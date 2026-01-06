@@ -273,7 +273,7 @@ After each file update:
 - [ ] All `<cannot_skip>` tags explain why non-negotiable
 - [ ] All `<output_required>` tags define exact format
 - [ ] Strategic spacing (`---`) between tag blocks
-- [ ] File still renders correctly in markdown
+- [ ] File still renders correctly in Markdown
 
 ---
 

@@ -503,7 +503,7 @@ If any condition is true, STOP and dispatch fix or escalate to user.
 
 | Decision Type | Examples | Action |
 |---------------|----------|--------|
-| **HARD BLOCK** | Service lacks JSON structured logs | **STOP** - Dispatch fix to implementation agent |
+| **HARD BLOCK** | Service lacks JSON-structured logs | **STOP** - Dispatch fix to implementation agent |
 | **HARD BLOCK** | Instrumentation coverage < 50% | **STOP** - Dispatch fix to implementation agent |
 | **HARD BLOCK** | Max iterations reached | **STOP** - Escalate to user |
 
@@ -514,14 +514,14 @@ If any condition is true, STOP and dispatch fix or escalate to user.
 <cannot_skip>
 - Gate 2 execution (no MVP exemptions)
 - 90% instrumentation coverage minimum
-- JSON structured logs requirement
+- JSON-structured logs requirement
 </cannot_skip>
 
 | Requirement | Cannot Be Waived By | Rationale |
 |-------------|---------------------|-----------|
 | Gate 2 execution | CTO, PM, "MVP" arguments | Observability prevents production blindness |
 | 90% instrumentation coverage | "We'll add spans later" | Later = never. Instrument during implementation. |
-| JSON structured logs | "Plain text is enough" | Plain text is unsearchable in production |
+| JSON-structured logs | "Plain text is enough" | Plain text is unsearchable in production |
 
 ## Pressure Resistance
 
