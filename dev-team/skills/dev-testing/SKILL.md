@@ -195,7 +195,7 @@ testing_state = {
 
 ## Step 3: Dispatch QA Analyst Agent
 
-<dispatch_required agent="qa-analyst" model="opus">
+<dispatch_required agent="ring-dev-team:qa-analyst" model="opus">
 Write unit tests for all acceptance criteria with 85%+ coverage.
 </dispatch_required>
 
