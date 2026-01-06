@@ -230,7 +230,7 @@ All workflows converge to the 6-gate development cycle:
 |----------|-------------|--------|------|
 | **New Feature** | `/pre-dev-feature "description"` | `docs/pre-dev/{feature}/tasks.md` | → `/dev-cycle tasks.md` |
 | **Direct Tasks** | `/dev-cycle tasks.md` | — | Execute 6 gates directly |
-| **Refactoring** | `/dev-refactor` | `docs/refactor/{timestamp}/tasks.md` | → `/dev-cycle tasks.md` |
+| **Refactoring** | `/dev-refactor` | `docs/dev-refactor/{timestamp}/tasks.md` | → `/dev-cycle tasks.md` |
 
 **6-Gate Development Cycle:**
 

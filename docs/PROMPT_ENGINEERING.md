@@ -433,7 +433,7 @@ MUST use Task tool with specified agent and model.
 
 <parallel_dispatch agents="ring-dev-team:backend-engineer-golang, ring-dev-team:qa-analyst, ring-dev-team:devops-engineer, ring-dev-team:sre" model="opus">
 Analyze codebase against Ring standards. All agents receive same context:
-- Codebase Report: docs/refactor/{timestamp}/codebase-report.md
+- Codebase Report: docs/dev-refactor/{timestamp}/codebase-report.md
 - Project Rules: docs/PROJECT_RULES.md
 </parallel_dispatch>
 

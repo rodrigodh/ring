@@ -113,12 +113,12 @@ When analyzing services for instrumentation compliance, verify:
 
 ## Output
 
-**Analysis Report** (`docs/refactor/{timestamp}/analysis-report.md`):
+**Analysis Report** (`docs/dev-refactor/{timestamp}/analysis-report.md`):
 - Summary table with issue counts by severity
 - Detailed findings grouped by dimension
 - Specific file locations and line numbers
 
-**Tasks File** (`docs/refactor/{timestamp}/tasks.md`):
+**Tasks File** (`docs/dev-refactor/{timestamp}/tasks.md`):
 - Grouped refactoring tasks (REFACTOR-001, REFACTOR-002, etc.)
 - Same format as PM Team output
 - Compatible with dev-cycle execution
@@ -204,6 +204,6 @@ See skill `dev-refactor` for full details. Key rules:
 - **All agents dispatch in parallel** - Single message, multiple Task calls
 - **Specify model: "opus"** - All agents need opus for comprehensive analysis
 - **MODE: ANALYSIS only** - Agents analyze, they DO NOT implement
-- **Save artifacts** to `docs/refactor/{timestamp}/`
+- **Save artifacts** to `docs/dev-refactor/{timestamp}/`
 - **Get user approval** before executing dev-cycle
-- **Handoff**: `/dev-cycle docs/refactor/{timestamp}/tasks.md`
+- **Handoff**: `/dev-cycle docs/dev-refactor/{timestamp}/tasks.md`

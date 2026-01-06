@@ -294,7 +294,7 @@ Any of these = IMMEDIATE SKILL FAILURE.
 
 ```
 Write tool:
-  file_path: "docs/refactor/{timestamp}/codebase-report.md"
+  file_path: "docs/dev-refactor/{timestamp}/codebase-report.md"
   content: [Task output]
 ```
 
@@ -311,7 +311,7 @@ Write tool:
 **BEFORE dispatching any specialist agent, verify:**
 
 ```
-Check 1: Does docs/refactor/{timestamp}/codebase-report.md exist?
+Check 1: Does docs/dev-refactor/{timestamp}/codebase-report.md exist?
   - YES → Continue to dispatch agents
   - no  → STOP. Go back to Step 3.
 
@@ -365,7 +365,7 @@ Task tool 1:
     Input:
     - Ring Standards: Load via WebFetch (golang.md)
     - Section Index: See shared-patterns/standards-coverage-table.md → "backend-engineer-golang"
-    - Codebase Report: docs/refactor/{timestamp}/codebase-report.md
+    - Codebase Report: docs/dev-refactor/{timestamp}/codebase-report.md
     - Project Rules: docs/PROJECT_RULES.md
 
     Output:
@@ -434,7 +434,7 @@ Task tool 1:
     Input:
     - Ring Standards: Load via WebFetch (typescript.md)
     - Section Index: See shared-patterns/standards-coverage-table.md → "backend-engineer-typescript"
-    - Codebase Report: docs/refactor/{timestamp}/codebase-report.md
+    - Codebase Report: docs/dev-refactor/{timestamp}/codebase-report.md
     - Project Rules: docs/PROJECT_RULES.md
 
     Output:
@@ -462,7 +462,7 @@ Task tool 5:
     Input:
     - Ring Standards: Load via WebFetch (frontend.md)
     - Section Index: See shared-patterns/standards-coverage-table.md → "frontend-engineer"
-    - Codebase Report: docs/refactor/{timestamp}/codebase-report.md
+    - Codebase Report: docs/dev-refactor/{timestamp}/codebase-report.md
     - Project Rules: docs/PROJECT_RULES.md
 
     Output:
@@ -499,7 +499,7 @@ Task tool 6:
     Input:
     - Ring Standards: Load via WebFetch (typescript.md)
     - Section Index: See shared-patterns/standards-coverage-table.md → "frontend-bff-engineer-typescript"
-    - Codebase Report: docs/refactor/{timestamp}/codebase-report.md
+    - Codebase Report: docs/dev-refactor/{timestamp}/codebase-report.md
     - Project Rules: docs/PROJECT_RULES.md
 
     Output:
@@ -531,7 +531,7 @@ Task tool 6:
 After all parallel agent tasks complete, save each agent's output to a separate file:
 
 ```
-docs/refactor/{timestamp}/reports/
+docs/dev-refactor/{timestamp}/reports/
 ├── backend-engineer-golang-report.md     (if Go project)
 ├── backend-engineer-typescript-report.md (if TypeScript Backend)
 ├── frontend-engineer-report.md           (if Frontend)
@@ -597,7 +597,7 @@ docs/refactor/{timestamp}/reports/
 
 ```
 Write tool:
-  file_path: "docs/refactor/{timestamp}/reports/{agent-name}-report.md"
+  file_path: "docs/dev-refactor/{timestamp}/reports/{agent-name}-report.md"
   content: [Agent Task output formatted per template above]
 ```
 
@@ -951,7 +951,7 @@ CANNOT proceed without explicit user selection.
 **TodoWrite:** Mark "Save all artifacts" as `in_progress`
 
 ```
-docs/refactor/{timestamp}/
+docs/dev-refactor/{timestamp}/
 ├── codebase-report.md  (Step 3)
 ├── reports/            (Step 4.5)
 │   ├── backend-engineer-golang-report.md
@@ -979,7 +979,7 @@ Skill tool:
 
 **⛔ CRITICAL: Pass tasks file path in context:**
 After invoking the skill, provide the tasks file location:
-- Tasks file: `docs/refactor/{timestamp}/tasks.md`
+- Tasks file: `docs/dev-refactor/{timestamp}/tasks.md`
 
 Where `{timestamp}` is the same timestamp used in Step 9 artifacts.
 
@@ -997,7 +997,7 @@ Where `{timestamp}` is the same timestamp used in Step 9 artifacts.
 
 If user approved execution, you MUST:
 1. Invoke `Skill tool: dev-cycle`
-2. Pass tasks file path: `docs/refactor/{timestamp}/tasks.md`
+2. Pass tasks file path: `docs/dev-refactor/{timestamp}/tasks.md`
 3. Wait for dev-cycle to complete all 6 gates
 
 **Skipping this step = SKILL FAILURE.**
