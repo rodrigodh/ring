@@ -380,6 +380,17 @@ Task:
     Multi-Tenant: Handled post-cycle by ring:dev-multi-tenant — implement single-tenant in this gate.
     Design for adaptability: use `r.connection` as a struct field so ring:dev-multi-tenant can replace `r.connection.GetDB()` with `core.ResolvePostgres(ctx, r.connection)` without restructuring.
 
+    ## ⛔ FILE SIZE ENFORCEMENT (MANDATORY)
+    See [shared-patterns/file-size-enforcement.md](../shared-patterns/file-size-enforcement.md)
+    - You MUST NOT create or modify files to exceed 300 lines (including test files)
+    - If implementing a feature would push a file past 300 lines, you MUST split it proactively
+    - Split by responsibility boundaries (not arbitrary line counts)
+    - **Go:** Each split file stays in the same package; all methods remain on the same receiver; verify with `go build ./... && go test ./...`
+    - **TypeScript:** Split files stay in the same module/directory; update barrel exports (index.ts) if needed; verify with `tsc --noEmit && npm test`
+    - Test files MUST be split to match source files
+    - Files > 300 lines = loop back for split. Files > 500 lines = HARD BLOCK.
+    - Reference: golang/domain.md → File Organization (MANDATORY), typescript.md → File Organization (MANDATORY)
+
     ## ⛔ CRITICAL: all Ring Standards Apply (no DEFERRAL)
     See Ring Standards for mandatory requirements:
     - Structured JSON logging with trace_id correlation
@@ -502,13 +513,26 @@ if any standards compliance is ❌:
   → Re-dispatch agent to fix
 
 if pass_output contains "PASS" and all standards ✅:
-  → implementation_state.tdd_green = {
-      status: "completed",
-      implementation_files: [extracted files],
-      pass_output: [extracted output],
-      commit_sha: [extracted SHA]
-    }
-  → Proceed to Step 8
+  → Run file-size verification (see shared-patterns/file-size-enforcement.md):
+    Go: find . -name "*.go" ! -path "*/mocks*" ! -path "*/generated/*" ! -path "*/gen/*" ! -name "*.pb.go" ! -name "*.gen.go" -exec wc -l {} + | awk '$1 > 300 && $NF != "total" {print}' | sort -rn
+    TS: find . \( -name "*.ts" -o -name "*.tsx" \) ! -path "*/node_modules/*" ! -path "*/dist/*" ! -path "*/build/*" ! -path "*/generated/*" ! -path "*/__mocks__/*" ! -name "*.d.ts" ! -name "*.gen.ts" -exec wc -l {} + | awk '$1 > 300 && $NF != "total" {print}' | sort -rn
+  
+  if any file > 500 lines:
+    → HARD BLOCK: "File [path] has [N] lines (max 500). MUST split before proceeding."
+    → Re-dispatch agent with split instructions from shared-patterns/file-size-enforcement.md
+
+  if any file > 300 lines:
+    → LOOP BACK: "File [path] has [N] lines (max 300). Split by responsibility boundaries."
+    → Re-dispatch agent with file path and split strategy suggestion
+
+  if all files ≤ 300 lines:
+    → implementation_state.tdd_green = {
+        status: "completed",
+        implementation_files: [extracted files],
+        pass_output: [extracted output],
+        commit_sha: [extracted SHA]
+      }
+    → Proceed to Step 8
 ```
 
 ## Step 8: Prepare Output
@@ -542,6 +566,7 @@ Generate skill output:
 - OpenTelemetry Spans: ✅
 - Error Handling: ✅
 - Context Propagation: ✅
+- File Size (≤300 lines): ✅
 ## Handoff to Next Gate
 - Implementation status: COMPLETE
 - Code compiles: ✅

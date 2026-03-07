@@ -375,6 +375,7 @@ Task:
     - Naming conventions
     - Error handling patterns
     - Performance concerns
+    - **File size compliance** — Any file > 300 lines (excluding auto-generated: *.pb.go, *.d.ts, */generated/*, */mocks/*) MUST be flagged as MEDIUM+ issue. Files > 500 lines = CRITICAL. See shared-patterns/file-size-enforcement.md. Reference: golang/domain.md → File Organization (MANDATORY)
 
     ## Required Output
     ### VERDICT: PASS / FAIL
