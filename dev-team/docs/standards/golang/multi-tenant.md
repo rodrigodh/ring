@@ -17,7 +17,7 @@ This module covers multi-tenant patterns with Tenant Manager.
 | 3 | [Route-Level Auth-Before-Tenant Ordering (MANDATORY)](#route-level-auth-before-tenant-ordering-mandatory) | Auth MUST validate JWT before tenant middleware calls Tenant Manager API |
 | 24 | [Multi-Tenant Message Queue Consumers (Lazy Mode)](#multi-tenant-message-queue-consumers-lazy-mode) | Lazy consumer initialization, on-demand connection, exponential backoff |
 | 25 | [M2M Credentials via Secret Manager (Plugin-Only)](#m2m-credentials-via-secret-manager-plugin-only) | AWS Secrets Manager integration for plugin-to-product authentication per tenant |
-| 26 | [Service Authentication (MANDATORY)](#service-authentication-mandatory) | API key authentication for tenant-manager /settings endpoint via X-API-Key header |
+| 26 | [Service Authentication (MANDATORY)](#service-authentication-mandatory) | API key authentication for tenant-manager /connections endpoint via X-API-Key header |
 
 ---
 
@@ -39,7 +39,7 @@ The only valid multi-tenant implementation uses:
 - `tmrabbitmq.Manager` for RabbitMQ vhost isolation (from `lib-commons/v4/commons/tenant-manager/rabbitmq`)
 - The 8 canonical `MULTI_TENANT_*` environment variables with correct names and defaults
 - `client.WithCircuitBreaker` on the Tenant Manager HTTP client
-- `client.WithServiceAPIKey` on the Tenant Manager HTTP client for `/settings` endpoint authentication
+- `client.WithServiceAPIKey` on the Tenant Manager HTTP client for `/connections` endpoint authentication
 
 MUST correct any deviation from these patterns before the service can be considered multi-tenant.
 
@@ -121,7 +121,7 @@ Services on lib-commons v2 or v3 MUST upgrade to v4 before implementing multi-te
 git ls-remote --tags https://github.com/LerianStudio/lib-commons.git | grep "v4" | sort -V | tail -1
 
 # Update go.mod (use latest beta until stable is released)
-go get github.com/LerianStudio/lib-commons/v4@v4.1.0-beta.4
+go get github.com/LerianStudio/lib-commons/v4@v4.1.0-beta.5
 
 # Update import paths across the codebase (portable — works on macOS and Linux)
 # From v2:
@@ -145,7 +145,7 @@ go build ./...
 
 | Env Var | Description | Default | Required |
 |---------|-------------|---------|----------|
-| `APPLICATION_NAME` | Service name for Tenant Manager API (`/tenants/{id}/services/{service}/settings`) | - | Yes |
+| `APPLICATION_NAME` | Service name for Tenant Manager API (`/tenants/{id}/services/{service}/connections`) | - | Yes |
 | `MULTI_TENANT_ENABLED` | Enable multi-tenant mode | `false` | Yes |
 | `MULTI_TENANT_URL` | Tenant Manager service URL | - | If multi-tenant |
 | `MULTI_TENANT_ENVIRONMENT` | Deployment environment for cache key segmentation (lazy consumer tenant discovery) | `staging` | Only if RabbitMQ |
@@ -153,7 +153,7 @@ go build ./...
 | `MULTI_TENANT_IDLE_TIMEOUT_SEC` | Seconds before idle tenant connection is eviction-eligible | `300` | No |
 | `MULTI_TENANT_CIRCUIT_BREAKER_THRESHOLD` | Consecutive failures before circuit breaker opens | `5` | Yes |
 | `MULTI_TENANT_CIRCUIT_BREAKER_TIMEOUT_SEC` | Seconds before circuit breaker resets (half-open) | `30` | Yes |
-| `MULTI_TENANT_SERVICE_API_KEY` | API key for authenticating with tenant-manager `/settings` endpoint. Generated via service catalog. | - | If multi-tenant |
+| `MULTI_TENANT_SERVICE_API_KEY` | API key for authenticating with tenant-manager `/connections` endpoint. Generated via service catalog. | - | If multi-tenant |
 
 **Example `.env` for multi-tenant:**
 ```bash
@@ -196,7 +196,7 @@ type Config struct {
 
 ### Service Name Resolution
 
-The `service` parameter in `NewManager` maps to the Tenant Manager API path: `/tenants/{id}/services/{service}/settings`. Use `cfg.ApplicationName` (env `APPLICATION_NAME`):
+The `service` parameter in `NewManager` maps to the Tenant Manager API path: `/tenants/{id}/services/{service}/connections`. Use `cfg.ApplicationName` (env `APPLICATION_NAME`):
 
 ```go
 pgMgr := tmpostgres.NewManager(tmClient, cfg.ApplicationName,
@@ -247,7 +247,7 @@ The Tenant Manager is an external service that stores database credentials per t
 
 | Method | Path | Returns | Purpose |
 |--------|------|---------|---------|
-| `GET` | `/tenants/{tenantID}/services/{service}/settings` | `TenantConfig` | Full tenant configuration with DB credentials |
+| `GET` | `/tenants/{tenantID}/services/{service}/connections` | `TenantConfig` | Full tenant configuration with DB credentials |
 | `GET` | `/tenants/active?service={service}` | `[]*TenantSummary` | List of active tenants (fallback for discovery) |
 
 **Tenant Discovery (for lazy consumer mode):**
@@ -2294,7 +2294,7 @@ Labels: `tenant_org_id`, `target_service`, `environment`.
 
 ## Service Authentication (MANDATORY)
 
-Consumer services that call the Tenant Manager `/settings` endpoint MUST authenticate using an API key sent via the `X-API-Key` HTTP header. Without this header, the Tenant Manager rejects requests to protected endpoints.
+Consumer services that call the Tenant Manager `/connections` endpoint MUST authenticate using an API key sent via the `X-API-Key` HTTP header. Without this header, the Tenant Manager rejects requests to protected endpoints.
 
 ### How It Works
 
@@ -2323,7 +2323,7 @@ if err != nil {
 }
 ```
 
-> **Fail-fast:** `NewClient` returns `core.ErrServiceAPIKeyRequired` if the API key is empty. The service refuses to start with a clear error instead of failing with runtime 401 errors on `/settings` calls.
+> **Fail-fast:** `NewClient` returns `core.ErrServiceAPIKeyRequired` if the API key is empty. The service refuses to start with a clear error instead of failing with runtime 401 errors on `/connections` calls.
 
 ### Key Rotation
 
@@ -2340,6 +2340,6 @@ The service catalog enforces a maximum of 2 active keys per environment, so both
 
 | Rationalization | Why It's WRONG | Required Action |
 |-----------------|----------------|-----------------|
-| "We don't need API key auth for internal services" | The `/settings` endpoint returns database credentials. Unauthenticated access is a security risk. | **MUST configure `WithServiceAPIKey`** |
-| "We'll add the API key later" | Without authentication, the Tenant Manager rejects `/settings` requests. The service cannot resolve tenant connections. | **MUST configure before enabling multi-tenant** |
+| "We don't need API key auth for internal services" | The `/connections` endpoint returns database credentials. Unauthenticated access is a security risk. | **MUST configure `WithServiceAPIKey`** |
+| "We'll add the API key later" | Without authentication, the Tenant Manager rejects `/connections` requests. The service cannot resolve tenant connections. | **MUST configure before enabling multi-tenant** |
 | "We can use a shared API key across services" | Each service MUST have its own API key for audit trail and independent revocation. | **MUST generate per-service keys via service catalog** |

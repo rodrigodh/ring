@@ -174,7 +174,7 @@ HARD GATE: A client without circuit breaker can cascade failures across all tena
 
 See [multi-tenant.md § Service Authentication](../../docs/standards/golang/multi-tenant.md#service-authentication-mandatory) for the authentication flow.
 
-The Tenant Manager HTTP client MUST be configured with `client.WithServiceAPIKey(cfg.MultiTenantServiceAPIKey)`. Without this, the Tenant Manager rejects requests to the `/settings` endpoint with `401 Unauthorized`.
+The Tenant Manager HTTP client MUST be configured with `client.WithServiceAPIKey(cfg.MultiTenantServiceAPIKey)`. Without this, the Tenant Manager rejects requests to the `/connections` endpoint with `401 Unauthorized`.
 
 HARD GATE: A client without `WithServiceAPIKey` cannot resolve tenant connections.
 
@@ -704,7 +704,7 @@ HARD GATE: MUST pass build and tests before proceeding.
 > - MULTI_TENANT_IDLE_TIMEOUT_SEC (int, default 300)
 > - MULTI_TENANT_CIRCUIT_BREAKER_THRESHOLD (int, default 5)
 > - MULTI_TENANT_CIRCUIT_BREAKER_TIMEOUT_SEC (int, default 30)
-> - MULTI_TENANT_SERVICE_API_KEY (string, required — API key for tenant-manager /settings endpoint)
+> - MULTI_TENANT_SERVICE_API_KEY (string, required — API key for tenant-manager /connections endpoint)
 >
 > MUST NOT use alternative names (e.g., TENANT_MANAGER_ADDRESS, TENANT_MANAGER_URL are WRONG).
 > Add conditional log: "Multi-tenant mode enabled" vs "Running in SINGLE-TENANT MODE".
@@ -741,7 +741,7 @@ HARD GATE: MUST pass build and tests before proceeding.
 > Public endpoints (/health, /version, /swagger) MUST bypass tenant middleware.
 > When MULTI_TENANT_ENABLED=false, middleware calls c.Next() immediately (single-tenant passthrough).
 >
-> **Service API Key Authentication (MANDATORY):** The Tenant Manager HTTP client MUST be configured with `client.WithServiceAPIKey(cfg.MultiTenantServiceAPIKey)` so that `X-API-Key` header is sent in requests to the `/settings` endpoint. Follow multi-tenant.md § "Service Authentication (MANDATORY)".
+> **Service API Key Authentication (MANDATORY):** The Tenant Manager HTTP client MUST be configured with `client.WithServiceAPIKey(cfg.MultiTenantServiceAPIKey)` so that `X-API-Key` header is sent in requests to the `/connections` endpoint. Follow multi-tenant.md § "Service Authentication (MANDATORY)".
 >
 > **IF RabbitMQ DETECTED:** Follow multi-tenant.md § "ConsumerTrigger interface" for the wiring pattern.
 
