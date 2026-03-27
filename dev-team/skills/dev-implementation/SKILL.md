@@ -410,7 +410,7 @@ Task:
     
     | Alias | Import Path | Purpose |
     |-------|-------------|---------|
-    | `core` | `github.com/LerianStudio/lib-commons/v4/commons/tenant-manager/core` | Resolvers, context helpers, types |
+    | `tmcore` | `github.com/LerianStudio/lib-commons/v4/commons/tenant-manager/core` | Resolvers, context helpers, types |
     | `tmmiddleware` | `github.com/LerianStudio/lib-commons/v4/commons/tenant-manager/middleware` | TenantMiddleware, WhenEnabled |
     | `tmpostgres` | `github.com/LerianStudio/lib-commons/v4/commons/tenant-manager/postgres` | PostgresManager |
     | `tmmongo` | `github.com/LerianStudio/lib-commons/v4/commons/tenant-manager/mongo` | MongoManager |
