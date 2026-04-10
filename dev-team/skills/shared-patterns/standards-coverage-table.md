@@ -333,19 +333,19 @@ These sections describe HOW to use the standards, not WHAT the standards are.
 | --- | ----------------------------- | -------------------------------------- | --------------------------------------------- |
 | 1   | Version                       | `#version`                             | TypeScript 5.0+, Node.js 20+                  |
 | 2   | Strict Configuration          | `#strict-configuration-mandatory`      | tsconfig.json strict mode                     |
-| 3   | Frameworks & Libraries        | `#frameworks--libraries`               | Express, Fastify, NestJS, Prisma, Zod, Vitest |
+| 3   | Frameworks & Libraries        | `#frameworks--libraries`               | Fastify via mars-api, Kysely, InversifyJS, Zod, Vitest |
 | 4   | Type Safety                   | `#type-safety`                         | No any, branded types, discriminated unions   |
 | 5   | Zod Validation Patterns       | `#zod-validation-patterns`             | Schema validation                             |
-| 6   | Dependency Injection          | `#dependency-injection`                | TSyringe patterns                             |
-| 7   | AsyncLocalStorage for Context | `#asynclocalstorage-for-context`       | Request context propagation                   |
+| 6   | Dependency Injection          | `#dependency-injection`                | InversifyJS + TYPES symbols + DI config files |
+| 7   | Context Propagation           | `#context-propagation`                 | DI-based context (auth via @Auth, transactions via UoW) |
 | 8   | Testing                       | `#testing`                             | Type-safe mocks, fixtures, edge cases         |
 | 9   | Error Handling                | `#error-handling`                      | Custom error classes                          |
 | 10  | Function Design               | `#function-design-mandatory`           | Single responsibility                         |
 | 11  | File Organization             | `#file-organization-mandatory`         | File-level SRP, max 200-300 lines             |
 | 12  | Naming Conventions            | `#naming-conventions`                  | Files, interfaces, types                      |
-| 13  | Directory Structure           | `#directory-structure`                 | Lerian pattern                                |
+| 13  | Directory Structure           | `#directory-structure`                 | Clean Architecture + DDD (domain/app/infra)   |
 | 14  | RabbitMQ Worker Pattern       | `#rabbitmq-worker-pattern`             | Async message processing                      |
-| 15  | Always-Valid Domain Model     | `#always-valid-domain-model-mandatory` | Constructor validation, invariant protection  |
+| 15  | Always-Valid Domain Model     | `#always-valid-domain-model-mandatory` | AggregateRoot/Entity factories, Value Objects, domain events |
 
 ---
 
@@ -357,11 +357,11 @@ These sections describe HOW to use the standards, not WHAT the standards are.
 | --- | ----------------------------- | -------------------------------------- | -------------------------------------------------------------------------- |
 | 1   | Version                       | `#version`                             | TypeScript 5.0+, Node.js 20+                                               |
 | 2   | Strict Configuration          | `#strict-configuration-mandatory`      | tsconfig.json strict mode                                                  |
-| 3   | Frameworks & Libraries        | `#frameworks--libraries`               | Express, Fastify, NestJS, Prisma, Zod, Vitest                              |
+| 3   | Frameworks & Libraries        | `#frameworks--libraries`               | Backend stack (see sections 16-21 for BFF overrides)                       |
 | 4   | Type Safety                   | `#type-safety`                         | No any, branded types, discriminated unions                                |
 | 5   | Zod Validation Patterns       | `#zod-validation-patterns`             | Schema validation                                                          |
-| 6   | Dependency Injection          | `#dependency-injection`                | TSyringe/Inversify patterns                                                |
-| 7   | AsyncLocalStorage for Context | `#asynclocalstorage-for-context`       | Request context propagation                                                |
+| 6   | Dependency Injection          | `#dependency-injection`                | InversifyJS patterns (BFF may differ, see sections 16-21)                  |
+| 7   | Context Propagation           | `#context-propagation`                 | DI-based context (BFF may use AsyncLocalStorage, see sections 16-21)       |
 | 8   | Testing                       | `#testing`                             | Type-safe mocks, fixtures, edge cases                                      |
 | 9   | Error Handling                | `#error-handling`                      | Custom error classes                                                       |
 | 10  | Function Design               | `#function-design-mandatory`           | Single responsibility                                                      |
