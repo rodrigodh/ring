@@ -1156,84 +1156,183 @@ class Service {
 
 ### Aggregate Root Pattern
 
-Aggregates extend `AggregateRoot<Props>` from `@v4-company/mars-api/core`:
+Aggregates extend `AggregateRoot<Props>` from `@v4-company/mars-api/core`. They use a private constructor, a `build` method for Value Object construction, `from` for reconstruction, and `create` for new instances with domain events:
 
 ```typescript
-import { AggregateRoot, EntityIdVO, RequiredStringVO, StringVO, RequiredDateVO } from "@v4-company/mars-api/core";
+import {
+  AggregateRoot,
+  RequiredBooleanVO,
+  RequiredDateVO,
+  RequiredStringVO,
+  StringVO,
+  type ToPrimitives,
+  type EntityIdVO,
+  DomainException,
+} from "@v4-company/mars-api/core";
+import { EmailVerifiedEvent, UserCreatedEvent } from "@v4-company/mars-events";
 
-interface ProjectProps {
-  id: EntityIdVO;
-  name: RequiredStringVO;
-  description: StringVO | null;
-  createdBy: RequiredStringVO;
+import { EmailAddress } from "../entities/EmailAddress.ts";
+import { type ExternalAccount } from "../entities/ExternalAccount.ts";
+import { type Membership } from "../entities/Membership.ts";
+import { MetadataVO } from "../value-objects/MetadataVO.ts";
+
+type UserProps = {
+  firstName: RequiredStringVO;
+  lastName: RequiredStringVO;
+  imageUrl: StringVO;
+  banned: RequiredBooleanVO;
+  emails: EmailAddress[];
+  externalAccount: ExternalAccount;
+  memberships: Membership[];
+  metadata?: MetadataVO;
+  isSystemAdmin: RequiredBooleanVO;
   createdAt: RequiredDateVO;
   updatedAt: RequiredDateVO;
-}
+};
 
-export class Project extends AggregateRoot<ProjectProps> {
-  // Factory method for NEW entities
-  static create(params: {
-    name: string;
-    description?: string | null;
-    createdBy: string;
-  }): Project {
-    const now = new Date();
-    const project = new Project({
-      id: EntityIdVO.generate(),
-      name: new RequiredStringVO(params.name),
-      description: params.description ? new StringVO(params.description) : null,
-      createdBy: new RequiredStringVO(params.createdBy),
-      createdAt: new RequiredDateVO(now),
-      updatedAt: new RequiredDateVO(now),
-    });
+export type PrimitiveUserProps = ToPrimitives<UserProps>;
 
-    // Raise domain events
-    project.raiseEvent(new ProjectCreatedEvent({ projectId: project.id.value }));
+export type CreateUserInput = Omit<PrimitiveUserProps, "emails"> & {
+  email: string;
+};
 
-    return project;
+export class User extends AggregateRoot<UserProps> {
+  private constructor(props: UserProps, id?: EntityIdVO) {
+    super(props, id);
+  }
+
+  // Build method converts primitives to Value Objects
+  private static build(props: PrimitiveUserProps): UserProps {
+    return {
+      firstName: new RequiredStringVO(props.firstName),
+      lastName: new RequiredStringVO(props.lastName),
+      imageUrl: new StringVO(props.imageUrl),
+      banned: new RequiredBooleanVO(props.banned),
+      emails: props.emails,
+      externalAccount: props.externalAccount,
+      isSystemAdmin: new RequiredBooleanVO(props.isSystemAdmin),
+      memberships: props.memberships,
+      metadata: props.metadata ? new MetadataVO(props.metadata) : undefined,
+      createdAt: new RequiredDateVO(new Date()),
+      updatedAt: new RequiredDateVO(new Date()),
+    };
   }
 
   // Reconstruction from database (trusted data, no events)
-  static from(params: ProjectProps): Project {
-    return new Project(params);
+  static from(props: PrimitiveUserProps, id?: EntityIdVO): User {
+    return new User(User.build(props), id);
   }
 
+  // Factory for NEW entities — raises domain events
+  static create(input: CreateUserInput): User {
+    const user = User.from({ ...input, emails: [] });
+
+    const primaryEmail = EmailAddress.create({
+      email: input.email,
+      userId: user.id.value,
+      isPrimary: true,
+      verified: false,
+      verifiedAt: null,
+    });
+    user.addEmail(primaryEmail);
+
+    user.raiseEvent(
+      new UserCreatedEvent({
+        userId: user.id.value,
+        email: primaryEmail.email.value,
+      }),
+    );
+
+    return user;
+  }
+
+  // Getters expose values
+  get firstName(): string { return this.props.firstName.value; }
+  get lastName(): string { return this.props.lastName.value; }
+  get banned(): boolean { return this.props.banned.value; }
+  get emails(): EmailAddress[] { return this.props.emails; }
+
   // Domain behavior methods
-  addProjectRepo(repo: ProjectRepo): void {
-    this.props.projectRepos.push(repo);
+  public addEmail(email: EmailAddress): void {
+    if (email.isPrimary.value && this.primaryEmail) {
+      throw new DomainException("User already has a primary email");
+    }
+    this.props.emails.push(email);
+  }
+
+  public verifyEmail(email: string): void {
+    const emailAddress = this.props.emails.find((e) => e.email.value === email);
+    if (!emailAddress) {
+      throw new DomainException("Email not found at verification");
+    }
+
+    emailAddress.props.verified = new RequiredBooleanVO(true);
+    emailAddress.props.verifiedAt = new RequiredDateVO(new Date());
+    this.props.updatedAt = new RequiredDateVO(new Date());
+
+    this.raiseEvent(new EmailVerifiedEvent({
+      userId: this.id.value,
+      emailAddressId: emailAddress.id.value,
+    }));
   }
 }
 ```
 
 ### Entity Pattern
 
-Child entities extend `Entity<Props>`:
+Child entities extend `Entity<Props>` with the same private constructor + `build` + `create`/`from` pattern:
 
 ```typescript
-import { Entity, EntityIdVO, RequiredStringVO, RequiredBooleanVO } from "@v4-company/mars-api/core";
+import {
+  DateVO,
+  EmailVO,
+  EntityIdVO,
+  RequiredBooleanVO,
+  type EntityProps,
+  Entity,
+  type ToPrimitives,
+} from "@v4-company/mars-api/core";
 
-interface ProjectRepoProps {
-  id: EntityIdVO;
-  projectId: RequiredStringVO;
-  githubId: RequiredStringVO;
-  name: RequiredStringVO;
-  isPrivate: RequiredBooleanVO;
-}
+export type EmailAddressProps = EntityProps<{
+  email: EmailVO;
+  verified: RequiredBooleanVO;
+  verifiedAt: DateVO;
+  isPrimary: RequiredBooleanVO;
+  userId: EntityIdVO;
+}>;
 
-export class ProjectRepo extends Entity<ProjectRepoProps> {
-  static create(params: { projectId: string; githubId: string; name: string; isPrivate: boolean }): ProjectRepo {
-    return new ProjectRepo({
-      id: EntityIdVO.generate(),
-      projectId: new RequiredStringVO(params.projectId),
-      githubId: new RequiredStringVO(params.githubId),
-      name: new RequiredStringVO(params.name),
-      isPrivate: new RequiredBooleanVO(params.isPrivate),
-    });
+export type EmailAddressPrimitives = ToPrimitives<EmailAddressProps>;
+
+export class EmailAddress extends Entity<EmailAddressProps> {
+  private constructor(props: EmailAddressProps, id?: EntityIdVO) {
+    super(props, id);
   }
 
-  static from(params: ProjectRepoProps): ProjectRepo {
-    return new ProjectRepo(params);
+  private static build(props: EmailAddressPrimitives): EmailAddressProps {
+    return {
+      email: new EmailVO(props.email),
+      verified: new RequiredBooleanVO(props.verified),
+      verifiedAt: new DateVO(props.verifiedAt),
+      isPrimary: new RequiredBooleanVO(props.isPrimary),
+      userId: new EntityIdVO(props.userId),
+    };
   }
+
+  static create(props: EmailAddressPrimitives): EmailAddress {
+    const entityProps = this.build(props);
+    return new EmailAddress(entityProps);
+  }
+
+  static from(props: EmailAddressPrimitives, id: EntityIdVO): EmailAddress {
+    const entityProps = this.build(props);
+    return new EmailAddress(entityProps, id);
+  }
+
+  get email(): EmailVO { return this.props.email; }
+  get verified(): RequiredBooleanVO { return this.props.verified; }
+  get verifiedAt(): DateVO { return this.props.verifiedAt; }
+  get isPrimary(): RequiredBooleanVO { return this.props.isPrimary; }
+  get userId(): EntityIdVO { return this.props.userId; }
 }
 ```
 
@@ -1241,11 +1340,15 @@ export class ProjectRepo extends Entity<ProjectRepoProps> {
 
 | Requirement | Description |
 |-------------|-------------|
-| **Factory methods** | `static create()` for new entities, `static from()` for reconstruction |
+| **Private constructor** | Prevent direct instantiation — use `create()`/`from()` factories |
+| **`build` method** | Private static method that converts primitives to Value Objects |
+| **`create()` factory** | For new entities — calls `build`, may raise domain events |
+| **`from()` factory** | For reconstruction from database — calls `build`, no events |
 | **Library base classes** | Extend `AggregateRoot<Props>` or `Entity<Props>` from mars-api/core |
-| **Value Objects for all properties** | Use `EntityIdVO`, `RequiredStringVO`, `RequiredBooleanVO`, `RequiredDateVO`, etc. |
-| **Domain events** | Aggregates raise events via `this.raiseEvent()` in create/mutation methods |
-| **No direct mutation** | State changes through domain behavior methods only |
+| **`ToPrimitives<T>` type** | Export primitive type for use in mappers and inputs |
+| **Value Objects for all properties** | Use `EntityIdVO`, `RequiredStringVO`, `RequiredBooleanVO`, `DateVO`, `EmailVO`, etc. |
+| **Domain events** | Aggregates raise events via `this.raiseEvent()` — events from `@v4-company/mars-events` |
+| **Domain behavior methods** | State changes through methods that validate and enforce invariants |
 
 ### UseCase Pattern (orchestration)
 
