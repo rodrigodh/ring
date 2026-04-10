@@ -19,7 +19,7 @@ Analyze changes, group them into coherent atomic commits, and create signed comm
 2. **Groups** related changes into logical, atomic commits (feature+tests, deps, docs)
 3. **Proposes** a commit plan with conventional commit messages
 4. **Confirms** the plan with the user before executing
-5. **Executes** signed commits with proper trailers (`--trailer "X-Lerian-Ref: 0x1"`)
+5. **Executes** signed commits with proper trailers (`--trailer "X-V4-Company-Ref: 0x1"`)
 6. **Offers** to push after successful commits
 
 ## Related

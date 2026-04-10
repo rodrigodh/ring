@@ -1,4 +1,4 @@
-# Helm Worker Patterns (Lerian Standard)
+# Helm Worker Patterns (V4-Company Standard)
 
 ## Dual-Mode Worker Pattern
 

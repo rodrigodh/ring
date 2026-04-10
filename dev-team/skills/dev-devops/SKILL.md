@@ -35,7 +35,7 @@ input_schema:
       description: "Task or subtask identifier"
     - name: language
       type: string
-      enum: [go, typescript, python]
+      enum: [typescript, python]
       description: "Programming language of the implementation"
     - name: service_type
       type: string
@@ -145,7 +145,7 @@ This skill configures the development and deployment infrastructure:
 
 <verify_before_proceed>
 - unit_id exists
-- language is valid (go|typescript|python)
+- language is valid (typescript|python)
 - service_type is valid (api|worker|batch|cli)
 - implementation_files is not empty
 </verify_before_proceed>
@@ -153,7 +153,7 @@ This skill configures the development and deployment infrastructure:
 ```text
 REQUIRED INPUT (from marsai:dev-cycle orchestrator):
 - unit_id: [task/subtask being containerized]
-- language: [go|typescript|python]
+- language: [typescript|python]
 - service_type: [api|worker|batch|cli]
 - implementation_files: [files from Gate 0]
 
@@ -185,7 +185,7 @@ if any REQUIRED input is missing:
 
 3. Identify services needed:
    - From new_services input
-   - From language (Go → alpine base, TS → node base)
+   - From language (TS → node base, Python → python base)
    - From service_type (api → expose port, worker → no port)
 ```
 
@@ -236,7 +236,7 @@ Task:
     - .env.example: [EXISTS/MISSING]
 
     ## Standards Reference
-    WebFetch: https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/devops.md
+    WebFetch: https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/devops.md
 
     You MUST implement all sections from devops.md.
 
@@ -341,7 +341,7 @@ Task:
     [list ❌ sections and FAIL verifications]
 
     ## Standards Reference
-    WebFetch: https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/devops.md
+    WebFetch: https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/devops.md
 
     Fix all issues and re-run verification commands.
     Return updated Standards Coverage Table with all ✅.

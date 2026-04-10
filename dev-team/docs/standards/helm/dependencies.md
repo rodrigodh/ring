@@ -1,6 +1,6 @@
-# Helm Dependencies (Lerian Standard)
+# Helm Dependencies (V4-Company Standard)
 
-## Dependency Chart Versions (Current Lerian Standard)
+## Dependency Chart Versions (Current V4-Company Standard)
 
 ```text
 postgresql:           bitnami v16.x   (charts.bitnami.com/bitnami)
@@ -8,7 +8,7 @@ mongodb:              bitnami v16.x   (charts.bitnami.com/bitnami)
 rabbitmq:             groundhog2k v2.x (groundhog2k.github.io/helm-charts)
 valkey:               valkey v0.7.x   (valkey.io/valkey-helm)
 keda:                 kedacore v2.17.x (kedacore.github.io/charts)
-otel-collector-lerian: OCI lerianstudio (registry-1.docker.io/lerianstudio)
+otel-collector-v4-company: OCI V4-Company (registry-1.docker.io/V4-Company)
 ```
 
 ---
@@ -44,9 +44,9 @@ FOR EACH dependency in dependencies:
     Tags: [keda-operator]
     Values: crds.install, webhookCerts.generate, operator.resources
 
-  otel-collector-lerian:
-    Chart: oci://registry-1.docker.io/lerianstudio/otel-collector-lerian
-    Condition: otel-collector-lerian.enabled
+  otel-collector-v4-company:
+    Chart: oci://registry-1.docker.io/V4-Company/otel-collector-v4-company
+    Condition: otel-collector-v4-company.enabled
 ```
 
 ---

@@ -9,14 +9,14 @@ trigger: |
   - Need to delegate a task to Gandalf (AI team member on dedicated Mac mini)
 
 skip_when: |
-  - Not connected to Lerian's Tailscale network
+  - Not connected to V4-Company's Tailscale network
   - Task can be completed locally without Gandalf's capabilities
   - Publishing to a destination other than Alfarrábio
 ---
 
 # Gandalf Webhook
 
-Send tasks to Gandalf and get responses back. Gandalf is Lerian's AI team member running on a dedicated Mac mini with access to Slack, Google Workspace, GitHub, Jira, Alfarrábio (report server), and more.
+Send tasks to Gandalf and get responses back. Gandalf is V4-Company's AI team member running on a dedicated Mac mini with access to Slack, Google Workspace, GitHub, Jira, Alfarrábio (report server), and more.
 
 ## Endpoint
 
@@ -49,7 +49,7 @@ Response (synchronous):
   "ok": true,
   "task_id": "a1b2c3d4",
   "status": "done",
-  "response": "https://alfarrabio.lerian.net/my-report-title.html"
+  "response": "https://alfarrabio.v4-company.net/my-report-title.html"
 }
 ```
 
@@ -62,7 +62,7 @@ curl -s -X POST http://gandalf.heron-justitia.ts.net:18792/task \
   -H "Content-Type: application/json" \
   -d '{
     "action": "notify",
-    "message": "#pull-requests: PR #1900 lib-commons v4 ready for review"
+    "message": "#pull-requests: PR #1900 auth-service v4 ready for review"
   }'
 ```
 

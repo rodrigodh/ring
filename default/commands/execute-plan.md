@@ -58,7 +58,6 @@ You will be asked to choose between:
 - Default batch size: first 3 tasks
 - Each task is marked in_progress, executed, then completed
 - Dispatches to specialized agents when available:
-  - Backend Go: `marsai:backend-engineer-golang`
   - Backend TypeScript: `marsai:backend-engineer-typescript`
   - Frontend React/Next.js/BFF: `frontend-bff-engineer-typescript`
   - Infrastructure: `marsai:devops-engineer`

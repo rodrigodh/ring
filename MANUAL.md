@@ -1,6 +1,6 @@
 # MarsAI Marketplace Manual
 
-Quick reference guide for the MarsAI skills library and workflow system. This monorepo provides 2 plugins with 54 skills, 22 agents, and 23 slash commands for enforcing proven software engineering practices.
+Quick reference guide for the MarsAI skills library and workflow system. This monorepo provides 2 plugins with 48 skills, 21 agents, and 22 slash commands for enforcing proven software engineering practices.
 
 ---
 
@@ -14,8 +14,8 @@ Quick reference guide for the MarsAI skills library and workflow system. This mo
 │  ┌───────────────┐  ┌───────────────┐                                            │
 │  │ marsai-default  │  │ marsai-dev-team │                                            │
 │  │  Skills(22)   │  │  Skills(32)   │                                            │
-│  │  Agents(10)   │  │  Agents(12)   │                                            │
-│  │  Cmds(14)     │  │  Cmds(9)      │                                            │
+│  │  Agents(10)   │  │  Agents(11)   │                                            │
+│  │  Cmds(14)     │  │  Cmds(8)      │                                            │
 │  └───────────────┘  └───────────────┘                                            │
 └────────────────────────────────────────────────────────────────────────────────────┘
 
@@ -115,7 +115,6 @@ Commands are invoked directly: `/command-name`.
 | `/marsai:dev-status`          | Show current gate progress         | `/marsai:dev-status`                      |
 | `/marsai:dev-report`          | Generate development cycle report  | `/marsai:dev-report`                      |
 | `/marsai:dev-cancel`          | Cancel active development cycle    | `/marsai:dev-cancel`                      |
-| `/marsai:migrate-v4 [path]`  | Analyze Go service for lib-commons v4 migration | `/marsai:migrate-v4 src/`        |
 
 ---
 
@@ -185,13 +184,12 @@ Use when you need expert depth in specific domains:
 
 | Agent                                   | Specialization               | Technologies                                       |
 | --------------------------------------- | ---------------------------- | -------------------------------------------------- |
-| `marsai:backend-engineer-golang`          | Go microservices & APIs      | Fiber, gRPC, PostgreSQL, MongoDB, Kafka, OAuth2    |
 | `marsai:backend-engineer-typescript`      | TypeScript/Node.js backend   | Express, NestJS, Prisma, TypeORM, GraphQL          |
 | `marsai:devops-engineer`                  | Infrastructure & CI/CD       | Docker, Kubernetes, Terraform, GitHub Actions      |
 | `marsai:frontend-bff-engineer-typescript` | BFF & React/Next.js frontend | Next.js API Routes, Clean Architecture, DDD, React |
 | `marsai:frontend-designer`                | Visual design & aesthetics   | Typography, motion, CSS, distinctive UI            |
 | `marsai:frontend-engineer`                | General frontend development | React, TypeScript, CSS, component architecture     |
-| `marsai:helm-engineer`                    | Helm chart specialist        | Helm charts, Kubernetes, Lerian conventions        |
+| `marsai:helm-engineer`                    | Helm chart specialist        | Helm charts, Kubernetes, V4-Company conventions        |
 | `marsai:prompt-quality-reviewer`          | AI prompt quality review     | Prompt engineering, clarity, effectiveness         |
 | `marsai:qa-analyst`                       | Quality assurance            | Test strategy, automation, coverage                |
 | `marsai:qa-analyst-frontend`              | Frontend QA specialist       | Accessibility, visual regression, E2E, performance |
@@ -218,9 +216,9 @@ Use when you need expert depth in specific domains:
 ```markdown
 ## Standards Compliance
 
-| Category | Current     | Expected        | Status | Location      |
-| -------- | ----------- | --------------- | ------ | ------------- |
-| Logging  | fmt.Println | lib-commons/zap | ⚠️     | service/\*.go |
+| Category | Current       | Expected          | Status | Location      |
+| -------- | ------------- | ----------------- | ------ | ------------- |
+| Logging  | console.log() | structured logger | ⚠️     | service/\*.ts |
 ```
 
 **Cross-references:** CLAUDE.md (Standards Compliance section), `dev-team/skills/dev-refactor/SKILL.md`
@@ -298,7 +296,6 @@ These enforce quality standards:
 | Large PR review (15+ files)       | Auto-sliced via `marsai:review-slicer`        |
 | Implementation planning           | `marsai:write-plan`                           |
 | Deep codebase analysis            | `marsai:codebase-explorer`                    |
-| Go backend expertise              | `marsai:backend-engineer-golang`              |
 | TypeScript/Node.js backend        | `marsai:backend-engineer-typescript`          |
 | Infrastructure/DevOps             | `marsai:devops-engineer`                      |
 | React/Next.js frontend & BFF      | `marsai:frontend-bff-engineer-typescript`     |
@@ -318,7 +315,7 @@ These enforce quality standards:
 ### Session Startup
 
 1. SessionStart hook runs automatically
-2. All 54 skills are auto-discovered and available
+2. All 48 skills are auto-discovered and available
 3. `marsai:using-marsai` workflow is activated (skill checking is now mandatory)
 
 ### Agent Dispatching
@@ -373,4 +370,4 @@ Consolidated report
 
 - **How to use Claude Code?** → Ask about Claude Code features, MCP servers, slash commands
 - **How to use MarsAI?** → Check skill names in this manual or in `marsai:using-marsai` skill
-- **Feature/bug tracking?** → https://github.com/lerianstudio/marsai/issues
+- **Feature/bug tracking?** → https://github.com/V4-Company/marsai/issues

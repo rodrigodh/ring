@@ -22,10 +22,10 @@ This principle is NON-NEGOTIABLE for all dev-team skills.
 **⛔ HARD GATE: Using any of these tools on source code = IMMEDIATE SKILL FAILURE**
 
 ```
-❌ Read(file_path="*.go|*.ts|*.tsx|*.jsx")  → SKILL FAILURE - Agent reads code
-❌ Write(file_path="*.go|*.ts|*.tsx|*.jsx") → SKILL FAILURE - Agent writes code
-❌ Edit(file_path="*.go|*.ts|*.tsx|*.jsx")  → SKILL FAILURE - Agent edits code
-❌ Bash(command="go test|npm test")         → SKILL FAILURE - Agent runs tests
+❌ Read(file_path="*.ts|*.tsx|*.jsx")  → SKILL FAILURE - Agent reads code
+❌ Write(file_path="*.ts|*.tsx|*.jsx") → SKILL FAILURE - Agent writes code
+❌ Edit(file_path="*.ts|*.tsx|*.jsx")  → SKILL FAILURE - Agent edits code
+❌ Bash(command="npm test")            → SKILL FAILURE - Agent runs tests
 ❌ Direct code analysis                     → SKILL FAILURE - Agent analyzes
 ```
 
@@ -37,9 +37,9 @@ This principle is NON-NEGOTIABLE for all dev-team skills.
 | `Edit` | ❌ FORBIDDEN | Dispatch specialist agent to make changes |
 | `Write` | ❌ FORBIDDEN | Dispatch specialist agent to create files |
 | `Grep` on code | ❌ FORBIDDEN | Dispatch `marsai:codebase-explorer` for pattern discovery |
-| `Bash` (go/npm/yarn) | ❌ FORBIDDEN | Specialist agent runs commands |
+| `Bash` (npm/yarn) | ❌ FORBIDDEN | Specialist agent runs commands |
 
-**Source files include:** `*.go`, `*.ts`, `*.tsx`, `*.jsx`, `*.py`, `*.java`, `*.rs`, `*.rb`
+**Source files include:** `*.ts`, `*.tsx`, `*.jsx`, `*.py`, `*.java`, `*.rs`, `*.rb`
 
 **You MAY use tools on:**
 - Task files (`tasks.md`, `findings.md`)
@@ -52,7 +52,6 @@ This principle is NON-NEGOTIABLE for all dev-team skills.
 ### marsai-dev-team Agents (Implementation)
 
 ```
-✅ Task(subagent_type="marsai:backend-engineer-golang", ...)
 ✅ Task(subagent_type="marsai:backend-engineer-typescript", ...)
 ✅ Task(subagent_type="marsai:frontend-engineer", ...)
 ✅ Task(subagent_type="marsai:frontend-designer", ...)
@@ -79,7 +78,6 @@ This principle is NON-NEGOTIABLE for all dev-team skills.
 
 | Gate | Specialized Agent | What Agent Does |
 |------|-------------------|-----------------|
-| 0 | `marsai:backend-engineer-golang` | Implements Go code, adds observability, runs TDD |
 | 0 | `marsai:backend-engineer-typescript` | Implements TS backend code, adds observability, runs TDD |
 | 0 | `marsai:frontend-engineer` | Implements React/Next.js components, runs TDD |
 | 0 | `marsai:frontend-bff-engineer-typescript` | Implements BFF layer, API aggregation |
@@ -96,7 +94,6 @@ This principle is NON-NEGOTIABLE for all dev-team skills.
 | Step | Specialized Agent | What Agent Does |
 |------|-------------------|-----------------|
 | 3 | `marsai:codebase-explorer` | Deep architecture analysis, pattern discovery |
-| 4 | `marsai:backend-engineer-golang` | Go standards compliance analysis |
 | 4 | `marsai:backend-engineer-typescript` | TypeScript standards compliance analysis |
 | 4 | `marsai:frontend-engineer` | Frontend standards compliance analysis |
 | 4 | `marsai:qa-analyst` | Test coverage and pattern analysis |
@@ -111,14 +108,13 @@ This principle is NON-NEGOTIABLE for all dev-team skills.
 
 | File Type / Task | Agent to Dispatch |
 |------------------|-------------------|
-| `*.go` files | `marsai:backend-engineer-golang` |
-| `*.ts` backend (Express, Fastify, NestJS) | `marsai:backend-engineer-typescript` |
+| `*.ts` backend (Fastify, NestJS) | `marsai:backend-engineer-typescript` |
 | `*.tsx` / `*.jsx` React components | `marsai:frontend-engineer` |
 | BFF / API Gateway layer | `marsai:frontend-bff-engineer-typescript` |
 | UI/UX review, design system | `marsai:frontend-designer` |
 | `Dockerfile`, `docker-compose.yml`, Helm | `marsai:devops-engineer` |
 | Logging, tracing | `marsai:sre` |
-| Test files (`*_test.go`, `*.spec.ts`) | `marsai:qa-analyst` |
+| Test files (`*.spec.ts`, `*.test.ts`) | `marsai:qa-analyst` |
 
 ### Code Review (Always Parallel)
 
@@ -152,10 +148,10 @@ This principle is NON-NEGOTIABLE for all dev-team skills.
 
 ### Library Requirements
 
-| Component | Go | TypeScript |
-|-----------|-----|------------|
-| **Logging** | `zerolog` or `zap` with JSON output | `pino` or `winston` with JSON output |
-| **Tracing** | `go.opentelemetry.io/otel` | `@opentelemetry/sdk-node` |
+| Component | TypeScript |
+|-----------|------------|
+| **Logging** | `pino` or `winston` with JSON output |
+| **Tracing** | `@opentelemetry/sdk-node` |
 
 ## Anti-Rationalization Table
 
@@ -163,7 +159,7 @@ This principle is NON-NEGOTIABLE for all dev-team skills.
 |-----------------|----------------|-----------------|
 | "This is a simple change, I can do it myself" | Simple ≠ exempt. Agents have standards loaded. You don't. | **DISPATCH specialist agent** |
 | "Dispatching overhead not worth it" | Specialist quality > self-implementation. Dispatch is investment. | **DISPATCH specialist agent** |
-| "I already know Go/TypeScript" | Knowing language ≠ knowing MarsAI standards. Agent has standards. | **DISPATCH specialist agent** |
+| "I already know TypeScript" | Knowing language ≠ knowing MarsAI standards. Agent has standards. | **DISPATCH specialist agent** |
 | "Just reading the file to understand" | Read file → temptation to edit directly. Agent reads for you. | **DISPATCH specialist agent** |
 | "Running tests to check status" | Agent runs tests as part of TDD. You orchestrate, not operate. | **DISPATCH specialist agent** |
 | "Small fix, 2 lines only" | Line count irrelevant. all code changes require specialist. | **DISPATCH specialist agent** |
@@ -175,10 +171,10 @@ This principle is NON-NEGOTIABLE for all dev-team skills.
 
 | Red Flag | What You're Thinking | Why It's Wrong |
 |----------|---------------------|----------------|
-| Opening `*.go` or `*.ts` with Read | "Let me understand this file..." | Agent understands for you |
+| Opening `*.ts` or `*.tsx` with Read | "Let me understand this file..." | Agent understands for you |
 | About to use Edit on source | "Just a quick fix..." | No fix is "quick" without standards |
 | About to use Write on source | "I'll create this file..." | Agent creates with observability |
-| Running `go test` or `npm test` | "Checking if tests pass..." | Agent runs tests in TDD cycle |
+| Running `npm test` | "Checking if tests pass..." | Agent runs tests in TDD cycle |
 | Analyzing code patterns | "Looking for the pattern..." | marsai:codebase-explorer analyzes |
 | "This is faster than dispatching" | Speed over quality | Agent quality > your speed |
 | "The agent would do the same" | Assuming equivalence | Agent has standards, you don't |
@@ -207,7 +203,7 @@ This principle is NON-NEGOTIABLE for all dev-team skills.
 
 ```text
 [ ] Did I directly Read/Edit/Write source code? → VIOLATION
-[ ] Did I run go test/npm test directly? → VIOLATION  
+[ ] Did I run npm test directly? → VIOLATION  
 [ ] Did I use Grep to analyze source patterns? → VIOLATION
 [ ] Did I make code changes without dispatching? → VIOLATION
 

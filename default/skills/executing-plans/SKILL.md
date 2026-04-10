@@ -141,7 +141,7 @@ User saying "don't wait", "don't ask questions", or "just execute" does NOT skip
 ### Step 3: Execute Batch
 **Default: First 3 tasks**
 
-**Agent Selection:** Backend Go → `marsai:backend-engineer-golang` | Backend TS → `marsai:backend-engineer-typescript` | Frontend → `marsai:frontend-bff-engineer-typescript` | Infra → `marsai:devops-engineer` | Testing → `marsai:qa-analyst` | Reliability → `marsai:sre`
+**Agent Selection:** Backend TS → `marsai:backend-engineer-typescript` | Frontend → `marsai:frontend-bff-engineer-typescript` | Infra → `marsai:devops-engineer` | Testing → `marsai:qa-analyst` | Reliability → `marsai:sre`
 
 For each task: Check context switch (Step 2.5) → Mark in_progress → Dispatch to agent with working_directory → Follow plan steps exactly → Run verifications → Mark completed
 

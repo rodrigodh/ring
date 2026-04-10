@@ -30,7 +30,7 @@ input_schema:
       description: "Task requirements or acceptance criteria"
     - name: language
       type: string
-      enum: [go, typescript, python]
+      enum: [typescript, python]
       description: "Programming language for implementation"
     - name: service_type
       type: string
@@ -85,9 +85,6 @@ output_schema:
 
 verification:
   automated:
-    - command: "go build ./... 2>&1 | grep -c 'error'"
-      description: "Go code compiles"
-      success_pattern: "^0$"
     - command: "npm run build 2>&1 | grep -c 'error'"
       description: "TypeScript compiles"
       success_pattern: "^0$"
@@ -123,7 +120,7 @@ This skill executes the implementation phase of the development cycle:
 <verify_before_proceed>
 - unit_id exists
 - requirements exists
-- language is valid (go|typescript|python)
+- language is valid (typescript|python)
 - service_type is valid (api|worker|batch|cli|frontend|bff)
 </verify_before_proceed>
 
@@ -131,7 +128,7 @@ This skill executes the implementation phase of the development cycle:
 REQUIRED INPUT (from marsai:dev-cycle orchestrator):
 - unit_id: [task/subtask being implemented]
 - requirements: [acceptance criteria or task description]
-- language: [go|typescript|python]
+- language: [typescript|python]
 - service_type: [api|worker|batch|cli|frontend|bff]
 
 OPTIONAL INPUT:
@@ -164,7 +161,6 @@ If condition is true, STOP and return error to orchestrator.
    
    | Language | Service Type | Agent |
    |----------|--------------|-------|
-   | go | api, worker, batch, cli | marsai:backend-engineer-golang |
    | typescript | api, worker | marsai:backend-engineer-typescript |
    | typescript | frontend, bff | frontend-bff-engineer-typescript |
    
@@ -201,7 +197,7 @@ Write failing test for unit_id following TDD-RED methodology.
 
 ```yaml
 Task:
-  subagent_type: "[selected_agent]"  # e.g., "marsai:backend-engineer-golang"
+  subagent_type: "[selected_agent]"  # e.g., "marsai:backend-engineer-typescript"
   description: "TDD-RED: Write failing test for [unit_id]"
   prompt: |
     ⛔ TDD-RED PHASE: Write a FAILING Test
@@ -215,12 +211,8 @@ Task:
     ## Project Standards
     Read and follow: [project_rules_path]
 
-    ## MarsAI Standards Reference (Modular)
-    Go modules: `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang/{module}.md`
-    For TS: `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/typescript.md`
-    **Go minimum for tests:** WebFetch `quality.md` → Testing section for test conventions.
-    Multi-Tenant: Implement DUAL-MODE from the start (Go only). Use resolvers for all resources — they work transparently in both single-tenant and multi-tenant mode. See TDD-GREEN prompt for full Dual-Mode Implementation section and the sub-package import table.
-    WebFetch `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang/multi-tenant.md` for patterns.
+    ## MarsAI Standards Reference
+    For TS: `https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/typescript.md`
 
     ## Frontend TDD Policy (React/Next.js only)
     If the component is purely visual/presentational (layout, styling, animations,
@@ -238,7 +230,7 @@ Task:
 
     ## Requirements for Test
     - Follow project naming conventions from PROJECT_RULES.md
-    - Use table-driven tests (Go) or describe/it blocks (TS)
+    - Use describe/it blocks (TS)
     - Test the happy path and edge cases
     - Include meaningful assertion messages
 
@@ -325,103 +317,23 @@ Task:
 
     ## MarsAI Standards Reference (Modular — Load by Task Type)
     
-    **⛔ MANDATORY: WebFetch the MODULAR standards files below, NOT the monolithic golang.md.**
-    The standards are split into focused modules. Load the ones relevant to your task type.
-    
-    ### Go — Module Loading Guide
-    Base URL: `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang/`
-    
-    | Task Type | REQUIRED Modules to WebFetch |
-    |-----------|----------------------------|
-    | New feature (full) | `core.md` → `bootstrap.md` → `domain.md` → `quality.md` → `api-patterns.md` |
-    | API endpoint | `core.md` → `api-patterns.md` → `domain.md` → `quality.md` |
-    | Auth / Security | `core.md` → `security.md` |
-    | Database work | `core.md` → `domain.md` → `domain-modeling.md` |
-    | Messaging / RabbitMQ | `core.md` → `messaging.md` |
-    | Infra / Bootstrap | `core.md` → `bootstrap.md` |
-    | Any task | `core.md` is ALWAYS required (lib-commons, license headers, dependency management) |
-    
     ### TypeScript
-    URL: `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/typescript.md`
-    
-    Multi-Tenant: Implement DUAL-MODE from the start. Use lib-commons v4 resolvers for ALL resources.
-    WebFetch: `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang/multi-tenant.md`
-    
-    ## ⛔ Multi-Tenant Dual-Mode Implementation (Go backend only — skip for TypeScript/Frontend)
-    
-    **Applies only when `language == "go"`.** TypeScript and frontend projects have different patterns.
-    
-    All Go backend code must work in BOTH modes from the start. The lib-commons v4 resolvers handle both transparently — in single-tenant mode they return the default connection, in multi-tenant mode they resolve per-tenant. There is NO post-cycle adaptation step.
-    
-    ### Sub-Package Import Reference
-    
-    | Alias | Import Path | Purpose |
-    |-------|-------------|---------|
-    | `tmcore` | `github.com/LerianStudio/lib-commons/v4/commons/tenant-manager/core` | Resolvers, context helpers, types |
-    | `tmmiddleware` | `github.com/LerianStudio/lib-commons/v4/commons/tenant-manager/middleware` | TenantMiddleware, WhenEnabled |
-    | `tmpostgres` | `github.com/LerianStudio/lib-commons/v4/commons/tenant-manager/postgres` | PostgresManager |
-    | `tmmongo` | `github.com/LerianStudio/lib-commons/v4/commons/tenant-manager/mongo` | MongoManager |
-    | `tmrabbitmq` | `github.com/LerianStudio/lib-commons/v4/commons/tenant-manager/rabbitmq` | RabbitMQ Manager (vhost isolation) |
-    | `valkey` | `github.com/LerianStudio/lib-commons/v4/commons/tenant-manager/valkey` | Redis key prefixing |
-    | `s3` | `github.com/LerianStudio/lib-commons/v4/commons/tenant-manager/s3` | S3 key prefixing |
-    
-    ### Resource Resolver Rules (ALL resources the service uses)
-    
-    | Resource | Single-Tenant Pattern (WRONG) | Dual-Mode Pattern (CORRECT) |
-    |----------|-------------------------------|------------------------------|
-    | **PostgreSQL** | `r.connection.GetDB()` | `tmcore.GetPGContext(ctx)` with fallback to `r.connection` |
-    | **PostgreSQL (multi-module)** | `r.connection.GetDB()` | `tmcore.GetPGContext(ctx, module)` with fallback to `r.connection` |
-    | **MongoDB** | `r.mongoConn.GetDatabase()` | `tmcore.GetMBContext(ctx)` or `tmcore.GetMBContext(ctx, module)` with fallback |
-    | **Redis/Valkey** | `redis.Set("key", val)` | `redis.Set(valkey.GetKeyContext(ctx, "key"), val)` |
-    | **S3** | `s3.PutObject("path/obj")` | `s3.PutObject(s3.GetS3KeyStorageContext(ctx, "path/obj"))` |
-    | **RabbitMQ** | `channel.Publish(exchange, ...)` | Use `tmrabbitmq.Manager` for vhost isolation + set `X-Tenant-ID` header |
-    
-    ### Route Registration with WhenEnabled
-    
-    Routes that need tenant context must use `WhenEnabled` — it's a no-op in single-tenant mode:
-    
-    ```go
-    // Auth MUST run before tenant middleware (per-route, not global)
-    app.Get("/accounts/:id",
-        authMiddleware.Handle,                    // Always runs
-        multiTenantMiddleware.WhenEnabled(),      // No-op when MULTI_TENANT_ENABLED=false
-        handler.GetAccount,
-    )
-    ```
-    
-    ### Backward Compatibility Rule
-    
-    The service must work correctly with ZERO `MULTI_TENANT_*` environment variables set. This is the single-tenant default. The resolvers handle this transparently — when `MULTI_TENANT_ENABLED` is not set or is `false`, they return the default connection.
-    
-    ### Verification (Go only)
-    
-    The agent must verify before completing Gate 0:
-    - No direct `r.connection.GetDB()` or `r.mongoConn.GetDatabase()` — must use resolvers
-    - No hardcoded Redis keys — must use `valkey.GetKeyContext`
-    - No hardcoded S3 keys — must use `s3.GetS3KeyStorageContext`
-    - No global DB singletons — connections injected via constructor
-    - All methods accept `ctx context.Context` as first parameter
-    - Routes use `WhenEnabled()` for tenant middleware (not global `app.Use`)
-    - RabbitMQ uses `tmrabbitmq.Manager` (not direct channel operations)
-    
-    If any check fails → refactor before gate passes. Do NOT defer to a post-cycle step.
+    URL: `https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/typescript.md`
 
     ## ⛔ FILE SIZE ENFORCEMENT (MANDATORY)
     See [shared-patterns/file-size-enforcement.md](../shared-patterns/file-size-enforcement.md)
     - You MUST NOT create or modify files to exceed 300 lines (including test files)
     - If implementing a feature would push a file past 300 lines, you MUST split it proactively
     - Split by responsibility boundaries (not arbitrary line counts)
-    - **Go:** Each split file stays in the same package; all methods remain on the same receiver; verify with `go build ./... && go test ./...`
     - **TypeScript:** Split files stay in the same module/directory; update barrel exports (index.ts) if needed; verify with `tsc --noEmit && npm test`
     - Test files MUST be split to match source files
     - Files > 300 lines = loop back for split. Files > 500 lines = HARD BLOCK.
-    - Reference: golang/domain.md → File Organization (MANDATORY), typescript.md → File Organization (MANDATORY)
+    - Reference: typescript.md → File Organization (MANDATORY)
 
     ## ⛔ CRITICAL: all MarsAI Standards Apply (no DEFERRAL)
     
     **You MUST check ALL sections from the modules you loaded.** Not just telemetry — ALL of them.
     See MarsAI Standards for mandatory requirements including (but not limited to):
-    - lib-commons usage (HARD GATE — no duplicate utils/helpers)
     - License headers on all source files
     - Structured JSON logging with trace_id correlation
     - OpenTelemetry instrumentation (spans in every function)
@@ -465,16 +377,11 @@ Task:
 
     ### Language-Specific Patterns (MANDATORY)
 
-    **⛔ HARD GATE: Agent MUST WebFetch modular standards files BEFORE writing any code.**
-    
-    Use the Module Loading Guide above to determine which modules to load.
-    **Minimum for ANY Go task:** `core.md` (lib-commons, license headers, deps, MongoDB patterns)
+    **⛔ HARD GATE: Agent MUST WebFetch standards files BEFORE writing any code.**
     
     | Language | Standards Modules | REQUIRED Sections to WebFetch |
     |----------|-------------------|-------------------------------|
-    | **Go** | See Module Loading Guide above | ALL sections from loaded modules (use `standards-coverage-table.md` → `marsai:backend-engineer-golang` section index) |
     | **TypeScript** | `typescript.md` | ALL 15 sections from `standards-coverage-table.md` → `marsai:backend-engineer-typescript` |
-    | **All** | N/A (post-cycle marsai:dev-multi-tenant) | Multi-tenant adaptation happens after dev-cycle completes |
 
     **⛔ NON-NEGOTIABLE: Agent MUST implement EXACTLY the patterns from standards. no deviations. no shortcuts.**
 
@@ -490,7 +397,6 @@ Task:
     
     **Agent MUST WebFetch standards and check Anti-Patterns table. Violations = REJECTED.**
 
-    - **Go:** `golang.md` → "Anti-Patterns" table - MUST check all rows
     - **TypeScript:** `typescript.md` → "Anti-Patterns" table - MUST check all rows
 
     **If agent uses any forbidden pattern → Implementation is INVALID. Start over.**
@@ -546,7 +452,6 @@ Task:
     **Quick reference derived from the Standards Coverage Table above.**
     If any item is ❌ here, it MUST also appear as ❌ in the Coverage Table with file:line evidence.
     
-    - lib-commons Usage: ✅/❌
     - License Headers: ✅/❌
     - Structured Logging: ✅/❌
     - OpenTelemetry Spans: ✅/❌
@@ -588,7 +493,6 @@ if any standards compliance summary is ❌:
 
 if pass_output contains "PASS" and all standards ✅ and Standards Coverage Table complete:
   → Run file-size verification (see shared-patterns/file-size-enforcement.md):
-    Go: find . -name "*.go" ! -path "*/mocks*" ! -path "*/generated/*" ! -path "*/gen/*" ! -name "*.pb.go" ! -name "*.gen.go" -exec wc -l {} + | awk '$1 > 300 && $NF != "total" {print}' | sort -rn
     TS: find . \( -name "*.ts" -o -name "*.tsx" \) ! -path "*/node_modules/*" ! -path "*/dist/*" ! -path "*/build/*" ! -path "*/generated/*" ! -path "*/__mocks__/*" ! -name "*.d.ts" ! -name "*.gen.ts" -exec wc -l {} + | awk '$1 > 300 && $NF != "total" {print}' | sort -rn
   
   if any file > 500 lines:
@@ -600,15 +504,13 @@ if pass_output contains "PASS" and all standards ✅ and Standards Coverage Tabl
     → Re-dispatch agent with file path and split strategy suggestion
 
   → Run linting verification (R4 — quality.md mandates 14 linters):
-    Go: if .golangci.yml exists, run: golangci-lint run ./...
-         if .golangci.yml does not exist, flag as warning (quality.md requires it)
     TypeScript: if eslint config exists, run: npx eslint . --ext .ts,.tsx
   
   if linting fails:
     → Re-dispatch agent: "Linting failed. Fix all lint issues before proceeding. Output: [lint errors]"
   
   → Run license header check (R5 — core.md License Headers MANDATORY):
-    For each file in [files_created + files_modified] matching *.go, *.ts, *.tsx:
+    For each file in [files_created + files_modified] matching *.ts, *.tsx:
       Check first 10 lines for: copyright|licensed|spdx|license (case-insensitive)
       If not found → flag as missing
 
@@ -709,29 +611,14 @@ See [shared-patterns/shared-anti-rationalization.md](../shared-patterns/shared-a
 | "I'll add observability later" | Later = never. Observability is part of GREEN. | **Add logging + tracing NOW** |
 | "Minimal code = no logging" | Minimal = pass test. Logging is a standard, not extra. | **Include observability** |
 | "DEFERRED to later tasks" | DEFERRED = FAILED. Standards are not deferrable. | **Implement all standards NOW** |
-| "Using raw OTel is fine" | lib-commons wrappers are MANDATORY for consistency | **Use libCommons.NewTrackingFromContext** |
-| "c.JSON() works the same" | Direct Fiber breaks response standardization | **Use libHTTP.OK(), libHTTP.WithError()** |
+| "c.JSON() works the same" | Direct framework breaks response standardization | **Use standard response helpers** |
 | "This function is too simple for spans" | Simple ≠ exempt. all functions need spans. | **Add span to every function** |
 | "Telemetry adds overhead" | Observability is non-negotiable for production | **Instrument 100% of code paths** |
-
-### ⛔ Post-Generation Panic Check (MANDATORY)
-
-Before delivering ANY generated code, run these checks:
-
-| Check | Command | Expected | If Found |
-|-------|---------|----------|----------|
-| No panic() | `grep -rn "panic(" --include="*.go" --exclude="*_test.go"` | 0 results | Rewrite to return error |
-| No log.Fatal() | `grep -rn "log.Fatal" --include="*.go"` | 0 results | Rewrite to return error |
-| No Must* helpers | `grep -rn "Must[A-Z]" --include="*.go" \| grep -v "regexp\.MustCompile"` | 0 results | Rewrite to return (T, error) |
-| No os.Exit() | `grep -rn "os.Exit" --include="*.go" --exclude="main.go"` | 0 results | Move to main() or return error |
-
-**If any check fails: DO NOT deliver. Fix first.**
 
 ## Agent Selection Guide
 
 | Language | Service Type | Condition | Agent |
 |----------|--------------|-----------|-------|
-| Go | API, Worker, Batch, CLI | - | `marsai:backend-engineer-golang` |
 | TypeScript | API, Worker | - | `marsai:backend-engineer-typescript` |
 | TypeScript | Frontend, BFF | No product-designer outputs | `marsai:frontend-bff-engineer-typescript` |
 | TypeScript | Frontend | ux-criteria.md exists | `marsai:ui-engineer` |

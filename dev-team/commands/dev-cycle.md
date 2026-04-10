@@ -86,10 +86,10 @@ CANNOT override CRITICAL gates. Provides custom context to agents.
 
 **Gate Protection:**
 
-CRITICAL: Gates 3, 4, 5 enforce mandatory requirements:
+CRITICAL: Gates 3, 6, 7 enforce mandatory requirements:
 - MUST enforce 85% coverage (Gate 3 Testing)
-- MUST dispatch all 7 reviewers (Gate 4 Review)
-- MUST require user approval (Gate 5 Validation)
+- MUST dispatch all 7 reviewers (Gate 6 Review)
+- MUST require user approval (Gate 7 Validation)
 
 **Conflict Detection:**
 - **Method:** Targeted pattern matching (e.g., `skip (gate|test|review)`, `bypass (threshold|check)`)
@@ -146,16 +146,14 @@ jq '.custom_prompt' docs/marsai:dev-cycle/current-cycle.json  # View
 | 1 | `marsai:dev-devops` | Create Docker/compose |
 | 2 | `marsai:dev-sre` | Observability (health checks, logging, tracing) |
 | 3 | `marsai:dev-unit-testing` | Unit tests with 85%+ coverage |
-| 4 | `marsai:dev-fuzz-testing` | Fuzz tests for edge cases |
-| 5 | `marsai:dev-property-testing` | Property-based tests for invariants |
-| 6 | `marsai:dev-integration-testing` | Integration tests with testcontainers |
-| 7 | `marsai:dev-chaos-testing` | Chaos tests for failure scenarios |
-| 8 | `marsai:requesting-code-review` | Code review (7 reviewers in parallel) |
-| 9 | `marsai:dev-validation` | Final validation |
+| 4 | `marsai:dev-integration-testing` | Integration tests with testcontainers |
+| 5 | `marsai:dev-chaos-testing` | Chaos tests for failure scenarios |
+| 6 | `marsai:requesting-code-review` | Code review (7 reviewers in parallel) |
+| 7 | `marsai:dev-validation` | Final validation |
 
-**MANDATORY:** All 10 gates execute per unit. After all units complete, `marsai:dev-multi-tenant` runs as a post-cycle step.
+**MANDATORY:** All 8 gates execute per unit.
 
-After multi-tenant + final commit: `marsai:dev-feedback-loop` generates metrics report.
+After final commit: `marsai:dev-feedback-loop` generates metrics report.
 
 ## Output
 
@@ -180,7 +178,7 @@ After multi-tenant + final commit: `marsai:dev-feedback-loop` generates metrics 
 Use Skill tool: marsai:dev-cycle
 ```
 
-The skill contains the complete 10-gate workflow (+ post-cycle multi-tenant) with:
+The skill contains the complete 8-gate workflow with:
 - Anti-rationalization tables
 - Pressure resistance scenarios
 - TDD sub-phases (Gate 0.1 RED → Gate 0.2 GREEN)
@@ -230,9 +228,8 @@ AskUserQuestion:
 
 See skill `marsai:dev-cycle` for full details. Key rules:
 
-- **all 10 gates execute per unit** - Checkpoints affect pauses, not gates
-- **Gates execute in order** - 0 → 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9
-- **Post-cycle:** marsai:dev-multi-tenant adapts all code for multi-tenant
-- **Gate 8 requires all 7 reviewers** - 6/7 = FAIL
+- **all 8 gates execute per unit** - Checkpoints affect pauses, not gates
+- **Gates execute in order** - 0 → 1 → 2 → 3 → 4 → 5 → 6 → 7
+- **Gate 6 requires all 7 reviewers** - 6/7 = FAIL
 - **Coverage threshold** - 85% minimum, no exceptions
 - **State persisted** - Can resume with `--resume` after any interruption

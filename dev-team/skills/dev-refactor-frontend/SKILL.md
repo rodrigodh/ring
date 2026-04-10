@@ -60,7 +60,7 @@ output_schema:
 
 # Dev Refactor Frontend Skill
 
-Analyzes existing frontend codebase against MarsAI/Lerian standards and generates refactoring tasks compatible with marsai:dev-cycle-frontend.
+Analyzes existing frontend codebase against MarsAI/V4-Company standards and generates refactoring tasks compatible with marsai:dev-cycle-frontend.
 
 ---
 
@@ -82,8 +82,8 @@ else:
 **Default URLs (used when `standards_path` is not provided):**
 
 <fetch_required>
-https://raw.githubusercontent.com/LerianStudio/marsai/main/CLAUDE.md
-https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/frontend.md
+https://raw.githubusercontent.com/V4-Company/marsai/main/CLAUDE.md
+https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/frontend.md
 </fetch_required>
 
 Fetch URLs above and extract: Agent Modification Verification requirements, Anti-Rationalization Tables requirements, Critical Rules, and Frontend Standards.
@@ -300,9 +300,9 @@ Re-run after file exists.
 
 **TodoWrite:** Mark "Detect frontend stack and UI library mode" as `in_progress`
 
-**⛔ SCOPE: FRONTEND AND BFF CODE ONLY.** This skill analyzes frontend code (React, Next.js) and BFF layers exclusively. MUST use `marsai:dev-refactor` for backend code (Go, pure TypeScript backend with Express/Fastify/NestJS without React).
+**⛔ SCOPE: FRONTEND AND BFF CODE ONLY.** This skill analyzes frontend code (React, Next.js) and BFF layers exclusively. MUST use `marsai:dev-refactor` for backend code (pure TypeScript backend with Express/Fastify/NestJS without React).
 
-**⛔ FORBIDDEN:** Dispatching `marsai:backend-engineer-golang` or `marsai:backend-engineer-typescript` from this skill. These are backend agents and belong to `marsai:dev-refactor`.
+**⛔ FORBIDDEN:** Dispatching `marsai:backend-engineer-typescript` from this skill. This is a backend agent and belongs to `marsai:dev-refactor`.
 
 **MANDATORY: Verify this is a frontend project. If not, redirect.**
 
@@ -312,7 +312,7 @@ Check for frontend indicators:
 |-------|-----------|--------|
 | `package.json` exists | Glob for `package.json` | Required |
 | React/Next.js in deps | `react`, `next` in dependencies | Required for frontend |
-| `@lerianstudio/sindarian-ui` in deps | Check dependencies/devDependencies | Store `ui_library_mode` |
+| `@V4-Company/sindarian-ui` in deps | Check dependencies/devDependencies | Store `ui_library_mode` |
 | BFF layer detected | `/api/` routes, Express/Fastify in deps | Add `marsai:frontend-bff-engineer-typescript` |
 | `ux-criteria.md` exists | `docs/pre-dev/*/ux-criteria.md` | Add `marsai:ui-engineer` |
 
@@ -327,7 +327,7 @@ Check for frontend indicators:
    NO  -> STOP: "Not a frontend project. Use marsai:dev-refactor instead."
    YES -> Continue
 
-3. @lerianstudio/sindarian-ui in dependencies?
+3. @V4-Company/sindarian-ui in dependencies?
    YES -> ui_library_mode = "sindarian-ui"
    NO  -> ui_library_mode = "fallback-only"
 
@@ -965,7 +965,7 @@ Total finding count MUST match total issues from Step 4.5
 ### MarsAI Standard Reference
 **Standard:** {standards-file}.md -> Section: {section-name}
 **Pattern:** {pattern-name}
-**URL:** https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/{file}.md
+**URL:** https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/{file}.md
 
 ### Required Changes
 1. {action item 1 - what to change}
@@ -1074,7 +1074,7 @@ Before proceeding to Step 7, verify:
 ### MarsAI Standard Reference
 | Standard File | Section | URL |
 |---------------|---------|-----|
-| {file}.md | {section} | [Link](https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/{file}.md) |
+| {file}.md | {section} | [Link](https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/{file}.md) |
 
 ### Required Actions
 1. [ ] {action 1 - specific change to make}

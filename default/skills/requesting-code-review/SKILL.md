@@ -236,54 +236,13 @@ review_state = {
 }
 ```
 
-## Step 2.5: Run Pre-Analysis Pipeline (MANDATORY)
+## Step 2.5: Pre-Analysis Context (Optional)
 
-**MANDATORY:** Run static analysis, AST extraction, and call graph analysis BEFORE dispatching reviewers. This provides critical context that significantly improves review quality.
+If pre-analysis context files exist in `docs/codereview/`, read them to provide additional context to reviewers.
 
-**Skip Override:** The `skip_preanalysis` parameter allows bypassing this step ONLY when explicitly requested by the user. This is NOT recommended.
+### Step 2.5.1: Read Context Files (if available)
 
-### Step 2.5.1: Install and Run Mithril
-
-```bash
-# ⚠️ SYNC NOTE: This Mithril install logic is also in default/commands/codereview.md (Step 0).
-# If you change the install pattern or CLI flags, update both locations.
-# Check if mithril is available
-if ! command -v mithril &> /dev/null; then
-    echo "mithril not found. Installing..."
-    if command -v go &> /dev/null; then
-        go install github.com/lerianstudio/mithril@latest
-        GOPATH_DIR="$(go env GOPATH)"
-        [[ -n "$GOPATH_DIR" ]] && export PATH="$PATH:$GOPATH_DIR/bin"
-    else
-        echo "Go is required to install mithril. Install Go from https://go.dev/dl/"
-        echo "DEGRADED MODE: Proceeding without pre-analysis"
-    fi
-fi
-
-# Run pre-analysis pipeline
-if command -v mithril &> /dev/null; then
-    if [[ -z "$BASE_SHA" || -z "$HEAD_SHA" ]]; then
-        echo "WARNING: BASE_SHA or HEAD_SHA not set"
-        echo "DEGRADED MODE: Proceeding without pre-analysis"
-    elif mithril --base="$BASE_SHA" --head="$HEAD_SHA" --output=docs/codereview --verbose; then
-        echo "Pre-analysis pipeline completed successfully"
-    else
-        echo "WARNING: Pre-analysis pipeline failed"
-        echo "DEGRADED MODE: Proceeding without pre-analysis"
-    fi
-else
-    echo "WARNING: mithril not available"
-    echo "DEGRADED MODE: Reviewers will proceed WITHOUT static analysis context."
-fi
-```
-
-- Timeout: Use `preanalysis_timeout` input (default 5 minutes)
-- On success: Set `preanalysis_state.success = true`
-- On failure: Display warning, set `preanalysis_state.success = false`, continue to Step 3
-
-### Step 2.5.2: Read Context Files
-
-If pipeline succeeded, read the 7 context files:
+Check for existing context files:
 
 | Reviewer | Context File |
 |----------|--------------|
@@ -416,11 +375,6 @@ Task:
     [CHANGE_SUMMARY]
     ```
 
-    ## Mithril Context (if available)
-    [IF preanalysis_state.success == true: brief summary]
-    [ELSE:]
-    _No pre-analysis context available._
-
     ## Instructions
     Evaluate semantic cohesion using all available signals.
     Apply three-phase reasoning (volume → cohesion → cost-benefit).
@@ -514,7 +468,7 @@ FOR EACH slice IN review_state.slicing.slices:
   1. Generate scoped diff for this slice:
      git diff [base_sha] [head_sha] -- [slice.files...]
 
-  2. Filter Mithril context for this slice:
+  2. Filter pre-analysis context for this slice (if available):
      FOR EACH reviewer_context IN preanalysis_state.context:
        → Extract only sections/paragraphs that mention files in slice.files
        → Store as slice_filtered_context[reviewer_name]
@@ -640,27 +594,13 @@ Task:
     - Naming conventions
     - Error handling patterns
     - Performance concerns
-    - **File size compliance** — Any file > 300 lines (excluding auto-generated: *.pb.go, *.d.ts, */generated/*, */mocks/*) MUST be flagged as MEDIUM+ issue. Files > 500 lines = CRITICAL. See shared-patterns/file-size-enforcement.md.
+    - **File size compliance** — Any file > 300 lines (excluding auto-generated: *.d.ts, */generated/*, */mocks/*) MUST be flagged as MEDIUM+ issue. Files > 500 lines = CRITICAL. See shared-patterns/file-size-enforcement.md.
 
     ## ⛔ MarsAI Standards Verification (MANDATORY)
     
     **WebFetch the relevant standards modules and verify the changed code against them.**
     
-    For Go projects, WebFetch these modules based on changed files:
-    Base URL: `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang/`
-    
-    **Always load:**
-    - `core.md` (lib-commons, license headers, deps, MongoDB patterns)
-    - `quality.md` (linting, testing, production config validation)
-    
-    **Conditional (load if changed files match):**
-    - `domain.md` (if service/domain/model code changed)
-    - `domain-modeling.md` (if entity/value object code changed)
-    - `api-patterns.md` (if handler/API/route code changed)
-    - `architecture.md` (if structural/directory changes, new packages, concurrency patterns)
-    - `bootstrap.md` (if bootstrap/main/wire/health code changed)
-    - `security.md` (if auth/middleware/validation code changed)
-    - `messaging.md` (if RabbitMQ/message queue code changed)
+    Detect the project language and WebFetch the appropriate standards.
     
     For TypeScript: WebFetch `typescript.md`
     
@@ -777,20 +717,14 @@ Task:
 
     ## ⛔ MarsAI Security Standards Verification (MANDATORY)
     
-    **WebFetch the security standards and verify changed code against them:**
-    - `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang/security.md`
+    **WebFetch the relevant security standards for the detected language and verify changed code against them.**
     
-    **Check ALL applicable sections from standards-coverage-table.md → marsai:backend-engineer-golang:**
-    - #15 Access Manager Integration (if auth code changed)
-    - #16 License Manager Integration (if licensed project)
-    - #17 Secret Redaction Patterns (MANDATORY — credential leak prevention)
-    - #18 SQL Safety (MANDATORY — parameterized queries, injection prevention)
-    - #19 HTTP Security Headers (MANDATORY — X-Content-Type-Options, X-Frame-Options)
-    - #51 Rate Limiting Three-Tier (MANDATORY — if API endpoints changed)
-    - #52 CORS Configuration (MANDATORY — if middleware changed)
-    
-    **Also check from core.md:**
-    - #8 MongoDB Injection Prevention (CRITICAL — if MongoDB code present)
+    **Check ALL applicable security sections from standards-coverage-table.md:**
+    - Secret Redaction Patterns (MANDATORY — credential leak prevention)
+    - SQL Safety (MANDATORY — parameterized queries, injection prevention)
+    - HTTP Security Headers (MANDATORY — X-Content-Type-Options, X-Frame-Options)
+    - Rate Limiting (MANDATORY — if API endpoints changed)
+    - CORS Configuration (MANDATORY — if middleware changed)
 
     ## Required Output
     ### VERDICT: PASS / FAIL
@@ -808,7 +742,6 @@ Task:
     | HTTP Security Headers | ✅/❌/N/A | [file:line] |
     | Rate Limiting | ✅/❌/N/A | [file:line] |
     | CORS Configuration | ✅/❌/N/A | [file:line] |
-    | MongoDB Injection Prevention | ✅/❌/N/A | [file:line] |
 
     ### Security Checklist
     | Check | Status |
@@ -1852,7 +1785,6 @@ IF coderabbit_results.overall_status == "ISSUES_FOUND":
             → Identify the correct agent for re-dispatch:
               - Check gate0_handoff.implementation_agent (if available)
               - OR infer from file type:
-                - *.go files → marsai:backend-engineer-golang
                 - *.ts files (backend) → marsai:backend-engineer-typescript
                 - *.ts/*.tsx files (frontend) → marsai:frontend-engineer
                 - *.yaml/*.yml (infra) → marsai:devops-engineer
@@ -2437,7 +2369,6 @@ STOP and report if:
 | Missing git context | Cannot determine base_sha or head_sha | STOP and request valid git context |
 | No files changed | git diff returns empty between refs | STOP and verify implementation exists |
 | Max iterations exceeded | 3 fix iterations completed but issues remain | STOP and escalate to user for manual resolution |
-| Pre-analysis pipeline fails | Mithril installation fails or execution returns error | Report and proceed in DEGRADED MODE |
 | All reviewers fail to dispatch | Task tool unavailable or errors | STOP and report infrastructure issue |
 
 ### Cannot Be Overridden

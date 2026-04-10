@@ -2,7 +2,7 @@
 
 **⛔ MIGRATION SAFETY (MANDATORY when SQL migration files are present):**
 
-See [migration-safety.md](../../docs/standards/golang/migration-safety.md) for the complete standard including expand-contract pattern, multi-tenant considerations, and anti-rationalization table.
+See the migration safety standards for the complete standard including expand-contract pattern, multi-tenant considerations, and anti-rationalization table.
 
 ## When This Applies
 

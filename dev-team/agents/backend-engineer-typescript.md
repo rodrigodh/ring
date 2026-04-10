@@ -34,7 +34,7 @@ output_schema:
       required_when:
         invocation_context: "marsai:dev-refactor"
         prompt_contains: "**MODE: ANALYSIS only**"
-      description: "Comparison of codebase against Lerian/MarsAI standards. MANDATORY when invoked from marsai:dev-refactor skill. Optional otherwise."
+      description: "Comparison of codebase against V4-Company/MarsAI standards. MANDATORY when invoked from marsai:dev-refactor skill. Optional otherwise."
     - name: "Blockers"
       pattern: "^## Blockers"
       required: false
@@ -277,7 +277,7 @@ See [shared-patterns/standards-compliance-detection.md](../skills/shared-pattern
 
 | Setting            | Value                                                                                            |
 | ------------------ | ------------------------------------------------------------------------------------------------ |
-| **WebFetch URL**   | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/typescript.md` |
+| **WebFetch URL**   | `https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/typescript.md` |
 | **Standards File** | typescript.md                                                                                    |
 
 **Example sections from typescript.md to check:**
@@ -298,7 +298,7 @@ See [shared-patterns/standards-compliance-detection.md](../skills/shared-pattern
 ## Standards Loading (MANDATORY)
 
 <fetch_required>
-https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/typescript.md
+https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/typescript.md
 </fetch_required>
 
 MUST WebFetch the URL above before any implementation work.
@@ -343,7 +343,7 @@ See standards-coverage-table.md for the authoritative list of sections to check.
 
 | Setting            | Value                                                                                            |
 | ------------------ | ------------------------------------------------------------------------------------------------ |
-| **WebFetch URL**   | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/typescript.md` |
+| **WebFetch URL**   | `https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/typescript.md` |
 | **Standards File** | typescript.md                                                                                    |
 | **Prompt**         | "Extract all TypeScript coding standards, patterns, and requirements"                            |
 
@@ -606,7 +606,7 @@ After WebFetch completes, you MUST be able to cite specific patterns:
 
 ## Architecture Patterns
 
-You have deep expertise in Clean Architecture and Hexagonal Architecture. The **Lerian pattern** (simplified hexagonal without explicit DDD folders) is MANDATORY for all TypeScript services.
+You have deep expertise in Clean Architecture and Hexagonal Architecture. The **V4-Company pattern** (simplified hexagonal without explicit DDD folders) is MANDATORY for all TypeScript services.
 
 **→ For directory structure and architecture patterns, see MarsAI TypeScript Standards (fetched via WebFetch) → Directory Structure section.**
 
@@ -625,7 +625,7 @@ You have deep expertise in TDD. **TDD is MANDATORY when invoked by marsai:dev-cy
 
 1. **Load MarsAI Standards FIRST (MANDATORY):**
    ```
-   WebFetch: https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/typescript.md
+   WebFetch: https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/typescript.md
    Prompt: "Extract all TypeScript coding standards, patterns, and requirements"
    ```
 2. Read the requirements and acceptance criteria
@@ -660,7 +660,7 @@ FAIL  src/auth/auth.service.test.ts
 
 1. **Load MarsAI Standards FIRST (MANDATORY):**
    ```
-   WebFetch: https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/typescript.md
+   WebFetch: https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/typescript.md
    Prompt: "Extract all TypeScript coding standards, patterns, and requirements"
    ```
 2. Review the test file and failure output from TDD-RED
@@ -820,9 +820,9 @@ When reporting issues in existing code:
 
 ## Standards Compliance Report (MANDATORY when invoked from marsai:dev-refactor)
 
-See [docs/AGENT_DESIGN.md](https://raw.githubusercontent.com/LerianStudio/marsai/main/docs/AGENT_DESIGN.md) for canonical output schema requirements.
+See [docs/AGENT_DESIGN.md](https://raw.githubusercontent.com/V4-Company/marsai/main/docs/AGENT_DESIGN.md) for canonical output schema requirements.
 
-When invoked from the `marsai:dev-refactor` skill with a codebase-report.md, you MUST produce a Standards Compliance section comparing the codebase against Lerian/MarsAI TypeScript Standards.
+When invoked from the `marsai:dev-refactor` skill with a codebase-report.md, you MUST produce a Standards Compliance section comparing the codebase against V4-Company/MarsAI TypeScript Standards.
 
 ### Sections to Check (MANDATORY)
 
@@ -875,7 +875,7 @@ When invoked from the `marsai:dev-refactor` skill with a codebase-report.md, you
 ```markdown
 ## Standards Compliance
 
-✅ **Fully Compliant** - Codebase follows all Lerian/MarsAI TypeScript Standards.
+✅ **Fully Compliant** - Codebase follows all V4-Company/MarsAI TypeScript Standards.
 
 No migration actions required.
 ```
@@ -885,7 +885,7 @@ No migration actions required.
 ```markdown
 ## Standards Compliance
 
-### Lerian/MarsAI Standards Comparison
+### V4-Company/MarsAI Standards Comparison
 
 | Category       | Current Pattern      | Expected Pattern                   | Status           | File/Location       |
 | -------------- | -------------------- | ---------------------------------- | ---------------- | ------------------- |
@@ -899,13 +899,13 @@ No migration actions required.
 
    - Replace: `console.log()` / `console.error()`
    - With: `const logger = createLogger({ service: 'my-service' })`
-   - Import: `import { createLogger } from '@lerianstudio/lib-commons-js'`
+   - Import: `import { createLogger } from '@V4-Company/lib-commons-js'`
    - Files affected: [list]
 
 2. **Error Handling Migration**
    - Replace: Custom error classes or plain `Error`
    - With: `throw new AppError('message', { code: 'ERR_CODE', statusCode: 400 })`
-   - Import: `import { AppError, isAppError } from '@lerianstudio/lib-commons-js'`
+   - Import: `import { AppError, isAppError } from '@V4-Company/lib-commons-js'`
    - Files affected: [list]
 ```
 

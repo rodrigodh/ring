@@ -1,7 +1,7 @@
 ---
 name: marsai:dev-llms-txt
 description: |
-  Generates or audits llms.txt files for Lerian repositories following the llmstxt.org
+  Generates or audits llms.txt files for V4-Company repositories following the llmstxt.org
   specification. Creates LLM-friendly entry points that help AI agents, coding assistants,
   and chat models understand a project quickly without parsing full HTML docs.
   Also generates CLAUDE.md / AGENTS.md when missing.
@@ -32,7 +32,7 @@ input_schema:
       description: "create = generate missing files, audit = check existing, full = both"
     - name: repo_url
       type: string
-      description: "Public URL of the repository (e.g., https://github.com/LerianStudio/midaz)"
+      description: "Public URL of the repository (e.g., https://github.com/your-org/your-repo)"
     - name: docs_url
       type: string
       description: "Public documentation URL if separate from repo"
@@ -63,11 +63,11 @@ output_schema:
 
 ## Overview
 
-This skill generates AI-friendly entry point files for Lerian repositories:
+This skill generates AI-friendly entry point files for V4-Company repositories:
 
 - **llms.txt** — universal LLM entry point (llmstxt.org spec)
 - **CLAUDE.md** — instructions for Claude Code / Anthropic coding agents
-- **AGENTS.md** — instructions for any AI coding agent (OpenCode, Codex, Cursor, etc.)
+- **AGENTS.md** — instructions for AI coding agents (symlink to CLAUDE.md)
 
 These files solve different problems:
 
@@ -84,7 +84,7 @@ Scan the repository to gather context:
 ```text
 1. Read README.md — project name, description, purpose
 2. Read CONTRIBUTING.md — build, test, lint instructions (if exists)
-3. Read Makefile / package.json / go.mod — build system, language, dependencies
+3. Read Makefile / package.json — build system, language, dependencies
 4. Scan /docs/ or /documentation/ — available documentation
 5. Scan /api/ or OpenAPI specs — API surface
 6. Read existing llms.txt / CLAUDE.md / AGENTS.md (if mode=audit)

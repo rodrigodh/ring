@@ -1,11 +1,11 @@
 ---
 name: marsai:using-dev-team
 description: |
-  9 specialist developer agents for backend (Go/TypeScript), DevOps, frontend,
+  8 specialist developer agents for backend (TypeScript), DevOps, frontend,
   design, UI implementation, QA (backend + frontend), and SRE. Dispatch when you need deep technology expertise.
 
 trigger: |
-  - Need deep expertise for specific technology (Go, TypeScript)
+  - Need deep expertise for specific technology (TypeScript)
   - Building infrastructure/CI-CD → marsai:devops-engineer
   - Frontend with design focus → marsai:frontend-designer
   - Frontend from product-designer specs → marsai:ui-engineer
@@ -24,9 +24,9 @@ related:
 
 # Using MarsAI Developer Specialists
 
-The marsai-dev-team plugin provides 9 specialized developer agents. Use them via `Task tool with subagent_type:`.
+The marsai-dev-team plugin provides 8 specialized developer agents. Use them via `Task tool with subagent_type:`.
 
-See [CLAUDE.md](https://raw.githubusercontent.com/LerianStudio/marsai/main/CLAUDE.md) and [marsai:using-marsai](https://raw.githubusercontent.com/LerianStudio/marsai/main/default/skills/using-marsai/SKILL.md) for canonical workflow requirements and ORCHESTRATOR principle. This skill introduces dev-team-specific agents.
+See [CLAUDE.md](https://raw.githubusercontent.com/V4-Company/marsai/main/CLAUDE.md) and [marsai:using-marsai](https://raw.githubusercontent.com/V4-Company/marsai/main/default/skills/using-marsai/SKILL.md) for canonical workflow requirements and ORCHESTRATOR principle. This skill introduces dev-team-specific agents.
 
 **Remember:** Follow the **ORCHESTRATOR principle** from `marsai:using-marsai`. Dispatch agents to handle complexity; don't operate tools directly.
 
@@ -36,7 +36,7 @@ See [CLAUDE.md](https://raw.githubusercontent.com/LerianStudio/marsai/main/CLAUD
 
 <block_condition>
 
-- Technology Stack decision needed (Go vs TypeScript)
+- Technology Stack decision needed
 - Architecture decision needed (monolith vs microservices)
 - Infrastructure decision needed (cloud provider)
 - Testing strategy decision needed (unit vs E2E)
@@ -48,7 +48,7 @@ If any condition applies, STOP and ask user.
 
 | Decision Type        | Examples                         | Action                                         |
 | -------------------- | -------------------------------- | ---------------------------------------------- |
-| **Technology Stack** | Go vs TypeScript for new service | STOP. Check existing patterns. Ask user.       |
+| **Technology Stack** | TypeScript variant for new service | STOP. Check existing patterns. Ask user.       |
 | **Architecture**     | Monolith vs microservices        | STOP. This is a business decision. Ask user.   |
 | **Infrastructure**   | Cloud provider choice            | STOP. Check existing infrastructure. Ask user. |
 | **Testing Strategy** | Unit vs E2E vs both              | STOP. Check QA requirements. Ask user.         |
@@ -95,7 +95,7 @@ See [shared-patterns/shared-anti-rationalization.md](../shared-patterns/shared-a
 <cannot_skip>
 
 - Dispatch to specialist (standards loading required)
-- 10-gate development cycle (quality gates)
+- 8-gate development cycle (quality gates)
 - Parallel reviewer dispatch (not sequential)
 - TDD in Gate 0 (test-first)
 - User approval in Gate 9
@@ -106,7 +106,7 @@ See [shared-patterns/shared-anti-rationalization.md](../shared-patterns/shared-a
 | Requirement                    | Why It Cannot Be Waived                       |
 | ------------------------------ | --------------------------------------------- |
 | **Dispatch to specialist**     | Specialists have standards loading, you don't |
-| **10-gate development cycle**  | Gates prevent quality regressions             |
+| **8-gate development cycle**  | Gates prevent quality regressions             |
 | **Parallel reviewer dispatch** | Sequential review = 3x slower, same cost      |
 | **TDD in Gate 0**              | Test-first ensures testability                |
 | **User approval in Gate 9**    | Only users can approve completion             |
@@ -135,7 +135,7 @@ See [shared-patterns/shared-pressure-resistance.md](../shared-patterns/shared-pr
 
 ```
 Task tool:
-  subagent_type: "marsai:backend-engineer-golang"
+  subagent_type: "marsai:backend-engineer-typescript"
   prompt: "URGENT PRODUCTION INCIDENT: [brief context]. [Your specific request]"
 ```
 
@@ -149,7 +149,7 @@ See [shared-patterns/shared-pressure-resistance.md](../shared-patterns/shared-pr
 
 ---
 
-## 9 Developer Specialists
+## 8 Developer Specialists
 
 <dispatch_required agent="{specialist}">
 Use Task tool to dispatch appropriate specialist based on technology need.
@@ -157,13 +157,12 @@ Use Task tool to dispatch appropriate specialist based on technology need.
 
 | Agent                                       | Specializations                                                                                      | Use When                                                                              |
 | ------------------------------------------- | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| **`marsai:backend-engineer-golang`**          | Go microservices, PostgreSQL/MongoDB, Kafka/RabbitMQ, OAuth2/JWT, gRPC, concurrency                  | Go services, DB optimization, auth/authz, concurrency issues                          |
 | **`marsai:backend-engineer-typescript`**      | TypeScript/Node.js, Express/Fastify/NestJS, Prisma/TypeORM, async patterns, Jest/Vitest              | TS backends, JS→TS migration, NestJS design, full-stack TS                            |
 | **`marsai:devops-engineer`**                  | Docker/Compose, Terraform/Helm, cloud infra, secrets management                                      | Containerization, local dev setup, IaC provisioning, Helm charts                      |
 | **`marsai:frontend-bff-engineer-typescript`** | Next.js API Routes BFF, Clean/Hexagonal Architecture, DDD patterns, Inversify DI, repository pattern | BFF layer, Clean Architecture, DDD domains, API orchestration                         |
 | **`marsai:frontend-designer`**                | Bold typography, color systems, animations, unexpected layouts, textures/gradients                   | Landing pages, portfolios, distinctive dashboards, design systems                     |
 | **`marsai:ui-engineer`**                      | Wireframe-to-code, Design System compliance, UX criteria satisfaction, UI states implementation      | Implementing from product-designer specs (ux-criteria.md, user-flows.md, wireframes/) |
-| **`marsai:qa-analyst`**                       | Test strategy, coverage analysis, API testing, fuzz/property/integration/chaos testing (Go)          | Backend test planning, coverage gaps, quality gates (Go-focused)                      |
+| **`marsai:qa-analyst`**                       | Test strategy, coverage analysis, API testing, integration/chaos testing                             | Backend test planning, coverage gaps, quality gates                                   |
 | **`marsai:qa-analyst-frontend`**              | Vitest, Testing Library, axe-core, Playwright, Lighthouse, Core Web Vitals, snapshot testing         | Frontend test planning, accessibility, visual, E2E, performance testing               |
 | **`marsai:sre`**                              | Structured logging, tracing, health checks, observability                                            | Logging validation, tracing setup, health endpoint verification                       |
 
@@ -191,7 +190,7 @@ Use `marsai:ui-engineer` when product-designer outputs exist in `docs/pre-dev/{f
 ### Use Developer Specialists for:
 
 - ✅ **Deep technical expertise needed** – Architecture decisions, complex implementations
-- ✅ **Technology-specific guidance** – "How do I optimize this Go service?"
+- ✅ **Technology-specific guidance** – "How do I optimize this TypeScript service?"
 - ✅ **Specialized domains** – Infrastructure, SRE, testing strategy
 - ✅ **Building from scratch** – New service, new pipeline, new testing framework
 
@@ -212,12 +211,12 @@ If you need multiple specialists (e.g., backend engineer + DevOps engineer), dis
 
 ```
 ✅ CORRECT:
-Task #1: marsai:backend-engineer-golang
+Task #1: marsai:backend-engineer-typescript
 Task #2: marsai:devops-engineer
 (Both run in parallel)
 
 ❌ WRONG:
-Task #1: marsai:backend-engineer-golang
+Task #1: marsai:backend-engineer-typescript
 (Wait for response)
 Task #2: marsai:devops-engineer
 (Sequential = 2x slower)
@@ -235,11 +234,11 @@ Remember:
 
 ### Good Example (ORCHESTRATOR):
 
-> "I need a Go service. Let me dispatch `marsai:backend-engineer-golang` to design it."
+> "I need a TypeScript service. Let me dispatch `marsai:backend-engineer-typescript` to design it."
 
 ### Bad Example (OPERATOR):
 
-> "I'll manually read Go best practices and design the service myself."
+> "I'll manually read TypeScript best practices and design the service myself."
 
 ---
 
@@ -247,7 +246,7 @@ Remember:
 
 **Agents:** See "9 Developer Specialists" table above.
 
-**Skills:** `marsai:using-dev-team` (this), `marsai:dev-cycle` (10-gate backend workflow), `marsai:dev-cycle-frontend` (9-gate frontend workflow), `marsai:dev-refactor` (backend/general codebase analysis), `marsai:dev-refactor-frontend` (frontend codebase analysis)
+**Skills:** `marsai:using-dev-team` (this), `marsai:dev-cycle` (8-gate backend workflow), `marsai:dev-cycle-frontend` (9-gate frontend workflow), `marsai:dev-refactor` (backend/general codebase analysis), `marsai:dev-refactor-frontend` (frontend codebase analysis)
 
 **Commands:** `/marsai:dev-cycle` (backend tasks), `/marsai:dev-cycle-frontend` (frontend tasks), `/marsai:dev-refactor` (analyze backend/general codebase), `/marsai:dev-refactor-frontend` (analyze frontend codebase), `/marsai:dev-status`, `/marsai:dev-cancel`, `/marsai:dev-report`
 
@@ -257,37 +256,34 @@ Remember:
 
 ## Development Workflows
 
-All workflows converge to the 10-gate development cycle:
+All workflows converge to the 8-gate development cycle:
 
 | Workflow         | Entry Point                           | Output                                        | Then                         |
 | ---------------- | ------------------------------------- | --------------------------------------------- | ---------------------------- |
 | **New Feature**  | `/marsai:pre-dev-feature "description"` | `docs/pre-dev/{feature}/tasks.md`             | → `/marsai:dev-cycle tasks.md` |
-| **Direct Tasks** | `/marsai:dev-cycle tasks.md`            | —                                             | Execute 6 gates directly     |
+| **Direct Tasks** | `/marsai:dev-cycle tasks.md`            | —                                             | Execute 8 gates directly     |
 | **Refactoring**  | `/marsai:dev-refactor`                  | `docs/marsai:dev-refactor/{timestamp}/tasks.md` | → `/marsai:dev-cycle tasks.md` |
 | **Frontend Refactoring** | `/marsai:dev-refactor-frontend` | `docs/marsai:dev-refactor-frontend/{timestamp}/tasks.md` | → `/marsai:dev-cycle-frontend tasks.md` |
 
-**10-Gate Backend Development Cycle (+ post-cycle multi-tenant):**
+**8-Gate Backend Development Cycle:**
 
 | Gate                       | Focus                            | Agent(s)                                                                               |
 | -------------------------- | -------------------------------- | -------------------------------------------------------------------------------------- |
-| **0: Implementation**      | TDD: RED→GREEN→REFACTOR (single-tenant) | `marsai:backend-engineer-*`, `marsai:frontend-bff-engineer-typescript`, `marsai:ui-engineer` |
+| **0: Implementation**      | TDD: RED→GREEN→REFACTOR          | `marsai:backend-engineer-*`, `marsai:frontend-bff-engineer-typescript`, `marsai:ui-engineer` |
 | **1: DevOps**              | Dockerfile, docker-compose, .env | `marsai:devops-engineer`                                                                 |
 | **2: SRE**                 | Health checks, logging, tracing  | `marsai:sre`                                                                             |
 | **3: Unit Testing**        | Unit tests, coverage ≥85%        | `marsai:qa-analyst`                                                                      |
-| **4: Fuzz Testing**        | Fuzz tests for edge cases        | `marsai:qa-analyst`                                                                      |
-| **5: Property Testing**    | Property-based tests for invariants | `marsai:qa-analyst`                                                                   |
-| **6: Integration Testing** | Integration tests (write per unit, execute at end) | `marsai:qa-analyst`                                                   |
-| **7: Chaos Testing**       | Chaos tests (write per unit, execute at end) | `marsai:qa-analyst`                                                         |
-| **8: Review**              | 7 reviewers IN PARALLEL          | `marsai:code-reviewer`, `marsai:business-logic-reviewer`, `marsai:security-reviewer`, `marsai:test-reviewer`, `marsai:nil-safety-reviewer`, `marsai:consequences-reviewer`, `marsai:dead-code-reviewer` |
-| **9: Validation**          | User approval: APPROVED/REJECTED | User decision                                                                          |
-| **Post-cycle: Multi-Tenant** | Adapt all code for multi-tenant | `marsai:backend-engineer-golang` (via `marsai:dev-multi-tenant`)                          |
+| **4: Integration Testing** | Integration tests (write per unit, execute at end) | `marsai:qa-analyst`                                                   |
+| **5: Chaos Testing**       | Chaos tests (write per unit, execute at end) | `marsai:qa-analyst`                                                         |
+| **6: Review**              | 7 reviewers IN PARALLEL          | `marsai:code-reviewer`, `marsai:business-logic-reviewer`, `marsai:security-reviewer`, `marsai:test-reviewer`, `marsai:nil-safety-reviewer`, `marsai:consequences-reviewer`, `marsai:dead-code-reviewer` |
+| **7: Validation**          | User approval: APPROVED/REJECTED | User decision                                                                          |
 
 **Gate 0 Agent Selection for Frontend:**
 
 - If `docs/pre-dev/{feature}/ux-criteria.md` exists → use `marsai:ui-engineer`
 - Otherwise → use `marsai:frontend-bff-engineer-typescript`
 
-**Key Principle:** Backend follows the 10-gate process. Frontend follows the 9-gate process.
+**Key Principle:** Backend follows the 8-gate process. Frontend follows the 9-gate process.
 
 ### Frontend Development Cycle (9 Gates)
 

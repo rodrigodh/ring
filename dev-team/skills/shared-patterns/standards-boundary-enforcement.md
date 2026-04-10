@@ -33,7 +33,6 @@ Canonical source for preventing agents from hallucinating requirements beyond wh
 | "Missing `make proto`" | not in devops.md Makefile Standards | Hallucinated requirement |
 | "Missing `make mocks`" | not in devops.md Makefile Standards | Hallucinated requirement |
 | "Missing `make migrate-up/down`" | not in devops.md Makefile Standards | Hallucinated requirement |
-| "Should use gRPC" | not in golang.md Frameworks | Hallucinated requirement |
 | "Needs GraphQL schema" | not in typescript.md | Hallucinated requirement |
 
 **Solution:** Agents MUST extract requirements only from WebFetch result, never from general knowledge.
@@ -108,15 +107,6 @@ Each agent MUST:
 | `make install` | Verify in devops.md "Makefile Standards" section |
 | `make clean` | Verify in devops.md "Makefile Standards" section |
 
-#### marsai:backend-engineer-golang → golang.md
-
-| Common Hallucination | Action |
-|---------------------|--------|
-| gRPC requirement | Verify in golang.md "Frameworks & Libraries" section |
-| GraphQL requirement | Verify in golang.md "Frameworks & Libraries" section |
-| Gin instead of Fiber | Check actual HTTP framework in golang.md |
-| GORM instead of pgx | Check actual ORM/driver in golang.md |
-
 #### marsai:backend-engineer-typescript → typescript.md
 
 | Common Hallucination | Action |
@@ -151,7 +141,7 @@ Each agent MUST:
 | Rationalization | Why It's WRONG | Required Action |
 |-----------------|----------------|-----------------|
 | "Industry standard to have make proto" | Industry ≠ MarsAI standards. MarsAI defines requirements. | **Do not flag** |
-| "Most Go projects need gRPC" | Most ≠ this project. Standards define this project. | **Do not flag** |
+| "Most projects need X" | Most ≠ this project. Standards define this project. | **Do not flag** |
 | "It's a best practice to have X" | Best practices are IN the standards. If not there, not required. | **Do not flag** |
 | "This would improve the codebase" | Improvement suggestions ≠ compliance findings. | **Do not flag as non-compliant** |
 | "I've seen this in similar projects" | Similar ≠ this. Standards are project-specific. | **Do not flag** |

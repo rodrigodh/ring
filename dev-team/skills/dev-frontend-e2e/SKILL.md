@@ -122,7 +122,7 @@ Ensure all user flows from `marsai:product-designer` have passing **Playwright E
 **MANDATORY:** Load testing-e2e.md standards via WebFetch.
 
 <fetch_required>
-https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/frontend/testing-e2e.md
+https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/frontend/testing-e2e.md
 </fetch_required>
 
 ---

@@ -42,8 +42,8 @@ verification:
 **Before any gate execution, you MUST load MarsAI standards:**
 
 <fetch_required>
-https://raw.githubusercontent.com/LerianStudio/marsai/main/CLAUDE.md
-https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/frontend.md
+https://raw.githubusercontent.com/V4-Company/marsai/main/CLAUDE.md
+https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/frontend.md
 </fetch_required>
 
 Fetch URLs above and extract: Agent Modification Verification requirements, Anti-Rationalization Tables requirements, Critical Rules, and Frontend Standards.
@@ -154,7 +154,7 @@ Before any gate execution, detect the project's UI library configuration:
 Read tool: package.json
 
 Parse the JSON content:
-  - If "dependencies" or "devDependencies" contains "@lerianstudio/sindarian-ui"
+  - If "dependencies" or "devDependencies" contains "@V4-Company/sindarian-ui"
     → ui_library_mode = "sindarian-ui"
   - Otherwise
     → ui_library_mode = "fallback-only"
@@ -162,7 +162,7 @@ Parse the JSON content:
 
 Store result in state file under `ui_library_mode`.
 
-**`@lerianstudio/sindarian-ui`** is PRIMARY. shadcn/ui + Radix is FALLBACK for missing components.
+**`@V4-Company/sindarian-ui`** is PRIMARY. shadcn/ui + Radix is FALLBACK for missing components.
 
 | Mode | Meaning | Agent Behavior |
 |------|---------|----------------|
@@ -455,7 +455,7 @@ For the frontend cycle, the 5 parallel reviewers are:
 | 4 | `marsai:test-reviewer` | Test quality, coverage gaps, test patterns, assertion quality |
 | 5 | `marsai:frontend-engineer` (review mode) | Accessibility compliance, frontend standards, component architecture |
 
-**NOTE:** The 5th reviewer slot uses `marsai:frontend-engineer` in review mode instead of `marsai:nil-safety-reviewer` (which is Go-specific). The frontend engineer reviews accessibility compliance and frontend standards adherence.
+**NOTE:** The 5th reviewer slot uses `marsai:frontend-engineer` in review mode instead of `marsai:nil-safety-reviewer`. The frontend engineer reviews accessibility compliance and frontend standards adherence.
 
 **All 5 reviewers MUST be dispatched in a single message with 5 parallel Task calls.**
 

@@ -1,6 +1,6 @@
 ---
 name: marsai:dev-refactor
-description: Analyzes backend codebase (Go/TypeScript) against standards and generates refactoring tasks for marsai:dev-cycle. For frontend projects, use marsai:dev-refactor-frontend instead.
+description: Analyzes backend codebase (TypeScript) against standards and generates refactoring tasks for marsai:dev-cycle. For frontend projects, use marsai:dev-refactor-frontend instead.
 trigger: |
   - User wants to refactor existing project to follow standards
   - Legacy codebase needs modernization
@@ -13,7 +13,7 @@ skip_when: |
 
 # Dev Refactor Skill
 
-Analyzes existing codebase against MarsAI/Lerian standards and generates refactoring tasks compatible with marsai:dev-cycle.
+Analyzes existing codebase against MarsAI/V4-Company standards and generates refactoring tasks compatible with marsai:dev-cycle.
 
 ---
 
@@ -68,7 +68,7 @@ If counts don't match → SKILL FAILURE. Go back and add missing findings.
 
 | Service Type | Hexagonal/Clean Architecture | Directory Structure |
 |--------------|------------------------------|---------------------|
-| CRUD API (with services, adapters) | ✅ APPLY | ✅ APPLY (Lerian pattern) |
+| CRUD API (with services, adapters) | ✅ APPLY | ✅ APPLY (V4-Company pattern) |
 | Complex business logic | ✅ APPLY | ✅ APPLY |
 | Multiple bounded contexts | ✅ APPLY | ✅ APPLY |
 | Event-driven systems | ✅ APPLY | ✅ APPLY |
@@ -79,14 +79,14 @@ If counts don't match → SKILL FAILURE. Go back and add missing findings.
 
 ### Detection Criteria
 
-**CRUD API (Hexagonal/Lerian Pattern APPLICABLE):**
+**CRUD API (Hexagonal/V4-Company Pattern APPLICABLE):**
 - Service exposes API endpoints (REST, gRPC, GraphQL)
 - Contains business logic and models
 - Has CRUD operations (Create, Read, Update, Delete)
 - Uses repositories for data access
-- → **MUST follow Hexagonal Architecture and Lerian directory pattern**
+- → **MUST follow Hexagonal Architecture and V4-Company directory pattern**
 
-**Simple Service (Hexagonal/Lerian not applicable):**
+**Simple Service (Hexagonal/V4-Company not applicable):**
 - CLI tools and scripts
 - Workers and background jobs
 - Simple utility functions
@@ -99,10 +99,10 @@ When dispatching specialist agents, include:
 
 ```
 ⛔ ARCHITECTURE APPLICABILITY CHECK:
-1. If service is an API with CRUD operations → APPLY Hexagonal/Lerian standards
-2. If service is CLI tool, script, or simple utility → Do not flag Hexagonal/Lerian gaps
+1. If service is an API with CRUD operations → APPLY Hexagonal/V4-Company standards
+2. If service is CLI tool, script, or simple utility → Do not flag Hexagonal/V4-Company gaps
 
-CRUD APIs MUST follow Hexagonal Architecture (ports/adapters) and Lerian directory pattern.
+CRUD APIs MUST follow Hexagonal Architecture (ports/adapters) and V4-Company directory pattern.
 ```
 
 ---
@@ -117,7 +117,7 @@ TodoWrite:
     - content: "Validate PROJECT_RULES.md exists"
       status: "pending"
       activeForm: "Validating PROJECT_RULES.md exists"
-    - content: "Detect project stack (Go/TypeScript backend only)"
+    - content: "Detect project stack (TypeScript backend only)"
       status: "pending"
       activeForm: "Detecting project stack"
     - content: "Read PROJECT_RULES.md for context"
@@ -203,7 +203,7 @@ Re-run after file exists.
 
 ## Step 1: Detect Project Stack
 
-**TodoWrite:** Mark "Detect project stack (Go/TypeScript)" as `in_progress`
+**TodoWrite:** Mark "Detect project stack (TypeScript)" as `in_progress`
 
 **⛔ SCOPE: BACKEND CODE ONLY.** This skill analyzes backend code exclusively. MUST use `marsai:dev-refactor-frontend` for frontend code (React, Next.js, Vue, Angular).
 
@@ -211,17 +211,15 @@ Check for backend manifest files:
 
 | File/Pattern | Stack | Agent |
 |--------------|-------|-------|
-| `go.mod` | Go Backend | marsai:backend-engineer-golang |
 | `package.json` + Express/Fastify/NestJS (no React/Next.js) | TypeScript Backend | marsai:backend-engineer-typescript |
 
 **Detection Logic:**
-- `go.mod` exists → Add Go backend agent
 - `package.json` exists + Express/Fastify/NestJS in dependencies (NO React/Next.js) → Add TypeScript backend agent
 - `package.json` exists + React/Next.js in dependencies → **STOP: This is a frontend project. Use `marsai:dev-refactor-frontend` instead.**
 
 **⛔ FORBIDDEN:** Dispatching `marsai:frontend-engineer`, `marsai:frontend-designer`, `marsai:ui-engineer`, `marsai:qa-analyst-frontend`, or `marsai:frontend-bff-engineer-typescript` from this skill. These are frontend agents and belong to `marsai:dev-refactor-frontend`.
 
-**TodoWrite:** Mark "Detect project stack (Go/TypeScript)" as `completed`
+**TodoWrite:** Mark "Detect project stack (TypeScript)" as `completed`
 
 ---
 
@@ -283,7 +281,7 @@ See [shared-patterns/anti-rationalization-codebase-explorer.md](../shared-patter
 ### FORBIDDEN Actions for Step 3
 
 <forbidden>
-- Bash(command="find ... -name '*.go'") → SKILL FAILURE
+- Bash(command="find ... -name '*.ts'") → SKILL FAILURE
 - Bash(command="ls -la ...") → SKILL FAILURE
 - Bash(command="tree ...") → SKILL FAILURE
 - Task(subagent_type="Explore", ...) → SKILL FAILURE
@@ -353,133 +351,6 @@ Check 2: Was codebase-report.md created by marsai:codebase-explorer?
 
 ---
 
-### For Go projects:
-
-<parallel_dispatch agents="marsai:backend-engineer-golang, marsai:qa-analyst, marsai:qa-analyst[goroutine-leak], marsai:devops-engineer, marsai:sre">
-MUST dispatch all five agents in parallel via Task tool.
-Input: codebase-report.md, PROJECT_RULES.md
-</parallel_dispatch>
-
-```yaml
-Task tool 1:
-  subagent_type: "marsai:backend-engineer-golang"
-  description: "Go standards analysis"
-  prompt: |
-    **MODE: ANALYSIS only**
-
-    ⛔ MANDATORY: Check all sections in golang.md per shared-patterns/standards-coverage-table.md
-
-    ⛔ FRAMEWORKS & LIBRARIES DETECTION (MANDATORY):
-    1. Read go.mod to extract all dependencies used in codebase
-    2. Load golang.md standards via WebFetch → extract all listed frameworks/libraries
-    3. For each category in standards (HTTP, Database, Validation, Testing, etc.):
-       - Compare codebase dependency vs standards requirement
-       - If codebase uses DIFFERENT library than standards → ISSUE-XXX
-       - If codebase is MISSING required library → ISSUE-XXX
-    4. any library not in standards that serves same purpose = ISSUE-XXX
-
-    ⛔ FILE SIZE ENFORCEMENT (MANDATORY):
-    - Any source file > 300 lines (including test files, excluding auto-generated: *.pb.go, */generated/*, */mocks*) MUST be flagged as ISSUE-XXX
-    - 301-500 lines: severity HIGH
-    - > 500 lines: severity CRITICAL
-    - > 1000 lines: severity CRITICAL with explicit decomposition plan
-    - Include current line count and proposed split strategy in each finding
-    - See shared-patterns/file-size-enforcement.md for split patterns
-    - Reference: golang/domain.md → File Organization (MANDATORY)
-
-    Input:
-    - MarsAI Standards: Load via WebFetch (golang.md)
-    - Section Index: See shared-patterns/standards-coverage-table.md → "marsai:backend-engineer-golang"
-    - Codebase Report: docs/marsai:dev-refactor/{timestamp}/codebase-report.md
-    - Project Rules: docs/PROJECT_RULES.md
-
-    ⛔ MULTI-TENANT ANALYSIS (MANDATORY):
-    See [shared-patterns/multi-tenant-analysis.md](../shared-patterns/multi-tenant-analysis.md) for the full checklist.
-
-    Output:
-    1. Standards Coverage Table (per shared-patterns format)
-    2. ISSUE-XXX for each ⚠️/❌ finding with: Pattern name, Severity, file:line, Current Code, Expected Code
-
-Task tool 2:
-  subagent_type: "marsai:qa-analyst"
-  description: "Test coverage analysis"
-  prompt: |
-    **MODE: ANALYSIS only**
-    Check all testing sections per shared-patterns/standards-coverage-table.md → "marsai:qa-analyst"
-    Input: codebase-report.md, PROJECT_RULES.md
-    Output: Standards Coverage Table + ISSUE-XXX for gaps
-
-Task tool 3:
-  subagent_type: "marsai:devops-engineer"
-  description: "DevOps analysis"
-  prompt: |
-    **MODE: ANALYSIS only**
-    Check all 8 sections per shared-patterns/standards-coverage-table.md → "marsai:devops-engineer"
-    ⛔ "Containers" means BOTH Dockerfile and Docker Compose
-    ⛔ "Makefile Standards" means all required commands: build, lint, test, cover, up, down, etc.
-    Input: codebase-report.md, PROJECT_RULES.md
-    Output: Standards Coverage Table + ISSUE-XXX for gaps
-
-Task tool 4:
-  subagent_type: "marsai:sre"
-  description: "Observability analysis"
-  prompt: |
-    **MODE: ANALYSIS only**
-    Check all 6 sections per shared-patterns/standards-coverage-table.md → "marsai:sre"
-    Input: codebase-report.md, PROJECT_RULES.md
-    Output: Standards Coverage Table + ISSUE-XXX for gaps
-
-Task tool 5 (Go only):
-  subagent_type: "marsai:qa-analyst"
-  description: "Goroutine leak analysis"
-  prompt: |
-    **MODE: ANALYSIS only**
-    **test_mode: goroutine-leak**
-
-    ⛔ GOROUTINE LEAK DETECTION MODE
-
-    ## Standards Reference
-    https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang/architecture.md
-    Focus on: Goroutine Leak Detection (MANDATORY) section
-
-    ## Analysis Steps
-
-    ### 1. Detect Goroutine Usage
-    Scan all Go files for:
-    - `go func()` patterns (anonymous goroutines)
-    - `go methodCall()` patterns (direct calls)
-    - Channel consumers (`for range channel`)
-    - Worker pools and background services
-
-    ### 2. Verify goleak Coverage
-    For each package with goroutines:
-    - Check for `goleak.VerifyTestMain(m)` in TestMain
-    - Check for `defer goleak.VerifyNone(t)` in relevant tests
-    - Verify go.uber.org/goleak is in go.mod
-
-    ### 3. Identify Gaps
-    Create ISSUE-XXX for:
-    - Packages with goroutines but no goleak tests
-    - Missing goleak.VerifyTestMain in packages with workers
-    - Missing goleak.VerifyNone in specific tests
-
-    Input:
-    - Codebase Report: docs/marsai:dev-refactor/{timestamp}/codebase-report.md
-    - Project Rules: docs/PROJECT_RULES.md
-
-    Output:
-    ## Goroutine Detection Summary
-    | File | Line | Pattern | Package |
-    |------|------|---------|---------|
-    
-    ## goleak Coverage
-    | Package | Goroutine Files | goleak Present | Status |
-    |---------|-----------------|----------------|--------|
-    
-    ## Issues Found
-    ISSUE-XXX for each gap (missing goleak, missing TestMain, etc.)
-```
-
 ### For TypeScript Backend projects:
 
 <parallel_dispatch agents="marsai:backend-engineer-typescript, marsai:qa-analyst, marsai:devops-engineer, marsai:sre">
@@ -532,12 +403,9 @@ Task tool 1:
 
 | Stack Detected | Agents to Dispatch |
 |----------------|-------------------|
-| Go only | Task 1 (Go) + Task 2-4 + Task 5 (goroutine-leak) |
-| TypeScript Backend only | Task 1 (TS Backend) + Task 2-4 |
+| TypeScript Backend | Task 1 (TS Backend) + Task 2-4 |
 
 **⛔ MUST use `marsai:dev-refactor-frontend` for frontend/BFF projects.** This skill does not dispatch frontend agents.
-
-**Note:** Task 5 (goroutine-leak) is Go-specific. It detects goroutine usage and verifies goleak test coverage.
 
 **TodoWrite:** Mark "Dispatch specialist agents in parallel" as `completed`
 
@@ -553,10 +421,8 @@ After all parallel agent tasks complete, save each agent's output to a separate 
 
 ```
 docs/marsai:dev-refactor/{timestamp}/reports/
-├── marsai:backend-engineer-golang-report.md     (if Go project)
-├── marsai:backend-engineer-typescript-report.md (if TypeScript Backend)
+├── marsai:backend-engineer-typescript-report.md (always)
 ├── marsai:qa-analyst-report.md                  (always)
-├── marsai:qa-analyst-goroutine-leak-report.md   (if Go project)
 ├── marsai:devops-engineer-report.md             (always)
 └── marsai:sre-report.md                         (always)
 ```
@@ -596,10 +462,8 @@ docs/marsai:dev-refactor/{timestamp}/reports/
 
 | Agent Dispatched | Report File Name |
 |------------------|------------------|
-| marsai:backend-engineer-golang | `marsai:backend-engineer-golang-report.md` |
 | marsai:backend-engineer-typescript | `marsai:backend-engineer-typescript-report.md` |
 | marsai:qa-analyst | `marsai:qa-analyst-report.md` |
-| marsai:qa-analyst (goroutine-leak) | `marsai:qa-analyst-goroutine-leak-report.md` |
 | marsai:devops-engineer | `marsai:devops-engineer-report.md` |
 | marsai:sre | `marsai:sre-report.md` |
 
@@ -813,7 +677,7 @@ If counts don't match → STOP. Go back to Step 4.1. Map missing issues.
 ## FINDING-001: {Pattern Name}
 
 **Severity:** Critical | High | Medium | Low (all MANDATORY)
-**Category:** {lib-commons | architecture | testing | devops}
+**Category:** {architecture | testing | devops}
 **Agent:** {agent-name}
 **Standard:** {file}.md:{section}
 
@@ -826,7 +690,7 @@ If counts don't match → STOP. Go back to Step 4.1. Map missing issues.
 ### MarsAI Standard Reference
 **Standard:** {standards-file}.md → Section: {section-name}
 **Pattern:** {pattern-name}
-**URL:** https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/{file}.md
+**URL:** https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/{file}.md
 
 ### Required Changes
 1. {action item 1 - what to change}
@@ -920,7 +784,7 @@ Before proceeding to Step 7, verify:
 
 **Finding:** FINDING-001
 **Severity:** Critical | High | Medium | Low (all ARE MANDATORY)
-**Category:** {lib-commons | architecture | testing | devops}
+**Category:** {architecture | testing | devops}
 **Agent:** {agent-name}
 **Effort:** {hours}h
 **Dependencies:** {other REFACTOR-XXX tasks or none}
@@ -934,7 +798,7 @@ Before proceeding to Step 7, verify:
 ### MarsAI Standard Reference
 | Standard File | Section | URL |
 |---------------|---------|-----|
-| {file}.md | {section} | [Link](https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/{file}.md) |
+| {file}.md | {section} | [Link](https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/{file}.md) |
 
 ### Required Actions
 1. [ ] {action 1 - specific change to make}
@@ -1028,7 +892,7 @@ CANNOT proceed without explicit user selection.
 docs/marsai:dev-refactor/{timestamp}/
 ├── codebase-report.md  (Step 3)
 ├── reports/            (Step 4.5)
-│   ├── marsai:backend-engineer-golang-report.md
+│   ├── marsai:backend-engineer-typescript-report.md
 │   ├── marsai:qa-analyst-report.md
 │   ├── marsai:devops-engineer-report.md
 │   └── marsai:sre-report.md
@@ -1083,7 +947,7 @@ If user approved execution, you MUST:
 
 **Skipping this step = SKILL FAILURE.**
 
-marsai:dev-cycle executes each REFACTOR-XXX task through 10-gate process. After all tasks complete, marsai:dev-multi-tenant runs as a post-cycle step to adapt all implemented code for multi-tenant support.
+marsai:dev-cycle executes each REFACTOR-XXX task through the 8-gate process.
 
 **TodoWrite:** Mark "Handoff to marsai:dev-cycle" as `completed`
 

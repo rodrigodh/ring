@@ -23,7 +23,7 @@ related:
 
 **Writing skills IS Test-Driven Development applied to process documentation.**
 
-**Personal skills live in agent-specific directories (e.g., `~/.claude/skills` for Claude Code, `~/.codex/skills` for Codex, or custom agent directories)** 
+**Personal skills live in `~/.claude/skills` for Claude Code.** 
 
 You write test cases (pressure scenarios with subagents), watch them fail (baseline behavior), write the skill (documentation), watch tests pass (agents comply), and refactor (close loopholes).
 

@@ -23,11 +23,11 @@ This document defines the mandatory separation of responsibilities between revie
 ┌─────────────────────────────┐          ┌─────────────────────────────────┐
 │         REVIEWERS           │          │     IMPLEMENTATION AGENTS       │
 │                             │          │                                 │
-│ • marsai:code-reviewer         │          │ • marsai:backend-engineer-golang      │
-│ • marsai:business-logic-reviewer│          │ • marsai:backend-engineer-typescript  │
-│ • marsai:security-reviewer     │          │ • marsai:frontend-engineer            │
-│ • marsai:test-reviewer         │          │ • marsai:devops-engineer              │
-│ • marsai:nil-safety-reviewer   │          │ • marsai:qa-analyst                   │
+│ • marsai:code-reviewer         │          │ • marsai:backend-engineer-typescript  │
+│ • marsai:business-logic-reviewer│          │ • marsai:frontend-engineer            │
+│ • marsai:security-reviewer     │          │ • marsai:devops-engineer              │
+│ • marsai:test-reviewer         │          │ • marsai:qa-analyst                   │
+│ • marsai:nil-safety-reviewer   │          │                                 │
 │ • marsai:dead-code-reviewer    │          │                                 │
 │                             │          │                                 │
 │ OUTPUT: Report              │          │ OUTPUT: Code changes            │

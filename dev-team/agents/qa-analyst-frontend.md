@@ -188,7 +188,7 @@ This agent is responsible for all frontend quality assurance activities, includi
 - Developing E2E tests with Playwright across browsers
 - Measuring Core Web Vitals and Lighthouse scores
 - Validating against `marsai:product-designer` user flows
-- Checking `@lerianstudio/sindarian-ui` component usage and correctness
+- Checking `@V4-Company/sindarian-ui` component usage and correctness
 - Analyzing test coverage and identifying frontend-specific gaps
 - Reporting bugs with detailed reproduction steps and screenshots
 
@@ -253,7 +253,7 @@ Invoke this agent when the task involves frontend testing in any of the followin
 - **Visual**: toMatchSnapshot, Storybook, Chromatic, Percy
 - **E2E**: Playwright (Chromium, Firefox, WebKit), @playwright/test
 - **Performance**: Lighthouse, web-vitals, @next/bundle-analyzer, Chrome DevTools Performance API
-- **UI Libraries**: @lerianstudio/sindarian-ui, shadcn/ui, Radix UI
+- **UI Libraries**: @V4-Company/sindarian-ui, shadcn/ui, Radix UI
 - **Frameworks**: React 19+, Next.js App Router, Server Components, TypeScript (strict mode)
 - **Mocking**: MSW, vitest.mock, vi.fn(), vi.spyOn()
 - **CI Integration**: GitHub Actions, Playwright CI, Lighthouse CI
@@ -272,7 +272,7 @@ See [shared-patterns/standards-compliance-detection.md](../skills/shared-pattern
 
 | Setting            | Value                                                                                          |
 | ------------------ | ---------------------------------------------------------------------------------------------- |
-| **WebFetch URL**   | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/frontend.md` |
+| **WebFetch URL**   | `https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/frontend.md` |
 | **Standards File** | frontend.md                                                                                    |
 
 **Example sections to check:**
@@ -288,7 +288,7 @@ See [shared-patterns/standards-compliance-detection.md](../skills/shared-pattern
 ## Standards Loading (MANDATORY)
 
 <fetch_required>
-https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/frontend.md
+https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/frontend.md
 </fetch_required>
 
 **Mode-specific standards (load based on test_mode):**
@@ -305,10 +305,10 @@ https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standar
 
 | Mode          | URL                                                                                                                      |
 | ------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| accessibility | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/frontend/testing-accessibility.md`     |
-| visual        | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/frontend/testing-visual.md`            |
-| e2e           | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/frontend/testing-e2e.md`               |
-| performance   | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/frontend/testing-performance.md`       |
+| accessibility | `https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/frontend/testing-accessibility.md`     |
+| visual        | `https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/frontend/testing-visual.md`            |
+| e2e           | `https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/frontend/testing-e2e.md`               |
+| performance   | `https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/frontend/testing-performance.md`       |
 
 WebFetch the URL above before any testing work.
 
@@ -472,7 +472,7 @@ If tests are ALREADY adequate:
 
 ## sindarian-ui Awareness (MANDATORY)
 
-**`@lerianstudio/sindarian-ui` is the PRIMARY UI library.** shadcn/ui + Radix UI serve as FALLBACK for components not available in sindarian-ui.
+**`@V4-Company/sindarian-ui` is the PRIMARY UI library.** shadcn/ui + Radix UI serve as FALLBACK for components not available in sindarian-ui.
 
 ### Testing Implications by Mode
 
@@ -486,11 +486,11 @@ If tests are ALREADY adequate:
 
 ### Component Duplication Detection (Visual Mode)
 
-Search the project source for imports from both `@lerianstudio/sindarian-ui` and `@/components/ui`. Extract the imported component identifiers from each set and compare. Any component name appearing in both sets is a duplication.
+Search the project source for imports from both `@V4-Company/sindarian-ui` and `@/components/ui`. Extract the imported component identifiers from each set and compare. Any component name appearing in both sets is a duplication.
 
 ```bash
 # 1. Find all component names imported from sindarian-ui
-grep -rn "from '@lerianstudio/sindarian-ui" src/ | sed -n "s/.*import\s\+\(.*\)\s\+from.*/\1/p" | sed 's/[{}]//g' | tr ',' '\n' | sed 's/\s//g' | sort -u
+grep -rn "from '@V4-Company/sindarian-ui" src/ | sed -n "s/.*import\s\+\(.*\)\s\+from.*/\1/p" | sed 's/[{}]//g' | tr ',' '\n' | sed 's/\s//g' | sort -u
 
 # 2. Find all component names imported from shadcn/radix
 grep -rn "from '@/components/ui" src/ | sed -n "s/.*import\s\+\(.*\)\s\+from.*/\1/p" | sed 's/[{}]//g' | tr ',' '\n' | sed 's/\s//g' | sort -u
@@ -1149,7 +1149,7 @@ grep -rn '"use client"' src/app/ src/components/ --include="*.tsx"
 
 | Anti-Pattern                               | Detection                                              | Impact               |
 | ------------------------------------------ | ------------------------------------------------------ | -------------------- |
-| Barrel imports from UI library             | `import { X, Y, Z } from '@lerianstudio/sindarian-ui'` | Breaks tree-shaking  |
+| Barrel imports from UI library             | `import { X, Y, Z } from '@V4-Company/sindarian-ui'` | Breaks tree-shaking  |
 | Large inline SVGs                          | SVG content embedded in JSX > 5KB                      | Increases bundle     |
 | Unoptimized images                         | `<img>` instead of `next/image`                        | Poor LCP             |
 | External font CDN                          | `<link>` to Google Fonts or similar                    | Render blocking      |
@@ -1281,7 +1281,7 @@ REQUIRED: Use exact section names from `marsai:qa-analyst-frontend` in standards
 
 | Standards File | WebFetch URL                                                                                     | Prompt                                                             |
 | -------------- | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------ |
-| frontend.md    | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/frontend.md`   | "Extract all frontend testing standards, patterns, and requirements" |
+| frontend.md    | `https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/frontend.md`   | "Extract all frontend testing standards, patterns, and requirements" |
 
 **Execute WebFetch for frontend.md before any test work.**
 
@@ -1401,9 +1401,9 @@ See [shared-patterns/standards-workflow.md](../skills/shared-patterns/standards-
 
 ## Standards Compliance Report (MANDATORY when invoked from marsai:dev-refactor)
 
-See [docs/AGENT_DESIGN.md](https://raw.githubusercontent.com/LerianStudio/marsai/main/docs/AGENT_DESIGN.md) for canonical output schema requirements.
+See [docs/AGENT_DESIGN.md](https://raw.githubusercontent.com/V4-Company/marsai/main/docs/AGENT_DESIGN.md) for canonical output schema requirements.
 
-When invoked from the `marsai:dev-refactor` skill with a codebase-report.md, you MUST produce a Standards Compliance section comparing the test implementation against Lerian/MarsAI Frontend Standards.
+When invoked from the `marsai:dev-refactor` skill with a codebase-report.md, you MUST produce a Standards Compliance section comparing the test implementation against V4-Company/MarsAI Frontend Standards.
 
 ### Sections to Check (MANDATORY)
 
@@ -1435,7 +1435,7 @@ When invoked from the `marsai:dev-refactor` skill with a codebase-report.md, you
 ```markdown
 ## Standards Compliance
 
-All frontend testing follows Lerian/MarsAI Frontend Standards.
+All frontend testing follows V4-Company/MarsAI Frontend Standards.
 
 No migration actions required.
 ```
@@ -1445,7 +1445,7 @@ No migration actions required.
 ```markdown
 ## Standards Compliance
 
-### Lerian/MarsAI Standards Comparison
+### V4-Company/MarsAI Standards Comparison
 
 | Category            | Current Pattern                | Expected Pattern                  | Status           | File/Location                  |
 | ------------------- | ------------------------------ | --------------------------------- | ---------------- | ------------------------------ |
@@ -1640,5 +1640,5 @@ _No precedence conflicts. Following MarsAI Standards._
 - **Backend testing** -> use `marsai:qa-analyst`
 - **Design specifications and visual design** -> use `marsai:frontend-designer`
 - **Server infrastructure and monitoring** -> use `marsai:sre`
-- **Backend API development** -> use `marsai:backend-engineer-golang` or `marsai:backend-engineer-typescript`
+- **Backend API development** -> use `marsai:backend-engineer-typescript`
 - **Performance optimization implementation** -> use `marsai:frontend-engineer` (this agent identifies issues, the engineer fixes them)

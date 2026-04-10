@@ -176,37 +176,32 @@ The Coverage Table ensures nothing is skipped. The Detailed Findings provide act
 ```markdown
 ## Standards Coverage Table
 
-**Standards File:** golang.md (from WebFetch)
-**Total Sections Found:** 21
-**Table Rows:** 21 (MUST match)
+**Standards File:** typescript.md (from WebFetch)
+**Total Sections Found:** 15
+**Table Rows:** 15 (MUST match)
 
-| #   | Section (from WebFetch)      | Status | Evidence                               |
-| --- | ---------------------------- | ------ | -------------------------------------- |
-| 1   | Version                      | ✅     | go.mod:3 (Go 1.24)                     |
-| 2   | Core Dependency: lib-commons | ✅     | go.mod:5                               |
-| 3   | Frameworks & Libraries       | ✅     | Fiber v2, pgx/v5 in go.mod             |
-| 4   | Configuration Loading        | ⚠️     | internal/config/config.go:12           |
-| 5   | Telemetry & Observability    | ❌     | Not implemented                        |
-| 6   | Bootstrap Pattern            | ✅     | cmd/server/main.go:15                  |
-| 7   | Access Manager Integration   | ✅     | internal/middleware/auth.go:25         |
-| 8   | License Manager Integration  | N/A    | Not a licensed project                 |
-| 9   | Data Transformation          | ✅     | internal/adapters/postgres/mapper.go:8 |
-| 10  | Error Codes Convention       | ⚠️     | Uses generic codes                     |
-| 11  | Error Handling               | ✅     | Consistent pattern                     |
-| 12  | Function Design              | ✅     | Small functions, clear names           |
-| 13  | Pagination Patterns          | N/A    | No list endpoints                      |
-| 14  | Testing Patterns             | ❌     | No tests found                         |
-| 15  | Logging Standards            | ⚠️     | Missing structured fields              |
-| 16  | Linting                      | ✅     | .golangci.yml present                  |
-| 17  | Architecture Patterns        | ✅     | Hexagonal structure                    |
-| 18  | Directory Structure          | ✅     | Follows Lerian pattern                 |
-| 19  | Concurrency Patterns         | N/A    | No concurrent code                     |
-| 20  | RabbitMQ Worker Pattern      | N/A    | No message queue                       |
+| #   | Section (from WebFetch)       | Status | Evidence                               |
+| --- | ----------------------------- | ------ | -------------------------------------- |
+| 1   | Version                       | ✅     | package.json (TypeScript 5.x, Node 20) |
+| 2   | Strict Configuration          | ✅     | tsconfig.json strict: true             |
+| 3   | Frameworks & Libraries        | ✅     | Fastify, Kysely, InversifyJS in deps   |
+| 4   | Type Safety                   | ⚠️     | Some `any` types found                 |
+| 5   | Zod Validation Patterns       | ❌     | Not implemented                        |
+| 6   | Dependency Injection          | ✅     | InversifyJS + TYPES symbols            |
+| 7   | Context Propagation           | ✅     | DI-based context via @Auth             |
+| 8   | Testing                       | ❌     | No tests found                         |
+| 9   | Error Handling                | ✅     | Custom error classes                   |
+| 10  | Function Design               | ✅     | Small functions, clear names           |
+| 11  | File Organization             | ⚠️     | Some files exceed 300 lines            |
+| 12  | Naming Conventions            | ✅     | Follows standard conventions           |
+| 13  | Directory Structure           | ✅     | Clean Architecture + DDD               |
+| 14  | RabbitMQ Worker Pattern       | N/A    | No message queue                       |
+| 15  | Always-Valid Domain Model     | ✅     | AggregateRoot factories used           |
 
 **Completeness Verification:**
 
-- Sections in standards: 20
-- Rows in table: 20
+- Sections in standards: 15
+- Rows in table: 15
 - Status: ✅ Complete
 ```
 
@@ -249,84 +244,6 @@ Standards files may contain these meta-sections that are not counted in section 
 
 These sections describe HOW to use the standards, not WHAT the standards are.
 
-### marsai:backend-engineer-golang → golang/
-
-**Modular Structure:** Standards are split into focused modules. Load index.md first, then required modules.
-
-| # | Section to Check | File | Anchor | Key Subsections |
-|---|------------------|------|--------|-----------------|
-| 1 | Version | core.md | `#version` | Go 1.24+ |
-| 2 | Core Dependency: lib-commons | core.md | `#core-dependency-lib-commons-mandatory` | **HARD GATE:** No duplicate utils/helpers - use lib-commons |
-| 3 | Frameworks & Libraries | core.md | `#frameworks--libraries` | lib-commons v2, Fiber v2, pgx/v5, OpenTelemetry, zap, testify, gomock, **validator v10 migration (MANDATORY)** |
-| 4 | Configuration | core.md | `#configuration` | Environment variable handling |
-| 5 | Database Naming Convention (snake_case) | core.md | `#database-naming-convention-snake-case-mandatory` | Table and column naming |
-| 6 | Database Migrations | core.md | `#database-migrations-mandatory` | golang-migrate requirement |
-| 7 | License Headers | core.md | `#license-headers-mandatory` | **MANDATORY** - All source files require license headers |
-| 8 | MongoDB Patterns | core.md | `#mongodb-patterns-mandatory` | **Injection prevention (CRITICAL)**, connection pooling, index management, deprecated API removal |
-| 9 | Dependency Management | core.md | `#dependency-management-mandatory` | **Version pinning (MANDATORY)**, go.sum, security updates, govulncheck, detection commands |
-| 10 | Observability | bootstrap.md | `#observability` | OpenTelemetry integration, **Span Naming Conventions (MANDATORY)**: layer.domain.operation pattern, detection commands |
-| 11 | Bootstrap | bootstrap.md | `#bootstrap` | Application initialization |
-| 12 | Graceful Shutdown Patterns | bootstrap.md | `#graceful-shutdown-patterns-mandatory` | **Signal handling (MANDATORY)**, shutdown order, resource cleanup, detection commands |
-| 13 | Health Checks | bootstrap.md | `#health-checks-mandatory` | **/health vs /ready (MANDATORY)**, Kubernetes probes, dependency checks |
-| 14 | Connection Management | bootstrap.md | `#connection-management-mandatory` | **Pool configuration (MANDATORY)**, timeouts, graceful shutdown, detection commands |
-| 15 | Access Manager Integration | security.md | `#access-manager-integration-mandatory` | **CONDITIONAL** - Check if project has auth |
-| 16 | License Manager Integration | security.md | `#license-manager-integration-mandatory` | **CONDITIONAL** - Check if project is licensed |
-| 17 | Secret Redaction Patterns | security.md | `#secret-redaction-patterns-mandatory` | **Credential leak prevention (MANDATORY)**, connection string redaction, detection commands |
-| 18 | SQL Safety | security.md | `#sql-safety-mandatory` | **Parameterized queries (MANDATORY)**, SQL injection prevention, whitelist pattern, detection commands |
-| 19 | HTTP Security Headers | security.md | `#http-security-headers-mandatory` | **X-Content-Type-Options: nosniff (MANDATORY)**, **X-Frame-Options: DENY (MANDATORY)** |
-| 20 | Data Transformation | domain.md | `#data-transformation-toentityfromentity-mandatory` | ToEntity/FromEntity patterns |
-| 21 | Error Codes Convention | domain.md | `#error-codes-convention-mandatory` | Service-prefixed codes |
-| 22 | Error Handling | domain.md | `#error-handling` | **Sentinel errors (MANDATORY)**, error wrapping |
-| 23 | Exit/Fatal Location Rules | domain.md | `#exitfatal-location-rules-mandatory` | **panic() Detection Checklist (MANDATORY)**, **log.Fatal() Location Rules (MANDATORY)**, Anti-Rationalization Table |
-| 24 | Function Design | domain.md | `#function-design-mandatory` | Single responsibility |
-| 25 | File Organization | domain.md | `#file-organization-mandatory` | File-level SRP, max 200-300 lines |
-| 26 | JSON Naming Convention (camelCase) | api-patterns.md | `#json-naming-convention-camelcase-mandatory` | API response field naming |
-| 27 | Pagination Patterns | api-patterns.md | `#pagination-patterns` | **Offset & cursor strategies**, limit validation, response structure, lib-commons utilities |
-| 28 | HTTP Status Code Consistency | api-patterns.md | `#http-status-code-consistency-mandatory` | **201 for creation, 200 for update (MANDATORY)**, lib-commons response methods, detection commands |
-| 29 | OpenAPI Documentation (Swaggo) | api-patterns.md | `#openapi-documentation-swaggo-mandatory` | Annotations as source of truth |
-| 30 | Handler Constructor Pattern | api-patterns.md | `#handler-constructor-pattern-mandatory` | **Dependency injection via constructor (MANDATORY)**, validation at startup, detection commands |
-| 31 | Input Validation | api-patterns.md | `#input-validation-mandatory` | **Defense in depth (MANDATORY)**, validator v10 tags, **numeric query param validation**, error translation |
-| 32 | Testing | quality.md | `#testing` | Table-driven tests, edge cases, **t.Setenv (MANDATORY)**, **b.Loop (MANDATORY)** |
-| 33 | Logging | quality.md | `#logging` | Structured logging with lib-commons |
-| 34 | Linting | quality.md | `#linting` | **Import ordering (MANDATORY)**, **Post-implementation linting (MANDATORY)**, **.golangci.yml requirement (MANDATORY)**, **14 mandatory linters**, magic numbers (mnd) |
-| 35 | Migration Guidance for Mandatory Linter Promotion | quality.md | `#migration-guidance-for-mandatory-linter-promotion` | **Phased rollout (MANDATORY)**, per-linter common violations, batch fix commands |
-| 36 | Production Config Validation | quality.md | `#production-config-validation-mandatory` | **Startup validation (MANDATORY)**, fail-fast, detailed error messages |
-| 37 | Container Security | quality.md | `#container-security-conditional` | **⚠️ CONDITIONAL** - Non-root user, image pinning (if Dockerfile exists) |
-| 38 | Architecture Patterns | architecture.md | `#architecture-patterns` | Hexagonal architecture |
-| 39 | Directory Structure | architecture.md | `#directory-structure` | Lerian pattern |
-| 40 | Concurrency Patterns | architecture.md | `#concurrency-patterns` | Goroutines, channels, errgroup, **Map mutex (MANDATORY)**, loop variable capture, detection commands |
-| 41 | Goroutine Recovery Patterns | architecture.md | `#goroutine-recovery-patterns-mandatory` | **Panic recovery (MANDATORY)**, recovery wrapper, detection commands |
-| 42 | Goroutine Leak Detection | architecture.md | `#goroutine-leak-detection-mandatory` | **goleak framework (MANDATORY)**: When implementing goroutines, MUST create goleak leak tests. TestMain pattern, per-test VerifyNone, goroutine leak patterns, detection commands |
-| 43 | N+1 Query Detection | architecture.md | `#n1-query-detection-mandatory` | **Batch loading (MANDATORY)**, JOIN patterns, detection commands |
-| 44 | Performance Patterns | architecture.md | `#performance-patterns-mandatory` | **SELECT * avoidance (MANDATORY)**, sync.Pool, memory allocation, detection commands |
-| 45 | RabbitMQ Worker Pattern | messaging.md | `#rabbitmq-worker-pattern` | Async message processing, **Exponential Backoff with Jitter (MANDATORY)**, **Error Classification (MANDATORY)** |
-| 46 | RabbitMQ Reconnection Strategy | messaging.md | `#rabbitmq-reconnection-strategy-mandatory` | **MANDATORY: Consumer Reconnection Loop**, **MANDATORY: Producer Per-Publish Retry**, **MANDATORY: Health Check Integration**, **MANDATORY: Deadlock Prevention** |
-| 47 | Always-Valid Domain Model | domain-modeling.md | `#always-valid-domain-model-mandatory` | **MANDATORY: Constructor Validation Patterns**: NewEntity/NewEntityFromDTO/ReconstructEntity conventions, invariant protection, ToEntity/FromEntity integration, detection commands |
-| 48 | Idempotency Patterns | idempotency.md | `#idempotency-patterns-mandatory-for-transaction-apis` | Redis SetNX, hash fallback, async caching |
-| 49 | Multi-Tenant Patterns | multi-tenant.md | `#multi-tenant-patterns-mandatory` | **MANDATORY: Both single-tenant and multi-tenant modes with backward compatibility.** See [multi-tenant.md](../../docs/standards/golang/multi-tenant.md) for full standard. |
-| 50 | Route-Level Auth-Before-Tenant Ordering | multi-tenant.md | `#route-level-auth-before-tenant-ordering-mandatory` | **MANDATORY: Auth MUST validate JWT before tenant middleware calls TM API.** WithTenantRoute per-route composition, DoS prevention, detection commands |
-| 51 | Rate Limiting | security.md | `#rate-limiting-mandatory` | **Three-tier strategy (MANDATORY)**: Global/Export/Dispatch, **Trusted Proxy (MANDATORY)**: EnableTrustedProxyCheck + TrustedProxies (Fiber v2) / TrustProxy + TrustProxyConfig (Fiber v3) for real client IP, Redis-backed storage (in-memory fallback on Redis outage), key priority (UserID > TenantID+IP > IP), **production force-enable (MANDATORY)**, Retry-After header, detection commands |
-| 52 | CORS Configuration | security.md | `#cors-configuration-mandatory` | **Configuration-driven (MANDATORY)**, production validation (no wildcard, no empty), middleware ordering (before Helmet), Helmet integration, detection commands |
-| 53 | Service Authentication | multi-tenant.md | `#service-authentication-mandatory` | **MANDATORY: API key authentication for tenant-manager /settings endpoint.** `MULTI_TENANT_SERVICE_API_KEY` env var, `client.WithServiceAPIKey()`, `X-API-Key` header, key rotation via service catalog |
-| 54 | Settings Revalidation | multi-tenant.md | N/A (pgManager internal) | **pgManager handles internally via `WithConnectionsCheckInterval`.** No separate watcher needed. Pass option when creating PostgreSQL manager. Detects maxOpenConns/maxIdleConns/statementTimeout changes |
-
-**Module Loading Guide:**
-
-| Task Type | Required Modules |
-|-----------|------------------|
-| New feature (full) | core.md → bootstrap.md → domain.md → quality.md |
-| Auth implementation | core.md → security.md |
-| Rate limiting | security.md |
-| CORS configuration | security.md |
-| Add tracing | bootstrap.md |
-| Testing | quality.md |
-| API endpoints | api-patterns.md (pagination + swaggo) |
-| Idempotency | idempotency.md + domain.md |
-| Multi-tenant | multi-tenant.md + bootstrap.md |
-| Full compliance check | all modules |
-
----
-
 ### marsai:backend-engineer-typescript → typescript.md
 
 | #   | Section to Check              | Anchor                                 | Key Subsections                               |
@@ -367,7 +284,7 @@ These sections describe HOW to use the standards, not WHAT the standards are.
 | 10  | Function Design               | `#function-design-mandatory`           | Single responsibility                                                      |
 | 11  | File Organization             | `#file-organization-mandatory`         | File-level SRP, max 200-300 lines                                          |
 | 12  | Naming Conventions            | `#naming-conventions`                  | Files, interfaces, types                                                   |
-| 13  | Directory Structure           | `#directory-structure`                 | Lerian pattern                                                             |
+| 13  | Directory Structure           | `#directory-structure`                 | V4-Company pattern                                                             |
 | 14  | RabbitMQ Worker Pattern       | `#rabbitmq-worker-pattern`             | Async message processing                                                   |
 | 15  | Always-Valid Domain Model     | `#always-valid-domain-model-mandatory` | Constructor validation                                                     |
 | 16  | BFF Architecture Pattern      | `#bff-architecture-pattern-mandatory`  | **HARD GATE:** Clean Architecture, dual-mode (sindarian-server vs vanilla) |
@@ -458,7 +375,7 @@ In addition to the standard Coverage Table, marsai:ui-engineer MUST output:
 | 1   | Cloud Provider (MANDATORY)         | Provider table                                                                             |
 | 2   | Infrastructure as Code (MANDATORY) | Terraform structure, State management, Module pattern, Best practices                      |
 | 3   | Containers (MANDATORY)             | **Dockerfile patterns, Docker Compose (Local Dev), .env file**, Image guidelines           |
-| 4   | Helm (MANDATORY)                   | General chart structure, Chart.yaml, values.yaml, [Lerian Helm Standards](../../docs/standards/helm/index.md) (delegate to marsai:helm-engineer) |
+| 4   | Helm (MANDATORY)                   | General chart structure, Chart.yaml, values.yaml, [V4-Company Helm Standards](../../docs/standards/helm/index.md) (delegate to marsai:helm-engineer) |
 | 5   | Observability (MANDATORY)          | Logging (Structured JSON), Tracing (OpenTelemetry)                                         |
 | 6   | Security (MANDATORY)               | Secrets management, Network policies                                                       |
 | 7   | Makefile Standards (MANDATORY)     | Required commands (build, lint, test, cover, up, down, etc.), Component delegation pattern |
@@ -477,30 +394,14 @@ In addition to the standard Coverage Table, marsai:ui-engineer MUST output:
 | 1   | Observability                         | `#observability`                                                  |
 | 2   | Logging                               | `#logging`                                                        |
 | 3   | Tracing                               | `#tracing`                                                        |
-| 4   | OpenTelemetry with lib-commons        | `#opentelemetry-with-lib-commons-mandatory-for-go`                |
-| 5   | Structured Logging with lib-common-js | `#structured-logging-with-lib-common-js-mandatory-for-typescript` |
-| 6   | Health Checks                         | `#health-checks`                                                  |
+| 4   | Structured Logging with lib-common-js | `#structured-logging-with-lib-common-js-mandatory-for-typescript` |
+| 5   | Health Checks                         | `#health-checks`                                                  |
 
 ---
 
 ### marsai:qa-analyst → testing-unit.md (Unit Mode - Gate 3)
 
 **Mode Detection:** `test_mode: unit` passed when invoking `Task(subagent_type="marsai:qa-analyst", test_mode="unit")`
-
-**For Go projects (Unit Mode):**
-| # | Section to Check | Anchor |
-|---|------------------|--------|
-| UNIT-1 | Table-Driven Tests (MANDATORY) | `#table-driven-tests-mandatory` |
-| UNIT-2 | Test Naming Convention (MANDATORY) | `#test-naming-convention-mandatory` |
-| UNIT-3 | Parallel Test Execution (MANDATORY) | `#parallel-test-execution-mandatory` |
-| UNIT-4 | Loop Variable Capture (MANDATORY) | `#loop-variable-capture-mandatory` |
-| UNIT-5 | Edge Case Coverage (MANDATORY) | `#edge-case-coverage-mandatory` |
-| UNIT-6 | Assertion Requirements (MANDATORY) | `#assertion-requirements-mandatory` |
-| UNIT-7 | Mock Generation (MANDATORY) | `#mock-generation-mandatory` |
-| UNIT-8 | Environment Variables in Tests (MANDATORY) | `#environment-variables-in-tests-mandatory` |
-| UNIT-9 | Shared Test Utilities (MANDATORY) | `#shared-test-utilities-mandatory` |
-| UNIT-10 | Unit Test Scope & Boundaries (MANDATORY) | `#unit-test-scope--boundaries-mandatory` |
-| UNIT-11 | Unit Test Quality Gate (MANDATORY) | `#unit-test-quality-gate-mandatory` |
 
 **For TypeScript projects (Unit Mode):**
 | # | Section to Check |
@@ -512,114 +413,9 @@ In addition to the standard Coverage Table, marsai:ui-engineer MUST output:
 **Unit Test Quality Gate Checks (Gate 3 Exit - all REQUIRED):**
 | # | Check | Detection |
 |---|-------|-----------|
-| 1 | Table-driven pattern | All tests use `tests := []struct` pattern |
-| 2 | t.Parallel() | `grep "t.Parallel()"` at function and subtest level |
-| 3 | Loop variable capture | `tt := tt` before each `t.Run()` |
-| 4 | Strong error assertions | No empty `errContains` fields |
-| 5 | Response type verification | `assert.IsType()` for success cases |
-| 6 | GoMock usage | No hand-written mocks |
-| 7 | t.Setenv | No `os.Setenv` in test files |
-| 8 | Shared utilities | No local `Ptr` or duplicate helpers |
-| 9 | Edge cases | ≥3 per acceptance criterion |
-| 10 | No flaky tests | 3x consecutive pass |
-
----
-
-### marsai:qa-analyst → testing-fuzz.md (Fuzz Mode - Gate 4)
-
-**Mode Detection:** `test_mode: fuzz` passed when invoking `Task(subagent_type="marsai:qa-analyst", test_mode="fuzz")`
-
-**For Go projects (Fuzz Mode):**
-| # | Section to Check | Anchor |
-|---|------------------|--------|
-| FUZZ-1 | What Is Fuzz Testing | `#what-is-fuzz-testing` |
-| FUZZ-2 | Fuzz Function Pattern (MANDATORY) | `#fuzz-function-pattern-mandatory` |
-| FUZZ-3 | Seed Corpus (MANDATORY) | `#seed-corpus-mandatory` |
-| FUZZ-4 | Input Types | `#input-types` |
-| FUZZ-5 | Fuzz Test Quality Gate (MANDATORY) | `#fuzz-test-quality-gate-mandatory` |
-
-**Fuzz Test Quality Gate Checks (Gate 4 Exit - all REQUIRED):**
-| # | Check | Detection |
-|---|-------|-----------|
-| 1 | Naming convention | `func FuzzXxx(f *testing.F)` format |
-| 2 | Seed corpus | `f.Add()` with ≥5 entries |
-| 3 | Test passes | `go test -fuzz=. -fuzztime=30s` |
-
----
-
-### marsai:qa-analyst → testing-property.md (Property Mode - Gate 5)
-
-**Mode Detection:** `test_mode: property` passed when invoking `Task(subagent_type="marsai:qa-analyst", test_mode="property")`
-
-**For Go projects (Property Mode):**
-| # | Section to Check | Anchor |
-|---|------------------|--------|
-| PROP-1 | What Is Property-Based Testing | `#what-is-property-based-testing` |
-| PROP-2 | Property Function Pattern (MANDATORY) | `#property-function-pattern-mandatory` |
-| PROP-3 | Common Properties | `#common-properties` |
-| PROP-4 | Integration with Unit Tests | `#integration-with-unit-tests` |
-| PROP-5 | Property Test Quality Gate (MANDATORY) | `#property-test-quality-gate-mandatory` |
-
-**Property Test Quality Gate Checks (Gate 5 Exit - all REQUIRED):**
-| # | Check | Detection |
-|---|-------|-----------|
-| 1 | Naming convention | `TestProperty_{Subject}_{Property}` format |
-| 2 | quick.Check usage | `testing/quick.Check` imported and used |
-| 3 | Domain invariants | At least 1 property per domain entity |
-
----
-
-### marsai:qa-analyst → testing-integration.md (Integration Mode - Gate 6)
-
-**Mode Detection:** `test_mode: integration` passed when invoking `Task(subagent_type="marsai:qa-analyst", test_mode="integration")`
-
-**For Go projects (Integration Mode):**
-| # | Section to Check | Anchor |
-|---|------------------|--------|
-| INT-1 | Test Pyramid | `#test-pyramid` |
-| INT-2 | File Naming Convention (MANDATORY) | `#file-naming-convention-mandatory` |
-| INT-3 | Function Naming Convention (MANDATORY) | `#function-naming-convention-mandatory` |
-| INT-4 | Build Tags (MANDATORY) | `#build-tags-mandatory` |
-| INT-5 | Testcontainers Patterns (MANDATORY) | `#testcontainers-patterns-mandatory` |
-| INT-6 | Parallel Test Prohibition (MANDATORY) | `#parallel-test-prohibition-mandatory` |
-| INT-7 | Fixture Centralization (MANDATORY) | `#fixture-centralization-mandatory` |
-| INT-8 | Stub Centralization (MANDATORY) | `#stub-centralization-mandatory` |
-| INT-9 | Guardrails (11 Anti-Patterns) (MANDATORY) | `#guardrails-11-anti-patterns-mandatory` |
-| INT-10 | Test Failure Analysis (No Greenwashing) | `#test-failure-analysis-no-greenwashing` |
-
-**Integration Test Quality Gate Checks (Gate 6 Exit - all REQUIRED):**
-| # | Check | Detection |
-|---|-------|-----------|
-| 1 | Build tag present | `//go:build integration` at top of file |
-| 2 | No hardcoded ports | `grep ":5432\|:6379"` = 0 |
-| 3 | Testcontainers used | import check for testcontainers |
-| 4 | No t.Parallel() | `grep "t.Parallel()"` in integration tests = 0 |
-| 5 | Cleanup present | `t.Cleanup()` for all containers |
-| 6 | No flaky tests | 3x consecutive pass |
-
----
-
-### marsai:qa-analyst → testing-chaos.md (Chaos Mode - Gate 7)
-
-**Mode Detection:** `test_mode: chaos` passed when invoking `Task(subagent_type="marsai:qa-analyst", test_mode="chaos")`
-
-**For Go projects (Chaos Mode):**
-| # | Section to Check | Anchor |
-|---|------------------|--------|
-| CHAOS-1 | What Is Chaos Testing | `#what-is-chaos-testing` |
-| CHAOS-2 | Chaos Test Pattern (MANDATORY) | `#chaos-test-pattern-mandatory` |
-| CHAOS-3 | Failure Scenarios | `#failure-scenarios` |
-| CHAOS-4 | Infrastructure Setup | `#infrastructure-setup` |
-| CHAOS-5 | Chaos Test Quality Gate (MANDATORY) | `#chaos-test-quality-gate-mandatory` |
-
-**Chaos Test Quality Gate Checks (Gate 7 Exit - all REQUIRED):**
-| # | Check | Detection |
-|---|-------|-----------|
-| 1 | Dual-gate pattern | `CHAOS=1` env check + `testing.Short()` |
-| 2 | Naming convention | `TestIntegration_Chaos_{Component}_{Scenario}` |
-| 3 | 5-phase structure | Normal → Inject → Verify → Restore → Recovery |
-| 4 | Toxiproxy usage | `tests/utils/chaos/` infrastructure |
-| 5 | All deps covered | Chaos test for each external dependency |
+| 1 | Type-safe mocks | No `any` in mock definitions |
+| 2 | Edge cases | ≥3 per acceptance criterion |
+| 3 | No flaky tests | 3x consecutive pass |
 
 ---
 

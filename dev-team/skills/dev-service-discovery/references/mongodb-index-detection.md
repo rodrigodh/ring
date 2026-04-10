@@ -293,7 +293,7 @@ The migrations bucket follows the **Service → Module → Resource Type** hiera
 
 Example for ledger service:
 ```
-lerian-development-migrations/
+v4-company-development-migrations/
 ├── ledger/
 │   ├── onboarding/
 │   │   ├── mongodb/         ← 7 index migration files
@@ -323,7 +323,7 @@ Each module's MongoDB index scripts go into `s3://{bucket}/{service}/{module}/mo
    "Found {N} index scripts to upload for service '{service_name}'.
     Which S3 bucket should I upload to?
     
-    Example: lerian-development-migrations
+    Example: v4-company-development-migrations
     (scripts will be placed at: s3://{bucket}/{service}/{module}/mongodb/)"
 
    - Wait for user response

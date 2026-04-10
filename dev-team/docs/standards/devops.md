@@ -16,7 +16,7 @@ This file defines the specific standards for DevOps, SRE, and infrastructure.
 | 1   | [Cloud Provider](#cloud-provider)                 | AWS, GCP, Azure services                           |
 | 2   | [Infrastructure as Code](#infrastructure-as-code) | Terraform patterns and best practices              |
 | 3   | [Containers](#containers)                         | Dockerfile, Docker Compose, .env                   |
-| 4   | [Helm](#helm)                                     | Chart structure, configuration, Lerian delegation  |
+| 4   | [Helm](#helm)                                     | Chart structure, configuration, V4-Company delegation  |
 | 5   | [Observability](#observability)                   | Logging and tracing standards                      |
 | 6   | [Security](#security)                             | Secrets management, network policies               |
 | 7   | [Makefile Standards](#makefile-standards)         | Required commands and patterns                     |
@@ -175,28 +175,32 @@ resource "aws_instance" "example" {
 
 ```dockerfile
 # Multi-stage build for minimal images
-FROM golang:1.22-alpine AS builder
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
 # Cache dependencies
-COPY go.mod go.sum ./
-RUN go mod download
+COPY package.json package-lock.json ./
+RUN npm ci
 
 # Build
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /app/server ./cmd/api
+RUN npm run build
 
 # Production image
-FROM gcr.io/distroless/static-debian12:nonroot
+FROM node:20-alpine
 
-COPY --from=builder /app/server /server
+WORKDIR /app
 
-USER nonroot:nonroot
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./
 
-EXPOSE 8080
+USER node
 
-ENTRYPOINT ["/server"]
+EXPOSE 3000
+
+CMD ["node", "dist/main.js"]
 ```
 
 ### Image Guidelines
@@ -367,16 +371,16 @@ postgresql:
   enabled: false # Use external database
 ```
 
-### Lerian Helm Charts
+### V4-Company Helm Charts
 
-For Lerian-specific Helm chart creation (naming conventions, directory structure, ConfigMap/Secrets split, dual-mode KEDA/Deployment, AWS RolesAnywhere sidecar, port allocation, and all production patterns), use the dedicated skill and agent:
+For V4-Company-specific Helm chart creation (naming conventions, directory structure, ConfigMap/Secrets split, dual-mode KEDA/Deployment, AWS RolesAnywhere sidecar, port allocation, and all production patterns), use the dedicated skill and agent:
 
-- **Skill:** `marsai:dev-helm` — Orchestrates Helm chart creation following Lerian conventions
-- **Agent:** `marsai:helm-engineer` — Specialist agent with all Lerian Helm patterns
-- **Standards:** [`dev-team/docs/standards/helm/`](helm/index.md) — Complete Lerian Helm conventions (conventions, values, templates, dependencies, worker patterns)
-- **Reference charts:** `Documents/Lerian/helm/charts/` (production charts as source of truth)
+- **Skill:** `marsai:dev-helm` — Orchestrates Helm chart creation following V4-Company conventions
+- **Agent:** `marsai:helm-engineer` — Specialist agent with all V4-Company Helm patterns
+- **Standards:** [`dev-team/docs/standards/helm/`](helm/index.md) — Complete V4-Company Helm conventions (conventions, values, templates, dependencies, worker patterns)
+- **Reference charts:** `Documents/V4-Company/helm/charts/` (production charts as source of truth)
 
-> **⚠️ DELEGATION:** When creating or modifying Helm charts for Lerian services, `marsai:devops-engineer` MUST delegate to `marsai:helm-engineer` via the `marsai:dev-helm` skill. The generic patterns above apply to non-Lerian charts only.
+> **⚠️ DELEGATION:** When creating or modifying Helm charts for V4-Company services, `marsai:devops-engineer` MUST delegate to `marsai:helm-engineer` via the `marsai:dev-helm` skill. The generic patterns above apply to non-V4-Company charts only.
 
 ---
 
@@ -499,7 +503,7 @@ All projects **MUST** include a Makefile with standardized commands for consiste
 | Command                | Purpose                                               | Category      |
 | ---------------------- | ----------------------------------------------------- | ------------- |
 | `make build`           | Build all components                                  | Core          |
-| `make lint`            | Run linters (golangci-lint)                           | Code Quality  |
+| `make lint`            | Run linters (eslint, etc.)                            | Code Quality  |
 | `make test`            | Run all tests                                         | Testing       |
 | `make cover`           | Generate test coverage report                         | Testing       |
 | `make test-unit`       | Run unit tests only                                   | Testing       |
@@ -510,7 +514,7 @@ All projects **MUST** include a Makefile with standardized commands for consiste
 | `make restart`         | Restart all containers                                | Docker        |
 | `make rebuild-up`      | Rebuild and restart services                          | Docker        |
 | `make set-env`         | Copy .env.example to .env                             | Setup         |
-| `make dev-setup`       | Install development tools (swag, golangci-lint, etc.) | Setup         |
+| `make dev-setup`       | Install development tools                             | Setup         |
 | `make generate-docs`   | Generate API documentation (Swagger)                  | Documentation |
 | `make migrate-up`      | Apply all pending database migrations                 | Database      |
 | `make migrate-down`    | Rollback last migration                               | Database      |
@@ -563,14 +567,13 @@ test:
 .PHONY: test-unit
 test-unit:
 	@for dir in $(COMPONENTS); do \
-		(cd $$dir && go test -v -short ./...) || exit 1; \
+		(cd $$dir && npm run test:unit) || exit 1; \
 	done
 
 .PHONY: cover
 cover:
 	@sh ./scripts/coverage.sh
-	@go tool cover -html=coverage.out -o coverage.html
-	@echo "Coverage report generated at coverage.html"
+	@echo "Coverage report generated"
 
 #-------------------------------------------------------
 # Code Quality Commands
@@ -579,8 +582,8 @@ cover:
 .PHONY: lint
 lint:
 	@for dir in $(COMPONENTS); do \
-		if find "$$dir" -name "*.go" -type f | grep -q .; then \
-			(cd $$dir && golangci-lint run --fix ./...) || exit 1; \
+		if [ -f "$$dir/package.json" ]; then \
+			(cd $$dir && npm run lint) || exit 1; \
 		fi; \
 	done
 	@echo "[ok] Linting completed successfully"
@@ -691,18 +694,17 @@ all-components:
 # Component Makefile (e.g., components/onboarding/Makefile)
 
 SERVICE_NAME := onboarding-service
-ARTIFACTS_DIR := ./artifacts
 
 .PHONY: build test lint up down
 
 build:
-	@go build -o $(ARTIFACTS_DIR)/$(SERVICE_NAME) ./cmd/app
+	@npm run build
 
 test:
-	@go test -v ./...
+	@npm test
 
 lint:
-	@golangci-lint run --fix ./...
+	@npm run lint -- --fix
 
 up:
 	@docker compose -f docker-compose.yml up -d
@@ -713,7 +715,7 @@ down:
 
 ### Database Migration Commands (MANDATORY)
 
-MUST: All projects with a database include these migration commands using `golang-migrate`:
+MUST: All projects with a database include these migration commands:
 
 ```makefile
 #-------------------------------------------------------
@@ -792,7 +794,7 @@ make migrate-force VERSION=5
 
 ### Documentation Commands (MANDATORY)
 
-All projects with API endpoints MUST include Swagger generation using swaggo:
+All projects with API endpoints MUST include API documentation generation:
 
 ```makefile
 #-------------------------------------------------------
@@ -800,14 +802,10 @@ All projects with API endpoints MUST include Swagger generation using swaggo:
 #-------------------------------------------------------
 
 .PHONY: generate-docs
-generate-docs: ## Generate Swagger API documentation
-	@echo "Generating Swagger documentation..."
-	@if ! command -v swag >/dev/null 2>&1; then \
-		echo "Error: swag is not installed. Run: make dev-setup"; \
-		exit 1; \
-	fi
-	swag init -g cmd/app/main.go -o api --parseDependency --parseInternal
-	@echo "[ok] Swagger documentation generated in api/"
+generate-docs: ## Generate API documentation
+	@echo "Generating API documentation..."
+	@npm run docs:generate
+	@echo "[ok] API documentation generated in api/"
 
 .PHONY: serve-docs
 serve-docs: ## Serve Swagger UI locally (requires swagger-ui)
@@ -815,20 +813,10 @@ serve-docs: ## Serve Swagger UI locally (requires swagger-ui)
 	@docker run -p 8081:8080 -e SWAGGER_JSON=/api/swagger.json -v $(PWD)/api:/api swaggerapi/swagger-ui
 ```
 
-**Command parameters:**
-
-| Flag                 | Purpose                                        |
-| -------------------- | ---------------------------------------------- |
-| `-g cmd/app/main.go` | Entry point file with API metadata annotations |
-| `-o api`             | Output directory for generated files           |
-| `--parseDependency`  | Parse external dependencies for models         |
-| `--parseInternal`    | Parse internal packages for types              |
-
 **Generated files:**
 
 ```text
 /api
-  docs.go         # Go code for embedding (GENERATED - do not edit)
   swagger.json    # OpenAPI spec in JSON (GENERATED - do not edit)
   swagger.yaml    # OpenAPI spec in YAML (GENERATED - do not edit)
 ```
@@ -847,63 +835,27 @@ All projects MUST include a dev-setup command to install required tools:
 .PHONY: dev-setup
 dev-setup: ## Install development tools
 	@echo "Installing development tools..."
-
-	@# golangci-lint
-	@if ! command -v golangci-lint >/dev/null 2>&1; then \
-		echo "Installing golangci-lint..."; \
-		go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest; \
-	else \
-		echo "[ok] golangci-lint already installed"; \
-	fi
-
-	@# swag (Swagger generator)
-	@if ! command -v swag >/dev/null 2>&1; then \
-		echo "Installing swag..."; \
-		go install github.com/swaggo/swag/cmd/swag@latest; \
-	else \
-		echo "[ok] swag already installed"; \
-	fi
-
-	@# golang-migrate
-	@if ! command -v migrate >/dev/null 2>&1; then \
-		echo "Installing golang-migrate..."; \
-		go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest; \
-	else \
-		echo "[ok] migrate already installed"; \
-	fi
-
-	@# mockgen (for GoMock)
-	@if ! command -v mockgen >/dev/null 2>&1; then \
-		echo "Installing mockgen..."; \
-		go install go.uber.org/mock/mockgen@latest; \
-	else \
-		echo "[ok] mockgen already installed"; \
-	fi
-
+	@npm install
 	@echo "[ok] All development tools installed"
 
 .PHONY: check-tools
 check-tools: ## Verify all required tools are installed
 	@echo "Checking required tools..."
-	@command -v go >/dev/null 2>&1 || { echo "❌ go not found"; exit 1; }
-	@command -v golangci-lint >/dev/null 2>&1 || { echo "❌ golangci-lint not found"; exit 1; }
-	@command -v swag >/dev/null 2>&1 || { echo "❌ swag not found"; exit 1; }
-	@command -v migrate >/dev/null 2>&1 || { echo "❌ migrate not found"; exit 1; }
-	@command -v mockgen >/dev/null 2>&1 || { echo "❌ mockgen not found"; exit 1; }
+	@command -v node >/dev/null 2>&1 || { echo "❌ node not found"; exit 1; }
+	@command -v npm >/dev/null 2>&1 || { echo "❌ npm not found"; exit 1; }
 	@command -v docker >/dev/null 2>&1 || { echo "❌ docker not found"; exit 1; }
 	@echo "[ok] All required tools are installed"
 ```
 
 **Required tools:**
 
-| Tool            | Purpose             | Installation                                                                          |
-| --------------- | ------------------- | ------------------------------------------------------------------------------------- |
-| `golangci-lint` | Code linting        | `go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest`               |
-| `swag`          | Swagger generation  | `go install github.com/swaggo/swag/cmd/swag@latest`                                   |
-| `migrate`       | Database migrations | `go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest` |
-| `mockgen`       | Mock generation     | `go install go.uber.org/mock/mockgen@latest`                                          |
+| Tool     | Purpose            | Installation                     |
+| -------- | ------------------ | -------------------------------- |
+| `node`   | Runtime            | `nvm install 20` or system pkg   |
+| `npm`    | Package manager    | Included with node               |
+| `docker` | Containerization   | Docker Desktop or docker engine  |
 
-### Generate Mocks Command (MANDATORY)
+### Generate Code Command (OPTIONAL)
 
 ```makefile
 #-------------------------------------------------------
@@ -911,16 +863,10 @@ check-tools: ## Verify all required tools are installed
 #-------------------------------------------------------
 
 .PHONY: generate
-generate: ## Run all code generation (mocks, etc.)
-	@echo "Running go generate..."
-	@go generate ./...
+generate: ## Run all code generation
+	@echo "Running code generation..."
+	@npm run generate
 	@echo "[ok] Code generation completed"
-
-.PHONY: generate-mocks
-generate-mocks: ## Generate mock files using mockgen
-	@echo "Generating mocks..."
-	@go generate ./...
-	@echo "[ok] Mocks generated"
 ```
 
 ---
@@ -948,19 +894,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-node@v4
         with:
-          go-version: "1.24"
-      - name: golangci-lint
-        uses: golangci/golangci-lint-action@v4
+          node-version: "20"
+          cache: "npm"
+      - run: npm ci
+      - name: Lint
+        run: npm run lint
 
   test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-node@v4
         with:
-          go-version: "1.24"
+          node-version: "20"
+          cache: "npm"
+      - run: npm ci
       - name: Run tests
         run: make test
       - name: Check coverage
@@ -970,8 +920,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Run govulncheck
-        run: go run golang.org/x/vuln/cmd/govulncheck@latest ./...
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+      - run: npm ci
+      - name: Run npm audit
+        run: npm audit --audit-level=high
 
   build:
     runs-on: ubuntu-latest
@@ -1015,7 +970,7 @@ Settings:
 
 ```bash
 # Find projects without CI config
-find . -name "go.mod" -exec dirname {} \; | while read dir; do
+find . -name "package.json" -not -path "*/node_modules/*" -exec dirname {} \; | while read dir; do
   if [ ! -f "$dir/.github/workflows/ci.yml" ] && [ ! -f "$dir/.gitlab-ci.yml" ]; then
     echo "MISSING CI: $dir"
   fi
@@ -1027,7 +982,7 @@ done
 | Rationalization             | Why It's WRONG                                          | Required Action                |
 | --------------------------- | ------------------------------------------------------- | ------------------------------ |
 | "Local tests are enough"    | Local ≠ CI environment. CI catches env-specific issues. | **Add CI pipeline**            |
-| "Security scan is slow"     | Slow scan > production vulnerability.                   | **Include govulncheck**        |
+| "Security scan is slow"     | Slow scan > production vulnerability.                   | **Include security scanning**  |
 | "We'll add CI later"        | Later = technical debt. Start with CI.                  | **Add CI on project creation** |
 | "Manual deployment is fine" | Manual = error-prone + no audit trail.                  | **Automate deployments**       |
 

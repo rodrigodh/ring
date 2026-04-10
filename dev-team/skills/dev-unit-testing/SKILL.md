@@ -42,7 +42,7 @@ input_schema:
       description: "Files from Gate 0 implementation"
     - name: language
       type: string
-      enum: [go, typescript, python]
+      enum: [typescript, python]
       description: "Programming language"
   optional:
     - name: coverage_threshold
@@ -90,9 +90,6 @@ output_schema:
 
 verification:
   automated:
-    - command: "go test ./... -covermode=atomic -coverprofile=coverage.out && go tool cover -func=coverage.out | grep total"
-      description: "Go tests pass with coverage"
-      success_pattern: 'total:.*[8-9][0-9]|100'
     - command: "npm test -- --coverage | grep -E 'All files|Statements'"
       description: "TypeScript tests pass with coverage"
       success_pattern: '[8-9][0-9]|100'
@@ -136,14 +133,14 @@ REQUIRED INPUT (from marsai:dev-cycle orchestrator):
 - unit_id exists
 - acceptance_criteria is not empty
 - implementation_files is not empty
-- language is valid (go|typescript|python)
+- language is valid (typescript|python)
 </verify_before_proceed>
 
 ```text
 - unit_id: [task/subtask being tested]
 - acceptance_criteria: [list of ACs to test]
 - implementation_files: [files from Gate 0]
-- language: [go|typescript|python]
+- language: [typescript|python]
 
 OPTIONAL INPUT:
 - coverage_threshold: [default 85.0, cannot be lower]
@@ -171,12 +168,6 @@ testing_state = {
   max_iterations: 3,
   traceability_matrix: [],
   tests_written: 0,
-  # Goroutine leak detection (Go only)
-  goroutine_check: null,       # NOT_APPLICABLE | REQUIRED
-  goroutine_files: 0,          # Count of files with goroutines
-  goleak_coverage: null,       # "X/Y" packages with goleak
-  leaks_detected: 0,           # Count of actual leaks
-  goroutine_verdict: null      # PASS | NEEDS_ACTION | FAIL
 }
 ```
 
@@ -205,8 +196,7 @@ Task:
     [list implementation_files]
 
     ## Standards Reference
-    For Go: https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang.md
-    For TS: https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/typescript.md
+    For TS: https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/typescript.md
 
     Focus on: Testing Patterns section
 
@@ -218,7 +208,6 @@ Task:
     - Edge cases REQUIRED (null, empty, boundary, error conditions)
 
     ### Test Naming
-    - Go: `Test{Unit}_{Method}_{Scenario}`
     - TS: `describe('{Unit}', () => { it('should {scenario}', ...) })`
 
     ### Test Structure
@@ -241,41 +230,6 @@ Task:
     | CRUD operations | not found, duplicate, concurrent | 3+ |
     | Business logic | zero, negative, overflow, boundary | 3+ |
     | Error handling | timeout, connection failure, retry | 2+ |
-
-    ### Multi-Tenant Dual-Mode Testing (Go backend only)
-
-    Every repository/service test that accesses a resource (PostgreSQL, MongoDB, Redis, S3, RabbitMQ) must verify BOTH modes. The resolvers in lib-commons v4 work transparently — the same code path handles both modes. Tests verify this contract.
-
-    **Required pattern:** Add dual-mode sub-tests for any test that touches a resource:
-
-    ```go
-    func TestCreateAccount(t *testing.T) {
-        modes := []struct {
-            name         string
-            multiTenant  string
-        }{
-            {"single-tenant", "false"},
-            {"multi-tenant", "true"},
-        }
-        for _, mode := range modes {
-            t.Run(mode.name, func(t *testing.T) {
-                t.Setenv("MULTI_TENANT_ENABLED", mode.multiTenant)
-                // ... same test logic, same assertions
-                // Resolvers handle the connection routing transparently
-            })
-        }
-    }
-    ```
-
-    **What to verify in multi-tenant mode:**
-    - Context contains tenant ID → resolver returns tenant-specific connection
-    - Context WITHOUT tenant ID → resolver returns error (not default connection)
-    - Backward compat: no MULTI_TENANT_* env vars → works as single-tenant
-
-    **What does NOT need dual-mode tests:**
-    - Pure business logic (no resource access)
-    - Utility/helper functions
-    - Frontend/TypeScript tests
 
     ## Required Output Format
 
@@ -319,47 +273,6 @@ Task:
     - **Files needing coverage:** [list with line numbers]
 ```
 
-## Step 3.5: Goroutine Leak Detection (Go only)
-
-**⛔ CONDITIONAL: Only execute if `language == "go"`**
-
-After unit tests pass, detect goroutine usage and verify goleak coverage.
-
-See [marsai:dev-goroutine-leak-testing](../dev-goroutine-leak-testing/SKILL.md) for full detection patterns and dispatch templates.
-See [architecture.md](../../docs/standards/golang/architecture.md#goroutine-leak-detection-mandatory) for goleak standards.
-
-### Detection Logic
-
-```text
-if language != "go":
-  → Skip to Step 4
-
-# Detect goroutine patterns: "go func(", "go methodCall("
-if no goroutine patterns found:
-  → testing_state.goroutine_check = "NOT_APPLICABLE"
-  → Skip to Step 4
-
-# Goroutines detected
-→ testing_state.goroutine_check = "REQUIRED"
-→ Dispatch marsai:qa-analyst with test_mode="goroutine-leak"
-```
-
-### Dispatch
-
-<dispatch_required agent="marsai:qa-analyst" test_mode="goroutine-leak">
-MUST dispatch with test_mode="goroutine-leak" to detect leaks and verify goleak coverage.
-</dispatch_required>
-
-### Parse Output and Handle Verdict
-
-| Verdict | Action |
-|---------|--------|
-| PASS | Proceed to Step 4 |
-| NEEDS_ACTION | Dispatch `marsai:backend-engineer-golang` to add goleak tests, re-run |
-| FAIL | Dispatch `marsai:backend-engineer-golang` to fix leaks, re-run |
-
----
-
 ## Step 4: Parse QA Analyst Output
 
 ```text
@@ -380,8 +293,8 @@ if verdict == "PASS" and coverage_actual >= coverage_threshold:
 if verdict == "FAIL" or coverage_actual < coverage_threshold:
   → testing_state.verdict = "FAIL"
   → testing_state.iterations += 1
-  → if iterations >= max_iterations: Go to Step 7 (Escalate)
-  → Go to Step 5 (Dispatch Fix)
+  → if iterations >= max_iterations: Proceed to Step 7 (Escalate)
+  → Proceed to Step 5 (Dispatch Fix)
 ```
 
 ## Step 5: Dispatch Fix to Implementation Agent
@@ -390,7 +303,7 @@ if verdict == "FAIL" or coverage_actual < coverage_threshold:
 
 ```yaml
 Task:
-  subagent_type: "[implementation_agent from Gate 0]"  # e.g., "marsai:backend-engineer-golang"
+  subagent_type: "[implementation_agent from Gate 0]"  # e.g., "marsai:backend-engineer-typescript"
   description: "Add tests to meet coverage threshold for [unit_id]"
   prompt: |
     ⛔ COVERAGE BELOW THRESHOLD - Add More Tests
@@ -419,7 +332,7 @@ Task:
     - Coverage command output
 ```
 
-After fix → Go back to Step 3 (Re-dispatch QA Analyst)
+After fix → Return to Step 3 (Re-dispatch QA Analyst)
 
 ## Step 6: Prepare Success Output
 
@@ -455,20 +368,6 @@ Generate skill output:
 | All ACs tested | ✅ |
 | No skipped tests | ✅ |
 | Edge cases present | ✅ |
-| Goroutine leak check (Go only) | [✅/N/A] |
-
-## Goroutine Leak Report (Go only)
-[If language == "go" and goroutines detected]
-
-| Metric | Value |
-|--------|-------|
-| Goroutines detected | [count] |
-| Packages with goleak | [X]/[Y] |
-| Leaks found | 0 |
-| Status | ✅ PASS |
-
-[If language != "go" or no goroutines: "N/A - No goroutines detected"]
-
 ## Handoff to Next Gate
 - Testing status: COMPLETE
 - Coverage: [coverage_actual]% (threshold: [coverage_threshold]%)

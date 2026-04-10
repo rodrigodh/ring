@@ -1,4 +1,4 @@
-# Helm Conventions (Lerian Standard)
+# Helm Conventions (V4-Company Standard)
 
 ## Chart Naming
 
@@ -7,7 +7,7 @@ RULE: Chart name in Chart.yaml MUST have "-helm" suffix.
 
 EXCEPTIONS (no suffix):
   - plugin-access-manager
-  - otel-collector-lerian
+  - otel-collector-v4-company
 
 EXAMPLES:
   ✅ reporter-helm
@@ -27,17 +27,16 @@ apiVersion: v2
 name: {service}-helm
 description: A Helm chart for deploying {service}
 type: application
-home: https://github.com/LerianStudio/{service}/tree/main/deploy/charts/{service}
+home: https://github.com/V4-Company/{service}/tree/main/deploy/charts/{service}
 sources:
-  - https://github.com/LerianStudio/{service}
+  - https://github.com/V4-Company/{service}
 maintainers:
-  - name: "Lerian Studio"
-    email: "support@lerian.studio"
+  - name: "V4-Company"
+    email: "support@v4-company.studio"
 version: 1.0.0
 appVersion: "1.0.0"
 keywords:
-  - midaz
-  - lerian
+  - v4-company
   - {service}
 icon: https://avatars.githubusercontent.com/u/148895005?s=200&v=4
 ```
@@ -71,16 +70,16 @@ icon: https://avatars.githubusercontent.com/u/148895005?s=200&v=4
 ## Image Repository Convention
 
 ```text
-FORMAT: ghcr.io/lerianstudio/{service-name}
+FORMAT: ghcr.io/V4-Company/{service-name}
 
 For multi-component:
-  ghcr.io/lerianstudio/{service}-{component}
+  ghcr.io/V4-Company/{service}-{component}
 
 EXAMPLES:
-  ghcr.io/lerianstudio/reporter-manager
-  ghcr.io/lerianstudio/reporter-worker
-  ghcr.io/lerianstudio/plugin-fees
-  ghcr.io/lerianstudio/product-console
+  ghcr.io/V4-Company/reporter-manager
+  ghcr.io/V4-Company/reporter-worker
+  ghcr.io/V4-Company/plugin-fees
+  ghcr.io/V4-Company/product-console
 ```
 
 ---
@@ -97,8 +96,8 @@ No NodePort. No LoadBalancer. Ingress handles external access.
 ## Port Allocation
 
 ```text
-Lerian port ranges:
-  3000-3099: Midaz core services
+V4-Company port ranges:
+  3000-3099: Core services
   4000-4099: Plugin/application APIs
   5432: PostgreSQL
   5672: RabbitMQ AMQP

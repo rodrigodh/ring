@@ -158,10 +158,6 @@ Dedup removes noise, not signal. Two different reviewers catching the same issue
 
 ## Integration Points
 
-### With Mithril Pre-Analysis
-
-The slicer runs **after** Mithril completes. Mithril context files are filtered per slice: each reviewer receives only the Mithril analysis sections that mention files in their slice. This keeps pre-analysis context focused too.
-
 ### With Reviewer Dispatch
 
 When slicing is active:

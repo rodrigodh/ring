@@ -30,7 +30,7 @@ output_schema:
       required_when:
         invocation_context: "marsai:dev-refactor"
         prompt_contains: "**MODE: ANALYSIS only**"
-      description: "Comparison of codebase against Lerian/MarsAI standards. MANDATORY when invoked from marsai:dev-refactor skill. Optional otherwise."
+      description: "Comparison of codebase against V4-Company/MarsAI standards. MANDATORY when invoked from marsai:dev-refactor skill. Optional otherwise."
     - name: "Blockers"
       pattern: "^## Blockers"
       required: false
@@ -132,7 +132,7 @@ See [shared-patterns/standards-compliance-detection.md](../skills/shared-pattern
 
 | Setting            | Value                                                                                          |
 | ------------------ | ---------------------------------------------------------------------------------------------- |
-| **WebFetch URL**   | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/frontend.md` |
+| **WebFetch URL**   | `https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/frontend.md` |
 | **Standards File** | frontend.md                                                                                    |
 
 **Example sections from frontend.md to check:**
@@ -152,7 +152,7 @@ See [shared-patterns/standards-compliance-detection.md](../skills/shared-pattern
 ## Standards Loading (MANDATORY)
 
 <fetch_required>
-https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/frontend.md
+https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/frontend.md
 </fetch_required>
 
 MUST WebFetch the URL above before any implementation work.
@@ -202,25 +202,25 @@ When `api-design.md` exists:
 
 ```bash
 # Check package.json for sindarian-ui
-grep -q "@lerianstudio/sindarian-ui" package.json && echo "sindarian-ui" || echo "fallback-only"
+grep -q "@V4-Company/sindarian-ui" package.json && echo "sindarian-ui" || echo "fallback-only"
 ```
 
 ### UI Library Strategy
 
-**`@lerianstudio/sindarian-ui@1.0.0-beta.34`** is the PRIMARY UI library. For components not available in sindarian-ui, use shadcn/ui + Radix as FALLBACK (placed in project `components/ui/`). Both coexist.
+**`@V4-Company/sindarian-ui@1.0.0-beta.34`** is the PRIMARY UI library. For components not available in sindarian-ui, use shadcn/ui + Radix as FALLBACK (placed in project `components/ui/`). Both coexist.
 
 ### Mode Indicators
 
 | Mode             | Detection Pattern                                      | Implementation Approach                              |
 | ---------------- | ------------------------------------------------------ | ---------------------------------------------------- |
-| **sindarian-ui** (primary) | `@lerianstudio/sindarian-ui` in dependencies  | Use sindarian-ui FormField, Input, Select components |
+| **sindarian-ui** (primary) | `@V4-Company/sindarian-ui` in dependencies  | Use sindarian-ui FormField, Input, Select components |
 | **shadcn/radix** (fallback) | Components not available in sindarian-ui      | Place in project `components/ui/` using shadcn/ui + Radix primitives |
 
 ### Mode-Specific Requirements
 
 | Aspect      | sindarian-ui (primary)                    | shadcn/radix (fallback)               |
 | ----------- | ----------------------------------------- | ------------------------------------- |
-| Form Fields | Import from `@lerianstudio/sindarian-ui`  | Import from `@/components/ui/form`    |
+| Form Fields | Import from `@V4-Company/sindarian-ui`  | Import from `@/components/ui/form`    |
 | Tooltips    | Use `FormTooltip` component               | Use Radix Tooltip with custom wrapper |
 | Page Layout | Use `PageRoot`, `PageView`                | Use custom layout components          |
 | Toast       | Use sindarian toast                       | Use sonner or shadcn toast            |
@@ -265,7 +265,7 @@ All sections are mandatory—see standards-coverage-table.md for the authoritati
 
 | Setting            | Value                                                                                          |
 | ------------------ | ---------------------------------------------------------------------------------------------- |
-| **WebFetch URL**   | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/frontend.md` |
+| **WebFetch URL**   | `https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/frontend.md` |
 | **Standards File** | frontend.md                                                                                    |
 | **Prompt**         | "Extract all frontend standards, patterns, and requirements"                                   |
 
@@ -1065,9 +1065,9 @@ See [shared-patterns/standards-coverage-table.md](../skills/shared-patterns/stan
 
 ### When Invoked from marsai:dev-refactor
 
-See [docs/AGENT_DESIGN.md](https://raw.githubusercontent.com/LerianStudio/marsai/main/docs/AGENT_DESIGN.md) for canonical output schema requirements.
+See [docs/AGENT_DESIGN.md](https://raw.githubusercontent.com/V4-Company/marsai/main/docs/AGENT_DESIGN.md) for canonical output schema requirements.
 
-When invoked from the `marsai:dev-refactor` skill with a codebase-report.md, you MUST produce a Standards Compliance section comparing the frontend implementation against Lerian/MarsAI Frontend Standards.
+When invoked from the `marsai:dev-refactor` skill with a codebase-report.md, you MUST produce a Standards Compliance section comparing the frontend implementation against V4-Company/MarsAI Frontend Standards.
 
 ### Sections to Check (MANDATORY)
 
@@ -1106,7 +1106,7 @@ When invoked from the `marsai:dev-refactor` skill with a codebase-report.md, you
 ```markdown
 ## Standards Compliance
 
-✅ **Fully Compliant** - Frontend follows all Lerian/MarsAI Frontend Standards.
+✅ **Fully Compliant** - Frontend follows all V4-Company/MarsAI Frontend Standards.
 
 No migration actions required.
 ```
@@ -1116,7 +1116,7 @@ No migration actions required.
 ```markdown
 ## Standards Compliance
 
-### Lerian/MarsAI Standards Comparison
+### V4-Company/MarsAI Standards Comparison
 
 | Category      | Current Pattern      | Expected Pattern      | Status           | File/Location          |
 | ------------- | -------------------- | --------------------- | ---------------- | ---------------------- |

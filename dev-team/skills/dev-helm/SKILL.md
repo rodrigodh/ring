@@ -1,12 +1,12 @@
 ---
 name: marsai:dev-helm
 description: |
-  Mandatory skill for creating and maintaining Helm charts following Lerian conventions.
+  Mandatory skill for creating and maintaining Helm charts following V4-Company conventions.
   Enforces standardized chart structure, values organization, template patterns,
   security defaults, and dependency management.
 
 trigger: |
-  - Creating a new Helm chart for any Lerian service
+  - Creating a new Helm chart for any V4-Company service
   - Modifying an existing Helm chart (adding components, dependencies, templates)
   - Reviewing a Helm chart PR for convention compliance
   - Migrating a docker-compose setup to Helm
@@ -14,7 +14,7 @@ trigger: |
 NOT_skip_when: |
   - "It's a simple chart, I don't need all that" → Every chart grows. Structure prevents debt.
   - "I'll add security later" → Security is foundational, not an afterthought.
-  - "The defaults are fine" → Lerian has specific conventions that MUST be followed.
+  - "The defaults are fine" → V4-Company has specific conventions that MUST be followed.
   - "I'll just copy another chart" → Copying without understanding introduces drift. Use this skill.
 
 skip_when: |
@@ -80,16 +80,16 @@ verification:
       description: "Template renders without errors"
       success_pattern: '^(apiVersion|-{3})'
   manual:
-    - "All values.yaml fields follow Lerian naming conventions"
+    - "All values.yaml fields follow V4-Company naming conventions"
     - "Secrets do not contain real credentials"
     - "Health check paths match application endpoints"
 ---
 
-# Helm Chart Creation & Maintenance (Lerian Conventions)
+# Helm Chart Creation & Maintenance (V4-Company Conventions)
 
 ## Overview
 
-This skill enforces Lerian's Helm chart conventions across all services. Every Helm chart MUST follow these patterns to ensure consistency, security, and operability across the platform.
+This skill enforces V4-Company's Helm chart conventions across all services. Every Helm chart MUST follow these patterns to ensure consistency, security, and operability across the platform.
 
 **Reference standards:** [`dev-team/docs/standards/helm/`](../../docs/standards/helm/index.md)
 **Executor agent:** `marsai:helm-engineer`
@@ -145,7 +145,7 @@ MUST create the standard directory structure. See [helm/conventions.md](../../do
 CHART NAME RULES:
 - Default: {service_name}-helm (e.g., reporter-helm, tracer-helm)
 - Exception: plugin-access-manager (no -helm suffix)
-- Exception: otel-collector-lerian (no -helm suffix)
+- Exception: otel-collector-v4-company (no -helm suffix)
 
 if service_name is NOT in exception list:
   → chart name = {service_name}-helm
@@ -166,7 +166,7 @@ MUST define helper functions per component. See [helm/templates.md](../../docs/s
 ## Step 4: Create values.yaml
 
 <cannot_skip>
-values.yaml MUST follow the exact Lerian structure.
+values.yaml MUST follow the exact V4-Company structure.
 </cannot_skip>
 
 See [helm/values.md](../../docs/standards/helm/values.md) for:
@@ -176,7 +176,7 @@ See [helm/values.md](../../docs/standards/helm/values.md) for:
 - Mandatory environment variable groups (app config, telemetry, health, auth, database)
 
 <block_condition>
-HARD GATE: MUST read the application's .env.example or config.go to extract ALL expected
+HARD GATE: MUST read the application's .env.example or config file to extract ALL expected
 environment variables. Do NOT guess. Missing env vars are the #1 cause of CrashLoopBackOff.
 </block_condition>
 
@@ -185,7 +185,7 @@ environment variables. Do NOT guess. Missing env vars are the #1 cause of CrashL
 ## Step 5: Dispatch Agent
 
 <dispatch_required agent="marsai:helm-engineer">
-Create/update Helm chart following Lerian conventions.
+Create/update Helm chart following V4-Company conventions.
 </dispatch_required>
 
 ```yaml
@@ -193,7 +193,7 @@ Task:
   subagent_type: "marsai:helm-engineer"
   description: "Create Helm chart for {service_name}"
   prompt: |
-    ⛔ MANDATORY: Create Helm chart following Lerian conventions.
+    ⛔ MANDATORY: Create Helm chart following V4-Company conventions.
 
     ## Context
     - **Service:** {service_name}
@@ -204,7 +204,7 @@ Task:
     ## Required Steps
     1. Read application .env.example and config struct
     2. Verify health check endpoints in application source
-    3. Create chart structure per Lerian conventions
+    3. Create chart structure per V4-Company conventions
     4. Map ALL env vars to configmap/secrets
     5. Validate with helm lint and helm template
 
@@ -317,7 +317,7 @@ See [shared-patterns/shared-pressure-resistance.md](../shared-patterns/shared-pr
 | Rationalization | Why It's WRONG | Required Action |
 |-----------------|----------------|-----------------|
 | "Health probes are the same for all services" | Each service has unique endpoints. Wrong paths = CrashLoopBackOff | **MUST read application source code** |
-| "We can use NodePort for testing" | Lerian convention: always ClusterIP. Ingress handles external access | **Set service.type: ClusterIP** |
+| "We can use NodePort for testing" | V4-Company convention: always ClusterIP. Ingress handles external access | **Set service.type: ClusterIP** |
 | "Secrets can use default values" | Default passwords in values.yaml are a security risk | **Use empty strings or placeholders** |
 | "One configmap for everything" | Sensitive data MUST be in Secrets, not ConfigMap | **Split per ConfigMap vs Secrets rule** |
 | "The chart works, so it's done" | Must validate against app env vars AND lint AND template render | **Run ALL validation steps** |

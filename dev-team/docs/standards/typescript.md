@@ -1388,7 +1388,7 @@ import { RequestDto } from "@v4-company/mars-api/core";
 export const CreateProjectSchema = z.object({
   name: z.string().min(1).max(255),
   description: z.string().optional(),
-  template: z.enum(["TYPESCRIPT", "GOLANG"]),
+  template: z.enum(["TYPESCRIPT", "NEXTJS"]),
 });
 
 export type CreateProjectDTO = z.infer<typeof CreateProjectSchema>;
@@ -1476,11 +1476,11 @@ export class ProjectResponseMapper implements ResponseMapper<ProjectParam, Proje
 
 ### Dual-Mode Architecture
 
-The BFF architecture supports two modes based on whether `@lerianstudio/sindarian-server` is available:
+The BFF architecture supports two modes based on whether `@V4-Company/sindarian-server` is available:
 
 | Mode | When to Use | Characteristics |
 |------|-------------|-----------------|
-| **With sindarian-server** | Project has `@lerianstudio/sindarian-server` dependency | Use decorators (@Controller, @Get, @injectable, @inject, @Module) |
+| **With sindarian-server** | Project has `@V4-Company/sindarian-server` dependency | Use decorators (@Controller, @Get, @injectable, @inject, @Module) |
 | **Without sindarian-server** | Standard Next.js project | Same architecture, manual DI container, no decorators |
 
 **IMPORTANT:** Both modes follow IDENTICAL architecture. The only difference is decorator usage.
@@ -1504,13 +1504,13 @@ The BFF architecture supports two modes based on whether `@lerianstudio/sindaria
       /controllers
         organization.controller.ts
       /dto
-        midaz-organization.dto.ts
+        external-organization.dto.ts
         organization.dto.ts
       /mappers
-        midaz-organization.mapper.ts
+        external-organization.mapper.ts
         organization.mapper.ts
       /services
-        midaz-http.service.ts    # External API client
+        external-http.service.ts    # External API client
     /repositories
       organization.repository.ts # Implementation
     /modules
@@ -1522,7 +1522,7 @@ The BFF architecture supports two modes based on whether `@lerianstudio/sindaria
 
 ```typescript
 // src/core/infrastructure/http/controllers/organization.controller.ts
-import { Controller, Get, Post, Body, Query } from '@lerianstudio/sindarian-server';
+import { Controller, Get, Post, Body, Query } from '@V4-Company/sindarian-server';
 
 @Controller('/organizations')
 export class OrganizationController {
@@ -1543,7 +1543,7 @@ export class OrganizationController {
 }
 
 // src/core/infrastructure/app.ts
-import { ServerFactory } from '@lerianstudio/sindarian-server';
+import { ServerFactory } from '@V4-Company/sindarian-server';
 import { AppModule } from './modules/app.module';
 
 export const app = await ServerFactory.create(AppModule);
@@ -1661,7 +1661,7 @@ export class GetOrganizationsUseCase {
 │  └── Domain Entities (Organization)                           │
 ├──────────────────────────────────────────────────────────────┤
 │  Infrastructure Layer (External Services)                     │
-│  └── External DTOs (MidazOrganizationDto)                    │
+│  └── External DTOs (ExternalOrganizationDto)                 │
 └──────────────────────────────────────────────────────────────┘
 ```
 
@@ -1707,8 +1707,8 @@ export interface OrganizationResponseDto {
     updated_at: string;
 }
 
-// src/core/infrastructure/http/dto/midaz-organization.dto.ts (External Service)
-export interface MidazOrganizationDto {
+// src/core/infrastructure/http/dto/external-organization.dto.ts (External Service)
+export interface ExternalOrganizationDto {
     organization_id: string;
     organization_name: string;
     org_status: string;
@@ -1745,9 +1745,9 @@ export class OrganizationMapper implements EntityMapper<Organization, Organizati
     }
 }
 
-// src/core/infrastructure/http/mappers/midaz-organization.mapper.ts
-export class MidazOrganizationMapper implements ExternalMapper<Organization, MidazOrganizationDto> {
-    toDomain(external: MidazOrganizationDto): Organization {
+// src/core/infrastructure/http/mappers/external-organization.mapper.ts
+export class ExternalOrganizationMapper implements ExternalMapper<Organization, ExternalOrganizationDto> {
+    toDomain(external: ExternalOrganizationDto): Organization {
         return {
             id: external.organization_id,
             name: external.organization_name,
@@ -1757,7 +1757,7 @@ export class MidazOrganizationMapper implements ExternalMapper<Organization, Mid
         };
     }
 
-    toExternal(entity: Organization): MidazOrganizationDto {
+    toExternal(entity: Organization): ExternalOrganizationDto {
         return {
             organization_id: entity.id,
             organization_name: entity.name,
@@ -1789,11 +1789,11 @@ Client Request
     ▼                                                     │
 [Domain Entity] ←─────────────────────────────────────────┤
     │                                                     │
-    │ MidazOrganizationMapper.toExternal()               │
+    │ ExternalOrganizationMapper.toExternal()             │
     ▼                                                     │
 [External DTO] → External Service                        │
     │                                                     │
-    │ MidazOrganizationMapper.toDomain()                 │
+    │ ExternalOrganizationMapper.toDomain()               │
     ▼                                                     │
 [Domain Entity] ──────────────────────────────────────────┤
     │                                                     │
@@ -1886,13 +1886,13 @@ export abstract class BaseHttpService {
 ### Implementation Example
 
 ```typescript
-// src/core/infrastructure/http/services/midaz-http.service.ts
+// src/core/infrastructure/http/services/external-http.service.ts
 import { injectable } from 'inversify';
 
 @injectable()
-export class MidazHttpService extends BaseHttpService {
+export class ExternalHttpService extends BaseHttpService {
     constructor() {
-        super(process.env.MIDAZ_API_URL!);
+        super(process.env.EXTERNAL_API_URL!);
     }
 
     protected createDefaults(): RequestInit {
@@ -1900,45 +1900,45 @@ export class MidazHttpService extends BaseHttpService {
             ...super.createDefaults(),
             headers: {
                 ...super.createDefaults().headers,
-                'Authorization': `Bearer ${process.env.MIDAZ_API_TOKEN}`,
+                'Authorization': `Bearer ${process.env.EXTERNAL_API_TOKEN}`,
             },
         };
     }
 
     protected onBeforeFetch(url: string, init: RequestInit): RequestInit {
         const modified = super.onBeforeFetch(url, init);
-        // Add Midaz-specific headers
+        // Add service-specific headers
         return {
             ...modified,
             headers: {
                 ...modified.headers,
-                'X-Midaz-Client': 'bff-service',
+                'X-Service-Client': 'bff-service',
             },
         };
     }
 
     protected async onAfterFetch<T>(response: Response): Promise<T> {
         // Log response metrics
-        console.log(`[Midaz] ${response.status} - ${response.url}`);
+        console.log(`[External] ${response.status} - ${response.url}`);
         return super.onAfterFetch<T>(response);
     }
 
     protected async catch(error: unknown): Promise<never> {
-        // Transform to Midaz-specific exception
+        // Transform to service-specific exception
         if (error instanceof Response) {
             const body = await error.json().catch(() => ({}));
-            throw new MidazApiException(body.message ?? 'Midaz API error', error.status, body);
+            throw new ExternalApiException(body.message ?? 'External API error', error.status, body);
         }
         return super.catch(error);
     }
 
     // Service-specific methods
-    async getOrganizations(limit: number): Promise<MidazOrganizationDto[]> {
-        return this.fetch<MidazOrganizationDto[]>(`/organizations?limit=${limit}`);
+    async getOrganizations(limit: number): Promise<ExternalOrganizationDto[]> {
+        return this.fetch<ExternalOrganizationDto[]>(`/organizations?limit=${limit}`);
     }
 
-    async createOrganization(data: CreateMidazOrganizationDto): Promise<MidazOrganizationDto> {
-        return this.fetch<MidazOrganizationDto>('/organizations', {
+    async createOrganization(data: CreateExternalOrganizationDto): Promise<ExternalOrganizationDto> {
+        return this.fetch<ExternalOrganizationDto>('/organizations', {
             method: 'POST',
             body: JSON.stringify(data),
         });
@@ -2191,9 +2191,9 @@ export class ConflictException extends ApiException {
 }
 
 // External service exception
-export class MidazApiException extends ApiException {
+export class ExternalApiException extends ApiException {
     constructor(message: string, statusCode: number, details?: Record<string, unknown>) {
-        super(message, statusCode, details, 'MIDAZ_API_ERROR');
+        super(message, statusCode, details, 'EXTERNAL_API_ERROR');
     }
 }
 ```

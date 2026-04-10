@@ -93,7 +93,7 @@ See [shared-patterns/standards-boundary-enforcement.md](standards-boundary-enfor
 | Rationalization | Why It's WRONG | Required Action |
 |-----------------|----------------|-----------------|
 | "Industry standard to have make proto" | Industry ≠ MarsAI standards. MarsAI defines requirements. | **Do not flag** |
-| "Most Go projects need gRPC" | Most ≠ this project. Standards define this project. | **Do not flag** |
+| "Most projects need X" | Most ≠ this project. Standards define this project. | **Do not flag** |
 | "It's a best practice to have X" | Best practices are IN the standards. If not there, not required. | **Do not flag** |
 | "This would improve the codebase" | Improvement suggestions ≠ compliance findings. | **Do not flag as non-compliant** |
 | "I've seen this in similar projects" | Similar ≠ this. Standards are project-specific. | **Do not flag** |

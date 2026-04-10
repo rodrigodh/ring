@@ -33,7 +33,7 @@ output_schema:
       required_when:
         invocation_context: "marsai:dev-refactor"
         prompt_contains: "**MODE: ANALYSIS only**"
-      description: "Comparison of codebase against Lerian/MarsAI standards. MANDATORY when invoked from marsai:dev-refactor skill. Optional otherwise."
+      description: "Comparison of codebase against V4-Company/MarsAI standards. MANDATORY when invoked from marsai:dev-refactor skill. Optional otherwise."
     - name: "Blockers"
       pattern: "^## Blockers"
       required: false
@@ -760,12 +760,12 @@ When ambiguity exists, present options with trade-offs:
 
 ```bash
 # Check package.json for sindarian-ui
-grep -q "@lerianstudio/sindarian-ui" package.json && echo "sindarian-ui" || echo "fallback-only"
+grep -q "@V4-Company/sindarian-ui" package.json && echo "sindarian-ui" || echo "fallback-only"
 ```
 
 | Mode             | Detection                                              | What to Specify in Handoff                                   |
 | ---------------- | ------------------------------------------------------ | ------------------------------------------------------------ |
-| **sindarian-ui** (primary) | `@lerianstudio/sindarian-ui` in dependencies  | Use sindarian-ui component names (FormField, PageRoot, etc.) |
+| **sindarian-ui** (primary) | `@V4-Company/sindarian-ui` in dependencies  | Use sindarian-ui component names (FormField, PageRoot, etc.) |
 | **shadcn/radix** (fallback) | Components not available in sindarian-ui      | Use shadcn/ui or Radix for missing components only           |
 
 **⛔ MANDATORY:** Include "UI Library Mode" row in handoff Overview section:
@@ -833,7 +833,7 @@ See [shared-patterns/standards-compliance-detection.md](../skills/shared-pattern
 
 | Setting            | Value                                                                                          |
 | ------------------ | ---------------------------------------------------------------------------------------------- |
-| **WebFetch URL**   | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/frontend.md` |
+| **WebFetch URL**   | `https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/frontend.md` |
 | **Standards File** | frontend.md                                                                                    |
 
 ### Sections to Check (MANDATORY)
@@ -871,7 +871,7 @@ See [shared-patterns/standards-compliance-detection.md](../skills/shared-pattern
 ## Standards Loading (MANDATORY)
 
 <fetch_required>
-https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/frontend.md
+https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/frontend.md
 </fetch_required>
 
 MUST WebFetch the URL above before any design work.
@@ -914,7 +914,7 @@ See standards-coverage-table.md for the authoritative list of sections to check.
 
 | Setting            | Value                                                                                          |
 | ------------------ | ---------------------------------------------------------------------------------------------- |
-| **WebFetch URL**   | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/frontend.md` |
+| **WebFetch URL**   | `https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/frontend.md` |
 | **Standards File** | frontend.md                                                                                    |
 | **Prompt**         | "Extract all frontend design standards, patterns, and requirements"                            |
 
@@ -1227,7 +1227,7 @@ If any condition is true, STOP immediately and ask user for clarification.
 
 ## Standards Compliance
 
-### Lerian/MarsAI Standards Comparison
+### V4-Company/MarsAI Standards Comparison
 
 | Category      | Current Pattern      | Expected Pattern          | Status           | File/Location   |
 | ------------- | -------------------- | ------------------------- | ---------------- | --------------- |
@@ -1271,7 +1271,6 @@ See [shared-patterns/standards-coverage-table.md](../skills/shared-patterns/stan
 
 - `frontend-bff-engineer-typescript` - BFF layer for frontend
 - `frontend-bff-engineer-typescript` - BFF layer implementation (API Routes)
-- `marsai:backend-engineer-golang` - Backend API development (Go)
 - `marsai:backend-engineer-typescript` - Backend API development (TypeScript)
 - `marsai:devops-engineer` - Docker/CI-CD configuration
 - `marsai:qa-analyst` - Testing strategy and QA automation

@@ -4,7 +4,7 @@ description: Generate beautiful, self-contained HTML pages that visually explain
 argument-hint: "[topic-or-description]"
 ---
 
-Generate a self-contained, Lerian-branded HTML page that visually explains a system, codebase, data set, or technical concept. Outputs styled diagrams, tables, architecture overviews, diff reviews, and more -- opened directly in the browser.
+Generate a self-contained, V4-Company-branded HTML page that visually explains a system, codebase, data set, or technical concept. Outputs styled diagrams, tables, architecture overviews, diff reviews, and more -- opened directly in the browser.
 
 ## Usage
 
@@ -43,8 +43,8 @@ Creates an interactive code diff page using `@pierre/diffs` with syntax highligh
 When you run this command:
 
 1. **Think** -- determines the audience, diagram type, and visual aesthetic (editorial, blueprint, neon dashboard, etc.)
-2. **Structure** -- reads the mandatory Lerian standard template (`standard.html`) and the diagram-specific reference template (architecture, data-table, mermaid-flowchart, or code-diff)
-3. **Style** -- applies the Lerian brand foundation (Inter font, sunglow accent, zinc neutrals) with diagram-specific customizations on top
+2. **Structure** -- reads the mandatory V4-Company standard template (`standard.html`) and the diagram-specific reference template (architecture, data-table, mermaid-flowchart, or code-diff)
+3. **Style** -- applies the V4-Company brand foundation (Inter font, sunglow accent, zinc neutrals) with diagram-specific customizations on top
 4. **Deliver** -- writes the self-contained HTML file to `~/.agent/diagrams/` and opens it in the browser
 
 Supported visualization types include: architecture overviews, flowcharts, sequence diagrams, ER/schema diagrams, state machines, mind maps, data tables, timelines, dashboards, and code diff reviews.

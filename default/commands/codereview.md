@@ -8,64 +8,19 @@ Dispatch all 7 specialized code reviewers in parallel, collect their reports, an
 
 ## Review Process
 
-### Step 0: Run Pre-Analysis Pipeline (MANDATORY)
-
-**MANDATORY:** Before dispatching reviewers, run the pre-analysis pipeline to generate static analysis context.
-
-```bash
-# ⚠️ SYNC NOTE: This Mithril install logic is also in default/skills/requesting-code-review/SKILL.md (Step 2.5.1).
-# If you change the install pattern or CLI flags, update both locations.
-# Check if mithril is available
-if ! command -v mithril &> /dev/null; then
-    echo "mithril not found. Installing via go install..."
-    if command -v go &> /dev/null; then
-        go install github.com/lerianstudio/mithril@latest
-        GOPATH_DIR="$(go env GOPATH)"
-        [[ -n "$GOPATH_DIR" ]] && export PATH="$PATH:$GOPATH_DIR/bin"
-    else
-        echo "WARNING: Go is required to install mithril."
-        echo "  Install Go from https://go.dev/dl/"
-        echo "DEGRADED MODE: Proceeding without pre-analysis"
-    fi
-fi
-
-# Run pre-analysis pipeline
-if command -v mithril &> /dev/null; then
-    BASE_REF=$(git merge-base HEAD main 2>/dev/null || echo "main")
-    if mithril --base="$BASE_REF" --head=HEAD --output=docs/codereview --verbose; then
-        echo "Pre-analysis pipeline completed successfully"
-    else
-        echo "WARNING: Pre-analysis pipeline failed"
-        echo "DEGRADED MODE: Proceeding without pre-analysis"
-    fi
-fi
-```
-
-**Output:** Creates 7 context files in `docs/codereview/`:
-- `context-code-reviewer.md`
-- `context-security-reviewer.md`
-- `context-business-logic-reviewer.md`
-- `context-test-reviewer.md`
-- `context-nil-safety-reviewer.md`
-- `context-consequences-reviewer.md`
-- `context-dead-code-reviewer.md`
-
-⚠️ **DEGRADED MODE:** If mithril is not available, display warning and continue. Reviewers will work without pre-analysis context.
-
----
-
-### Step 0.5: Review Slicing (Adaptive Cohesion-Based Grouping for Large PRs)
+### Step 0: Review Slicing (Adaptive Cohesion-Based Grouping for Large PRs)
 
 **See [shared-patterns/reviewer-slicing-strategy.md](../skills/shared-patterns/reviewer-slicing-strategy.md) for full rationale.**
 
-After Mithril completes, determine whether the PR should be sliced into thematic groups for focused review. The slicer evaluates semantic cohesion between changed files — files that belong to the same package, import each other, or modify related functions are grouped together rather than split apart. This reuses the same logic as `marsai:requesting-code-review` Step 2.7.
+Determine whether the PR should be sliced into thematic groups for focused review. The slicer evaluates semantic cohesion between changed files — files that belong to the same package, import each other, or modify related functions are grouped together rather than split apart. This reuses the same logic as `marsai:requesting-code-review` Step 2.7.
 
 ⚠️ **SYNC NOTE:** This enhanced input collection logic is shared with `default/skills/requesting-code-review/SKILL.md` (Step 2.7). If you change the inputs or collection approach, update both locations.
 
 **Collect slicer inputs:**
 
 ```bash
-# Reuse BASE_REF from Step 0 (already computed as git merge-base HEAD main)
+# Compute BASE_REF
+BASE_REF=$(git merge-base HEAD main 2>/dev/null || echo "main")
 
 # 1. FILE_LIST — flat list of changed file paths
 FILE_LIST=$(git diff --name-only "$BASE_REF" HEAD)
@@ -73,9 +28,9 @@ FILE_LIST=$(git diff --name-only "$BASE_REF" HEAD)
 # 2. DIFF_STATS — per-file insertion/deletion counts
 DIFF_STATS=$(git diff --stat "$BASE_REF" HEAD)
 
-# 3. PACKAGE_MAP — group changed files by Go package (directory) or TS module
+# 3. PACKAGE_MAP — group changed files by parent directory (package/module)
 #    Simple string operation: group file paths by their parent directory.
-#    Example: { "internal/ledger": ["handler.go", "service.go"], "cmd/api": ["main.go"] }
+#    Example: { "internal/ledger": ["handler.ts", "service.ts"], "cmd/api": ["main.ts"] }
 PACKAGE_MAP=$(git diff --name-only "$BASE_REF" HEAD | while read -r f; do
   dir=$(dirname "$f")
   base=$(basename "$f")
@@ -131,9 +86,6 @@ Task tool (marsai:review-slicer):
     ## Change Summary (modified functions/methods)
     [CHANGE_SUMMARY]
 
-    ## Mithril Context
-    [MITHRIL_CONTEXT — from docs/codereview/ if available]
-
     Evaluate cohesion signals and return structured JSON.
 ```
 
@@ -165,7 +117,6 @@ IF slicer agent fails:
 
 **If slicing IS active:** For EACH slice, dispatch all 7 reviewers with:
 - Scoped diff: `git diff [BASE_REF] HEAD -- [slice files...]`
-- Filtered Mithril context: only sections mentioning files in the slice
 - Add to each reviewer prompt: `"Review Scope: Slice '[name]' — [description]"`
 - After all slices complete, merge results and deduplicate per Step 3-S-Merge in `marsai:requesting-code-review` SKILL.md
 
@@ -175,7 +126,7 @@ Gather the required context first:
 - BASE_SHA: Base commit for comparison (if applicable)
 - HEAD_SHA: Head commit for comparison (if applicable)
 - DESCRIPTION: Additional context about the changes
-- LANGUAGES: Go, TypeScript, or both (for marsai:nil-safety-reviewer)
+- LANGUAGES: Language(s) detected in the codebase (for marsai:nil-safety-reviewer)
 
 Then dispatch all 7 reviewers:
 
@@ -214,7 +165,7 @@ Task tool #5 (marsai:nil-safety-reviewer):
   description: "Review nil/null pointer safety"
   prompt: |
     [Same parameters as above]
-    LANGUAGES: [Go|TypeScript|both]
+    LANGUAGES: [detected language(s)]
     Focus: Nil sources, propagation paths, missing guards.
 
 Task tool #6 (marsai:consequences-reviewer):
@@ -522,41 +473,6 @@ Signs that a reviewer produced incomplete output:
 6. **Provide clear action guidance** - Tell user exactly what to fix vs. document
 7. **Overall FAIL if any reviewer fails** - One failure means work needs fixes
 8. **Retry failed reviewers once** - Don't give up on first failure
-
----
-
-## Mithril Installation
-
-MarsAI's pre-analysis pipeline requires [Mithril](https://github.com/LerianStudio/mithril), an external code analysis tool.
-
-### Prerequisites
-
-- [Go 1.22+](https://go.dev/dl/)
-
-### Install via `go install`
-
-```bash
-go install github.com/lerianstudio/mithril@latest
-```
-
-Verify the installation:
-
-```bash
-mithril version
-mithril --help
-```
-
-If `mithril` is not in your PATH after installation, add `$(go env GOPATH)/bin` to your shell's `PATH`.
-
-## Security Model
-
-Mithril is installed via `go install`, which uses Go's [module proxy](https://proxy.golang.org/) and [checksum database](https://sum.golang.org/) for integrity verification. This provides:
-
-- **Transparency-log-based verification** of module contents
-- **Automatic checksum validation** against the Go checksum database
-- **Tamper detection** if module contents change after initial publication
-
-Do NOT set `GONOSUMCHECK` or `GONOSUMDB` environment variables, as these disable integrity verification.
 
 ---
 

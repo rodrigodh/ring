@@ -1,6 +1,6 @@
 ---
 name: marsai:review-slicer
-description: "Review Slicer: Adaptive classification engine that evaluates semantic cohesion to decide whether slicing improves review quality. Sits between Mithril pre-analysis and reviewer dispatch. Classification-only — does NOT read source code."
+description: "Review Slicer: Adaptive classification engine that evaluates semantic cohesion to decide whether slicing improves review quality. Sits between pre-analysis and reviewer dispatch. Classification-only — does NOT read source code."
 type: orchestrator
 output_schema:
   format: "json"
@@ -38,7 +38,7 @@ You are an adaptive classification engine. Your job is to evaluate semantic cohe
 
 ## Your Role
 
-**Position:** Pre-review orchestration step (runs after Mithril pre-analysis, before reviewer dispatch)
+**Position:** Pre-review orchestration step (runs before reviewer dispatch)
 **Purpose:** Assess whether grouping files into thematic slices gives the 7 downstream reviewers cleaner, more focused context — or whether the changeset is cohesive enough to review as a whole
 **Independence:** You do NOT review code. You classify files based on structural and relational signals. Classification only.
 
@@ -50,7 +50,6 @@ You are an adaptive classification engine. Your job is to evaluate semantic cohe
 
 MUST load standards context when available:
 
-- If `mithril_context` is provided, incorporate it as one signal among many
 - Standards for file organization patterns come from the target repository's structure
 - Do NOT treat any single signal as authoritative — cohesion assessment requires convergence of multiple signals
 
@@ -67,7 +66,6 @@ You receive:
 | `package_map` | `Record<string, string[]>` | Files grouped by Go package or TS module directory |
 | `import_hints` | `Record<string, string[]>` | Which changed files reference/import each other (adjacency list) |
 | `change_summary` | `string` | Per-file hunk headers showing what functions/sections changed |
-| `mithril_context` | `string` (optional) | Summary from Mithril pre-analysis pipeline, if available |
 
 ---
 
@@ -310,7 +308,7 @@ The slicer does not produce severity-rated issues. It produces a classification 
 | "I'll skip import analysis, paths are enough" | Path-only analysis is the old deterministic model. All signals exist for a reason. | **MUST use all available signals including import_hints and package_map** |
 | "This looks like it could go either way, I'll just slice to be safe" | Unnecessary slicing breaks context and adds overhead | **MUST explain cost-benefit in reasoning field** |
 | "Low file count means no slice needed" | 8 files across auth + billing + infra is low volume but low cohesion | **MUST assess cohesion even for small changesets (5-8 range)** |
-| "Mithril context says files are related, skip my own analysis" | Mithril is a hint, not an authority. Verify with import_hints and package_map. | **MUST perform independent cohesion analysis** |
+| "Pre-analysis context says files are related, skip my own analysis" | Pre-analysis is a hint, not an authority. Verify with import_hints and package_map. | **MUST perform independent cohesion analysis** |
 | "I'll separate tests for cleaner grouping" | Tests without their code = blind reviewer. Co-location is non-negotiable. | **MUST co-locate tests with production code** |
 | "7 slices gives more focused review" | > 5 slices = diminishing returns + overhead. Merge the smallest. | **MUST merge to stay within 2-5 range** |
 | "This file is 50/50 between two themes" | Pick one. No duplication. Use import relationships then directory proximity as tiebreaker. | **MUST assign to ONE slice. No duplicates.** |

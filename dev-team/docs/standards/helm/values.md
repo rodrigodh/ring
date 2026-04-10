@@ -1,4 +1,4 @@
-# Helm Values Structure (Lerian Standard)
+# Helm Values Structure (V4-Company Standard)
 
 ## ConfigMap vs Secrets Classification
 
@@ -12,7 +12,7 @@ CONFIGMAP (non-sensitive):
   ✅ OTEL_*, ENABLE_TELEMETRY, SWAGGER_*
   ✅ PLUGIN_AUTH_ADDRESS, PLUGIN_AUTH_ENABLED
   ✅ Feature flags, timeouts, pool sizes
-  ✅ Service URLs (MIDAZ_*, BTG_BASE_URL, etc.)
+  ✅ Service URLs (EXTERNAL_*, BTG_BASE_URL, etc.)
 
 SECRETS (sensitive):
   🔒 DB_PASSWORD, MONGO_PASSWORD, REDIS_PASSWORD
@@ -65,7 +65,7 @@ global:
   revisionHistoryLimit: 10
 
   image:
-    repository: ghcr.io/lerianstudio/{service_name}-{component}
+    repository: ghcr.io/V4-Company/{service_name}-{component}
     pullPolicy: IfNotPresent
     tag: "1.0.0"
   imagePullSecrets: []
@@ -202,7 +202,7 @@ VERIFY: Compare with application's .env.example or config struct to ensure
 ```
 
 <block_condition>
-HARD GATE: MUST read the application's .env.example or config.go to extract
+HARD GATE: MUST read the application's .env.example or config file to extract
 ALL expected environment variables. Do NOT guess. Missing env vars are the
 #1 cause of CrashLoopBackOff in production.
 </block_condition>

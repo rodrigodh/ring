@@ -1,10 +1,10 @@
 ---
 name: marsai:dev-cycle
 description: |
-  Main orchestrator for the 10-gate development cycle system. Loads tasks/subtasks
-  from PM team output and executes through implementation → devops → SRE → unit testing → fuzz testing → property testing → integration testing (write) → chaos testing (write) → review → validation
-  gates (Gates 0-9), with state persistence and metrics collection.
-  Gates 6-7 (integration/chaos) write and update test code per unit but only execute tests at end of cycle (deferred execution).
+  Main orchestrator for the 8-gate development cycle system. Loads tasks/subtasks
+  from PM team output and executes through implementation → devops → SRE → unit testing → integration testing (write) → chaos testing (write) → review → validation
+  gates (Gates 0-7), with state persistence and metrics collection.
+  Gates 4-5 (integration/chaos) write and update test code per unit but only execute tests at end of cycle (deferred execution).
   Multi-tenant dual-mode is implemented during Gate 0 and verified at Gate 0.5G (no separate post-cycle step).
 
 trigger: |
@@ -56,7 +56,7 @@ verification:
 **Before any gate execution, you MUST load MarsAI standards:**
 
 <fetch_required>
-https://raw.githubusercontent.com/LerianStudio/marsai/main/CLAUDE.md
+https://raw.githubusercontent.com/V4-Company/marsai/main/CLAUDE.md
 </fetch_required>
 
 Fetch URL above and extract: Agent Modification Verification requirements, Anti-Rationalization Tables requirements, and Critical Rules.
@@ -70,15 +70,15 @@ If any condition is true, STOP and report blocker. Cannot proceed without MarsAI
 
 ## Overview
 
-The development cycle orchestrator loads tasks/subtasks from PM team output (or manual task files) and executes through 11 gates (Gate 0–9, including 0.5 Delivery Verification) with **deferred execution** for infrastructure-dependent tests:
+The development cycle orchestrator loads tasks/subtasks from PM team output (or manual task files) and executes through 9 gates (Gate 0–7, including 0.5 Delivery Verification) with **deferred execution** for infrastructure-dependent tests:
 
-- **Gates 0-5, 8-9 (per unit):** Write code + run tests per task/subtask
-- **Gates 6-7 (per unit):** Write/update integration and chaos test code, verify compilation, but do **not execute** tests (no containers)
-- **Gates 6-7 (end of cycle):** Execute all integration and chaos tests once after all units complete
+- **Gates 0-3, 6-7 (per unit):** Write code + run tests per task/subtask
+- **Gates 4-5 (per unit):** Write/update integration and chaos test code, verify compilation, but do **not execute** tests (no containers)
+- **Gates 4-5 (end of cycle):** Execute all integration and chaos tests once after all units complete
 
 This keeps test code current with each feature while avoiding redundant container spin-ups during development.
 
-**MUST announce at start:** "I'm using the marsai:dev-cycle skill to orchestrate task execution through 11 gates (Gate 0–9, including 0.5 Delivery Verification). Gates 6-7 write tests per unit but execute at end of cycle."
+**MUST announce at start:** "I'm using the marsai:dev-cycle skill to orchestrate task execution through 9 gates (Gate 0–7, including 0.5 Delivery Verification). Gates 4-5 write tests per unit but execute at end of cycle."
 
 ## ⛔ CRITICAL: Specialized Agents Perform All Tasks
 
@@ -108,10 +108,10 @@ See [shared-patterns/shared-orchestrator-principle.md](../shared-patterns/shared
 ### What Orchestrator CANNOT Do (FORBIDDEN)
 
 <forbidden>
-- Read source code (`Read` on `*.go`, `*.ts`, `*.tsx`) - Agent reads code, not orchestrator
-- Write source code (`Write`/`Create` on `*.go`, `*.ts`) - Agent writes code, not orchestrator
-- Edit source code (`Edit` on `*.go`, `*.ts`, `*.tsx`) - Agent edits code, not orchestrator
-- Run tests (`Execute` with `go test`, `npm test`) - Agent runs tests in TDD cycle
+- Read source code (`Read` on `*.ts`, `*.tsx`) - Agent reads code, not orchestrator
+- Write source code (`Write`/`Create` on `*.ts`) - Agent writes code, not orchestrator
+- Edit source code (`Edit` on `*.ts`, `*.tsx`) - Agent edits code, not orchestrator
+- Run tests (`Execute` with `npm test`) - Agent runs tests in TDD cycle
 - Analyze code (Direct pattern analysis) - `marsai:codebase-explorer` analyzes
 - Make architectural decisions (Choosing patterns/libraries) - User decides, agent implements
 </forbidden>
@@ -126,7 +126,7 @@ Any of these actions by orchestrator = IMMEDIATE VIOLATION. Dispatch agent inste
 
 This is not negotiable:
 - 1-3 files of non-source content (markdown, json, yaml) → Orchestrator MAY edit directly
-- 1+ source code files (`*.go`, `*.ts`, `*.tsx`) → MUST dispatch agent
+- 1+ source code files (`*.ts`, `*.tsx`) → MUST dispatch agent
 - 4+ files of any type → MUST dispatch agent
 
 ### Orchestrator Workflow Order (MANDATORY)
@@ -164,12 +164,10 @@ This is not negotiable:
 - Gate 1: `Skill("marsai:dev-devops")` → then `Task(subagent_type="marsai:devops-engineer", ...)`
 - Gate 2: `Skill("marsai:dev-sre")` → then `Task(subagent_type="marsai:sre", ...)`
 - Gate 3: `Skill("marsai:dev-unit-testing")` → then `Task(subagent_type="marsai:qa-analyst", test_mode="unit", ...)`
-- Gate 4: `Skill("marsai:dev-fuzz-testing")` → then `Task(subagent_type="marsai:qa-analyst", test_mode="fuzz", ...)`
-- Gate 5: `Skill("marsai:dev-property-testing")` → then `Task(subagent_type="marsai:qa-analyst", test_mode="property", ...)`
-- Gate 6: `Skill("marsai:dev-integration-testing")` → per unit: write/update tests + compile check (no execution); end of cycle: execute
-- Gate 7: `Skill("marsai:dev-chaos-testing")` → per unit: write/update tests + compile check (no execution); end of cycle: execute
-- Gate 8: `Skill("marsai:requesting-code-review")` → then 5x `Task(...)` in parallel
-- Gate 9: `Skill("marsai:dev-validation")` → N/A (verification only)
+- Gate 4: `Skill("marsai:dev-integration-testing")` → per unit: write/update tests + compile check (no execution); end of cycle: execute
+- Gate 5: `Skill("marsai:dev-chaos-testing")` → per unit: write/update tests + compile check (no execution); end of cycle: execute
+- Gate 6: `Skill("marsai:requesting-code-review")` → then 5x `Task(...)` in parallel
+- Gate 7: `Skill("marsai:dev-validation")` → N/A (verification only)
 </cannot_skip>
 
 Between "WebFetch standards" and "Task(agent)" there MUST be "Skill(sub-skill)".
@@ -191,7 +189,7 @@ Between "WebFetch standards" and "Task(agent)" there MUST be "Skill(sub-skill)".
 
 ```yaml
 Task tool:
-  subagent_type: "marsai:backend-engineer-golang"
+  subagent_type: "marsai:backend-engineer-typescript"
   prompt: |
     **CUSTOM CONTEXT (from user):**
     {state.custom_prompt}
@@ -237,7 +235,7 @@ Task tool:
 | "It's just one small file" | File count doesn't determine agent need. Language does. | **DISPATCH specialist agent** |
 | "I already loaded the standards" | Loading standards ≠ permission to implement. Standards are for AGENTS. | **DISPATCH specialist agent** |
 | "Agent dispatch adds overhead" | Overhead ensures compliance. Skip = skip verification. | **DISPATCH specialist agent** |
-| "I can write Go/TypeScript" | Knowing language ≠ having MarsAI standards loaded. Agent has them. | **DISPATCH specialist agent** |
+| "I can write TypeScript" | Knowing language ≠ having MarsAI standards loaded. Agent has them. | **DISPATCH specialist agent** |
 | "Just a quick fix" | "Quick" is irrelevant. all source changes require specialist. | **DISPATCH specialist agent** |
 | "I'll read the file first to understand" | Reading source → temptation to edit. Agent reads for you. | **DISPATCH specialist agent** |
 | "Let me check if tests pass first" | Agent runs tests in TDD cycle. You don't run tests. | **DISPATCH specialist agent** |
@@ -247,7 +245,7 @@ Task tool:
 **If you catch yourself doing any of these, STOP IMMEDIATELY:**
 
 ```text
-🚨 RED FLAG: About to Read *.go or *.ts file
+🚨 RED FLAG: About to Read *.ts file
    → STOP. Dispatch agent instead.
 
 🚨 RED FLAG: About to Write/Create source code
@@ -256,7 +254,7 @@ Task tool:
 🚨 RED FLAG: About to Edit source code
    → STOP. Dispatch agent instead.
 
-🚨 RED FLAG: About to run "go test" or "npm test"
+🚨 RED FLAG: About to run "npm test"
    → STOP. Agent runs tests, not you.
 
 🚨 RED FLAG: Thinking "I'll just..."
@@ -297,10 +295,10 @@ You CANNOT proceed when blocked. Report and wait for resolution.
 ### Cannot Be Overridden
 
 <cannot_skip>
-- All 11 gates must execute (0→0.5→1→2→3→4→5→6→7→8→9) - Each gate catches different issues
-- All testing gates (3-7) are MANDATORY - Comprehensive test coverage ensures quality
-- Gates execute in order (0→0.5→1→2→3→4→5→6→7→8→9) - Dependencies exist between gates
-- Gate 8 requires all 7 reviewers - Different review perspectives are complementary
+- All 9 gates must execute (0→0.5→1→2→3→4→5→6→7) - Each gate catches different issues
+- All testing gates (3-5) are MANDATORY - Comprehensive test coverage ensures quality
+- Gates execute in order (0→0.5→1→2→3→4→5→6→7) - Dependencies exist between gates
+- Gate 6 requires all 7 reviewers - Different review perspectives are complementary
 - Coverage threshold ≥ 85% - Industry standard for quality code
 - PROJECT_RULES.md must exist - Cannot verify standards without target
 </cannot_skip>
@@ -322,7 +320,7 @@ Report all severities. Let user prioritize.
 
 ### Reviewer Verdicts Are Final
 
-**MEDIUM issues found in Gate 4 MUST be fixed. No exceptions.**
+**MEDIUM issues found in Gate 6 MUST be fixed. No exceptions.**
 
 | Request | Why It's WRONG | Required Action |
 |---------|----------------|-----------------|
@@ -402,33 +400,30 @@ Day 4: Production incident from Day 1 code
 | 1 | Dockerfile + docker-compose + .env.example | Missing any = FAIL |
 | 2 | Structured JSON logs with trace correlation | Partial structured logs = FAIL |
 | 3 | Unit test coverage ≥ 85% + all AC tested | 84% = FAIL |
-| 4 | Fuzz tests with seed corpus ≥ 5 entries | Missing corpus = FAIL |
-| 5 | Property-based tests for domain invariants | Missing property tests = FAIL |
-| 6 | Integration tests with testcontainers | No testcontainers = FAIL |
-| 7 | Chaos tests for failure scenarios | Missing chaos tests = FAIL |
-| 8 | **All 7 reviewers PASS** | 6/7 reviewers = FAIL |
-| 9 | Explicit "APPROVED" from user | "Looks good" = not approved |
+| 4 | Integration tests with testcontainers | No testcontainers = FAIL |
+| 5 | Chaos tests for failure scenarios | Missing chaos tests = FAIL |
+| 6 | **All 7 reviewers PASS** | 6/7 reviewers = FAIL |
+| 7 | Explicit "APPROVED" from user | "Looks good" = not approved |
 
-**CRITICAL for Gate 8:** Running 6 of 7 reviewers is not a partial pass - it's a FAIL. Re-run all 7 reviewers.
+**CRITICAL for Gate 6:** Running 6 of 7 reviewers is not a partial pass - it's a FAIL. Re-run all 7 reviewers.
 
 **Anti-Rationalization for Partial Gates:**
 
 | Rationalization | Why It's WRONG | Required Action |
 |-----------------|----------------|-----------------|
-| "6 of 7 reviewers passed" | Gate 8 requires all 7. 6/7 = 0/7. | **Re-run all 7 reviewers** |
+| "6 of 7 reviewers passed" | Gate 6 requires all 7. 6/7 = 0/7. | **Re-run all 7 reviewers** |
 | "Gate mostly complete" | Mostly ≠ complete. Binary: done or not done. | **Complete all components** |
 | "Can finish remaining in next cycle" | Gates don't carry over. Complete NOW. | **Finish current gate** |
 | "Core components done, optional can wait" | No component is optional within a gate. | **Complete all components** |
-| "Unit tests are enough, skip fuzz/property" | Each test type catches different bugs. All are MANDATORY. | **Execute all testing gates (3-7)** |
-| "No external dependencies, skip integration" | Integration testing is MANDATORY. Write tests per unit, execute at end of cycle. | **Write Gate 6 tests per unit, execute at end** |
+| "No external dependencies, skip integration" | Integration testing is MANDATORY. Write tests per unit, execute at end of cycle. | **Write Gate 4 tests per unit, execute at end** |
 
 ---
 
 ## Gate Order Enforcement (HARD GATE)
 
-**Gates MUST execute in order: 0 → 0.5 → 1 → 2 → 3 → 4 → 5 → 6(write) → 7(write) → 8 → 9. All 11 gates are MANDATORY.**
+**Gates MUST execute in order: 0 → 0.5 → 1 → 2 → 3 → 4(write) → 5(write) → 6 → 7. All 9 gates are MANDATORY.**
 
-**Deferred Execution Model for Gates 6-7:**
+**Deferred Execution Model for Gates 4-5:**
 - **Per unit:** Write/update test code + verify compilation (no container execution)
 - **End of cycle:** Execute all integration and chaos tests (containers spun up once), then verify multi-tenant dual-mode compliance (already implemented at Gate 0, verified at Gate 0.5G)
 
@@ -436,18 +431,16 @@ Day 4: Production incident from Day 1 code
 |-----------|----------------|-------------|
 | Skip Gate 1 (DevOps) | "No infra changes" | Code without container = works on my machine only |
 | Skip Gate 2 (SRE) | "Observability later" | Blind production = debugging nightmare |
-| Skip Gate 4 (Fuzz) | "Unit tests are enough" | Edge cases and crashes not discovered |
-| Skip Gate 5 (Property) | "Too complex" | Domain invariant violations not detected |
-| Skip Gate 6 (Integration) | "No external dependencies" | Internal integration bugs surface in production |
-| Skip Gate 7 (Chaos) | "Infra is reliable" | System fails under real-world conditions |
+| Skip Gate 4 (Integration) | "No external dependencies" | Internal integration bugs surface in production |
+| Skip Gate 5 (Chaos) | "Infra is reliable" | System fails under real-world conditions |
 | Reorder Gates | "Review before test" | Reviewing untested code wastes reviewer time |
 | Parallel Gates | "Run 3 and 4 together" | Dependencies exist. Order is intentional. |
 
-**All testing gates (3-7) are MANDATORY. No exceptions. No skip reasons.**
+**All testing gates (3-5) are MANDATORY. No exceptions. No skip reasons.**
 
 **Gates are not parallelizable across different gates. Sequential execution is MANDATORY.**
 
-## The 10 Gates
+## The 8 Gates
 
 | Gate | Skill | Purpose | Agent | Per Unit | Standards Module |
 |------|-------|---------|-------|----------|------------------|
@@ -455,16 +448,14 @@ Day 4: Production incident from Day 1 code
 | 1 | marsai:dev-devops | Infrastructure and deployment | marsai:devops-engineer | Write + Run | devops.md |
 | 2 | marsai:dev-sre | Observability (health, logging, tracing) | marsai:sre | Write + Run | sre.md |
 | 3 | marsai:dev-unit-testing | Unit tests for acceptance criteria | marsai:qa-analyst (test_mode: unit) | Write + Run | testing-unit.md |
-| 4 | marsai:dev-fuzz-testing | Fuzz tests for edge cases and crashes | marsai:qa-analyst (test_mode: fuzz) | Write + Run | testing-fuzz.md |
-| 5 | marsai:dev-property-testing | Property-based tests for domain invariants | marsai:qa-analyst (test_mode: property) | Write + Run | testing-property.md |
-| 6 | marsai:dev-integration-testing | Integration tests with testcontainers | marsai:qa-analyst (test_mode: integration) | **Write only** | testing-integration.md |
-| 7 | marsai:dev-chaos-testing | Chaos tests for failure scenarios | marsai:qa-analyst (test_mode: chaos) | **Write only** | testing-chaos.md |
-| 8 | marsai:requesting-code-review | Parallel code review (7 reviewers) | marsai:code-reviewer, marsai:business-logic-reviewer, marsai:security-reviewer, marsai:nil-safety-reviewer, marsai:test-reviewer, marsai:consequences-reviewer, marsai:dead-code-reviewer | Run | N/A |
-| 9 | marsai:dev-validation | Final acceptance validation | N/A (verification) | Run | N/A |
+| 4 | marsai:dev-integration-testing | Integration tests with testcontainers | marsai:qa-analyst (test_mode: integration) | **Write only** | testing-integration.md |
+| 5 | marsai:dev-chaos-testing | Chaos tests for failure scenarios | marsai:qa-analyst (test_mode: chaos) | **Write only** | testing-chaos.md |
+| 6 | marsai:requesting-code-review | Parallel code review (7 reviewers) | marsai:code-reviewer, marsai:business-logic-reviewer, marsai:security-reviewer, marsai:nil-safety-reviewer, marsai:test-reviewer, marsai:consequences-reviewer, marsai:dead-code-reviewer | Run | N/A |
+| 7 | marsai:dev-validation | Final acceptance validation | N/A (verification) | Run | N/A |
 
 **All gates are MANDATORY. No exceptions. No skip reasons.**
 
-**Gates 6-7 Deferred Execution:** Test code is written/updated per unit to stay current. Actual test execution (with containers) happens once at end of cycle.
+**Gates 4-5 Deferred Execution:** Test code is written/updated per unit to stay current. Actual test execution (with containers) happens once at end of cycle.
 
 ## Integrated PM → Dev Workflow
 
@@ -477,17 +468,17 @@ Day 4: Production incident from Day 1 code
 
 ## Execution Order
 
-**Core Principle:** Each execution unit passes through all 11 gates. Gates 6-7 write test code per unit but defer execution to end of cycle.
+**Core Principle:** Each execution unit passes through all 9 gates. Gates 4-5 write test code per unit but defer execution to end of cycle.
 
-**Per-Unit Flow:** Unit → Gate 0→0.5(delivery verify)→1→2→3→4→5→6(write)→7(write)→8→9 → 🔒 Unit Checkpoint → 🔒 Task Checkpoint → Next Unit
-**End-of-Cycle Flow:** All units done → Gate 6(execute)→7(execute) → **Multi-Tenant Adaptation** → Final Commit → Feedback
+**Per-Unit Flow:** Unit → Gate 0→0.5(delivery verify)→1→2→3→4(write)→5(write)→6→7 → 🔒 Unit Checkpoint → 🔒 Task Checkpoint → Next Unit
+**End-of-Cycle Flow:** All units done → Gate 4(execute)→5(execute) → **Multi-Tenant Verification** → Final Commit → Feedback
 
 | Scenario | Execution Unit | Gates Per Unit | End of Cycle |
 |----------|----------------|----------------|--------------|
-| Task without subtasks | Task itself | 11 gates (6-7 write only) | Gate 6-7 execute |
-| Task with subtasks | Each subtask | 11 gates per subtask (6-7 write only) | Gate 6-7 execute |
+| Task without subtasks | Task itself | 9 gates (4-5 write only) | Gate 4-5 execute |
+| Task with subtasks | Each subtask | 9 gates per subtask (4-5 write only) | Gate 4-5 execute |
 
-**Why deferred execution for Gates 6-7:**
+**Why deferred execution for Gates 4-5:**
 - Integration tests require testcontainers (slow to spin up/tear down)
 - Chaos tests require Toxiproxy infrastructure
 - Running containers per subtask is wasteful when subsequent subtasks modify the same code
@@ -499,7 +490,7 @@ Day 4: Production incident from Day 1 code
 
 | Option | When Commit Happens | Use Case |
 |--------|---------------------|----------|
-| **(a) Per subtask** | After each subtask passes Gate 9 | Fine-grained history, easy rollback per subtask |
+| **(a) Per subtask** | After each subtask passes Gate 7 | Fine-grained history, easy rollback per subtask |
 | **(b) Per task** | After all subtasks of a task complete | Logical grouping, one commit per feature chunk |
 | **(c) At the end** | After entire cycle completes | Single commit with all changes, clean history |
 
@@ -595,13 +586,13 @@ State is persisted to `{state_path}` (either `docs/marsai:dev-cycle/current-cycl
           "started_at": "...",
           "tdd_red": {
             "status": "pending|in_progress|completed",
-            "test_file": "path/to/test_file.go",
+            "test_file": "path/to/test_file.ts",
             "failure_output": "FAIL: TestFoo - expected X got nil",
             "completed_at": "ISO timestamp"
           },
           "tdd_green": {
             "status": "pending|in_progress|completed",
-            "implementation_file": "path/to/impl.go",
+            "implementation_file": "path/to/impl.ts",
             "test_pass_output": "PASS: TestFoo (0.003s)",
             "completed_at": "ISO timestamp"
           }
@@ -618,8 +609,6 @@ State is persisted to `{state_path}` (either `docs/marsai:dev-cycle/current-cycl
         "devops": {"status": "pending"},
         "sre": {"status": "pending"},
         "unit_testing": {"status": "pending"},
-        "fuzz_testing": {"status": "pending"},
-        "property_testing": {"status": "pending"},
         "integration_testing": {
           "status": "pending|in_progress|completed",
           "scenarios_tested": 0,
@@ -634,7 +623,7 @@ State is persisted to `{state_path}` (either `docs/marsai:dev-cycle/current-cycl
       "artifacts": {},
       "agent_outputs": {
         "implementation": {
-          "agent": "marsai:backend-engineer-golang",
+          "agent": "marsai:backend-engineer-typescript",
           "output": "## Summary\n...",
           "timestamp": "ISO timestamp",
           "duration_ms": 0,
@@ -694,40 +683,6 @@ State is persisted to `{state_path}` (either `docs/marsai:dev-cycle/current-cycl
           "standards_compliance": {
             "total_sections": 6,
             "compliant": 6,
-            "not_applicable": 0,
-            "non_compliant": 0,
-            "gaps": []
-          }
-        },
-        "fuzz_testing": {
-          "agent": "marsai:qa-analyst",
-          "test_mode": "fuzz",
-          "output": "## Summary\n...",
-          "verdict": "PASS",
-          "corpus_entries": 5,
-          "iterations": 1,
-          "timestamp": "ISO timestamp",
-          "duration_ms": 0,
-          "standards_compliance": {
-            "total_sections": 5,
-            "compliant": 5,
-            "not_applicable": 0,
-            "non_compliant": 0,
-            "gaps": []
-          }
-        },
-        "property_testing": {
-          "agent": "marsai:qa-analyst",
-          "test_mode": "property",
-          "output": "## Summary\n...",
-          "verdict": "PASS",
-          "properties_tested": 3,
-          "iterations": 1,
-          "timestamp": "ISO timestamp",
-          "duration_ms": 0,
-          "standards_compliance": {
-            "total_sections": 5,
-            "compliant": 5,
             "not_applicable": 0,
             "non_compliant": 0,
             "gaps": []
@@ -845,7 +800,7 @@ State is persisted to `{state_path}` (either `docs/marsai:dev-cycle/current-cycl
   "section": "Error Handling (MANDATORY)",
   "status": "❌",
   "reason": "Missing error wrapping with context",
-  "file": "internal/handler/user.go",
+  "file": "internal/handler/user.ts",
   "line": 45,
   "evidence": "return err // should wrap with additional context"
 }
@@ -856,12 +811,12 @@ State is persisted to `{state_path}` (either `docs/marsai:dev-cycle/current-cycl
 ```json
 {
   "test_name": "TestUserCreate_InvalidEmail",
-  "test_file": "internal/handler/user_test.go",
+  "test_file": "internal/handler/user.test.ts",
   "error_type": "assertion",
   "expected": "ErrInvalidEmail",
   "actual": "nil",
   "message": "Expected validation error for invalid email format",
-  "stack_trace": "user_test.go:42 → user.go:28"
+  "stack_trace": "user.test.ts:42 → user.ts:28"
 }
 ```
 
@@ -872,7 +827,7 @@ State is persisted to `{state_path}` (either `docs/marsai:dev-cycle/current-cycl
   "severity": "MEDIUM",
   "category": "error-handling",
   "description": "Error not wrapped with context before returning",
-  "file": "internal/handler/user.go",
+  "file": "internal/handler/user.ts",
   "line": 45,
   "suggestion": "Use fmt.Errorf(\"failed to create user: %w\", err)",
   "fixed": false,
@@ -886,8 +841,8 @@ State is persisted to `{state_path}` (either `docs/marsai:dev-cycle/current-cycl
 {
   "check": "docker_build",
   "status": "FAIL",
-  "error": "COPY failed: file not found in build context: go.sum",
-  "suggestion": "Ensure go.sum exists and is not in .dockerignore"
+  "error": "COPY failed: file not found in build context: package-lock.json",
+  "suggestion": "Ensure package-lock.json exists and is not in .dockerignore"
 }
 ```
 
@@ -897,7 +852,7 @@ State is persisted to `{state_path}` (either `docs/marsai:dev-cycle/current-cycl
 {
   "check": "structured_logging",
   "status": "FAIL",
-  "file": "internal/handler/user.go",
+  "file": "internal/handler/user.ts",
   "line": 32,
   "error": "Using fmt.Printf instead of structured logger",
   "suggestion": "Use logger.Info().Str(\"user_id\", id).Msg(\"user created\")"
@@ -914,11 +869,9 @@ State is persisted to `{state_path}` (either `docs/marsai:dev-cycle/current-cycl
 | Gate 1 (DevOps) | `standards_compliance` + `verification_errors[]` |
 | Gate 2 (SRE) | `standards_compliance` + `validation_errors[]` |
 | Gate 3 (Unit Testing) | `standards_compliance` + `failures[]` + `uncovered_criteria[]` |
-| Gate 4 (Fuzz Testing) | `standards_compliance` + `corpus_entries` |
-| Gate 5 (Property Testing) | `standards_compliance` + `properties_tested` |
-| Gate 6 (Integration Testing) | `standards_compliance` + `scenarios_tested` + `tests_passed` + `tests_failed` + `flaky_tests_detected` |
-| Gate 7 (Chaos Testing) | `standards_compliance` + `failure_scenarios_tested` + `recovery_verified` |
-| Gate 8 (Review) | `standards_compliance` per reviewer + `issues[]` per reviewer |
+| Gate 4 (Integration Testing) | `standards_compliance` + `scenarios_tested` + `tests_passed` + `tests_failed` + `flaky_tests_detected` |
+| Gate 5 (Chaos Testing) | `standards_compliance` + `failure_scenarios_tested` + `recovery_verified` |
+| Gate 6 (Review) | `standards_compliance` per reviewer + `issues[]` per reviewer |
 
 **All gates track `standards_compliance`:**
 - `total_sections`: Count from agent's standards file (via standards-coverage-table.md)
@@ -935,7 +888,7 @@ State is persisted to `{state_path}` (either `docs/marsai:dev-cycle/current-cycl
 
 ### After every Gate Transition
 
-You MUST execute these steps after completing any gate (0, 1, 2, 3, 4, or 5):
+You MUST execute these steps after completing any gate (0, 1, 2, 3, 4, 5, 6, or 7):
 
 ```yaml
 # Step 1: Update state object with gate results
@@ -966,14 +919,12 @@ Read tool:
 | Gate 1 (DevOps) | `devops.status`, `agent_outputs.devops` | ✅ YES |
 | Gate 2 (SRE) | `sre.status`, `agent_outputs.sre` | ✅ YES |
 | Gate 3 (Unit Testing) | `unit_testing.status`, `agent_outputs.unit_testing` | ✅ YES |
-| Gate 4 (Fuzz Testing) | `fuzz_testing.status`, `agent_outputs.fuzz_testing` | ✅ YES |
-| Gate 5 (Property Testing) | `property_testing.status`, `agent_outputs.property_testing` | ✅ YES |
-| Gate 6 (Integration Testing) | `integration_testing.status`, `agent_outputs.integration_testing` | ✅ YES |
-| Gate 7 (Chaos Testing) | `chaos_testing.status`, `agent_outputs.chaos_testing` | ✅ YES |
-| Gate 8 (Review) | `review.status`, `agent_outputs.review` | ✅ YES |
-| Gate 9 (Validation) | `validation.status` (execution unit only — do NOT touch task-level status here) | ✅ YES |
-| Step 11.1 (Unit Approval) | `status = "paused_for_approval"` | ✅ YES |
-| Step 11.2 (Task Approval) | `task.status = "completed"` in JSON **+ tasks.md Status → `✅ Done`** | ✅ YES |
+| Gate 4 (Integration Testing) | `integration_testing.status`, `agent_outputs.integration_testing` | ✅ YES |
+| Gate 5 (Chaos Testing) | `chaos_testing.status`, `agent_outputs.chaos_testing` | ✅ YES |
+| Gate 6 (Review) | `review.status`, `agent_outputs.review` | ✅ YES |
+| Gate 7 (Validation) | `validation.status` (execution unit only — do NOT touch task-level status here) | ✅ YES |
+| Step 9.1 (Unit Approval) | `status = "paused_for_approval"` | ✅ YES |
+| Step 9.2 (Task Approval) | `task.status = "completed"` in JSON **+ tasks.md Status → `✅ Done`** | ✅ YES |
 | HARD BLOCK (any gate) | `task.status = "failed"` in JSON **+ tasks.md Status → `❌ Failed`** | ✅ YES |
 
 **tasks.md Status update rules (apply at the three checkpoints above):**
@@ -989,7 +940,7 @@ Use Edit tool on state.source_file (tasks.md):
 - Find the row starting with `| {task_id} |` in the `## Summary` table
 - Before Gate 0: replace `⏸️ Pending` with `🔄 Doing`
   - If already `🔄 Doing` (resumed cycle) → skip, no change needed
-- Step 11.2 (all subtasks done, user approved): replace `🔄 Doing` with `✅ Done`
+- Step 9.2 (all subtasks done, user approved): replace `🔄 Doing` with `✅ Done`
 - HARD BLOCK (any gate, task abandoned): replace `🔄 Doing` with `❌ Failed`
   - If row shows `⏸️ Pending` (unexpected) → replace with target value anyway
 - If row not found or no Status column → log warning "Status update skipped: task {task_id} row not found in {source_file}" and continue, do not abort
@@ -1243,7 +1194,7 @@ Create tool:
     # Project Rules
     
     > MarsAI Standards apply automatically. This file documents only what MarsAI does not cover.
-    > For error handling, logging, testing, architecture, lib-commons → See MarsAI Standards (auto-loaded by agents)
+    > For error handling, logging, testing, architecture → See MarsAI Standards (auto-loaded by agents)
     > Generated from legacy project analysis.
     
     ## What MarsAI Standards Already Cover (DO not ADD HERE)
@@ -1254,7 +1205,6 @@ Create tool:
     - Testing patterns (table-driven tests, mocks)
     - Architecture patterns (Hexagonal, Clean Architecture)
     - Observability (OpenTelemetry, trace correlation)
-    - lib-commons usage and patterns
     - API directory structure
     
     ---
@@ -1466,21 +1416,18 @@ Create tool:
     > Generated from PM documents (PRD/TRD/Feature Map).
     >
     > MarsAI Standards URLs:
-    > - Go: https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang.md
-    > - TypeScript: https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/typescript.md
+    > - TypeScript: https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/typescript.md
     
     ## What MarsAI Standards Cover (DO not DUPLICATE HERE)
     
     The following are defined in MarsAI Standards and MUST not be duplicated in this file:
     - Error handling patterns (no panic, wrap errors)
-    - Logging standards (structured JSON via lib-commons)
+    - Logging standards (structured JSON)
     - Testing patterns (table-driven tests, mocks)
     - Architecture patterns (Hexagonal, Clean Architecture)
-    - Observability (OpenTelemetry via lib-commons)
-    - lib-commons / lib-common-js usage and patterns
-    - API directory structure (Lerian pattern)
-    - Database connections (PostgreSQL, MongoDB, Redis via lib-commons)
-    - Bootstrap pattern (config.go, service.go, server.go)
+    - Observability (OpenTelemetry)
+    - API directory structure (V4-Company pattern)
+    - Database connections (PostgreSQL, MongoDB, Redis)
     
     **Agents MUST WebFetch MarsAI Standards and output Standards Coverage Table.**
     
@@ -1696,9 +1643,9 @@ Task tool:
 
 | Status | Action |
 |--------|--------|
-| `paused_for_approval` | Re-present Step 11.1 checkpoint |
+| `paused_for_approval` | Re-present Step 9.1 checkpoint |
 | `paused_for_testing` | Ask if testing complete → continue or keep paused |
-| `paused_for_task_approval` | Re-present Step 11.2 checkpoint |
+| `paused_for_task_approval` | Re-present Step 9.2 checkpoint |
 | `paused_for_integration_testing` | Ask if integration testing complete |
 | `paused` (generic) | Ask user to confirm resume |
 | `in_progress` | Resume from current gate |
@@ -1731,14 +1678,6 @@ detected_dependencies = []
    - Grep tool: pattern "rabbitmq" in docker-compose* files → add "rabbitmq"
 
 2. Scan dependency manifests:
-   if language == "go":
-     - Grep tool: pattern "github.com/lib/pq" in go.mod → add "postgres"
-     - Grep tool: pattern "github.com/jackc/pgx" in go.mod → add "postgres"
-     - Grep tool: pattern "go.mongodb.org/mongo-driver" in go.mod → add "mongodb"
-     - Grep tool: pattern "github.com/redis/go-redis" in go.mod → add "redis"
-     - Grep tool: pattern "github.com/valkey-io/valkey-go" in go.mod → add "valkey"
-     - Grep tool: pattern "github.com/rabbitmq/amqp091-go" in go.mod → add "rabbitmq"
-
    if language == "typescript":
      - Grep tool: pattern "\"pg\"" in package.json → add "postgres"
      - Grep tool: pattern "@prisma/client" in package.json → add "postgres"
@@ -1754,49 +1693,17 @@ detected_dependencies = []
 4. Store: state.detected_dependencies = detected_dependencies
 5. Log: "Auto-detected external dependencies: [detected_dependencies]"
 
-### ⛔ MANDATORY: Multi-Tenant Detection & Compliance Audit
-
-<cannot_skip>
-MANDATORY: Multi-tenant dual-mode applies to all Go services (no exceptions). Gate 0 implements dual-mode from the start using lib-commons v4 resolvers. Gate 0.5G verifies compliance. This detection captures the CURRENT state of the codebase for context.
-
-See [multi-tenant.md](../../docs/standards/golang/multi-tenant.md) for the canonical model and [dev-delivery-verification](../dev-delivery-verification/SKILL.md) Step 3.5G for the verification checks.
-</cannot_skip>
+### Multi-Tenant Detection (Optional)
 
 ```text
-6. Detect existing multi-tenant code and audit compliance:
+6. Detect existing multi-tenant code (if applicable):
    multi_tenant_exists = false
-   multi_tenant_compliant = false
-
-   if language == "go":
-     // Phase 1: Detection
-     - Grep tool: pattern "MULTI_TENANT_ENABLED" in internal/ --include="*.go" → multi_tenant_exists = true
-     - Grep tool: pattern "tenant-manager" in go.mod → multi_tenant_exists = true
-     - Grep tool: pattern "TenantMiddleware\|WithPG\|WithMB" in internal/ --include="*.go" → multi_tenant_exists = true
-
-     // Phase 2: Compliance audit (only if multi_tenant_exists = true)
-     if multi_tenant_exists:
-       compliance_checks = {}
-       - Grep: "TENANT_MANAGER_ADDRESS\|TENANT_URL\|TENANT_MANAGER_URL" in internal/ → if match: compliance_checks.config = "NON-COMPLIANT"
-       - Grep: "tmmiddleware.NewTenantMiddleware" in internal/ → if no match: compliance_checks.middleware = "NON-COMPLIANT"
-       - Grep: "tmcore.GetPGContext\|tmcore.GetMBContext" in internal/ → if no match: compliance_checks.repositories = "NON-COMPLIANT"
-       - Grep: "WithCircuitBreaker" in internal/ → if no match: compliance_checks.circuit_breaker = "NON-COMPLIANT"
-       - Grep: "TestMultiTenant_BackwardCompatibility" in internal/ → if no match: compliance_checks.backward_compat = "NON-COMPLIANT"
-
-       if all checks pass: multi_tenant_compliant = true
-       else: multi_tenant_compliant = false
 
    if language == "typescript":
      - Grep tool: pattern "MULTI_TENANT_ENABLED" in src/ --include="*.ts" → multi_tenant_exists = true
      - Grep tool: pattern "tenant-manager" in package.json → multi_tenant_exists = true
-     // TypeScript compliance audit follows same pattern
 
    state.multi_tenant_exists = multi_tenant_exists
-   state.multi_tenant_compliant = multi_tenant_compliant
-
-   if multi_tenant_exists && multi_tenant_compliant:
-     Log: "Multi-tenant COMPLIANT — Gate 0 agent uses dual-mode resolvers, Gate 0.5G will verify"
-   elif multi_tenant_exists && !multi_tenant_compliant:
-     Log: "Multi-tenant DETECTED but NON-COMPLIANT — Gate 0 agent must fix, Gate 0.5G will verify"
    else:
      Log: "Multi-tenant NOT detected — Gate 0 agent will implement dual-mode, Gate 0.5G will verify"
 ```
@@ -1806,7 +1713,7 @@ See [multi-tenant.md](../../docs/standards/golang/multi-tenant.md) for the canon
 <auto_detect_reason>
 PM team task files often omit external_dependencies. If the codebase uses postgres, mongodb, valkey, or rabbitmq, these MUST be detected and passed to Gates 6 (integration) and 7 (chaos). Auto-detection at cycle level avoids redundant scans per gate.
 
-Multi-tenant state is detected here and passed to Gate 0 (implementation) and Gate 0.5G (verification). See [multi-tenant.md](../../docs/standards/golang/multi-tenant.md) for the canonical model and compliance criteria.
+Multi-tenant state is detected here and passed to Gate 0 (implementation) and Gate 0.5G (verification).
 </auto_detect_reason>
 
 ---
@@ -1833,19 +1740,6 @@ See [shared-patterns/shared-orchestrator-principle.md](../shared-patterns/shared
 **⛔ FORBIDDEN: Executing TDD-RED/GREEN logic directly from this step.**
 MUST invoke the marsai:dev-implementation skill via the Skill tool; it handles all TDD phases, agent selection, agent dispatch, standards verification, and fix iteration.
 
-### ⛔ Post-Generation Panic Check (MANDATORY)
-
-After marsai:dev-implementation completes, verify generated code:
-
-| Check | Command | Expected | If Found |
-|-------|---------|----------|----------|
-| No panic() | `grep -rn "panic(" --include="*.go" --exclude="*_test.go"` | 0 results | Return to Gate 0 with fix instructions |
-| No log.Fatal() | `grep -rn "log.Fatal" --include="*.go"` | 0 results | Return to Gate 0 with fix instructions |
-| No Must* helpers | `grep -rn "Must[A-Z]" --include="*.go" \| grep -v "regexp\.MustCompile"` | 0 results | Return to Gate 0 with fix instructions |
-| No os.Exit() | `grep -rn "os.Exit" --include="*.go" --exclude="main.go"` | 0 results | Return to Gate 0 with fix instructions |
-
-**If any check fails: DO NOT proceed to Gate 0.5. Return to Gate 0 with specific fix instructions.**
-
 ### ⛔ File Size Enforcement (MANDATORY — All Gates)
 
 See [shared-patterns/file-size-enforcement.md](../shared-patterns/file-size-enforcement.md) for thresholds, verification commands, split strategies, and agent instructions.
@@ -1854,7 +1748,7 @@ See [shared-patterns/file-size-enforcement.md](../shared-patterns/file-size-enfo
 
 - **Gate 0:** Implementation agent receives file-size instructions; orchestrator runs verification command after agent completes and loops back if any file > 300 lines.
 - **Gate 0.5:** Delivery verification skill runs 7 checks: (A) file-size, (B) license headers, (C) linting, (D) migration safety, (E) vulnerability scanning, (F) API backward compatibility, (G) multi-tenant dual-mode. Any FAIL → return to Gate 0 with specific fix instructions.
-- **Gate 8:** Code reviewers MUST flag any file > 300 lines as a MEDIUM+ issue (blocking).
+- **Gate 6:** Code reviewers MUST flag any file > 300 lines as a MEDIUM+ issue (blocking).
 
 ### Step 2.1: Prepare Input for marsai:dev-implementation Skill
 
@@ -1867,7 +1761,7 @@ implementation_input = {
   requirements: state.current_unit.acceptance_criteria,
 
   // REQUIRED - detected from project
-  language: state.current_unit.language,  // "go" | "typescript" | "python"
+  language: state.current_unit.language,  // "typescript" | "python"
   service_type: state.current_unit.service_type,  // "api" | "worker" | "batch" | "cli" | "frontend" | "bff"
 
   // OPTIONAL - additional context
@@ -1894,7 +1788,7 @@ implementation_input = {
      project_rules_path: implementation_input.project_rules_path
 
    The skill handles:
-   - Selecting appropriate agent (Go/TS/Frontend based on language)
+   - Selecting appropriate agent (TS/Frontend based on language)
    - TDD-RED phase (writing failing test, capturing failure output)
    - TDD-GREEN phase (implementing code to pass test)
    - Standards compliance verification (iteration loop, max 3 attempts)
@@ -2089,7 +1983,7 @@ devops_input = {
   unit_id: state.current_unit.id,
   
   // REQUIRED - from Gate 0 context
-  language: state.current_unit.language,  // "go" | "typescript" | "python"
+  language: state.current_unit.language,  // "typescript" | "python"
   service_type: state.current_unit.service_type,  // "api" | "worker" | "batch" | "cli"
   implementation_files: agent_outputs.implementation.files_changed,  // list of files from Gate 0
   
@@ -2229,9 +2123,9 @@ sre_input = {
   unit_id: state.current_unit.id,
   
   // REQUIRED - from Gate 0 context
-  language: state.current_unit.language,  // "go" | "typescript" | "python"
+  language: state.current_unit.language,  // "typescript" | "python"
   service_type: state.current_unit.service_type,  // "api" | "worker" | "batch" | "cli"
-  implementation_agent: agent_outputs.implementation.agent,  // e.g., "marsai:backend-engineer-golang"
+  implementation_agent: agent_outputs.implementation.agent,  // e.g., "marsai:backend-engineer-typescript"
   implementation_files: agent_outputs.implementation.files_changed,  // list of files from Gate 0
   
   // OPTIONAL - additional context
@@ -2344,7 +2238,7 @@ testing_input = {
   unit_id: state.current_unit.id,
   acceptance_criteria: state.current_unit.acceptance_criteria,  // list of ACs to test
   implementation_files: agent_outputs.implementation.files_changed,
-  language: state.current_unit.language,  // "go" | "typescript" | "python"
+  language: state.current_unit.language,  // "typescript" | "python"
   
   // OPTIONAL - additional context
   coverage_threshold: 85,  // MarsAI minimum, PROJECT_RULES.md can raise
@@ -2427,7 +2321,7 @@ testing_input = {
    failures: [
      {
        "test_name": "TestUserCreate_InvalidEmail",
-       "test_file": "internal/handler/user_test.go",
+       "test_file": "internal/handler/user.test.ts",
        "error_type": "assertion|panic|timeout|compilation",
        "expected": "[expected value]",
        "actual": "[actual value]",
@@ -2453,7 +2347,7 @@ testing_input = {
    - gate_progress.testing.status = "completed"
    - gate_progress.testing.coverage = [coverage_actual]
 
-7. Proceed to Gate 4 (Fuzz Testing)
+7. Proceed to Gate 4 (Integration Testing)
 ```
 
 ### Gate 3 Thresholds
@@ -2470,147 +2364,15 @@ testing_input = {
 | "Skip testing, deadline" | "Testing is MANDATORY. marsai:dev-unit-testing skill handles iterations." |
 | "Manual testing covers it" | "Gate 3 requires executable unit tests. Invoking marsai:dev-unit-testing now." |
 
-## Step 6: Gate 4 - Fuzz Testing (Per Execution Unit)
-
-**REQUIRED SUB-SKILL:** Use `marsai:dev-fuzz-testing`
-
-**MANDATORY GATE:** All code paths MUST have fuzz tests to discover edge cases and crashes.
-
-### Step 6.1: Prepare Input for marsai:dev-fuzz-testing Skill
-
-```text
-Gather from previous gates:
-
-fuzz_testing_input = {
-  // REQUIRED - from current execution unit
-  unit_id: state.current_unit.id,
-  implementation_files: agent_outputs.implementation.files_changed,
-  language: state.current_unit.language,  // "go" | "typescript"
-
-  // OPTIONAL - additional context
-  gate3_handoff: agent_outputs.unit_testing  // full Gate 3 output
-}
-```
-
-### Step 6.2: Invoke marsai:dev-fuzz-testing Skill
-
-```text
-1. Record gate start timestamp
-
-2. Invoke marsai:dev-fuzz-testing skill with structured input:
-
-   Skill("marsai:dev-fuzz-testing") with input:
-     unit_id: fuzz_testing_input.unit_id
-     implementation_files: fuzz_testing_input.implementation_files
-     language: fuzz_testing_input.language
-     gate3_handoff: fuzz_testing_input.gate3_handoff
-
-   The skill handles:
-   - Dispatching marsai:qa-analyst agent (test_mode: fuzz)
-   - Fuzz function creation (FuzzXxx naming)
-   - Seed corpus generation (minimum 5 entries)
-   - f.Add() pattern validation
-   - Dispatching fixes if crashes found
-   - Re-validation loop (max 3 iterations)
-
-3. Parse skill output for results:
-
-   if skill output contains "Status: PASS":
-     → Gate 4 PASSED. Proceed to Gate 5.
-
-   if skill output contains "Status: FAIL":
-     → Gate 4 BLOCKED.
-
-4. **MANDATORY: ⛔ Save state to file — Write tool → [state.state_path]**
-```
-
-### Step 6.3: Gate 4 Complete
-
-```text
-5. Update state:
-   - gate_progress.fuzz_testing.status = "completed"
-   - gate_progress.fuzz_testing.corpus_entries = [count]
-
-6. Proceed to Gate 5 (Property Testing)
-```
-
----
-
-## Step 7: Gate 5 - Property-Based Testing (Per Execution Unit)
-
-**REQUIRED SUB-SKILL:** Use `marsai:dev-property-testing`
-
-**MANDATORY GATE:** Domain invariants MUST be verified with property-based tests.
-
-### Step 7.1: Prepare Input for marsai:dev-property-testing Skill
-
-```text
-Gather from previous gates:
-
-property_testing_input = {
-  // REQUIRED - from current execution unit
-  unit_id: state.current_unit.id,
-  implementation_files: agent_outputs.implementation.files_changed,
-  language: state.current_unit.language,
-
-  // Domain invariants from requirements
-  domain_invariants: state.current_unit.domain_invariants || []
-}
-```
-
-### Step 7.2: Invoke marsai:dev-property-testing Skill
-
-```text
-1. Record gate start timestamp
-
-2. Invoke marsai:dev-property-testing skill with structured input:
-
-   Skill("marsai:dev-property-testing") with input:
-     unit_id: property_testing_input.unit_id
-     implementation_files: property_testing_input.implementation_files
-     language: property_testing_input.language
-     domain_invariants: property_testing_input.domain_invariants
-
-   The skill handles:
-   - Dispatching marsai:qa-analyst agent (test_mode: property)
-   - Property function creation (TestProperty_* naming)
-   - quick.Check pattern validation
-   - Invariant verification
-   - Dispatching fixes if properties fail
-   - Re-validation loop (max 3 iterations)
-
-3. Parse skill output for results:
-
-   if skill output contains "Status: PASS":
-     → Gate 5 PASSED. Proceed to Gate 6.
-
-   if skill output contains "Status: FAIL":
-     → Gate 5 BLOCKED.
-
-4. **MANDATORY: ⛔ Save state to file — Write tool → [state.state_path]**
-```
-
-### Step 7.3: Gate 5 Complete
-
-```text
-5. Update state:
-   - gate_progress.property_testing.status = "completed"
-   - gate_progress.property_testing.properties_tested = [count]
-
-6. Proceed to Gate 6 (Integration Testing)
-```
-
----
-
-## Step 8: Gate 6 - Integration Testing (Per Execution Unit — WRITE ONLY)
+## Step 6: Gate 4 - Integration Testing (Per Execution Unit — WRITE ONLY)
 
 **REQUIRED SUB-SKILL:** Use `marsai:dev-integration-testing`
 
 **MANDATORY GATE:** All code MUST have integration tests using testcontainers.
 
-**⛔ DEFERRED EXECUTION:** Per unit, this gate writes/updates integration test code and verifies compilation. Tests are NOT executed here (no containers). Actual execution happens at end of cycle (Step 12.1).
+**⛔ DEFERRED EXECUTION:** Per unit, this gate writes/updates integration test code and verifies compilation. Tests are NOT executed here (no containers). Actual execution happens at end of cycle (Step 10.1).
 
-### Step 8.1: Prepare Input for marsai:dev-integration-testing Skill
+### Step 6.1: Prepare Input for marsai:dev-integration-testing Skill
 
 ```text
 Gather from previous gates:
@@ -2624,7 +2386,7 @@ integration_testing_input = {
   mode: "write_only",  // CRITICAL: write tests, verify compilation, do NOT execute
 
   // OPTIONAL - additional context
-  gate5_handoff: agent_outputs.property_testing,
+  gate3_handoff: agent_outputs.unit_testing,
   implementation_files: agent_outputs.implementation.files_changed
 }
 
@@ -2632,7 +2394,7 @@ integration_testing_input = {
 // from Step 1.5 (cycle-level auto-detection) when the unit doesn't define them.
 ```
 
-### Step 8.2: Invoke marsai:dev-integration-testing Skill (Write Mode)
+### Step 6.2: Invoke marsai:dev-integration-testing Skill (Write Mode)
 
 ```text
 1. Record gate start timestamp
@@ -2645,14 +2407,14 @@ integration_testing_input = {
      external_dependencies: integration_testing_input.external_dependencies
      language: integration_testing_input.language
      mode: "write_only"
-     gate5_handoff: integration_testing_input.gate5_handoff
+     gate3_handoff: integration_testing_input.gate3_handoff
      implementation_files: integration_testing_input.implementation_files
 
    In write_only mode, the skill handles:
    - Dispatching marsai:qa-analyst agent (test_mode: integration)
    - Writing/updating integration test code for current unit's changes
-   - Verifying test compilation (go build ./... or tsc --noEmit)
-   - Verifying build tags (//go:build integration) present
+   - Verifying test compilation (tsc --noEmit)
+   - Verifying test setup is correct
    - Verifying testcontainers imports present
    - NOT spinning up containers or executing tests
 
@@ -2664,15 +2426,15 @@ integration_testing_input = {
    - "## Standards Compliance" → build tags, naming, testcontainers
 
    if compilation PASS and standards met:
-     → Gate 6 (write) PASSED. Proceed to Step 8.3.
+     → Gate 4 (write) PASSED. Proceed to Step 6.3.
 
    if compilation FAIL:
-     → Gate 6 BLOCKED. Fix compilation errors before proceeding.
+     → Gate 4 BLOCKED. Fix compilation errors before proceeding.
 
 4. **MANDATORY: ⛔ Save state to file — Write tool → [state.state_path]**
 ```
 
-### Step 8.3: Gate 6 (Write) Complete
+### Step 6.3: Gate 4 (Write) Complete
 
 ```text
 5. Update state:
@@ -2681,10 +2443,10 @@ integration_testing_input = {
    - gate_progress.integration_testing.test_files = [list of test files written/updated]
    - gate_progress.integration_testing.compilation_passed = true
 
-6. Proceed to Gate 7 (Chaos Testing — Write Only)
+6. Proceed to Gate 5 (Chaos Testing — Write Only)
 ```
 
-### Gate 6 Pressure Resistance
+### Gate 4 Pressure Resistance
 
 | User Says | Your Response |
 |-----------|---------------|
@@ -2695,15 +2457,15 @@ integration_testing_input = {
 
 ---
 
-## Step 9: Gate 7 - Chaos Testing (Per Execution Unit — WRITE ONLY)
+## Step 7: Gate 5 - Chaos Testing (Per Execution Unit — WRITE ONLY)
 
 **REQUIRED SUB-SKILL:** Use `marsai:dev-chaos-testing`
 
 **MANDATORY GATE:** All external dependencies MUST have chaos tests for failure scenarios.
 
-**⛔ DEFERRED EXECUTION:** Per unit, this gate writes/updates chaos test code and verifies compilation. Tests are NOT executed here (no Toxiproxy). Actual execution happens at end of cycle (Step 12.1).
+**⛔ DEFERRED EXECUTION:** Per unit, this gate writes/updates chaos test code and verifies compilation. Tests are NOT executed here (no Toxiproxy). Actual execution happens at end of cycle (Step 10.1).
 
-### Step 9.1: Prepare Input for marsai:dev-chaos-testing Skill
+### Step 7.1: Prepare Input for marsai:dev-chaos-testing Skill
 
 ```text
 Gather from previous gates:
@@ -2716,14 +2478,14 @@ chaos_testing_input = {
   mode: "write_only",  // CRITICAL: write tests, verify compilation, do NOT execute
 
   // OPTIONAL - additional context
-  gate6_handoff: agent_outputs.integration_testing
+  gate4_handoff: agent_outputs.integration_testing
 }
 
 // NOTE: external_dependencies falls back to state.detected_dependencies
 // from Step 1.5 (cycle-level auto-detection) when the unit doesn't define them.
 ```
 
-### Step 9.2: Invoke marsai:dev-chaos-testing Skill (Write Mode)
+### Step 7.2: Invoke marsai:dev-chaos-testing Skill (Write Mode)
 
 ```text
 1. Record gate start timestamp
@@ -2735,7 +2497,7 @@ chaos_testing_input = {
      external_dependencies: chaos_testing_input.external_dependencies
      language: chaos_testing_input.language
      mode: "write_only"
-     gate6_handoff: chaos_testing_input.gate6_handoff
+     gate4_handoff: chaos_testing_input.gate4_handoff
 
    In write_only mode, the skill handles:
    - Dispatching marsai:qa-analyst agent (test_mode: chaos)
@@ -2748,15 +2510,15 @@ chaos_testing_input = {
 3. Parse skill output for results:
 
    if compilation PASS and standards met:
-     → Gate 7 (write) PASSED. Proceed to Gate 8.
+     → Gate 5 (write) PASSED. Proceed to Gate 6.
 
    if compilation FAIL:
-     → Gate 7 BLOCKED. Fix compilation errors before proceeding.
+     → Gate 5 BLOCKED. Fix compilation errors before proceeding.
 
 4. **MANDATORY: ⛔ Save state to file — Write tool → [state.state_path]**
 ```
 
-### Step 9.3: Gate 7 (Write) Complete
+### Step 7.3: Gate 5 (Write) Complete
 
 ```text
 5. Update state:
@@ -2765,10 +2527,10 @@ chaos_testing_input = {
    - gate_progress.chaos_testing.test_files = [list of test files written/updated]
    - gate_progress.chaos_testing.compilation_passed = true
 
-6. Proceed to Gate 8 (Review)
+6. Proceed to Gate 6 (Review)
 ```
 
-### Gate 7 Pressure Resistance
+### Gate 5 Pressure Resistance
 
 | User Says | Your Response |
 |-----------|---------------|
@@ -2779,11 +2541,11 @@ chaos_testing_input = {
 
 ---
 
-## Step 10: Gate 8 - Review (Per Execution Unit)
+## Step 8: Gate 6 - Review (Per Execution Unit)
 
 **REQUIRED SUB-SKILL:** Use `marsai:requesting-code-review`
 
-### Step 10.1: Prepare Input for marsai:requesting-code-review Skill
+### Step 8.1: Prepare Input for marsai:requesting-code-review Skill
 
 ```text
 Gather from previous gates:
@@ -2802,7 +2564,7 @@ review_input = {
 }
 ```
 
-### Step 10.2: Invoke marsai:requesting-code-review Skill
+### Step 8.2: Invoke marsai:requesting-code-review Skill
 
 ```text
 1. Record gate start timestamp
@@ -2835,11 +2597,11 @@ review_input = {
    - "## Reviewer Verdicts" → all 7 reviewers
    - "## Handoff to Next Gate" → ready_for_validation: YES/NO
 
-   if skill output contains "Status: PASS" and "Ready for Gate 9: YES":
-     → Gate 8 PASSED. Proceed to Step 10.3.
+   if skill output contains "Status: PASS" and "Ready for Gate 7: YES":
+     → Gate 6 PASSED. Proceed to Step 8.3.
 
-   if skill output contains "Status: FAIL" or "Ready for Gate 9: NO":
-     → Gate 8 BLOCKED.
+   if skill output contains "Status: FAIL" or "Ready for Gate 7: NO":
+     → Gate 6 BLOCKED.
      → Skill already dispatched fixes to implementation agent
       → Skill already re-ran all 7 reviewers
      → If "ESCALATION" in output: STOP and report to user
@@ -2847,7 +2609,7 @@ review_input = {
 4. **MANDATORY: ⛔ Save state to file — Write tool → [state.state_path]**
 ```
 
-### Step 10.3: Gate 8 Complete
+### Step 8.3: Gate 6 Complete
 
 ```text
 5. When marsai:requesting-code-review skill returns PASS:
@@ -2900,7 +2662,7 @@ review_input = {
        "severity": "CRITICAL|HIGH|MEDIUM|LOW|COSMETIC",
        "category": "error-handling|security|performance|maintainability|business-logic|...",
        "description": "[detailed description of the issue]",
-       "file": "internal/handler/user.go",
+       "file": "internal/handler/user.ts",
        "line": 45,
        "code_snippet": "return err",
        "suggestion": "Use fmt.Errorf(\"failed to create user: %w\", err)",
@@ -2920,35 +2682,35 @@ review_input = {
    - gate_progress.review.status = "completed"
    - gate_progress.review.reviewers_passed = "5/5"
 
-7. Proceed to Gate 9
+7. Proceed to Gate 7
 ```
 
-### Gate 8 Anti-Rationalization Table
+### Gate 6 Anti-Rationalization Table
 
 | Rationalization | Why It's WRONG | Required Action |
 |-----------------|----------------|-----------------|
 | "Only 1 MEDIUM issue, can proceed" | MEDIUM = MUST FIX. Quantity is irrelevant. | **Fix the issue, re-run all 7 reviewers** |
 | "Issue is cosmetic, not really MEDIUM" | Reviewer decided severity. Accept their judgment. | **Fix the issue, re-run all 7 reviewers** |
-| "Will fix in next sprint" | Deferred fixes = technical debt = production bugs. | **Fix NOW before Gate 9** |
+| "Will fix in next sprint" | Deferred fixes = technical debt = production bugs. | **Fix NOW before Gate 7** |
 | "User approved, can skip fix" | User approval ≠ reviewer override. Fixes are mandatory. | **Fix the issue, re-run all 7 reviewers** |
 | "Same issue keeps appearing, skip it" | Recurring issue = fix is wrong. Debug properly. | **Root cause analysis, then fix** |
 | "Only one reviewer found it" | One reviewer = valid finding. All findings matter. | **Fix the issue, re-run all 7 reviewers** |
 | "Iteration limit reached, just proceed" | Limit = escalate, not bypass. Quality is non-negotiable. | **Escalate to user, DO NOT proceed** |
 | "Tests pass, review issues don't matter" | Tests ≠ review. Different quality dimensions. | **Fix the issue, re-run all 7 reviewers** |
 
-### Gate 8 Pressure Resistance
+### Gate 6 Pressure Resistance
 
 | User Says | Your Response |
 |-----------|---------------|
 | "Just skip this MEDIUM issue" | "MEDIUM severity issues are blocking by definition. I MUST dispatch a fix to the appropriate agent before proceeding. This protects code quality." |
-| "I'll fix it later, let's continue" | "Gate 8 is a HARD GATE. All CRITICAL/HIGH/MEDIUM issues must be resolved NOW. I'm dispatching the fix to [agent] and will re-run all 7 reviewers after." |
+| "I'll fix it later, let's continue" | "Gate 6 is a HARD GATE. All CRITICAL/HIGH/MEDIUM issues must be resolved NOW. I'm dispatching the fix to [agent] and will re-run all 7 reviewers after." |
 | "We're running out of time" | "Proceeding with known issues creates larger problems later. The fix dispatch is automated and typically takes 2-5 minutes. Quality gates exist to save time overall." |
 | "Override the gate, I approve" | "User approval cannot override reviewer findings. The gate ensures code quality. I'll dispatch the fix now." |
 | "It's just a style issue" | "If it's truly cosmetic, reviewers would mark it COSMETIC (non-blocking). MEDIUM means it affects maintainability or correctness. Fixing now." |
 
 ---
 
-## Step 11: Gate 9 - Validation (Per Execution Unit)
+## Step 9: Gate 7 - Validation (Per Execution Unit)
 
 ```text
 For current execution unit:
@@ -2978,10 +2740,10 @@ For current execution unit:
        timestamp: "[ISO timestamp]",
        criteria_results: [{criterion, status}]
      }
-   - Proceed to Step 11.1 (Execution Unit Approval)
+   - Proceed to Step 9.1 (Execution Unit Approval)
 ```
 
-## Step 11.1: Execution Unit Approval (Conditional)
+## Step 9.1: Execution Unit Approval (Conditional)
 
 **Checkpoint depends on `execution_mode`:** `manual_per_subtask` → Execute | `manual_per_task` / `automatic` → Skip
 
@@ -2997,8 +2759,8 @@ For current execution unit:
    - Content sourced from state JSON `agent_outputs` for the current unit:
      * **TDD Output:** `tdd_red` (failing test with failure_output) + `tdd_green` (implementation with pass_output)
      * **Files Changed:** Per-file before/after using `git diff` data from the implementation (for new files, show "New File" in the before panel). Do not read source files directly — use diff output provided by the implementation agent.
-      * **Review Verdicts:** Summary of all 7 reviewer verdicts from Gate 8
-     * **Acceptance Criteria:** Status from Gate 9 validation
+      * **Review Verdicts:** Summary of all 7 reviewer verdicts from Gate 6
+     * **Acceptance Criteria:** Status from Gate 7 validation
    - HTML includes: KPI cards (files changed, tests added, review iterations, gate pass/fail summary), per-file diff panels, review issues section (if any Medium+ issues were found and fixed)
    - Save to: `docs/marsai:dev-cycle/reports/unit-{unit_id}-report.html`
    - Open in browser:
@@ -3010,17 +2772,17 @@ For current execution unit:
    - See [shared-patterns/anti-rationalization-visual-report.md](../shared-patterns/anti-rationalization-visual-report.md) for anti-rationalization table
 
 1. Set `status = "paused_for_approval"`, save state
-2. Present summary: Unit ID, Parent Task, Gates 0-9 status, Criteria X/X, Duration, Files Changed, Commit Status
+2. Present summary: Unit ID, Parent Task, Gates 0-7 status, Criteria X/X, Duration, Files Changed, Commit Status
 3. **AskUserQuestion:** "Ready to proceed?" Options: (a) Continue (b) Test First (c) Stop Here
 4. **Handle response:**
 
 | Response | Action |
 |----------|--------|
-| Continue | Set in_progress, move to next unit (or Step 11.2 if last) |
+| Continue | Set in_progress, move to next unit (or Step 9.2 if last) |
 | Test First | Set `paused_for_testing`, STOP, output resume command |
 | Stop Here | Set `paused`, STOP, output resume command |
 
-## Step 11.2: Task Approval Checkpoint (Conditional)
+## Step 9.2: Task Approval Checkpoint (Conditional)
 
 **Checkpoint depends on `execution_mode`:** `manual_per_subtask` / `manual_per_task` → Execute | `automatic` → Skip
 
@@ -3047,7 +2809,7 @@ For current execution unit:
    - Tell the user the file path
    - See [shared-patterns/anti-rationalization-visual-report.md](../shared-patterns/anti-rationalization-visual-report.md) for anti-rationalization table
 
-1. Set task `status = "completed"`, cycle `status = "paused_for_task_approval"`, save state, and update tasks.md Status → `✅ Done` (per Step 11.2 row in State Persistence Checkpoints table)
+1. Set task `status = "completed"`, cycle `status = "paused_for_task_approval"`, save state, and update tasks.md Status → `✅ Done` (per Step 9.2 row in State Persistence Checkpoints table)
 
 2. Present summary: Task ID, Subtasks X/X, Total Duration, Review Iterations, Files Changed, Commit Status
 3. **AskUserQuestion:** "Task complete. Ready for next?" Options: (a) Continue (b) Integration Test (c) Stop Here
@@ -3118,7 +2880,7 @@ After completing all subtasks of a task:
    │ Assertiveness Score: XX% (Rating)               │
    │                                                  │
    │ Prompt Quality by Agent:                        │
-   │   marsai:backend-engineer-golang: 90% (Excellent)     │
+   │   marsai:backend-engineer-typescript: 90% (Excellent)     │
    │   marsai:qa-analyst: 75% (Acceptable)                 │
    │   marsai:code-reviewer: 88% (Good)               │
    │                                                  │
@@ -3129,8 +2891,8 @@ After completing all subtasks of a task:
    │ ═══════════════════════════════════════════════ │
    │                                                  │
    │ All Files Changed This Task:                    │
-   │   - file1.go                                    │
-   │   - file2.go                                    │
+   │   - file1.ts                                    │
+   │   - file2.ts                                    │
    │   - ...                                         │
    │                                                  │
    │ Next Task: [next_task_id] - [next_task_title]   │
@@ -3173,15 +2935,15 @@ After completing all subtasks of a task:
      - STOP execution
 ```
 
-**Note:** Tasks without subtasks execute both 7.1 and 7.2 in sequence.
+**Note:** Tasks without subtasks execute both 9.1 and 9.2 in sequence.
 
-## Step 12: Cycle Completion
+## Step 10: Cycle Completion
 
-### Step 12.0: Deferred Test Execution (Gates 6-7)
+### Step 10.0: Deferred Test Execution (Gates 4-5)
 
 **⛔ MANDATORY: Execute integration and chaos tests before final commit.**
 
-All units have written/updated test code during their Gate 6-7 passes. Now execute all tests once.
+All units have written/updated test code during their Gate 4-5 passes. Now execute all tests once.
 
 ```text
 1. Record deferred execution start timestamp
@@ -3223,16 +2985,16 @@ All units have written/updated test code during their Gate 6-7 passes. Now execu
 6. **MANDATORY: ⛔ Save state to file — Write tool → [state.state_path]**
 ```
 
-### Step 12.0 Anti-Rationalization
+### Step 10.0 Anti-Rationalization
 
 | Rationalization | Why It's WRONG | Required Action |
 |-----------------|----------------|-----------------|
-| "All unit/fuzz/property tests passed, skip integration" | Different test types catch different bugs. All are MANDATORY. | **Execute deferred tests** |
+| "All unit tests passed, skip integration" | Different test types catch different bugs. All are MANDATORY. | **Execute deferred tests** |
 | "Tests were written, that's enough" | Written ≠ passing. Execution verifies real behavior. | **Execute deferred tests** |
 | "Containers are slow, let CI handle it" | CI is backup, not replacement. Verify locally first. | **Execute deferred tests** |
 | "One test failed but it's flaky" | Flaky = unreliable = fix it. No exceptions. | **Fix and re-run** |
 
-### Step 12.0.5: Multi-Tenant Verification (Post-Cycle — Verification Only)
+### Step 10.0.5: Multi-Tenant Verification (Post-Cycle — Verification Only)
 
 **Multi-tenant dual-mode is now implemented during Gate 0 and verified at Gate 0.5G.** This post-cycle step is a final sanity check only — it does NOT implement or adapt any code.
 
@@ -3257,11 +3019,11 @@ All units have written/updated test code during their Gate 6-7 passes. Now execu
 3. MANDATORY: ⛔ Save state to file — Write tool → [state.state_path]
 ```
 
-**Note:** The full marsai:dev-multi-tenant skill (12 gates) is now used ONLY for migrating legacy codebases that were written before dual-mode was standard. For new development via dev-cycle, all multi-tenant compliance is handled by Gate 0 (implementation) + Gate 0.5G (verification).
+**Note:** For new development via dev-cycle, all multi-tenant compliance is handled by Gate 0 (implementation) + Gate 0.5G (verification).
 
 ---
 
-### Step 12.1: Final Commit
+### Step 10.1: Final Commit
 
 0. **FINAL COMMIT CHECK (before completion):**
    - if `commit_timing == "at_end"`:
@@ -3361,7 +3123,7 @@ When the backend dev cycle completes, it produces a handoff file for the fronten
 
 **Path:** `docs/marsai:dev-cycle/handoff-frontend.json`
 
-**Generated:** Automatically after Gate 9 (Validation) passes for all tasks.
+**Generated:** Automatically after Gate 7 (Validation) passes for all tasks.
 
 ### Handoff Schema
 

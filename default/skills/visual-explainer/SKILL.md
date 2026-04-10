@@ -5,7 +5,7 @@ description: Generate beautiful, self-contained HTML pages that visually explain
 trigger: |
   - User asks for a visual explanation, architecture overview, or comparison table
   - About to render a complex ASCII table (4+ rows or 3+ columns) in the terminal
-  - Need a branded, self-contained HTML visualization with Lerian styling
+  - Need a branded, self-contained HTML visualization with V4-Company styling
   - User asks for diff review, plan review, project recap, or dashboard visualization
 
 skip_when: |
@@ -22,23 +22,23 @@ Generate self-contained HTML files for technical diagrams, visualizations, and d
 
 ## Standard Template (MANDATORY)
 
-Every visual-explainer output MUST start from `./templates/standard.html`. This file defines the complete Lerian Studio brand system.
+Every visual-explainer output MUST start from `./templates/standard.html`. This file defines the complete V4-Company brand system.
 
 **Before generating any HTML, MUST read `./templates/standard.html`** and copy:
 1. The complete `<style>` block (everything above the "DO NOT MODIFY" marker)
-2. The `<header class="lerian-header">` with the inline Lerian logo SVG
-3. The `<footer class="lerian-footer">` with logo, company name, and "Generated with MarsAI"
+2. The `<header class="v4-company-header">` with the inline V4-Company logo SVG
+3. The `<footer class="v4-company-footer">` with logo, company name, and "Generated with MarsAI"
 4. The date auto-fill `<script>`
 
 Then add diagram-specific styles after the "TEMPLATE-SPECIFIC STYLES" marker.
 
 ### What is Fixed (CANNOT change)
 - **Font**: Inter (via Google Fonts) — MUST be the body font
-- **Color palette**: Lerian product-console tokens (sunglow accent, zinc neutrals, semantic status colors)
+- **Color palette**: V4-Company product-console tokens (sunglow accent, zinc neutrals, semantic status colors)
 - **Logo**: Inline SVG in header and footer, using `fill="currentColor"` for automatic light/dark adaptation
-- **Footer**: Full bar with Lerian Studio branding and "Generated with MarsAI"
+- **Footer**: Full bar with V4-Company branding and "Generated with MarsAI"
 - **Dark mode**: `@media (prefers-color-scheme: dark)` with zinc-based dark tokens
-  - **Exception:** code-diff diagrams MAY use GitHub-dark background tokens (`#0d1117`) for code panel readability while keeping the Lerian header/footer/accent intact
+  - **Exception:** code-diff diagrams MAY use GitHub-dark background tokens (`#0d1117`) for code panel readability while keeping the V4-Company header/footer/accent intact
 
 ### What is Variable (CAN customize per diagram)
 - **Additional display font**: MAY add a secondary Google Font for headings (but body MUST stay Inter)
@@ -125,7 +125,7 @@ HARD GATE: After reading the templates above, MUST also read the reference files
 | Dashboard | CSS Grid + Chart.js | Card grid with embedded charts |
 | Code diff / change review | HTML panels + @pierre/diffs | Side-by-side diff rendering handled by @pierre/diffs (includes Shiki internally); Highlight.js is still used for single-file code display (non-diff) |
 
-**Mermaid theming:** Always use `theme: 'base'` with custom `themeVariables` so colors match the Lerian palette. Use `look: 'handDrawn'` for sketch aesthetic or `look: 'classic'` for clean lines. Use `layout: 'elk'` for complex graphs (requires the `@mermaid-js/layout-elk` package — see `./references/libraries.md` for the CDN import). Override Mermaid's SVG classes with CSS for pixel-perfect control. MUST read `./references/libraries.md` before adding library theming variables (see Required Reading Matrix) — do NOT use CDN links or theme configs from memory as versions change.
+**Mermaid theming:** Always use `theme: 'base'` with custom `themeVariables` so colors match the V4-Company palette. Use `look: 'handDrawn'` for sketch aesthetic or `look: 'classic'` for clean lines. Use `layout: 'elk'` for complex graphs (requires the `@mermaid-js/layout-elk` package — see `./references/libraries.md` for the CDN import). Override Mermaid's SVG classes with CSS for pixel-perfect control. MUST read `./references/libraries.md` before adding library theming variables (see Required Reading Matrix) — do NOT use CDN links or theme configs from memory as versions change.
 
 **Mermaid zoom controls:** Always add zoom controls (+/-/reset buttons) to every `.mermaid-wrap` container. Complex diagrams render at small sizes and need zoom to be readable. Include Ctrl/Cmd+scroll zoom on the container. MUST copy the zoom controls pattern from `./references/css-patterns.md` (see Required Reading Matrix) and the reference template at `./templates/mermaid-flowchart.html`.
 
@@ -150,7 +150,7 @@ MUST read `./references/css-patterns.md` image container section before placing 
 
 **When to skip:** Anything Mermaid or CSS handles well. Generic decoration that doesn't convey meaning. Data-heavy pages where images would distract. Always degrade gracefully — if surf isn't available, skip images without erroring. The page should stand on its own with CSS and typography alone.
 
-**Prompt craft:** Match the image to the Lerian palette and aesthetic direction. Specify the style (3D render, technical illustration, watercolor, isometric, flat vector, etc.) and mention dominant colors from the standard template's CSS variables (sunglow yellow, zinc neutrals, de-york green, tangerine orange). Use `--aspect-ratio 16:9` for hero banners, `--aspect-ratio 1:1` for inline illustrations. Keep prompts specific — "isometric illustration of a message queue with sunglow-yellow nodes on zinc-800 background" beats "a diagram of a queue."
+**Prompt craft:** Match the image to the V4-Company palette and aesthetic direction. Specify the style (3D render, technical illustration, watercolor, isometric, flat vector, etc.) and mention dominant colors from the standard template's CSS variables (sunglow yellow, zinc neutrals, de-york green, tangerine orange). Use `--aspect-ratio 16:9` for hero banners, `--aspect-ratio 1:1` for inline illustrations. Keep prompts specific — "isometric illustration of a message queue with sunglow-yellow nodes on zinc-800 background" beats "a diagram of a queue."
 
 ### 3. Style
 
@@ -169,7 +169,7 @@ Apply these principles to every diagram, building ON TOP of the standard templat
 
 **Surfaces whisper, they don't shout.** Build depth through subtle lightness shifts (2-4% between levels), not dramatic color changes. Borders should be low-opacity (`var(--border-subtle)` in most cases, `var(--border)` for card edges) — visible when you look, invisible when you don't.
 
-**Backgrounds create atmosphere.** Don't use flat solid colors for the page background. Subtle gradients, faint grid patterns via CSS, or gentle radial glows behind focal areas using the Lerian palette colors. The background should feel like a space, not a void.
+**Backgrounds create atmosphere.** Don't use flat solid colors for the page background. Subtle gradients, faint grid patterns via CSS, or gentle radial glows behind focal areas using the V4-Company palette colors. The background should feel like a space, not a void.
 
 **Visual weight signals importance.** Not every section deserves equal visual treatment. Executive summaries and key metrics should dominate the viewport on load (larger type, more padding, subtle accent-tinted background zone). Reference sections (file maps, dependency lists, decision logs) should be compact and stay out of the way. Use `<details>/<summary>` for sections that are useful but not primary — MUST read the collapsible pattern from `./references/css-patterns.md` (see Required Reading Matrix) before using `<details>/<summary>`.
 
@@ -289,7 +289,7 @@ Every diagram is a single self-contained `.html` file. No external assets except
   <!-- Optional: secondary display font for headings -->
   <link href="https://fonts.googleapis.com/css2?family=DisplayFont&display=swap" rel="stylesheet">
   <style>
-    /* ===== LERIAN STANDARD FOUNDATION (copied from standard.html) ===== */
+    /* ===== V4-COMPANY STANDARD FOUNDATION (copied from standard.html) ===== */
     /* ... all tokens, base styles, header, footer, animations ... */
     /* ===== DO NOT MODIFY ABOVE THIS LINE ===== */
 
@@ -299,13 +299,13 @@ Every diagram is a single self-contained `.html` file. No external assets except
 </head>
 <body>
   <div class="container">
-    <!-- Lerian header with logo SVG -->
-    <header class="lerian-header">...</header>
+    <!-- V4-Company header with logo SVG -->
+    <header class="v4-company-header">...</header>
 
     <!-- Diagram content -->
 
-    <!-- Lerian footer with logo, company name, "Generated with MarsAI" -->
-    <footer class="lerian-footer">...</footer>
+    <!-- V4-Company footer with logo, company name, "Generated with MarsAI" -->
+    <footer class="v4-company-footer">...</footer>
   </div>
 
   <!-- Date auto-fill script -->
@@ -349,11 +349,11 @@ STOP and report if you encounter:
 
 ### Cannot Be Overridden
 The following requirements CANNOT be waived:
-- MUST use the Lerian standard template (`standard.html`) as the foundation for every output
-- MUST include the Lerian logo in header and footer (inline SVG from the standard template)
+- MUST use the V4-Company standard template (`standard.html`) as the foundation for every output
+- MUST include the V4-Company logo in header and footer (inline SVG from the standard template)
 - MUST use Inter as the body font (loaded via Google Fonts)
-- MUST include the Lerian footer with "Generated with MarsAI"
-- MUST use the Lerian color palette (sunglow accent, zinc neutrals, semantic status colors)
+- MUST include the V4-Company footer with "Generated with MarsAI"
+- MUST use the V4-Company color palette (sunglow accent, zinc neutrals, semantic status colors)
 - MUST generate an HTML table for any data >3 columns or 4 rows
 - MUST always provide a browser-openable HTML file, never fallback to ASCII art if the threshold is met
 - Code diff visualizations MUST use `@pierre/diffs` — hand-rolled CSS diff panels are NOT acceptable for code review pages
@@ -362,10 +362,10 @@ The following requirements CANNOT be waived:
 | Severity | Condition | Required Action |
 | --- | --- | --- |
 | CRITICAL | Diagram is unreadable, CSS is broken, or content overflows | MUST fix before presenting to user |
-| CRITICAL | Missing Lerian header, footer, or standard template styles | MUST add standard template foundation |
+| CRITICAL | Missing V4-Company header, footer, or standard template styles | MUST add standard template foundation |
 | HIGH | Missing Mermaid zoom controls or responsiveness | Fix before finishing |
 | HIGH | Using a non-Inter body font | Switch body font to Inter |
-| MEDIUM | Using default Mermaid colors instead of the Lerian palette | Update CSS overrides to use standard tokens |
+| MEDIUM | Using default Mermaid colors instead of the V4-Company palette | Update CSS overrides to use standard tokens |
 | LOW | No secondary display font for headings | Fix in next iteration |
 
 ## Pressure Resistance
@@ -373,22 +373,22 @@ The following requirements CANNOT be waived:
 | --- | --- |
 | "Just draw a quick ASCII table" (if >4 rows/3 cols) | "I'll generate an HTML table instead, as complex ASCII tables break in the terminal." |
 | "Don't bother with the CSS, just give me the raw mermaid" | "I'll generate the full HTML page so it's readable and includes zoom controls." |
-| "Skip the Lerian branding, I just want a plain diagram" | "The Lerian header and footer are part of the standard template. I'll keep them minimal but they MUST be present." |
+| "Skip the V4-Company branding, I just want a plain diagram" | "The V4-Company header and footer are part of the standard template. I'll keep them minimal but they MUST be present." |
 | "Use a different font, I don't like Inter" | "Inter is the mandatory body font from the standard template. I can add a secondary display font for headings." |
 
 ## Standards Compliance
 | Rationalization | Why It's WRONG | Required Action |
 | --- | --- | --- |
 | "A simple ASCII table is faster" | ASCII tables >4 rows/3 cols break on mobile and lack responsiveness. | **MUST generate HTML table.** |
-| "Mermaid's default theme is fine" | Default themes look unpolished and don't match the Lerian design system. | **MUST use the Lerian palette tokens.** |
+| "Mermaid's default theme is fine" | Default themes look unpolished and don't match the V4-Company design system. | **MUST use the V4-Company palette tokens.** |
 | "Zoom controls are overkill" | Complex diagrams render too small and become illegible without zoom. | **MUST include zoom controls.** |
 | "The standard template is too heavy for a simple diagram" | Brand consistency is non-negotiable. The template is the foundation. | **MUST use standard.html as the base.** |
-| "I'll just pick a nice font instead of Inter" | Inter is the Lerian brand font. Consistency across outputs matters. | **MUST use Inter as body font.** |
+| "I'll just pick a nice font instead of Inter" | Inter is the V4-Company brand font. Consistency across outputs matters. | **MUST use Inter as body font.** |
 | "I know the standard.html structure from the skill description" | Reading the description ≠ reading the file. Token values, SVG paths, and exact CSS change between versions. MUST use the Read tool to open the actual file. | **MUST Read tool open standard.html** |
 | "I already read the templates in a previous task" | Each generation MUST re-read the relevant templates. Memory of a previous read is not reliable — context may have been compressed. | **MUST re-read templates every time** |
 | "The description below the template reference is sufficient" | Descriptions are summaries. The template file is the authoritative source with exact token values, SVG data, and CSS patterns. | **MUST read the template file, not just the description** |
 | "I'll create something similar to the template" | "Similar" means "different." The template defines the EXACT standard. Copy the foundation, then customize only what the skill explicitly marks as variable. | **MUST copy foundation verbatim from template** |
-| "I already know CSS/Mermaid/Highlight.js well enough" | Your knowledge may be outdated or generic. The reference files contain PROJECT-SPECIFIC patterns: exact CDN versions, Lerian-themed variables, overflow guards. Generic knowledge produces plausible but incorrect output. | **MUST read the required reference files per the Reading Matrix** |
+| "I already know CSS/Mermaid/Highlight.js well enough" | Your knowledge may be outdated or generic. The reference files contain PROJECT-SPECIFIC patterns: exact CDN versions, V4-Company-themed variables, overflow guards. Generic knowledge produces plausible but incorrect output. | **MUST read the required reference files per the Reading Matrix** |
 | "The template already has everything I need" | Templates provide structure. References provide the patterns, CDN URLs, and CSS techniques that go INSIDE the structure. Both are required. | **MUST read both templates AND references per the Reading Matrix** |
 | "css-patterns.md is 1300 lines, too long to read" | Read the SECTIONS relevant to your diagram type, not the entire file. The Reading Matrix tells you which sections. Skipping because a file is long is not acceptable. | **MUST read at minimum the sections listed in the Reading Matrix** |
 | "css-patterns.md has diff panel CSS I can use directly" | Those CSS patterns are DEPRECATED for code diffs. They exist only for non-code comparisons (config files, text). For code diffs, `@pierre/diffs` provides superior rendering with Shiki highlighting, word-level diffs, and split/unified toggle. Using old CSS patterns is a regression. | **MUST use `@pierre/diffs` from `./references/libraries.md`, NOT hand-rolled CSS diff panels** |

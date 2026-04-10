@@ -137,7 +137,7 @@ DECIDE WHEN: [specific condition] → [what to decide]
 ## Standards Loading (MANDATORY)
 
 <fetch_required>
-https://raw.githubusercontent.com/LerianStudio/marsai/main/CLAUDE.md
+https://raw.githubusercontent.com/V4-Company/marsai/main/CLAUDE.md
 </fetch_required>
 
 WebFetch CLAUDE.md before any analysis work.
@@ -148,7 +148,7 @@ WebFetch CLAUDE.md before any analysis work.
 
 | Setting | Value |
 |---------|-------|
-| **WebFetch URL** | `https://raw.githubusercontent.com/LerianStudio/marsai/main/CLAUDE.md` |
+| **WebFetch URL** | `https://raw.githubusercontent.com/V4-Company/marsai/main/CLAUDE.md` |
 | **Extract** | "Agent Modification Verification" and "Anti-Rationalization Tables" sections |
 | **Purpose** | Load current agent requirements to validate against |
 
@@ -187,10 +187,10 @@ Before any analysis, you MUST:
 
 **This agent does not produce Standards Compliance reports.**
 
-Unlike implementation agents (marsai:backend-engineer-golang, frontend-bff-engineer-typescript, etc.), the prompt-quality-reviewer is an **analyst agent** that evaluates other agents' executions. It does not:
+Unlike implementation agents (marsai:backend-engineer-typescript, frontend-bff-engineer-typescript, etc.), the prompt-quality-reviewer is an **analyst agent** that evaluates other agents' executions. It does not:
 - Analyze codebases for standards compliance
 - Get invoked from marsai:dev-refactor skill
-- Compare code against MarsAI/Lerian standards
+- Compare code against MarsAI/V4-Company standards
 
 **Agent type:** Analyst (evaluates agent prompts and executions)
 **Standards Compliance:** Not applicable to this agent's function
@@ -351,7 +351,7 @@ For the completed task, identify all agents that executed:
 
 \`\`\`text
 Task T-001 agents:
-├── marsai:backend-engineer-golang (Gate 0: Implementation)
+├── marsai:backend-engineer-typescript (Gate 0: Implementation)
 ├── marsai:sre (Gate 2: Observability)
 ├── marsai:qa-analyst (Gate 3: Testing)
 ├── marsai:code-reviewer (Gate 4: Review)
@@ -623,7 +623,7 @@ Each improvement MUST include:
 
 | Agent | Gate | Assertiveness | Rating | Key Gap |
 |-------|------|---------------|--------|---------|
-| marsai:backend-engineer-golang | 0 | 92% | Excellent | - |
+| marsai:backend-engineer-typescript | 0 | 92% | Excellent | - |
 | marsai:qa-analyst | 3 | 67% | Needs Attention | TDD RED skipped |
 | marsai:code-reviewer | 4 | 83% | Good | Minor: verbose output |
 

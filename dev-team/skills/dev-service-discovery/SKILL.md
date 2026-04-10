@@ -1,7 +1,7 @@
 ---
 name: marsai:dev-service-discovery
 description: |
-  Scans the current Go project and identifies the Service → Module → Resource
+  Scans the current project and identifies the Service → Module → Resource
   hierarchy for tenant-manager registration. Detects service name and type,
   modules (via WithModule or component structure), resources per module
   (PostgreSQL, MongoDB, RabbitMQ), and database names for each resource.
@@ -19,24 +19,23 @@ trigger: |
   - User wants to know what to provision in tenant-manager for a service
   - User asks "what services/modules/resources does this project have?"
   - User needs to register a service in the tenant-manager catalog
-  - Before running marsai:dev-multi-tenant on a new service
   - User asks about MongoDB indexes in a project
 
 skip_when: |
-  - Not a Go project
+  - Project has no backend service
   - Task does not involve service discovery, tenant-manager, or resource mapping
   - Task is documentation-only, configuration-only, or non-code
   - Project has no external dependencies (no database, cache, or queue)
 
 prerequisites: |
-  - Go project with go.mod in the current working directory
+  - Project with package.json or go.mod in the current working directory
 
 NOT_skip_when: |
   - "Service is simple, I can see the structure" → Detection must be evidence-based, not assumed.
   - "Already know the modules" → Knowledge ≠ verified. Run the scan.
 
 related:
-  complementary: [marsai:dev-multi-tenant, marsai:dev-devops, marsai:exploring-codebase]
+  complementary: [marsai:dev-devops, marsai:exploring-codebase]
 
 output_schema:
   format: html

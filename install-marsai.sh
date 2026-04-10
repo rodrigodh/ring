@@ -12,9 +12,9 @@ echo "MarsAI Plugin Marketplace Installer"
 echo "================================================"
 echo ""
 
-MARKETPLACE_SOURCE="lerianstudio/marsai"
+MARKETPLACE_SOURCE="V4-Company/marsai"
 MARKETPLACE_NAME="marsai"
-MARKETPLACE_JSON_URL="https://raw.githubusercontent.com/lerianstudio/marsai/main/.claude-plugin/marketplace.json"
+MARKETPLACE_JSON_URL="https://raw.githubusercontent.com/V4-Company/marsai/main/.claude-plugin/marketplace.json"
 
 echo "📦 Adding MarsAI marketplace from GitHub..."
 set +e

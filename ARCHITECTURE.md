@@ -13,7 +13,7 @@
 
 ## Overview
 
-MarsAI is a **Claude Code plugin marketplace** that provides a comprehensive skills library and workflow system with **2 active plugins** (54 skills, 22 agents, 23 commands). It extends Claude Code's capabilities through structured, reusable patterns that enforce proven software engineering practices across the software delivery value chain.
+MarsAI is a **Claude Code plugin marketplace** that provides a comprehensive skills library and workflow system with **2 active plugins** (48 skills, 21 agents, 22 commands). It extends Claude Code's capabilities through structured, reusable patterns that enforce proven software engineering practices across the software delivery value chain.
 
 ### Architecture Philosophy
 
@@ -61,7 +61,7 @@ _Versions managed in `.claude-plugin/marketplace.json`_
 | Plugin               | Description                          | Components                       |
 | -------------------- | ------------------------------------ | -------------------------------- |
 | **marsai-default**     | Core skills library                  | 22 skills, 10 agents, 14 commands |
-| **marsai-dev-team**    | Developer agents                     | 32 skills, 12 agents, 9 commands |
+| **marsai-dev-team**    | Developer agents                     | 26 skills, 11 agents, 8 commands |
 
 ## Component Hierarchy
 
@@ -113,7 +113,6 @@ default/agents/
 
 ```
 dev-team/agents/
-├── backend-engineer-golang.md         # Go backend specialist (`marsai:backend-engineer-golang`)
 ├── backend-engineer-typescript.md     # TypeScript backend specialist (`marsai:backend-engineer-typescript`)
 ├── devops-engineer.md                 # DevOps specialist (`marsai:devops-engineer`)
 ├── frontend-bff-engineer-typescript.md # BFF specialist (`marsai:frontend-bff-engineer-typescript`)
@@ -175,7 +174,6 @@ All marsai-dev-team agents include a `## Standards Compliance` section in their 
 
 **Affected Agents:**
 
-- `marsai:backend-engineer-golang` → loads `golang.md`
 - `marsai:backend-engineer-typescript` → loads `typescript.md`
 - `marsai:devops-engineer` → loads `devops.md`
 - `marsai:frontend-bff-engineer-typescript` → loads `typescript.md`
@@ -189,11 +187,11 @@ All marsai-dev-team agents include a `## Standards Compliance` section in their 
 ```markdown
 ## Standards Compliance
 
-### Lerian/MarsAI Standards Comparison
+### V4-Company/MarsAI Standards Comparison
 
-| Category | Current Pattern | Expected Pattern | Status           | File/Location |
-| -------- | --------------- | ---------------- | ---------------- | ------------- |
-| Logging  | fmt.Println     | lib-commons/zap  | ⚠️ Non-Compliant | service/\*.go |
+| Category | Current Pattern | Expected Pattern | Status           | File/Location    |
+| -------- | --------------- | ---------------- | ---------------- | ---------------- |
+| Logging  | console.log     | structured logger| ⚠️ Non-Compliant | service/\*.ts    |
 
 ### Compliance Summary
 

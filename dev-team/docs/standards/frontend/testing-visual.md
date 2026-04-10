@@ -265,7 +265,7 @@ for (const viewport of VIEWPORTS) {
 
 ## Component Duplication Check (MANDATORY)
 
-**HARD GATE:** MUST NOT recreate components that exist in `@lerianstudio/sindarian-ui`.
+**HARD GATE:** MUST NOT recreate components that exist in `@V4-Company/sindarian-ui`.
 
 ### Detection Pattern
 
@@ -273,7 +273,7 @@ Before creating any component in `components/ui/`:
 
 ```bash
 # Check if component exists in sindarian-ui
-grep -r "export.*{ComponentName}" node_modules/@lerianstudio/sindarian-ui/
+grep -r "export.*{ComponentName}" node_modules/@V4-Company/sindarian-ui/
 
 # If found → Import from sindarian-ui
 # If NOT found → Create as shadcn/radix fallback in components/ui/
@@ -305,7 +305,7 @@ describe('Component duplication check', () => {
 |-------|---------------|
 | No duplicated components | `ls components/ui/` vs sindarian-ui exports |
 | Fallback components documented | Each shadcn component has comment: "Fallback: not in sindarian-ui" |
-| Import paths correct | sindarian-ui → `@lerianstudio/sindarian-ui`, fallback → `@/components/ui/` |
+| Import paths correct | sindarian-ui → `@V4-Company/sindarian-ui`, fallback → `@/components/ui/` |
 
 ---
 

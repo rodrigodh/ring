@@ -1,12 +1,12 @@
 <p align="center">
-  <img src="assets/ring-banner.png" alt="MarsAI by Lerian" width="100%" />
+  <img src="assets/ring-banner.png" alt="MarsAI by V4-Company" width="100%" />
 </p>
 
 # 💍 The MarsAI - Skills Library for AI Agents
 
 **Proven engineering practices, enforced through skills.**
 
-MarsAI is a comprehensive skills library and workflow system for AI agents that transforms how AI assistants approach software development. Currently implemented as a **Claude Code plugin marketplace** with **2 active plugins** and **54 skills** (see `.claude-plugin/marketplace.json` for current versions), the skills themselves are agent-agnostic and can be used with any AI agent system. MarsAI provides battle-tested patterns, mandatory workflows, and systematic approaches for software development.
+MarsAI is a comprehensive skills library and workflow system for AI agents that transforms how AI assistants approach software development. Currently implemented as a **Claude Code plugin marketplace** with **2 active plugins** and **48 skills** (see `.claude-plugin/marketplace.json` for current versions), the skills themselves are agent-agnostic and can be used with any AI agent system. MarsAI provides battle-tested patterns, mandatory workflows, and systematic approaches for software development.
 
 ## ✨ Why MarsAI?
 
@@ -21,8 +21,8 @@ Without MarsAI, AI assistants often:
 MarsAI solves this by:
 
 - **Enforcing proven workflows** - Test-driven development, systematic debugging, proper planning
-- **Providing 54 specialized skills** (22 core + 32 dev-team)
-- **22 specialized agents** - 10 review/planning + 12 developer
+- **Providing 48 specialized skills** (22 core + 26 dev-team)
+- **21 specialized agents** - 10 review/planning + 11 developer
 - **Automating skill discovery** - Skills load automatically at session start
 - **Preventing common failures** - Built-in anti-patterns and mandatory checklists
 
@@ -44,7 +44,6 @@ MarsAI solves this by:
 
 **Developer Agents (dev-team plugin):**
 
-- `marsai:backend-engineer-golang` - Go backend specialist for financial systems
 - `marsai:backend-engineer-typescript` - TypeScript/Node.js backend specialist (Express, NestJS, Fastify)
 - `marsai:devops-engineer` - DevOps infrastructure specialist
 - `marsai:frontend-bff-engineer-typescript` - BFF & React/Next.js frontend with Clean Architecture
@@ -55,7 +54,7 @@ MarsAI solves this by:
 - `marsai:qa-analyst-frontend` - Frontend QA specialist (accessibility, visual, E2E, performance)
 - `marsai:sre` - Site reliability engineer (monitoring, alerting, SLOs)
 - `marsai:ui-engineer` - UI component specialist (design systems, accessibility)
-- `marsai:helm-engineer` - Helm chart specialist (chart structure, security, Lerian conventions)
+- `marsai:helm-engineer` - Helm chart specialist (chart structure, security, V4-Company conventions)
 
 > **Standards Compliance:** All dev-team agents include a `## Standards Compliance` output section with conditional requirement:
 >
@@ -74,123 +73,33 @@ _Plugin versions are managed in `.claude-plugin/marketplace.json`_
 
 ## 🖥️ Supported Platforms
 
-MarsAI works across multiple AI development platforms:
-
-| Platform        | Format      | Status             | Features                        |
-| --------------- | ----------- | ------------------ | ------------------------------- |
-| **Claude Code** | Native      | ✅ Source of truth | Skills, agents, commands, hooks |
-| **Factory AI**  | Transformed | ✅ Supported       | Droids, commands, skills        |
-| **Cursor**      | Transformed | ✅ Supported       | Skills, agents, commands        |
-| **Cline**       | Transformed | ✅ Supported       | Prompts                         |
-
-**Transformation Notes:**
-
-- Claude Code receives MarsAI content in its native format
-- Factory AI: `agents` → `droids` terminology
-- Cursor: Skills → ~/.cursor/skills/, Agents → ~/.cursor/agents/, Commands → ~/.cursor/commands/
-- Cline: All content → structured prompts
-
-**Platform-Specific Guides:**
-
-See the [installer README](installer/) for platform-specific setup and transformation details.
+MarsAI is built for **Claude Code** and reads skills, agents, and commands in their native markdown format.
 
 ## 🚀 Quick Start
 
-### Multi-Platform Installation (Recommended)
-
-The MarsAI installer automatically detects installed platforms and transforms content appropriately.
-
-**Linux/macOS/Git Bash:**
+**Linux/macOS:**
 
 ```bash
-# Interactive installer (auto-detects platforms)
-curl -fsSL https://raw.githubusercontent.com/lerianstudio/marsai/main/install-marsai.sh | bash
+curl -fsSL https://raw.githubusercontent.com/V4-Company/marsai/main/install-marsai.sh | bash
+```
 
-# Or clone and run locally
-git clone https://github.com/lerianstudio/marsai.git ~/ring
+**Or clone manually:**
+
+```bash
+git clone https://github.com/V4-Company/marsai.git ~/ring
 cd ~/ring
-./installer/install-marsai.sh
+./install-symlinks.sh
 ```
-
-**Windows PowerShell:**
-
-```powershell
-# Interactive installer (auto-detects platforms)
-irm https://raw.githubusercontent.com/lerianstudio/marsai/main/install-marsai.ps1 | iex
-
-# Or clone and run locally
-git clone https://github.com/lerianstudio/marsai.git $HOME\ring
-cd $HOME\ring
-.\installer\install-marsai.ps1
-```
-
-### Direct Platform Installation
-
-Install to specific platforms without the interactive menu:
-
-```bash
-# Install to Claude Code only (native format)
-./installer/install-marsai.sh install --platforms claude
-
-# Install to Factory AI only (droids format)
-./installer/install-marsai.sh install --platforms factory
-
-# Install to multiple platforms
-./installer/install-marsai.sh install --platforms claude,cursor,cline
-
-# Install to all detected platforms
-./installer/install-marsai.sh install --platforms auto
-
-# Dry run (preview changes without installing)
-./installer/install-marsai.sh install --platforms auto --dry-run
-```
-
-### Installer Commands
-
-```bash
-# List installed platforms and versions
-./installer/install-marsai.sh list
-
-# Update existing installation
-./installer/install-marsai.sh update
-
-# Check for available updates
-./installer/install-marsai.sh check
-
-# Sync (update only changed files)
-./installer/install-marsai.sh sync
-
-# Uninstall from specific platform
-./installer/install-marsai.sh uninstall --platforms cursor
-
-# Detect available platforms
-./installer/install-marsai.sh detect
-```
-
-### Claude Code Plugin Marketplace
-
-For Claude Code users, you can also install from the marketplace:
-
-- Open Claude Code
-- Go to Settings → Plugins
-- Search for "marsai"
-- Click Install
 
 ### Manual Installation (Claude Code only)
 
 ```bash
 # Clone the marketplace repository
-git clone https://github.com/lerianstudio/marsai.git ~/ring
+git clone https://github.com/V4-Company/marsai.git ~/ring
 
 # Skills auto-load at session start via hooks
 # No additional configuration needed for Claude Code
 ```
-
-### Code Analysis Pipeline
-
-The codereview pipeline uses [Mithril](https://github.com/LerianStudio/mithril), an external code analysis tool installed via `go install`. Mithril performs static analysis, AST extraction, call graph generation, and context compilation for AI-assisted code review.
-
-Install via `go install github.com/lerianstudio/mithril@latest`. See the [Mithril repository](https://github.com/LerianStudio/mithril) for full installation details and release notes.
 
 ### First Session
 
@@ -202,7 +111,7 @@ When you start a new Claude Code session with MarsAI installed, you'll see:
 - marsai:test-driven-development (RED-GREEN-REFACTOR cycle)
 - marsai:systematic-debugging (4-phase root cause analysis)
 - marsai:verification-before-completion (Evidence before claims)
-... and 50 more skills
+... and 44 more skills
 ```
 
 ## 🎯 Core Skills
@@ -241,7 +150,7 @@ Run command → Paste output → Then claim
 No "should work" → Only "does work" with proof
 ```
 
-## 📚 All 54 Skills (Across 2 Plugins)
+## 📚 All 48 Skills (Across 2 Plugins)
 
 ### Core Skills (marsai-default plugin - 22 skills)
 
@@ -285,7 +194,7 @@ No "should work" → Only "does work" with proof
 
 - `marsai:production-readiness-audit` - 44-dimension production readiness audit; runs explorers in batches of up to 10, appends incrementally to a single report; output: scored report (0-430, max 440 with multi-tenant) with severity ratings. See [default/skills/production-readiness-audit/SKILL.md](default/skills/production-readiness-audit/SKILL.md) for invocation and implementation details.
 
-### Developer Skills (marsai-dev-team plugin - 32 skills)
+### Developer Skills (marsai-dev-team plugin - 26 skills)
 
 **Orchestration & Refactoring (6):**
 
@@ -300,30 +209,23 @@ No "should work" → Only "does work" with proof
 
 - `marsai:dev-implementation` - Gate 0: TDD implementation
 - `marsai:dev-delivery-verification` - Gate 0.5: Delivery verification (ensures requested features are reachable)
-- `marsai:dev-multi-tenant` - Multi-tenant adaptation (database-per-tenant isolation, integrated into Gate 0)
 - `marsai:dev-devops` - Gate 1: DevOps setup (Docker, compose)
 - `marsai:dev-docker-security` - Docker image security audit for Docker Hub Health Score grade A
-- `marsai:dev-helm` - Helm chart creation and maintenance following Lerian conventions
+- `marsai:dev-helm` - Helm chart creation and maintenance following V4-Company conventions
 - `marsai:dev-sre` - Gate 2: Observability validation
 - `marsai:dev-service-discovery` - Service/module/resource hierarchy scanner for tenant-manager
 - `marsai:dev-readyz` - Comprehensive readiness probes (/readyz) with per-dependency status and TLS validation
 
-**Testing & Validation (8):**
+**Testing & Validation (5):**
 
 - `marsai:dev-unit-testing` - Gate 3: Unit test coverage (85%+ threshold)
-- `marsai:dev-fuzz-testing` - Gate 4: Fuzz testing with seed corpus for edge case discovery
-- `marsai:dev-property-testing` - Gate 5: Property-based tests for domain invariants
 - `marsai:dev-integration-testing` - Gate 6: Integration tests with real containers via testcontainers
 - `marsai:dev-chaos-testing` - Gate 7: Chaos tests using Toxiproxy for graceful degradation
-- `marsai:dev-goroutine-leak-testing` - Goroutine leak detection and regression testing
 - `marsai:dev-validation` - Gate 9: User approval
 - `marsai:dev-feedback-loop` - Assertiveness scoring and metrics
 
-**Migration & Reference (4):**
+**Reference (1):**
 
-- `marsai:using-lib-commons` - Comprehensive reference for lib-commons v4 (Lerian's shared Go library with 30+ packages)
-- `marsai:dev-migrate-v4` - Analyze Go service for lib-commons v2/v3 patterns and generate visual migration report
-- `marsai:systemplane-migration` - Migrate Lerian Go services from .env/YAML config to systemplane (database-backed hot-reloadable config)
 - `marsai:dev-llms-txt` - Generate or audit llms.txt files following llmstxt.org spec for AI-friendly repository entry points
 
 **Security (1):**
@@ -362,7 +264,7 @@ MarsAI provides 23 slash commands across 2 plugins for common workflows.
 
 ### Development Cycle (marsai-dev-team)
 
-- `/marsai:dev-cycle [task]` - Start 10-gate development workflow (implementation→delivery-verification→devops→SRE→unit-testing→fuzz-testing→property-testing→integration-testing→chaos-testing→review→validation)
+- `/marsai:dev-cycle [task]` - Start 10-gate development workflow (implementation→delivery-verification→devops→SRE→unit-testing→integration-testing→chaos-testing→review→validation)
 - `/marsai:dev-cycle-frontend [task]` - Start 9-gate frontend workflow (implementation→devops→accessibility→unit-testing→visual-testing→e2e-testing→performance→review→validation)
 - `/marsai:dev-refactor [path]` - Analyze codebase against standards
 - `/marsai:dev-refactor-frontend [path]` - Analyze frontend codebase against standards and generate executable tasks
@@ -370,7 +272,6 @@ MarsAI provides 23 slash commands across 2 plugins for common workflows.
 - `/marsai:dev-status` - Show current gate progress
 - `/marsai:dev-report` - Generate development cycle report
 - `/marsai:dev-cancel` - Cancel active development cycle
-- `/marsai:migrate-v4 [path]` - Analyze Go service for lib-commons v4 migration and generate visual report
 
 ## 💡 Usage Examples
 
@@ -472,9 +373,8 @@ ring/                                  # Monorepo root
 │   │   ├── write-plan.md                # Implementation planning (`marsai:write-plan`)
 │   │   └── codebase-explorer.md         # Deep architecture analysis (`marsai:codebase-explorer`)
 │   └── docs/                       # Documentation
-└── dev-team/                      # Developer Agents plugin (marsai-dev-team) - 32 skills, 12 agents, 9 commands
-    └── agents/                      # 12 specialized developer agents
-        ├── backend-engineer-golang.md       # Go backend specialist (`marsai:backend-engineer-golang`)
+└── dev-team/                      # Developer Agents plugin (marsai-dev-team) - 26 skills, 11 agents, 8 commands
+    └── agents/                      # 11 specialized developer agents
         ├── backend-engineer-typescript.md   # TypeScript/Node.js backend specialist (`marsai:backend-engineer-typescript`)
         ├── devops-engineer.md               # DevOps infrastructure (`marsai:devops-engineer`)
         ├── frontend-bff-engineer-typescript.md # BFF & React/Next.js specialist (`marsai:frontend-bff-engineer-typescript`)
@@ -568,7 +468,7 @@ ring/                                  # Monorepo root
      "description": "Product XYZ specific skills",
      "version": "0.1.0",
      "source": "./product-xyz",
-     "homepage": "https://github.com/lerianstudio/marsai/tree/product-xyz"
+     "homepage": "https://github.com/V4-Company/marsai/tree/product-xyz"
    }
    ```
 
@@ -591,7 +491,6 @@ ring/                                  # Monorepo root
 - [CLAUDE.md](CLAUDE.md) - Repository guide for Claude Code
 - [MANUAL.md](MANUAL.md) - Quick reference for all commands, agents, and workflows
 - [ARCHITECTURE.md](ARCHITECTURE.md) - Architecture diagrams and component relationships
-- [Installer](installer/) - Multi-platform installation and migration
 
 ## 🎯 Philosophy
 
@@ -622,7 +521,7 @@ MarsAI is built on decades of collective software engineering wisdom, incorporat
 - Agile methodologies
 - DevOps practices
 
-Special thanks to the Lerian Team for battle-testing these skills in production.
+Special thanks to the V4-Company Team for battle-testing these skills in production.
 
 ## 📄 License
 
@@ -630,8 +529,8 @@ MIT - See [LICENSE](LICENSE) file
 
 ## 🔗 Links
 
-- [GitHub Repository](https://github.com/lerianstudio/marsai)
-- [Issue Tracker](https://github.com/lerianstudio/marsai/issues)
+- [GitHub Repository](https://github.com/V4-Company/marsai)
+- [Issue Tracker](https://github.com/V4-Company/marsai/issues)
 - [Plugin Marketplace](https://claude.ai/marketplace/ring)
 
 ---

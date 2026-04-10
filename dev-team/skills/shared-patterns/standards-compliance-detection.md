@@ -26,13 +26,12 @@ Canonical source for Standards Compliance detection logic used by all dev-team a
 
 | Agent | Standards File | When |
 |-------|---------------|------|
-| `marsai:backend-engineer-golang` | golang.md | any implementation task |
 | `marsai:backend-engineer-typescript` | typescript.md | any implementation task |
 | `frontend-bff-engineer-typescript` | typescript.md | any implementation task |
 | `marsai:frontend-engineer` | frontend.md | any implementation task |
 | `marsai:devops-engineer` | devops.md | any artifact creation |
 | `marsai:sre` | sre.md | any validation task |
-| `marsai:qa-analyst` | golang.md/typescript.md | any testing task |
+| `marsai:qa-analyst` | typescript.md | any testing task |
 
 **⛔ HARD GATE:** If agent does not output Standards Coverage Table → Output is INCOMPLETE → Orchestrator MUST re-dispatch.
 
@@ -142,7 +141,7 @@ If detection is ambiguous, output FULL compliance (table + findings). Better to 
 ### FORBIDDEN Actions
 
 ```
-❌ Inventing section names ("Security", "Go Version", "Code Quality")
+❌ Inventing section names ("Security", "Code Quality")
 ❌ Merging sections ("Error Handling & Logging" instead of separate rows)
 ❌ Renaming sections ("Config" instead of "Configuration Loading")
 ❌ Skipping sections not found in codebase
@@ -160,15 +159,14 @@ If detection is ambiguous, output FULL compliance (table + findings). Better to 
 
 ### Section Name Validation
 
-**For golang.md, section names MUST be:**
-- Version, Core Dependency: lib-commons, Frameworks & Libraries, Configuration Loading, Telemetry & Observability, Bootstrap Pattern, Data Transformation: ToEntity/FromEntity, Error Codes Convention, Error Handling, Function Design, Pagination Patterns, Testing Patterns, Logging Standards, Linting, Architecture Patterns, Directory Structure, Concurrency Patterns, RabbitMQ Worker Pattern
+**For typescript.md, section names MUST be:**
+- Version, Strict Configuration, Frameworks & Libraries, Type Safety, Zod Validation Patterns, Dependency Injection, Context Propagation, Testing, Error Handling, Function Design, File Organization, Naming Conventions, Directory Structure, RabbitMQ Worker Pattern, Always-Valid Domain Model
 
 **not:**
-- ❌ "Error Handling" (missing "Error Codes Convention" as separate row)
-- ❌ "Logging" (should be "Logging Standards")
-- ❌ "Configuration" (should be "Configuration Loading")
-- ❌ "Security" (not a section in golang.md)
-- ❌ "Bootstrap" (should be "Bootstrap Pattern")
+- ❌ "Types" (should be "Type Safety")
+- ❌ "DI" (should be "Dependency Injection")
+- ❌ "Validation" (should be "Zod Validation Patterns")
+- ❌ "Security" (not a section in typescript.md)
 
 ### Anti-Rationalization for Section Names
 
@@ -237,7 +235,7 @@ See [shared-patterns/standards-compliance-detection.md](../skills/shared-pattern
 - Anti-rationalization rules
 
 **Agent-Specific Standards:**
-- WebFetch URL: `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/{file}.md`
+- WebFetch URL: `https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/{file}.md`
 - Sections to check: See [standards-coverage-table.md](../skills/shared-patterns/standards-coverage-table.md)
 
 **⛔ Standards Coverage Table is always required. No exceptions.**

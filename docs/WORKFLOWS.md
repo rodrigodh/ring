@@ -117,7 +117,6 @@ Each plugin auto-loads a `using-{plugin}` skill via SessionStart hook to introdu
 - Auto-loads when marsai-dev-team plugin is enabled
 - Located: `dev-team/skills/using-dev-team/SKILL.md`
 - Agents (invoke as `marsai:{agent-name}`):
-  - marsai:backend-engineer-golang
   - marsai:backend-engineer-typescript
   - marsai:devops-engineer
   - marsai:frontend-bff-engineer-typescript
@@ -154,7 +153,7 @@ Each plugin auto-loads a `using-{plugin}` skill via SessionStart hook to introdu
 
 ## Development Cycle (10-gate)
 
-The **marsai:dev-cycle** skill orchestrates task execution through **10 gates** (Gates 0–9, with Gate 0.5 for delivery verification): implementation (Gate 0) → delivery verification (Gate 0.5) → devops (Gate 1) → SRE (Gate 2) → unit-testing (Gate 3) → fuzz-testing (Gate 4) → property-testing (Gate 5) → integration-testing (Gate 6) → chaos-testing (Gate 7) → review (Gate 8) → validation (Gate 9). Multi-tenant adaptation is integrated into Gate 0. All gates are MANDATORY. Invoke with `/marsai:dev-cycle [tasks-file]` or Skill tool `marsai:dev-cycle`. State is persisted to `docs/marsai:dev-cycle/current-cycle.json`. See [dev-team/skills/dev-cycle/SKILL.md](../dev-team/skills/dev-cycle/SKILL.md) for full protocol.
+The **marsai:dev-cycle** skill orchestrates task execution through **8 gates** (Gates 0–7, with Gate 0.5 for delivery verification): implementation (Gate 0) → delivery verification (Gate 0.5) → devops (Gate 1) → SRE (Gate 2) → unit-testing (Gate 3) → integration-testing (Gate 4) → chaos-testing (Gate 5) → review (Gate 6) → validation (Gate 7). All gates are MANDATORY. Invoke with `/marsai:dev-cycle [tasks-file]` or Skill tool `marsai:dev-cycle`. State is persisted to `docs/marsai:dev-cycle/current-cycle.json`. See [dev-team/skills/dev-cycle/SKILL.md](../dev-team/skills/dev-cycle/SKILL.md) for full protocol.
 
 ---
 

@@ -1,11 +1,11 @@
 ---
 name: marsai:dev-integration-testing
 description: |
-  Gate 6 of development cycle - ensures integration tests pass for all
+  Gate 4 of development cycle - ensures integration tests pass for all
   external dependency interactions using real containers via testcontainers.
 
 trigger: |
-  - After property-based testing complete (Gate 5)
+  - After unit testing complete (Gate 3)
   - MANDATORY for all development tasks
   - Verifies real service integration with testcontainers
 
@@ -21,7 +21,7 @@ NOT_skip_when: |
   - "CI doesn't support Docker" - Fix CI. Docker is baseline infrastructure.
 
 sequence:
-  after: [marsai:dev-property-testing]
+  after: [marsai:dev-unit-testing]
   before: [marsai:dev-chaos-testing]
 
 related:
@@ -42,7 +42,7 @@ input_schema:
       description: "External services (postgres, redis, rabbitmq, etc.)"
     - name: language
       type: string
-      enum: [go, typescript]
+      enum: [typescript]
       description: "Programming language"
   optional:
     - name: gate3_handoff
@@ -87,9 +87,6 @@ output_schema:
 
 verification:
   automated:
-    - command: "go test -tags=integration -v ./... 2>&1 | tail -20"
-      description: "Integration tests pass"
-      success_pattern: "PASS"
   manual:
     - "All integration scenarios have at least one test"
     - "No flaky tests (run 3x, all pass)"
@@ -97,7 +94,7 @@ verification:
 
 ---
 
-# Dev Integration Testing (Gate 6)
+# Dev Integration Testing (Gate 4)
 
 ## Overview
 
@@ -140,14 +137,6 @@ if external_dependencies is empty or not provided:
      - Grep tool: pattern "rabbitmq" in docker-compose* files → add "rabbitmq"
 
   2. Scan dependency manifests:
-     if language == "go":
-       - Grep tool: pattern "github.com/lib/pq" in go.mod → add "postgres"
-       - Grep tool: pattern "github.com/jackc/pgx" in go.mod → add "postgres"
-       - Grep tool: pattern "go.mongodb.org/mongo-driver" in go.mod → add "mongodb"
-       - Grep tool: pattern "github.com/redis/go-redis" in go.mod → add "redis"
-       - Grep tool: pattern "github.com/valkey-io/valkey-go" in go.mod → add "valkey"
-       - Grep tool: pattern "github.com/rabbitmq/amqp091-go" in go.mod → add "rabbitmq"
-
      if language == "typescript":
        - Grep tool: pattern "\"pg\"" in package.json → add "postgres"
        - Grep tool: pattern "@prisma/client" in package.json → add "postgres"
@@ -177,12 +166,12 @@ PM team task files often omit external_dependencies. If the codebase uses postgr
 REQUIRED INPUT (from marsai:dev-cycle orchestrator):
 <verify_before_proceed>
 - unit_id exists
-- language is valid (go|typescript)
+- language is valid (typescript)
 </verify_before_proceed>
 
-OPTIONAL INPUT (determines if Gate 6 runs or skips):
-- integration_scenarios: [list of scenarios] - if provided and non-empty, Gate 6 runs
-- external_dependencies: [list of deps] (from input OR auto-detected in Step 0) - if non-empty, Gate 6 runs
+OPTIONAL INPUT (determines if Gate 4 runs or skips):
+- integration_scenarios: [list of scenarios] - if provided and non-empty, Gate 4 runs
+- external_dependencies: [list of deps] (from input OR auto-detected in Step 0) - if non-empty, Gate 4 runs
 - gate3_handoff: [full Gate 3 output]
 - implementation_files: [files from Gate 0]
 
@@ -192,11 +181,11 @@ EXECUTION LOGIC:
    -> Return to orchestrator with error
 
 2. if integration_scenarios is empty AND external_dependencies is empty (AFTER auto-detection in Step 0):
-   -> Gate 6 SKIP (document reason: "No integration scenarios or external dependencies found after codebase scan")
+   -> Gate 4 SKIP (document reason: "No integration scenarios or external dependencies found after codebase scan")
    -> Return skip result with status: "skipped"
 
 3. Otherwise:
-   -> Gate 6 REQUIRED - proceed to Step 2
+   -> Gate 4 REQUIRED - proceed to Step 2
 ```
 
 ## Step 2: Check If Integration Tests Needed
@@ -206,21 +195,21 @@ EXECUTION LOGIC:
 ```text
 1. Task has external_dependencies list (from input or auto-detected)?
    |
-   +-- YES -> Gate 6 REQUIRED
+   +-- YES -> Gate 4 REQUIRED
    |
    +-- NO -> Continue to #2
 
 2. Task has integration_scenarios?
    |
-   +-- YES -> Gate 6 REQUIRED
+   +-- YES -> Gate 4 REQUIRED
    |
    +-- NO -> Continue to #3
 
 3. Task acceptance criteria mention "integration", "database", "queue"?
    |
-   +-- YES -> Gate 6 REQUIRED
+   +-- YES -> Gate 4 REQUIRED
    |
-   +-- NO -> Gate 6 SKIP (with reason)
+   +-- NO -> Gate 4 SKIP (with reason)
 ```
 
 **If SKIP:**
@@ -228,7 +217,7 @@ EXECUTION LOGIC:
 Return:
   status: SKIP
   skip_reason: "No external dependencies (after codebase scan) or integration scenarios identified"
-  ready_for_gate7: YES
+  ready_for_gate5: YES
 ```
 
 ## Step 3: Initialize Testing State
@@ -270,16 +259,7 @@ Task:
     ## External Dependencies
     [list external_dependencies with container requirements]
 
-    ## Standards Reference
-    WebFetch: https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang/testing-integration.md
-
-    Focus on: All sections, especially INT-5 (Build Tags), INT-6 (Testcontainers), INT-7 (No t.Parallel())
-
     ## Requirements
-
-    ### File Naming
-    - Pattern: `*_integration_test.go`
-    - Build tag: `//go:build integration` (MANDATORY at top of file)
 
     ### Function Naming
     - Pattern: `TestIntegration_{Component}_{Scenario}`
@@ -420,7 +400,7 @@ Generate skill output:
 - Tests passed: [tests_passed]
 - Tests failed: 0
 - Flaky tests: 0
-- Ready for Gate 7 (Chaos Testing): YES
+- Ready for Gate 5 (Chaos Testing): YES
 ```
 
 ## Step 8: Escalate - Max Iterations Reached
@@ -441,7 +421,7 @@ Generate skill output:
 
 ## Handoff to Next Gate
 - Integration testing status: FAILED
-- Ready for Gate 4: NO
+- Ready for Gate 5: NO
 - **Action Required:** User must manually fix integration tests
 
 ESCALATION: Max iterations (3) reached. Integration tests still failing.
@@ -480,7 +460,7 @@ See [shared-patterns/shared-pressure-resistance.md](../shared-patterns/shared-pr
 
 See [shared-patterns/shared-anti-rationalization.md](../shared-patterns/shared-anti-rationalization.md) for universal anti-rationalizations.
 
-### Gate 6-Specific Anti-Rationalizations
+### Gate 4-Specific Anti-Rationalizations
 
 | Rationalization | Why It's WRONG | Required Action |
 |-----------------|----------------|-----------------|
@@ -522,14 +502,14 @@ See [shared-patterns/shared-anti-rationalization.md](../shared-patterns/shared-a
 
 ## Handoff to Next Gate
 - Integration testing status: [COMPLETE|FAILED|SKIPPED]
-- Ready for Gate 7: [YES|NO]
+- Ready for Gate 5: [YES|NO]
 ```
 
 ---
 
 ## Skip Conditions (Documented)
 
-**When Gate 6 can be skipped (MUST document reason):**
+**When Gate 4 can be skipped (MUST document reason):**
 
 | Condition | Skip Reason |
 |-----------|-------------|
@@ -538,7 +518,7 @@ See [shared-patterns/shared-anti-rationalization.md](../shared-patterns/shared-a
 | Library/utility code | "Task is internal utility with no external calls" |
 | Already covered | "Integration tests exist and pass (verified)" |
 
-**When Gate 6 CANNOT be skipped:**
+**When Gate 4 CANNOT be skipped:**
 
 | Condition | Why Required |
 |-----------|--------------|

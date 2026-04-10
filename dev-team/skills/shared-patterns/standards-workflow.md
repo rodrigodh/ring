@@ -47,7 +47,7 @@ Read docs/PROJECT_RULES.md
 | Logging standards | MarsAI Standards | ❌ Do not duplicate |
 | Testing patterns | MarsAI Standards | ❌ Do not duplicate |
 | Architecture patterns | MarsAI Standards | ❌ Do not duplicate |
-| lib-commons, shared packages | MarsAI Standards | ❌ Do not duplicate |
+| Shared packages | MarsAI Standards | ❌ Do not duplicate |
 | API directory structure | MarsAI Standards | ❌ Do not duplicate |
 | Business rules | Product docs (PRD) | ❌ Does not belong in PROJECT_RULES |
 
@@ -91,7 +91,7 @@ Read docs/PROJECT_RULES.md
 | Rationalization | Why It's WRONG | Required Action |
 |-----------------|----------------|-----------------|
 | "I know the patterns from training" | Training data may be outdated. Standards evolve. | **MUST WebFetch current standards** |
-| "I'll use general best practices" | General ≠ Lerian standards. Compliance requires specifics. | **MUST WebFetch current standards** |
+| "I'll use general best practices" | General ≠ V4-Company standards. Compliance requires specifics. | **MUST WebFetch current standards** |
 | "WebFetch is slow, I'll skip it" | Speed ≠ correctness. Wrong patterns = rework. | **MUST WebFetch, wait for result** |
 | "I'll add the patterns I remember" | Memory ≠ source of truth. Standards file is authoritative. | **MUST WebFetch current standards** |
 | "Standards haven't changed recently" | You don't know this. Always fetch latest. | **MUST WebFetch current standards** |
@@ -100,14 +100,13 @@ Read docs/PROJECT_RULES.md
 
 | Agent | Standards File | URL |
 |-------|---------------|-----|
-| `marsai:backend-engineer-golang` | golang.md | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang.md` |
-| `marsai:backend-engineer-typescript` | typescript.md | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/typescript.md` |
-| `frontend-bff-engineer-typescript` | typescript.md | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/typescript.md` |
-| `marsai:frontend-engineer` | frontend.md | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/frontend.md` |
-| `marsai:frontend-designer` | frontend.md | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/frontend.md` |
-| `marsai:devops-engineer` | devops.md | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/devops.md` |
-| `marsai:sre` | sre.md | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/sre.md` |
-| `marsai:qa-analyst` | golang.md or typescript.md | Based on project language (check PROJECT_RULES.md first) |
+| `marsai:backend-engineer-typescript` | typescript.md | `https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/typescript.md` |
+| `frontend-bff-engineer-typescript` | typescript.md | `https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/typescript.md` |
+| `marsai:frontend-engineer` | frontend.md | `https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/frontend.md` |
+| `marsai:frontend-designer` | frontend.md | `https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/frontend.md` |
+| `marsai:devops-engineer` | devops.md | `https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/devops.md` |
+| `marsai:sre` | sre.md | `https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/sre.md` |
+| `marsai:qa-analyst` | typescript.md | TypeScript testing standards |
 | `prompt-quality-reviewer` | N/A | Domain-independent (no standards WebFetch required) |
 
 ---
@@ -140,7 +139,7 @@ Read docs/PROJECT_RULES.md
 ```text
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  Step 1: WebFetch MarsAI Standards FIRST                                      │
-│  ├─ Load standards for detected language (Go, TypeScript, etc.)             │
+│  ├─ Load standards for detected language (TypeScript, etc.)                 │
 │  └─ This establishes what is ALREADY covered                                │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  Step 2: Analyze Codebase for Project-Specific Information                  │
@@ -170,24 +169,23 @@ Read docs/PROJECT_RULES.md
 > This file documents only project-specific information not covered by MarsAI Standards.
 >
 > MarsAI Standards URLs:
-> - Go: https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang.md
-> - TypeScript: https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/typescript.md
-> - Frontend: https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/frontend.md
-> - DevOps: https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/devops.md
-> - SRE: https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/sre.md
+> - TypeScript: https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/typescript.md
+> - Frontend: https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/frontend.md
+> - DevOps: https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/devops.md
+> - SRE: https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/sre.md
 
 ## What MarsAI Standards Cover (DO not DUPLICATE HERE)
 
 The following are defined in MarsAI Standards and MUST not be duplicated in this file:
-- Error handling patterns (no panic, wrap errors)
-- Logging standards (structured JSON via lib-commons)
-- Testing patterns (table-driven tests, mocks)
-- Architecture patterns (Hexagonal, Clean Architecture)
-- Observability (OpenTelemetry via lib-commons)
-- lib-commons / lib-common-js usage and patterns
-- API directory structure (Lerian pattern)
-- Database connections (PostgreSQL, MongoDB, Redis via lib-commons)
-- Bootstrap pattern (config.go, service.go, server.go)
+- Error handling patterns (custom error classes, Result types)
+- Logging standards (structured JSON via pino/winston)
+- Testing patterns (type-safe mocks, fixtures)
+- Architecture patterns (Clean Architecture, DDD)
+- Observability (OpenTelemetry)
+- lib-common-js usage and patterns
+- API directory structure (V4-Company pattern)
+- Database connections (PostgreSQL, MongoDB, Redis)
+- Dependency injection (InversifyJS)
 
 **Agents MUST WebFetch MarsAI Standards and output Standards Coverage Table.**
 
@@ -251,7 +249,7 @@ The following are defined in MarsAI Standards and MUST not be duplicated in this
 | Error handling patterns | ❌ REMOVE - MarsAI Standards covers this |
 | Logging format/structure | ❌ REMOVE - MarsAI Standards covers this |
 | Testing patterns | ❌ REMOVE - MarsAI Standards covers this |
-| lib-commons | ❌ REMOVE - MarsAI Standards covers this |
+| lib-common-js | ❌ REMOVE - MarsAI Standards covers this |
 | Hexagonal/Clean Architecture | ❌ REMOVE - MarsAI Standards covers this |
 | OpenTelemetry/tracing | ❌ REMOVE - MarsAI Standards covers this |
 | Standard API directory structure | ❌ REMOVE - MarsAI Standards covers this |
@@ -266,8 +264,8 @@ I'll help you create `docs/PROJECT_RULES.md` with only project-specific informat
 
 **MarsAI Standards already cover:**
 - Error handling, logging, testing patterns
-- Architecture (Hexagonal), observability (OpenTelemetry)
-- lib-commons usage, API structure
+- Architecture (Clean Architecture, DDD), observability (OpenTelemetry)
+- lib-common-js usage, API structure
 
 **I need to document (if applicable):**
 1. Tech stack not in MarsAI (specific message broker, cache, etc.)
@@ -290,7 +288,7 @@ I'll help you create `docs/PROJECT_RULES.md` with only project-specific informat
 | Rationalization | Why It's WRONG | Required Action |
 |-----------------|----------------|-----------------|
 | "Include error handling section anyway" | MarsAI Standards covers this. Duplication causes drift. | **REMOVE from PROJECT_RULES.md** |
-| "Add lib-commons usage notes" | MarsAI Standards is the source of truth. | **REMOVE from PROJECT_RULES.md** |
+| "Add lib-common-js usage notes" | MarsAI Standards is the source of truth. | **REMOVE from PROJECT_RULES.md** |
 | "Document testing patterns here" | MarsAI Standards defines testing patterns. | **REMOVE from PROJECT_RULES.md** |
 | "Include business rules for context" | Business rules belong in PRD, not tech docs. | **REMOVE from PROJECT_RULES.md** |
 | "Better to have everything in one place" | Single source of truth prevents drift. MarsAI = patterns. | **Reference MarsAI, don't duplicate** |
@@ -321,7 +319,6 @@ I'll help you create `docs/PROJECT_RULES.md` with only project-specific informat
 
 | Agent Type | Signs of Non-Compliant Code |
 |------------|----------------------------|
-| **Go Backend** | `panic()` for errors, `fmt.Println` instead of structured logging, ignored errors with `result, _ :=`, no context propagation |
 | **TypeScript Backend** | `any` types, no Zod validation, `// @ts-ignore`, missing Result type for errors |
 | **Frontend** | No component tests, inline styles instead of design system, missing accessibility attributes |
 | **DevOps** | Hardcoded secrets, no health checks, missing resource limits |
@@ -385,7 +382,7 @@ See [shared-patterns/standards-workflow.md](../skills/shared-patterns/standards-
 
 | Setting | Value |
 |---------|-------|
-| **WebFetch URL** | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/{file}.md` |
+| **WebFetch URL** | `https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/{file}.md` |
 | **Standards File** | {file}.md |
 | **Prompt** | "Extract all [domain] standards, patterns, and requirements" |
 ```

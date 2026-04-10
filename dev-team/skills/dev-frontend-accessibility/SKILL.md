@@ -115,7 +115,7 @@ Ensure all frontend components meet **WCAG 2.1 AA** accessibility standards thro
 **MANDATORY:** Load testing-accessibility.md standards via WebFetch.
 
 <fetch_required>
-https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/frontend/testing-accessibility.md
+https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/frontend/testing-accessibility.md
 </fetch_required>
 
 ---

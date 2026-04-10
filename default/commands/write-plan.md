@@ -85,7 +85,6 @@ Plans specify recommended agents for execution:
 
 | Task Type | Recommended Agent |
 |-----------|-------------------|
-| Backend (Go) | `marsai:backend-engineer-golang` |
 | Backend (TypeScript) | `marsai:backend-engineer-typescript` |
 | Frontend (BFF/API Routes) | `frontend-bff-engineer-typescript` |
 | Infrastructure | `marsai:devops-engineer` |

@@ -91,11 +91,11 @@ Each task MUST include:
 
 **Target:** backend
 **Working Directory:** packages/api
-**Agent:** marsai:backend-engineer-golang
+**Agent:** marsai:backend-engineer-typescript
 
 **Files to Create/Modify:**
-- `packages/api/internal/handlers/auth.go`
-- `packages/api/internal/services/auth_service.go`
+- `packages/api/src/handlers/auth.ts`
+- `packages/api/src/services/auth-service.ts`
 
 ...rest of task...
 ```
@@ -104,7 +104,7 @@ Each task MUST include:
 
 | Target | When | Agent |
 |--------|------|-------|
-| `backend` | API endpoints, services, data layer, CLI | `marsai:backend-engineer-{golang,typescript}` |
+| `backend` | API endpoints, services, data layer, CLI | `marsai:backend-engineer-typescript` |
 | `frontend` | UI components, pages, BFF routes | See [Frontend Tasks (api_pattern aware)](#frontend-tasks-api_pattern-aware) |
 | `shared` | CI/CD, configs, docs, cross-module | `marsai:devops-engineer` or `marsai:general-purpose` |
 
@@ -122,7 +122,6 @@ Each task MUST include:
 
 | Task Type | Agent |
 |-----------|-------|
-| Go backend API/services | `marsai:backend-engineer-golang` |
 | TypeScript backend API/services | `marsai:backend-engineer-typescript` |
 
 ### Frontend Tasks (api_pattern aware)

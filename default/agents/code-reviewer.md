@@ -343,7 +343,6 @@ async function fulfillOrder(orderId: string) {
 |----------|-------|
 | **TypeScript** | `npx eslint src/`, `npx tsc --noEmit` |
 | **Python** | `black --check .`, `mypy .` |
-| **Go** | `golangci-lint run` |
 
 ---
 

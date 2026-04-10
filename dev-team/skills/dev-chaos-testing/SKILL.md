@@ -38,7 +38,7 @@ input_schema:
       description: "External services (postgres, redis, rabbitmq, etc.)"
     - name: language
       type: string
-      enum: [go, typescript]
+      enum: [typescript]
       description: "Programming language"
   optional:
     - name: gate6_handoff
@@ -116,7 +116,7 @@ Ensure code handles **failure conditions gracefully** by injecting faults using 
 **MANDATORY:** Load testing-chaos.md standards via WebFetch.
 
 <fetch_required>
-https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang/testing-chaos.md
+Load chaos testing standards for the project language.
 </fetch_required>
 
 ---
@@ -138,14 +138,6 @@ if external_dependencies is empty or not provided:
      - Grep tool: pattern "rabbitmq" in docker-compose* files → add "rabbitmq"
 
   2. Scan dependency manifests:
-     if language == "go":
-       - Grep tool: pattern "github.com/lib/pq" in go.mod → add "postgres"
-       - Grep tool: pattern "github.com/jackc/pgx" in go.mod → add "postgres"
-       - Grep tool: pattern "go.mongodb.org/mongo-driver" in go.mod → add "mongodb"
-       - Grep tool: pattern "github.com/redis/go-redis" in go.mod → add "redis"
-       - Grep tool: pattern "github.com/valkey-io/valkey-go" in go.mod → add "valkey"
-       - Grep tool: pattern "github.com/rabbitmq/amqp091-go" in go.mod → add "rabbitmq"
-
      if language == "typescript":
        - Grep tool: pattern "\"pg\"" in package.json → add "postgres"
        - Grep tool: pattern "@prisma/client" in package.json → add "postgres"
@@ -175,7 +167,7 @@ PM team task files often omit external_dependencies. If the codebase uses postgr
 REQUIRED INPUT:
 - unit_id: [task/subtask being tested]
 - external_dependencies: [postgres, mongodb, valkey, redis, rabbitmq, etc.] (from input OR auto-detected in Step 0)
-- language: [go|typescript]
+- language: [typescript]
 
 OPTIONAL INPUT:
 - gate6_handoff: [full Gate 6 output]

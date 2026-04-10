@@ -35,7 +35,7 @@ input_schema:
       description: "Task or subtask identifier being validated"
     - name: language
       type: string
-      enum: [go, typescript, python]
+      enum: [typescript, python]
       description: "Programming language of the implementation"
     - name: service_type
       type: string
@@ -43,7 +43,7 @@ input_schema:
       description: "Type of service being validated"
     - name: implementation_agent
       type: string
-      description: "Agent that performed Gate 0 (e.g., marsai:backend-engineer-golang)"
+      description: "Agent that performed Gate 0 (e.g., marsai:backend-engineer-typescript)"
     - name: implementation_files
       type: array
       items: string
@@ -134,7 +134,7 @@ This skill VALIDATES that observability was correctly implemented by developers:
 
 <verify_before_proceed>
 - unit_id exists
-- language is valid (go|typescript|python)
+- language is valid (typescript|python)
 - service_type is valid (api|worker|batch|cli|library)
 - implementation_agent exists
 - implementation_files is not empty
@@ -143,7 +143,7 @@ This skill VALIDATES that observability was correctly implemented by developers:
 ```text
 REQUIRED INPUT (from marsai:dev-cycle orchestrator):
 - unit_id: [task/subtask being validated]
-- language: [go|typescript|python]
+- language: [typescript|python]
 - service_type: [api|worker|batch|cli|library]
 - implementation_agent: [agent that did Gate 0]
 - implementation_files: [list of files from Gate 0]
@@ -192,7 +192,7 @@ Task:
     - **External Dependencies:** [external_dependencies or "None"]
 
     ## Standards Reference
-    WebFetch: https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/sre.md
+    WebFetch: https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/sre.md
 
     ## Your Role
     - VALIDATE that observability is implemented correctly
@@ -208,12 +208,6 @@ Task:
     Any occurrence = CRITICAL severity, automatic FAIL verdict.
 
     <forbidden>
-    - fmt.Println() in Go code
-    - fmt.Printf() in Go code
-    - log.Println() in Go code
-    - log.Printf() in Go code
-    - log.Fatal() in Go code
-    - println() in Go code
     - console.log() in TypeScript
     - console.error() in TypeScript
     - console.warn() in TypeScript
@@ -223,12 +217,6 @@ Task:
     
     | Language | FORBIDDEN Pattern | Search For |
     |----------|-------------------|------------|
-    | Go | `fmt.Println()` | `fmt.Println` in *.go files |
-    | Go | `fmt.Printf()` | `fmt.Printf` in *.go files |
-    | Go | `log.Println()` | `log.Println` in *.go files |
-    | Go | `log.Printf()` | `log.Printf` in *.go files |
-    | Go | `log.Fatal()` | `log.Fatal` in *.go files |
-    | Go | `println()` | `println(` in *.go files |
     | TypeScript | `console.log()` | `console.log` in *.ts files |
     | TypeScript | `console.error()` | `console.error` in *.ts files |
     | TypeScript | `console.warn()` | `console.warn` in *.ts files |
@@ -238,8 +226,7 @@ Task:
     - Verdict: **FAIL** (automatic, no exceptions)
     - Each occurrence MUST be listed with file:line
     
-    ### 1. Structured Logging (lib-commons)
-    - [ ] Uses `libCommons.NewTrackingFromContext(ctx)` for logger (Go)
+    ### 1. Structured Logging
     - [ ] Uses `initializeLogger()` from lib-common-js (TypeScript)
     - [ ] JSON format with timestamp, level, message, service
     - [ ] trace_id correlation in logs
@@ -248,13 +235,6 @@ Task:
     ### 2. Instrumentation Coverage (90%+ required)
     For [language], check these patterns:
 
-    **Go (lib-commons):**
-    ```go
-    logger, tracer, _, _ := libCommons.NewTrackingFromContext(ctx)
-    ctx, span := tracer.Start(ctx, "layer.operation")
-    defer span.End()
-    ```
-
     **TypeScript:**
     ```typescript
     const span = tracer.startSpan('layer.operation');
@@ -262,15 +242,15 @@ Task:
     ```
 
     Count spans in:
-    - Handlers: grep "tracer.Start" in *handler*.go or *controller*.ts
-    - Services: grep "tracer.Start" in *service*.go or *service*.ts
-    - Repositories: grep "tracer.Start" in *repo*.go or *repository*.ts
+    - Handlers: grep "tracer.Start" in *controller*.ts
+    - Services: grep "tracer.Start" in *service*.ts
+    - Repositories: grep "tracer.Start" in *repository*.ts
 
     ### 3. Context Propagation
     For external calls, verify:
-    - HTTP: InjectHTTPContext (Go) or equivalent
-    - gRPC: InjectGRPCContext (Go) or equivalent
-    - Queues: PrepareQueueHeaders (Go) or equivalent
+    - HTTP: context propagation middleware or equivalent
+    - gRPC: context propagation interceptor or equivalent
+    - Queues: header propagation or equivalent
 
     ### 4. Multi-Tenant Observability (MANDATORY)
     All services MUST include tenant context in observability:
@@ -340,21 +320,21 @@ validation_state.sre_result = {
 ```text
 if validation_state.sre_result.verdict == "PASS" 
    and validation_state.sre_result.instrumentation_coverage >= 90:
-  → Go to Step 8 (Success)
+  → Proceed to Step 8 (Success)
 
 if validation_state.sre_result.verdict == "FAIL"
    or validation_state.sre_result.instrumentation_coverage < 90:
-  → Go to Step 6 (Dispatch Fix)
+  → Proceed to Step 6 (Dispatch Fix)
 
 if validation_state.iteration >= validation_state.max_iterations:
-  → Go to Step 9 (Escalate)
+  → Proceed to Step 9 (Escalate)
 ```
 
 ## Step 6: Dispatch Fix to Implementation Agent
 
 ```yaml
 Task:
-  subagent_type: "[implementation_agent from input]"  # e.g., "marsai:backend-engineer-golang"
+  subagent_type: "[implementation_agent from input]"  # e.g., "marsai:backend-engineer-typescript"
   description: "Fix observability issues for [unit_id]"
   prompt: |
     ⛔ FIX REQUIRED - Observability Issues Found
@@ -373,8 +353,7 @@ Task:
     **Current:** [validation_state.sre_result.instrumentation_coverage]%
 
     ## Standards Reference
-    For Go: https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang.md
-    For TS: https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/typescript.md
+    For TS: https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/typescript.md
 
     Focus on: Telemetry & Observability section
 
@@ -408,9 +387,9 @@ Task:
 validation_state.iteration += 1
 
 if validation_state.iteration > validation_state.max_iterations:
-  → Go to Step 9 (Escalate)
+  → Proceed to Step 9 (Escalate)
 
-→ Go back to Step 3 (Dispatch SRE Agent)
+→ Return to Step 3 (Dispatch SRE Agent)
 ```
 
 ## Step 8: Success - Prepare Output

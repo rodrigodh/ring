@@ -104,11 +104,11 @@ The skill defines all steps including: stack detection, marsai:codebase-explorer
 
 | Dimension | What's Checked | Standards Reference |
 |-----------|----------------|---------------------|
-| **Architecture** | DDD patterns, layer separation, dependency direction, directory structure | `golang.md` § Architecture |
-| **Code Quality** | Naming conventions, error handling, forbidden practices, security | `golang.md` § Error Handling |
-| **Instrumentation** | Service method tracing, span naming, error classification, context propagation | `golang.md` § Distributed Tracing |
-| **Testing** | Coverage percentage, test patterns, naming, missing tests | `golang.md` § Testing |
-| **DevOps** | Dockerfile, docker-compose, env management, Helm charts | `golang.md` § DevOps |
+| **Architecture** | DDD patterns, layer separation, dependency direction, directory structure | `typescript.md` § Architecture |
+| **Code Quality** | Naming conventions, error handling, forbidden practices, security | `typescript.md` § Error Handling |
+| **Instrumentation** | Service method tracing, span naming, error classification, context propagation | `typescript.md` § Distributed Tracing |
+| **Testing** | Coverage percentage, test patterns, naming, missing tests | `typescript.md` § Testing |
+| **DevOps** | Dockerfile, docker-compose, env management, Helm charts | `typescript.md` § DevOps |
 
 **Analysis vs Execution:**
 - **Analysis (always):** All five dimensions analyzed, all severities (Critical, High, Medium, Low) tracked
@@ -128,7 +128,7 @@ When analyzing services for instrumentation compliance, verify:
    - Technical errors → `HandleSpanError` (span marked ERROR)
 5. **Structured logging**: Use logger from context, not `log.Printf`
 
-**Full details and code templates**: See `docs/standards/golang.md` § "Distributed Tracing Architecture"
+**Full details and code templates**: See `docs/standards/typescript.md` § "Distributed Tracing Architecture"
 
 ## Output
 

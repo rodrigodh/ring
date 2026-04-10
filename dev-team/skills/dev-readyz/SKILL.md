@@ -2,7 +2,7 @@
 name: marsai:dev-readyz
 description: |
   Implements comprehensive readiness probes (/readyz) and startup self-probes for
-  Lerian services. Goes beyond basic K8s liveness: validates every external dependency
+  V4-Company services. Goes beyond basic K8s liveness: validates every external dependency
   (database, cache, queue, TLS handshakes) and exposes per-dependency status with
   latency and TLS info. Designed to be consumed by Tenant Manager post-provisioning.
 
@@ -38,13 +38,13 @@ sequence:
 
 related:
   complementary: [marsai:dev-cycle, marsai:dev-sre, marsai:dev-devops, marsai:dev-service-discovery]
-  standards: [docs/standards/golang/bootstrap.md, docs/standards/sre.md, docs/standards/helm/templates.md]
+  standards: [docs/standards/sre.md, docs/standards/helm/templates.md]
 
 input_schema:
   required:
     - name: language
       type: string
-      enum: [go, typescript]
+      enum: [typescript]
       description: "Programming language of the service"
     - name: service_type
       type: string
@@ -93,15 +93,11 @@ output_schema:
 Scan the project to detect ALL external dependencies:
 
 ```bash
-# Go: detect imports and connection patterns
-grep -rn 'pgx\|pgxpool\|mongo\.\|mongo-driver\|redis\.\|valkey\|amqp\|rabbitmq\|s3\|aws' go.mod internal/ pkg/ cmd/
-grep -rn 'NewPostgres\|NewMongo\|NewRedis\|NewRabbit\|NewValkey\|WithModule' internal/
-
 # TypeScript/Next.js: detect connection patterns
 grep -rn 'MongoClient\|mongoose\|pg\|Pool\|redis\|amqplib\|S3Client' package.json src/ app/ lib/
 ```
 
-Build dependency map: PostgreSQL (pgx), MongoDB (mongo-driver), Redis/Valkey (go-redis), RabbitMQ (amqp091-go), S3 (aws-sdk), HTTP clients. For each, detect if TLS is configured (`sslmode`, `tls=true`, `rediss://`, `amqps://`).
+Build dependency map: PostgreSQL (pg/prisma), MongoDB (mongoose/mongodb), Redis/Valkey (ioredis), RabbitMQ (amqplib), S3 (aws-sdk), HTTP clients. For each, detect if TLS is configured (`sslmode`, `tls=true`, `rediss://`, `amqps://`).
 
 **SaaS deployment mode: TLS is MANDATORY for all database connections.** No exceptions.
 
@@ -128,76 +124,11 @@ Build dependency map: PostgreSQL (pgx), MongoDB (mongo-driver), Redis/Valkey (go
 - `deployment_mode`: from `DEPLOYMENT_MODE` env or inferred from config
 - `version`: from build info or `VERSION` env
 
-### Go Implementation (Fiber + lib-commons)
-
-```go
-// internal/adapters/http/in/readyz.go
-
-type DependencyCheck struct {
-    Status    string `json:"status"`
-    LatencyMs int64  `json:"latency_ms,omitempty"`
-    TLS       *bool  `json:"tls,omitempty"`
-    Connected *bool  `json:"connected,omitempty"`
-    Error     string `json:"error,omitempty"`
-}
-
-type ReadyResponse struct {
-    Status         string                      `json:"status"`
-    Checks         map[string]DependencyCheck  `json:"checks"`
-    Version        string                      `json:"version"`
-    DeploymentMode string                      `json:"deployment_mode"`
-}
-
-func isCacheDependency(name string) bool {
-    normalized := strings.ToLower(name)
-    return strings.Contains(normalized, "redis") ||
-        strings.Contains(normalized, "valkey") ||
-        strings.Contains(normalized, "cache")
-}
-
-func ReadyHandler(deps Dependencies) fiber.Handler {
-    return func(c *fiber.Ctx) error {
-        ctx, cancel := context.WithTimeout(c.UserContext(), 5*time.Second)
-        defer cancel()
-
-        resp := ReadyResponse{
-            Status:         "healthy",
-            Checks:         make(map[string]DependencyCheck),
-            Version:        buildVersion,
-            DeploymentMode: os.Getenv("DEPLOYMENT_MODE"),
-        }
-
-        // Each check: ping + measure latency + verify TLS
-        // Use 2s timeout per dependency, 1s for cache
-        for name, checker := range deps.HealthCheckers() {
-            timeout := 2 * time.Second
-            if isCacheDependency(name) {
-                timeout = 1 * time.Second
-            }
-
-            depCtx, depCancel := context.WithTimeout(ctx, timeout)
-            check := checker.Check(depCtx)
-            depCancel()
-
-            resp.Checks[name] = check
-            if check.Status != "up" {
-                resp.Status = "unhealthy"
-            }
-        }
-
-        if resp.Status != "healthy" {
-            return libHTTP.ServiceUnavailable(c, "UNHEALTHY", "Service Unhealthy", resp)
-        }
-        return libHTTP.OK(c, resp)
-    }
-}
-```
-
 ### TLS Verification (CRITICAL)
 
-Each checker MUST verify TLS state from the connection options (e.g., `connOpts.TLSConfig != nil` for Go, `mongoClient.options?.tls` for TS). This is what would have caught the Monetarie bug.
+Each checker MUST verify TLS state from the connection options (e.g., `mongoClient.options?.tls` for TS). This is what would have caught the Monetarie bug.
 
-**RabbitMQ note:** The `amqp091-go` library's `*amqp.Connection` does not reliably expose TLS state after dialing. For RabbitMQ, TLS detection MUST inspect the connection URL scheme (`amqps://` = TLS, `amqp://` = plaintext). The checker constructor MUST accept the connection URL alongside the `*amqp.Connection` object and derive `tls: true/false` from the scheme. Do not attempt to reflect on the live connection object for this purpose.
+**RabbitMQ note:** For RabbitMQ, TLS detection MUST inspect the connection URL scheme (`amqps://` = TLS, `amqp://` = plaintext). The checker constructor MUST accept the connection URL and derive `tls: true/false` from the scheme.
 
 ### SaaS TLS Enforcement
 
@@ -210,14 +141,6 @@ Each checker MUST verify TLS state from the connection options (e.g., `connOpts.
 
 MUST implement both. Surfacing without enforcement means the service starts silently insecure. Enforcement without surfacing means the Tenant Manager cannot confirm TLS posture post-provisioning. Neither alone is sufficient.
 
-Bootstrap enforcement pattern (Go):
-
-```go
-if os.Getenv("DEPLOYMENT_MODE") == "saas" && connOpts.TLSConfig == nil {
-    return nil, fmt.Errorf("TLS is required in SaaS mode but not configured for %s", depName)
-}
-```
-
 ### Next.js Implementation
 
 Same pattern at `app/api/admin/health/readyz/route.ts`: ping each dependency, measure latency, check TLS, return 200/503 with the same JSON contract. Use `Response.json()` with appropriate status code.
@@ -226,8 +149,6 @@ Same pattern at `app/api/admin/health/readyz/route.ts`: ping each dependency, me
 
 | Stack | Ready Path | Health Path |
 |-------|-------------|-------------|
-| Go API | `/readyz` | `/health` |
-| Go Worker | `/readyz` on `HEALTH_PORT` | `/health` on `HEALTH_PORT` |
 | Next.js | `/api/admin/health/readyz` | same as Ready Path |
 
 Next.js exposes a single `/api/admin/health/readyz` endpoint which serves both readiness and health checks.
@@ -236,85 +157,7 @@ Next.js exposes a single `/api/admin/health/readyz` endpoint which serves both r
 
 The app MUST run all readiness checks at boot and log results BEFORE accepting traffic.
 
-### Go Implementation
-
-```go
-// cmd/app/main.go or internal/bootstrap/selfprobe.go
-
-func RunSelfProbe(ctx context.Context, deps Dependencies, logger Logger) error {
-    logger.Infow("startup_self_probe_started",
-        "probe", "self",
-    )
-    results := make(map[string]DependencyCheck)
-    allHealthy := true
-
-    for name, checker := range deps.HealthCheckers() {
-        check := checker.Check(ctx)
-        results[name] = check
-
-        if check.Status == "up" {
-            logger.Infow("self_probe_check",
-                "probe", "self",
-                "name", name,
-                "status", check.Status,
-                "duration_ms", check.LatencyMs,
-                "tls", check.TLS,
-            )
-        } else {
-            logger.Errorw("self_probe_check",
-                "probe", "self",
-                "name", name,
-                "status", check.Status,
-                "duration_ms", check.LatencyMs,
-                "error", check.Error,
-            )
-            allHealthy = false
-        }
-    }
-
-    if !allHealthy {
-        logger.Errorw("startup_self_probe_failed",
-            "probe", "self",
-            "results", results,
-        )
-        return fmt.Errorf("self-probe failed: one or more dependencies unreachable")
-    }
-
-    logger.Infow("startup_self_probe_passed",
-        "probe", "self",
-        "results", results,
-    )
-    return nil
-}
-```
-
-### Impact on /health
-
-Self-probe failure MUST affect /health:
-
-```go
-var selfProbeOK atomic.Bool // package-level
-
-func init() { selfProbeOK.Store(false) } // unhealthy until proven otherwise
-
-// At startup, after self-probe succeeds:
-if err := RunSelfProbe(ctx, deps, logger); err != nil {
-    // selfProbeOK stays false — /health returns 503
-    // K8s liveness probe will restart the pod
-} else {
-    selfProbeOK.Store(true)
-}
-
-// /health handler
-f.Get("/health", func(c *fiber.Ctx) error {
-    if !selfProbeOK.Load() {
-        return libHTTP.ServiceUnavailable(c, "UNHEALTHY", "Self-probe failed", nil)
-    }
-    return libHTTP.HealthWithDependencies(deps)(c)
-})
-```
-
-**This is the key insight:** `/health` is no longer just "process alive." It's "startup self-probe passed AND lib-commons runtime dependency state is healthy." A pod that starts but can't reach its databases will be restarted by K8s instead of silently serving errors, and runtime dependency or circuit-breaker failures are still surfaced through the standard lib-commons health handler.
+**Key insight:** `/health` is no longer just "process alive." It's "startup self-probe passed AND runtime dependency state is healthy." A pod that starts but can't reach its databases will be restarted by K8s instead of silently serving errors.
 
 ### Self-Probe Lifecycle
 
@@ -359,7 +202,7 @@ These two mechanisms are complementary, not redundant:
 |-----------|------|---------|
 | Self-probe | STARTUP — before first request | Validates dependencies are reachable before traffic is allowed |
 | `/readyz` | RUNTIME — per request | Validates dependencies are still reachable as K8s readinessProbe |
-| `/health` | RUNTIME — per request | Reflects self-probe result AND lib-commons runtime circuit-breaker state |
+| `/health` | RUNTIME — per request | Reflects self-probe result AND runtime circuit-breaker state |
 
 A pod that passes startup self-probe can still fail `/readyz` later (e.g., DB goes away mid-run). A pod that fails self-probe should never receive traffic in the first place. Both gates are necessary.
 

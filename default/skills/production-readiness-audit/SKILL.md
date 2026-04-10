@@ -52,12 +52,12 @@ Use this skill when:
 | 3 | **Route Organization** | Hexagonal structure, handler construction, route registration |
 | 4 | **Bootstrap & Initialization** | Staged startup, cleanup handlers, graceful shutdown |
 | 5 | **Runtime Safety** | Panic recovery, production mode handling |
-| 28 | **Core Dependencies & Frameworks** | lib-commons v2, framework version minimums, no custom utility duplication |
+| 28 | **Core Dependencies & Frameworks** | Framework version minimums, no custom utility duplication |
 | 29 | **Naming Conventions** | snake_case DB, camelCase JSON body, snake_case query params |
 | 30 | **Domain Modeling** | ToEntity/FromEntity, always-valid constructors, private fields + getters |
 | 35 | **Nil/Null Safety** | Type assertions, nil map/pointer/channel, null guards, API response consistency |
 | 38 | **API Versioning** | Versioning strategy, backward compatibility, deprecation, sunset headers |
-| 42 | **Resource Leak Prevention** | Unclosed handles, connection leaks, context propagation, defer ordering |
+| 42 | **Resource Leak Prevention** | Unclosed handles, connection leaks, context propagation, cleanup ordering |
 
 ### Category B: Security & Access Control (9 base + 1 conditional)
 
@@ -77,7 +77,7 @@ Use this skill when:
 
 | # | Dimension | Focus Area |
 |---|-----------|------------|
-| 11 | **Telemetry & Observability** | OpenTelemetry integration, tracing, metrics, lib-commons tracking |
+| 11 | **Telemetry & Observability** | OpenTelemetry integration, tracing, metrics |
 | 12 | **Health Checks** | Liveness/readiness probes, dependency health, degraded status |
 | 13 | **Configuration Management** | Env var validation, production constraints, secrets handling |
 | 14 | **Connection Management** | DB/Redis pool settings, timeouts, replica support |
@@ -92,12 +92,12 @@ Use this skill when:
 | 16 | **Idempotency** | Idempotency keys, retry safety, duplicate prevention |
 | 17 | **API Documentation** | Swaggo/OpenAPI annotations, response schemas, examples |
 | 18 | **Technical Debt** | TODOs, FIXMEs, deprecated code, incomplete implementations |
-| 19 | **Testing Coverage** | Co-located tests, mockgen, table-driven tests, integration tests |
+| 19 | **Testing Coverage** | Co-located tests, mocking, parameterized tests, integration tests |
 | 20 | **Dependency Management** | Pinned versions, CVE scanning, deprecated packages |
 | 21 | **Performance Patterns** | N+1 queries, SELECT *, slice pre-allocation, batching |
-| 22 | **Concurrency Safety** | Race conditions, goroutine leaks, mutex usage, worker pools |
+| 22 | **Concurrency Safety** | Race conditions, async leaks, unbounded concurrency, worker pools |
 | 23 | **Migration Safety** | Up/down pairs, CONCURRENTLY indexes, NOT NULL defaults |
-| 31 | **Linting & Code Quality** | Import ordering (3 groups), magic numbers, golangci-lint config |
+| 31 | **Linting & Code Quality** | Import ordering, magic numbers, linter config |
 | 40 | **Caching Patterns** | Cache invalidation, TTL management, stampede prevention, tenant-scoped keys |
 
 ### Category E: Infrastructure & Hardening (6 dimensions)
@@ -109,7 +109,7 @@ Use this skill when:
 | 26 | **CI/CD Pipeline** | Pipeline definitions, automated tests, security scanning |
 | 27 | **Async Reliability** | DLQs, retry policies, consumer group usage, message durability |
 | 32 | **Makefile & Dev Tooling** | 17+ required Makefile commands, dev workflow automation |
-| 34 | **License Headers** | Copyright headers on all .go files |
+| 34 | **License Headers** | Copyright headers on all source files |
 
 ## Execution Protocol
 
@@ -139,19 +139,17 @@ Before running any explorers, detect the project stack to determine which MarsAI
 
 | Check | Flag | Standards to Load |
 |-------|------|-------------------|
-| `**/go.mod` exists | GO=true | All golang/*.md modules |
-| `**/package.json` + React/Next.js deps | FRONTEND=true | (future enrichment) |
-| `**/package.json` + Express/Fastify deps | TS_BACKEND=true | (future enrichment) |
+| `**/package.json` + React/Next.js deps | FRONTEND=true | Language-specific standards |
+| `**/package.json` + Express/Fastify/NestJS deps | TS_BACKEND=true | Language-specific standards |
 | `**/Dockerfile*` exists | DOCKER=true | devops.md |
 | `**/Makefile` exists | MAKEFILE=true | devops.md → Makefile Standards |
 | `**/LICENSE*` exists | LICENSE=true | Activates dimension 34 |
-| `MULTI_TENANT` env var in config/env files (`.env*`, `docker-compose*`, `**/config*.go`) | MULTI_TENANT=true | multi-tenant.md |
+| `MULTI_TENANT` env var in config/env files (`.env*`, `docker-compose*`, config files) | MULTI_TENANT=true | multi-tenant.md |
 
 **Detection Logic:**
 ```
-Glob("**/go.mod") → if found: GO=true
 Glob("**/package.json") → Read for React/Next.js → if found: FRONTEND=true
-Glob("**/package.json") → Read for Express/Fastify → if found: TS_BACKEND=true
+Glob("**/package.json") → Read for Express/Fastify/NestJS → if found: TS_BACKEND=true
 Glob("**/Dockerfile*") → if found: DOCKER=true
 Glob("**/Makefile") → if found: MAKEFILE=true
 Glob("**/LICENSE*") → if found: LICENSE=true
@@ -164,35 +162,18 @@ Grep("MULTI_TENANT") → if found in env/config files: MULTI_TENANT=true
 
 Based on detected stack, load MarsAI development standards via WebFetch from the canonical source of truth. Store fetched content for injection into explorer prompts.
 
-**WebFetch URL Map** (from `dev-team/docs/standards/golang/index.md`):
+**WebFetch URL Map:**
 
-If **GO=true**, WebFetch these and store content:
+Based on detected stack, WebFetch the relevant standards modules from `dev-team/docs/standards/`. The exact modules depend on the project's language and framework.
 
-| Module | Variable | URL |
-|--------|----------|-----|
-| core.md | `standards_core` | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang/core.md` |
-| bootstrap.md | `standards_bootstrap` | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang/bootstrap.md` |
-| security.md | `standards_security` | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang/security.md` |
-| domain.md | `standards_domain` | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang/domain.md` |
-| api-patterns.md | `standards_api` | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang/api-patterns.md` |
-| quality.md | `standards_quality` | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang/quality.md` |
-| architecture.md | `standards_arch` | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang/architecture.md` |
-| messaging.md | `standards_messaging` | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang/messaging.md` |
-| domain-modeling.md | `standards_dm` | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang/domain-modeling.md` |
-| idempotency.md | `standards_idempotency` | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang/idempotency.md` |
-
-If **MULTI_TENANT=true**, also WebFetch:
-
-| Module | Variable | URL |
-|--------|----------|-----|
-| multi-tenant.md | `standards_multitenant` | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang/multi-tenant.md` |
+**Stack-specific standards loading:** Load the appropriate standards modules based on the detected stack flags (GO, TS_BACKEND, FRONTEND, etc.). The standards files are located in the `dev-team/docs/standards/` directory of the MarsAI repository.
 
 **Always** WebFetch (stack-independent):
 
 | Module | Variable | URL |
 |--------|----------|-----|
-| devops.md | `standards_devops` | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/devops.md` |
-| sre.md | `standards_sre` | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/sre.md` |
+| devops.md | `standards_devops` | `https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/devops.md` |
+| sre.md | `standards_sre` | `https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/sre.md` |
 
 **Fallback:** If any WebFetch fails, note the failure in the audit report and proceed with existing generic patterns for that dimension. Do not abort the audit.
 
@@ -215,7 +196,7 @@ Write to docs/audits/production-readiness-{YYYY-MM-DDTHH:MM:SS}.md:
 
 | Property | Value |
 |----------|-------|
-| **Detected Stack** | {Go / TypeScript / Frontend / Mixed} |
+| **Detected Stack** | {TypeScript / Frontend / Mixed} |
 | **Standards Loaded** | {list of loaded standards files} |
 | **Active Dimensions** | {43 base + 1 conditional (max 44)} |
 | **Max Possible Score** | {dynamic_max: 430 or 440} |
@@ -333,44 +314,44 @@ Audit pagination implementation across the codebase for production readiness.
 {INJECTED: "Pagination Patterns" section from api-patterns.md}
 ---END STANDARDS---
 
-**Key Concept: Midaz uses TWO valid pagination strategies:**
-- **Offset** for low-volume admin entities (organizations, ledgers, accounts, assets, portfolios, products, segments)
-- **Cursor** for high-volume transaction entities (transactions, operations, balances, audit logs, events)
+**Key Concept: TWO valid pagination strategies:**
+- **Offset** for low-volume admin entities
+- **Cursor** for high-volume transaction entities
 
 **Search Patterns:**
-- Files: `**/pagination*.go`, `**/handlers.go`, `**/dto.go`, `**/httputils.go`, `**/cursor.go`
-- Keywords: `limit`, `offset`, `cursor`, `Page`, `NextCursor`, `PrevCursor`, `SetCursor`, `SetItems`
-- Standards-specific: `CursorPagination`, `Pagination`, `ValidateParameters`, `QueryHeader`, `MAX_PAGINATION_LIMIT`
+- Files: `**/pagination*.ts`, `**/handlers.ts`, `**/dto.ts`, `**/httputils.ts`, `**/cursor.ts`
+- Keywords: `limit`, `offset`, `cursor`, `page`, `nextCursor`, `prevCursor`, `setCursor`, `setItems`
+- Standards-specific: `CursorPagination`, `Pagination`, `validateParameters`, `QueryHeader`, `MAX_PAGINATION_LIMIT`
 
 **Reference Implementations (GOOD):**
 
 Offset mode (admin entities):
-```go
-// Handler sets Page field — indicates offset mode
-pagination := libPostgres.Pagination{
-    Limit:     headerParams.Limit,
-    Page:      headerParams.Page,
-    SortOrder: headerParams.SortOrder,
-}
-items, err := h.Query.GetAllOrganizations(ctx, *headerParams)
-pagination.SetItems(items)
-return libHTTP.OK(c, pagination)
+```typescript
+// Handler sets page field — indicates offset mode
+const pagination = new Pagination({
+  limit: headerParams.limit,
+  page: headerParams.page,
+  sortOrder: headerParams.sortOrder,
+});
+const items = await this.query.getAllOrganizations(ctx, headerParams);
+pagination.setItems(items);
+return res.status(200).json(pagination);
 
-// Repository uses OFFSET = (Page - 1) * Limit
-query.Limit(filter.Limit).Offset((filter.Page - 1) * filter.Limit)
+// Repository uses OFFSET = (page - 1) * limit
+query.limit(filter.limit).offset((filter.page - 1) * filter.limit);
 ```
 
 Cursor mode (transaction entities):
-```go
-// Handler does NOT set Page — indicates cursor mode
-pagination := libPostgres.Pagination{
-    Limit:     headerParams.Limit,
-    SortOrder: headerParams.SortOrder,
-}
-items, cursor, err := h.Query.GetAllTransactions(ctx, orgID, ledgerID, *headerParams)
-pagination.SetItems(items)
-pagination.SetCursor(cursor.Next, cursor.Prev)
-return libHTTP.OK(c, pagination)
+```typescript
+// Handler does NOT set page — indicates cursor mode
+const pagination = new Pagination({
+  limit: headerParams.limit,
+  sortOrder: headerParams.sortOrder,
+});
+const { items, cursor } = await this.query.getAllTransactions(ctx, orgID, ledgerID, headerParams);
+pagination.setItems(items);
+pagination.setCursor(cursor.next, cursor.prev);
+return res.status(200).json(pagination);
 ```
 
 **Check Against MarsAI Standards For:**
@@ -427,110 +408,115 @@ Audit error handling framework usage for production readiness.
 ---END STANDARDS---
 
 **Search Patterns:**
-- Files: `**/error*.go`, `**/handlers.go`
-- Keywords: `ErrRepo`, `errors.Is`, `errors.As`, `errors.New`
-- Also search: `panic(`, `log.Fatal`
-- Standards-specific: `ErrCode`, `DomainError`, `ErrorResponse`
+- Files: `**/error*.ts`, `**/handlers.ts`, `**/exceptions/*.ts`
+- Keywords: `throw`, `catch`, `Error`, `HttpException`, `NotFoundException`
+- Also search: `process.exit`, `unhandledRejection`
+- Standards-specific: `DomainError`, `ErrorResponse`, `HttpException`
 
 **Reference Implementation (GOOD):**
-```go
-// Validate with explicit checks and return errors (no panic)
-if config == nil {
-    return fmt.Errorf("validation: config required")
+```typescript
+// Validate with explicit checks and throw typed errors (no process.exit)
+if (!config) {
+  throw new ValidationError('config is required');
 }
 
 // Domain error types
-var (
-    ErrNotFound        = errors.New("resource not found")
-    ErrInvalidInput    = errors.New("invalid input")
-)
+class NotFoundError extends Error {
+  constructor(message = 'resource not found') { super(message); this.name = 'NotFoundError'; }
+}
+class InvalidInputError extends Error {
+  constructor(message = 'invalid input') { super(message); this.name = 'InvalidInputError'; }
+}
 
 // Error mapping in handlers
-if errors.Is(err, domain.ErrNotFound) {
-    return httputil.NotFoundError(c, span, logger, "resource not found", err)
+if (err instanceof NotFoundError) {
+  return res.status(404).json({ error: 'resource not found' });
 }
 ```
 
 **Reference Implementation (BAD):**
-```go
-// Direct panic in production code
-if config == nil {
-    panic("config is nil")  // BAD: Return error instead
+```typescript
+// BAD: process.exit in production code
+if (!config) {
+  process.exit(1); // BAD: Throw error instead
 }
 
-// Swallowing errors
-result, _ := doSomething()  // BAD: Ignoring error
+// BAD: Swallowing errors
+const result = await doSomething().catch(() => null); // BAD: Ignoring error
 
-// Generic error messages
-return errors.New("error")  // BAD: Not descriptive
+// BAD: Generic error messages
+throw new Error('error'); // BAD: Not descriptive
 ```
 
 **Reference Implementation (GOOD — RFC 7807 Error Responses):**
-```go
+```typescript
 // RFC 7807 Problem Details compliant error response
-type ProblemDetails struct {
-    Type     string `json:"type"`               // URI reference identifying the problem type
-    Title    string `json:"title"`              // Short human-readable summary
-    Status   int    `json:"status"`             // HTTP status code
-    Detail   string `json:"detail"`             // Human-readable explanation specific to this occurrence
-    Instance string `json:"instance,omitempty"` // URI reference for the specific occurrence
-    Code     string `json:"code"`               // Machine-readable error code for programmatic handling
+interface ProblemDetails {
+  type: string;       // URI reference identifying the problem type
+  title: string;      // Short human-readable summary
+  status: number;     // HTTP status code
+  detail: string;     // Human-readable explanation specific to this occurrence
+  instance?: string;  // URI reference for the specific occurrence
+  code: string;       // Machine-readable error code for programmatic handling
 }
 
 // Consistent error response factory
-func NewProblemResponse(c *fiber.Ctx, status int, errCode string, detail string) error {
-    return c.Status(status).JSON(ProblemDetails{
-        Type:     "https://api.example.com/errors/" + errCode,
-        Title:    http.StatusText(status),
-        Status:   status,
-        Detail:   detail,
-        Instance: c.Path(),
-        Code:     errCode,
-    })
+function newProblemResponse(res: Response, status: number, errCode: string, detail: string) {
+  return res.status(status).json({
+    type: `https://api.example.com/errors/${errCode}`,
+    title: getStatusText(status),
+    status,
+    detail,
+    instance: res.req.path,
+    code: errCode,
+  });
 }
 
 // Handler usage — consistent across ALL endpoints
-func (h *Handler) Create(c *fiber.Ctx) error {
+async function create(req: Request, res: Response) {
+  try {
     // ...
-    if errors.Is(err, domain.ErrNotFound) {
-        return NewProblemResponse(c, 404, "RESOURCE_NOT_FOUND", "The requested resource does not exist")
+  } catch (err) {
+    if (err instanceof NotFoundError) {
+      return newProblemResponse(res, 404, 'RESOURCE_NOT_FOUND', 'The requested resource does not exist');
     }
-    if errors.Is(err, domain.ErrInvalidInput) {
-        return NewProblemResponse(c, 422, "VALIDATION_FAILED", err.Error())
+    if (err instanceof InvalidInputError) {
+      return newProblemResponse(res, 422, 'VALIDATION_FAILED', err.message);
     }
-    return NewProblemResponse(c, 500, "INTERNAL_ERROR", "An unexpected error occurred")
+    return newProblemResponse(res, 500, 'INTERNAL_ERROR', 'An unexpected error occurred');
+  }
 }
 
-// Swaggo annotation with error response schema documented
-// @Failure 404 {object} ProblemDetails "Resource not found"
-// @Failure 422 {object} ProblemDetails "Validation failed"
-// @Failure 500 {object} ProblemDetails "Internal server error"
+// OpenAPI annotation with error response schema documented
+// @ApiResponse({ status: 404, type: ProblemDetails, description: 'Resource not found' })
+// @ApiResponse({ status: 422, type: ProblemDetails, description: 'Validation failed' })
+// @ApiResponse({ status: 500, type: ProblemDetails, description: 'Internal server error' })
 ```
 
 **Reference Implementation (BAD — Inconsistent Error Responses):**
-```go
+```typescript
 // BAD: Inconsistent error response formats across endpoints
 // Handler A returns:
-return c.Status(400).JSON(fiber.Map{"error": "invalid input"})
+return res.status(400).json({ error: 'invalid input' });
 
 // Handler B returns a different structure:
-return c.Status(400).JSON(fiber.Map{"message": "invalid input", "code": 400})
+return res.status(400).json({ message: 'invalid input', code: 400 });
 
 // Handler C returns yet another structure:
-return c.Status(400).JSON(fiber.Map{"errors": []string{"field X is required"}})
+return res.status(400).json({ errors: ['field X is required'] });
 
 // BAD: Free-text error messages only (no machine-readable codes)
-return c.Status(422).JSON(fiber.Map{"error": "The email field is required and must be valid"})
+return res.status(422).json({ error: 'The email field is required and must be valid' });
 // Client cannot programmatically distinguish error types — must parse human text
 
-// BAD: No error response schema in Swaggo annotations
-// @Failure 400 "Bad request"   // No response body schema defined
+// BAD: No error response schema in OpenAPI decorators
+// @ApiResponse({ status: 400, description: 'Bad request' }) // No response body schema defined
 ```
 
 **Check Against MarsAI Standards For:**
 1. (HARD GATE) Explicit nil checks with error returns instead of panic for validation per MarsAI standards
 2. (HARD GATE) Named error variables (sentinel errors) per module following MarsAI error codes convention
-3. (HARD GATE) No panic() in non-test production code
+3. (HARD GATE) No process.exit() or unhandled exceptions in production code
 4. Proper error wrapping with %w
 5. errors.Is/errors.As for error matching
 6. No swallowed errors (_, err := ignored)
@@ -541,7 +527,7 @@ return c.Status(422).JSON(fiber.Map{"error": "The email field is required and mu
 11. Error response examples documented in API annotations (Swaggo `@Failure` tags with response schema)
 
 **Severity Ratings:**
-- CRITICAL: panic() in production code paths (HARD GATE violation per MarsAI standards)
+- CRITICAL: process.exit() or unhandled exceptions in production code paths (HARD GATE violation per MarsAI standards)
 - CRITICAL: Swallowed errors in critical paths
 - HIGH: Generic error messages without context
 - HIGH: Error response format does not match MarsAI standards
@@ -582,39 +568,39 @@ Audit route organization and handler structure for production readiness.
 ---END STANDARDS---
 
 **Search Patterns:**
-- Files: `**/routes.go`, `**/handlers.go`, `internal/**/adapters/http/*.go`
-- Keywords: `RegisterRoutes`, `protected(`, `fiber.Router`, `NewHandler`
-- Standards-specific: `internal/{module}/adapters/`, `hexagonal`, `ports`
+- Files: `**/routes.ts`, `**/handlers.ts`, `**/controllers/*.ts`, `**/modules/*.ts`
+- Keywords: `Router`, `Controller`, `@Get`, `@Post`, `app.use`, `router.get`
+- Standards-specific: `modules/{module}/`, `hexagonal`, `ports`, `adapters`
 
 **Reference Implementation (GOOD):**
-```go
+```typescript
 // Centralized route registration
-func RegisterRoutes(protected func(resource, action string) fiber.Router, handler *Handler) error {
-    if handler == nil {
-        return errors.New("handler is nil")
-    }
-    protected("resource", "create").Post("/v1/resources", handler.Create)
-    protected("resource", "read").Get("/v1/resources", handler.List)
-    protected("resource", "read").Get("/v1/resources/:id", handler.Get)
-    return nil
+function registerRoutes(router: Router, handler: Handler): void {
+  if (!handler) {
+    throw new Error('handler is required');
+  }
+  router.post('/v1/resources', authMiddleware('resource', 'create'), handler.create);
+  router.get('/v1/resources', authMiddleware('resource', 'read'), handler.list);
+  router.get('/v1/resources/:id', authMiddleware('resource', 'read'), handler.get);
 }
 
 // Handler constructor with validation
-func NewHandler(deps ...interface{}) (*Handler, error) {
-    if dep == nil {
-        return nil, ErrNilDependency
+class Handler {
+  constructor(private readonly deps: Dependencies) {
+    if (!deps.repository) {
+      throw new Error('repository dependency is required');
     }
-    return &Handler{...}, nil
+  }
 }
 ```
 
 **Check Against MarsAI Standards For:**
-1. (HARD GATE) Hexagonal structure: `internal/{module}/adapters/http/` per architecture.md
+1. (HARD GATE) Hexagonal structure: `modules/{module}/adapters/http/` per architecture.md
 2. (HARD GATE) Centralized route registration per module
 3. Handler constructors validate all dependencies
 4. Consistent URL patterns (v1, kebab-case, plural resources) per MarsAI conventions
-5. All routes use protected() wrapper (no public endpoints without explicit exemption)
-6. Clear separation: routes.go vs handlers.go per MarsAI directory structure
+5. All routes use auth middleware (no public endpoints without explicit exemption)
+6. Clear separation: routes.ts vs handlers.ts per MarsAI directory structure
 
 **Severity Ratings:**
 - CRITICAL: Unprotected routes (missing auth middleware)
@@ -653,44 +639,45 @@ Audit application bootstrap and initialization for production readiness.
 ---END STANDARDS---
 
 **Search Patterns:**
-- Files: `**/main.go`, `**/init.go`, `**/bootstrap/*.go`
-- Keywords: `InitServers`, `startupSucceeded`, `defer`, `cleanup`, `graceful`
-- Standards-specific: `NewServiceBootstrap`, `staged initialization`
+- Files: `**/main.ts`, `**/index.ts`, `**/bootstrap/*.ts`, `**/app.module.ts`
+- Keywords: `bootstrap`, `NestFactory`, `listen`, `shutdown`, `cleanup`, `graceful`
+- Standards-specific: `bootstrapApplication`, `staged initialization`
 
 **Reference Implementation (GOOD):**
-```go
+```typescript
 // Staged initialization with cleanup
-func InitServers(opts *Options) (*Service, error) {
-    startupSucceeded := false
-    defer func() {
-        if !startupSucceeded {
-            cleanupConnections(...)  // Only cleanup on failure
-        }
-    }()
+async function bootstrap(): Promise<void> {
+  let startupSucceeded = false;
+  const cleanupFns: Array<() => Promise<void>> = [];
 
+  try {
     // 1. Load config
-    cfg, err := loadConfig()
-    if err != nil {
-        return nil, fmt.Errorf("config: %w", err)
-    }
+    const cfg = loadConfig();
 
     // 2. Initialize logger
-    logger := initLogger(cfg)
+    const logger = initLogger(cfg);
+    cleanupFns.push(() => logger.flush());
 
     // 3. Initialize telemetry
-    telemetry := initTelemetry(cfg, logger)
+    const telemetry = initTelemetry(cfg, logger);
+    cleanupFns.push(() => telemetry.shutdown());
 
     // 4. Connect infrastructure (DB, Redis, MQ)
-    db, err := connectDB(cfg)
-    if err != nil {
-        return nil, fmt.Errorf("database: %w", err)
-    }
+    const db = await connectDB(cfg);
+    cleanupFns.push(() => db.destroy());
 
     // 5. Initialize modules in dependency order
-    ...
+    // ...
 
-    startupSucceeded = true
-    return &Service{...}, nil
+    startupSucceeded = true;
+  } finally {
+    if (!startupSucceeded) {
+      // Cleanup on failure — reverse order
+      for (const fn of cleanupFns.reverse()) {
+        await fn().catch(() => {});
+      }
+    }
+  }
 }
 ```
 
@@ -735,42 +722,57 @@ Audit pkg/runtime usage and panic handling for production readiness.
 **Detected Stack:** {DETECTED_STACK}
 
 **Search Patterns:**
-- Files: `**/runtime/*.go`, `**/recover*.go`, `**/*.go`
-- Keywords: `RecoverAndLog`, `RecoverWithPolicy`, `InitPanicMetrics`, `SetProductionMode`
-- Also search: `panic(`, `recover()` (manual usage)
+- Files: `**/error-handler*.ts`, `**/middleware/*.ts`, `**/*.ts`
+- Keywords: `uncaughtException`, `unhandledRejection`, `process.on`, `ErrorHandler`
+- Also search: `process.exit(`, `throw` (unhandled)
 
 **Reference Implementation (GOOD):**
-```go
-// Bootstrap initialization
-runtime.InitPanicMetrics(telemetry.MetricsFactory)
-if cfg.EnvName == "production" {
-    runtime.SetProductionMode(true)
+```typescript
+// Bootstrap initialization — global error handlers
+process.on('uncaughtException', (err) => {
+  logger.error('Uncaught exception', { error: err.message, stack: err.stack });
+  metrics.increment('uncaught_exceptions');
+  if (cfg.envName === 'production') {
+    process.exit(1); // Crash and let orchestrator restart
+  }
+});
+
+process.on('unhandledRejection', (reason) => {
+  logger.error('Unhandled rejection', { reason });
+  metrics.increment('unhandled_rejections');
+});
+
+// In HTTP handlers — error middleware
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  logger.error('Handler error', { error: err.message, path: req.path });
+  res.status(500).json({ error: 'Internal server error' });
+});
+
+// In background workers — try/catch with recovery policy
+async function processJob(job: Job): Promise<void> {
+  try {
+    await handleJob(job);
+  } catch (err) {
+    logger.error('Job failed', { jobId: job.id, error: err });
+    // Log and continue — do not crash worker
+  }
 }
-
-// In HTTP handlers
-defer runtime.RecoverAndLogWithContext(ctx, logger, "module", "handler_name")
-
-// In worker goroutines
-defer runtime.RecoverWithPolicyAndContext(ctx, logger, "module", "worker", runtime.CrashProcess)
-
-// In background jobs (should retry, not crash)
-defer runtime.RecoverWithPolicyAndContext(ctx, logger, "module", "job", runtime.LogAndContinue)
 ```
 
 **Check For:**
 1. pkg/runtime initialized at startup
 2. Production mode set based on environment
-3. All goroutines have panic recovery
-4. Appropriate recovery policies per context
-5. Panic metrics enabled for alerting
-6. No raw recover() without pkg/runtime
+3. All async operations have error handling
+4. Appropriate error recovery policies per context
+5. Error metrics enabled for alerting
+6. Global error handlers configured (uncaughtException, unhandledRejection)
 
 **Severity Ratings:**
-- CRITICAL: Goroutines without panic recovery
+- CRITICAL: Async operations without error handling
 - HIGH: Missing production mode setting
-- HIGH: Raw recover() without proper handling
-- MEDIUM: Inconsistent recovery policies
-- LOW: Missing panic metrics
+- HIGH: No global error handlers (uncaughtException/unhandledRejection)
+- MEDIUM: Inconsistent error recovery policies
+- LOW: Missing error metrics
 
 **Output Format:**
 ```
@@ -802,40 +804,35 @@ Audit authentication and authorization implementation for production readiness.
 ---END STANDARDS---
 
 **Search Patterns:**
-- Files: `**/auth/*.go`, `**/middleware*.go`, `**/routes.go`
-- Keywords: `Authorize`, `protected`, `JWT`, `tenant`, `ExtractToken`
-- Standards-specific: `AccessManager`, `lib-auth`, `ProtectedGroup`
+- Files: `**/auth/*.ts`, `**/middleware/*.ts`, `**/guards/*.ts`, `**/routes.ts`
+- Keywords: `Authorize`, `Guard`, `JWT`, `tenant`, `extractToken`, `passport`
+- Standards-specific: `AccessManager`, `auth-library`, `AuthGuard`
 
 **Reference Implementation (GOOD):**
-```go
-// Protected route group
-protected := func(resource, action string) fiber.Router {
-    return auth.ProtectedGroup(api, authClient, tenantExtractor, resource, action)
-}
+```typescript
+// Protected route group with auth middleware
+const authMiddleware = (resource: string, action: string) =>
+  [verifyJwt, authorize(resource, action)];
 
-// All routes use protected
-protected("contexts", "create").Post("/v1/config/contexts", handler.Create)
+// All routes use auth middleware
+router.post('/v1/config/contexts', ...authMiddleware('contexts', 'create'), handler.create);
 
 // JWT validation
-func parseTokenClaims(tokenString string, secret []byte) (jwt.MapClaims, error) {
-    parser := jwt.NewParser(jwt.WithValidMethods(validSigningMethods))
-    token, err := parser.ParseWithClaims(...)
-    if err != nil || !token.Valid {
-        return nil, ErrInvalidToken
-    }
-    // Check expiration
-    if exp, ok := claims["exp"].(float64); ok {
-        if time.Now().Unix() > int64(exp) {
-            return nil, ErrTokenExpired
-        }
-    }
-    return claims, nil
+function parseTokenClaims(tokenString: string, secret: string): JwtPayload {
+  try {
+    const decoded = jwt.verify(tokenString, secret, { algorithms: ['RS256'] });
+    if (typeof decoded === 'string') throw new InvalidTokenError();
+    return decoded as JwtPayload;
+  } catch (err) {
+    if (err instanceof jwt.TokenExpiredError) throw new TokenExpiredError();
+    throw new InvalidTokenError();
+  }
 }
 ```
 
 **Check Against MarsAI Standards For:**
 1. (HARD GATE) All routes protected via Access Manager integration per security.md
-2. (HARD GATE) lib-auth used for JWT validation (not custom JWT parsing)
+2. (HARD GATE) Auth library used for JWT validation (not custom JWT parsing)
 3. Resource/action authorization granularity per MarsAI access control model
 4. Token expiration enforcement
 5. Tenant extraction from JWT claims
@@ -844,7 +841,7 @@ func parseTokenClaims(tokenString string, secret []byte) (jwt.MapClaims, error) 
 **Severity Ratings:**
 - CRITICAL: Unprotected data endpoints (HARD GATE violation per MarsAI standards)
 - CRITICAL: JWT parsed but not validated
-- CRITICAL: HARD GATE violation — not using lib-auth for access management
+- CRITICAL: HARD GATE violation — not using auth library for access management
 - HIGH: Missing token expiration check
 - HIGH: Tenant claims not enforced
 - MEDIUM: Overly broad permissions
@@ -875,50 +872,46 @@ Audit IDOR (Insecure Direct Object Reference) protection for production readines
 **Detected Stack:** {DETECTED_STACK}
 
 **Search Patterns:**
-- Files: `**/verifier*.go`, `**/handlers.go`, `**/context.go`
-- Keywords: `VerifyOwnership`, `tenantID`, `contextID`, `ParseAndVerify`
+- Files: `**/verifier*.ts`, `**/handlers.ts`, `**/guards/*.ts`, `**/context.ts`
+- Keywords: `verifyOwnership`, `tenantId`, `contextId`, `parseAndVerify`
 
 **Reference Implementation (GOOD):**
-```go
+```typescript
 // 4-layer IDOR protection
-func ParseAndVerifyContextParam(fiberCtx *fiber.Ctx, verifier ContextOwnershipVerifier) (uuid.UUID, uuid.UUID, error) {
-    // 1. UUID format validation
-    contextID, err := uuid.Parse(fiberCtx.Params("contextId"))
-    if err != nil {
-        return uuid.Nil, uuid.Nil, ErrInvalidID
-    }
+async function parseAndVerifyContextParam(
+  req: Request,
+  verifier: ContextOwnershipVerifier
+): Promise<{ contextId: string; tenantId: string }> {
+  // 1. UUID format validation
+  const contextId = req.params.contextId;
+  if (!isValidUUID(contextId)) throw new InvalidIdError();
 
-    // 2. Extract tenant from auth context (cannot be spoofed)
-    tenantID := auth.GetTenantID(ctx)
+  // 2. Extract tenant from auth context (cannot be spoofed)
+  const tenantId = req.user.tenantId;
 
-    // 3. Database query filtered by tenant
-    // 4. Post-query ownership verification
-    if err := verifier.VerifyOwnership(ctx, tenantID, contextID); err != nil {
-        return uuid.Nil, uuid.Nil, err
-    }
-    return contextID, tenantID, nil
+  // 3. Database query filtered by tenant
+  // 4. Post-query ownership verification
+  await verifier.verifyOwnership(tenantId, contextId);
+  return { contextId, tenantId };
 }
 
 // Verifier implementation
-func (v *verifier) VerifyOwnership(ctx context.Context, tenantID, resourceID uuid.UUID) error {
-    resource, err := v.query.Get(ctx, tenantID, resourceID)  // Query WITH tenant filter
-    if errors.Is(err, sql.ErrNoRows) {
-        return ErrNotFound
-    }
-    if resource.TenantID != tenantID {  // Double-check ownership
-        return ErrNotOwned
-    }
-    return nil
+class OwnershipVerifier {
+  async verifyOwnership(tenantId: string, resourceId: string): Promise<void> {
+    const resource = await this.query.get(tenantId, resourceId); // Query WITH tenant filter
+    if (!resource) throw new NotFoundError();
+    if (resource.tenantId !== tenantId) throw new NotOwnedError(); // Double-check ownership
+  }
 }
 ```
 
 **Reference Implementation (BAD):**
-```go
+```typescript
 // BAD: No ownership verification
-func GetResource(c *fiber.Ctx) error {
-    id := c.Params("id")
-    resource, err := repo.FindByID(ctx, id)  // No tenant filter!
-    return c.JSON(resource)
+async function getResource(req: Request, res: Response) {
+  const id = req.params.id;
+  const resource = await repo.findById(id); // No tenant filter!
+  return res.json(resource);
 }
 ```
 
@@ -962,36 +955,36 @@ Audit SQL injection prevention for production readiness.
 **Detected Stack:** {DETECTED_STACK}
 
 **Search Patterns:**
-- Files: `**/*.postgresql.go`, `**/repository/*.go`, `**/*_repo.go`
-- Keywords: `ExecContext`, `QueryContext`, `Exec(`, `Query(`, `$1`, `$2`
-- Also search for: String concatenation in SQL: `"SELECT.*" +`, `fmt.Sprintf.*SELECT`
+- Files: `**/repository/*.ts`, `**/*_repo.ts`, `**/database/*.ts`
+- Keywords: `query`, `execute`, `$1`, `$2`, `knex`, `prisma`, `typeorm`
+- Also search for: String concatenation in SQL: `` `SELECT.*${` ``, template literal interpolation in queries
 
 **Reference Implementation (GOOD):**
-```go
+```typescript
 // Parameterized queries
-query := `INSERT INTO resources (id, name, tenant_id) VALUES ($1, $2, $3)`
-_, err = tx.ExecContext(ctx, query, id, name, tenantID)
+const query = 'INSERT INTO resources (id, name, tenant_id) VALUES ($1, $2, $3)';
+await client.query(query, [id, name, tenantId]);
 
 // SQL identifier escaping for dynamic schemas
-func QuoteIdentifier(identifier string) string {
-    return "\"" + strings.ReplaceAll(identifier, "\"", "\"\"") + "\""
+function quoteIdentifier(identifier: string): string {
+  return '"' + identifier.replace(/"/g, '""') + '"';
 }
-schemaQuery := "SET LOCAL search_path TO " + QuoteIdentifier(tenantID)
+await client.query(`SET LOCAL search_path TO ${quoteIdentifier(tenantId)}`);
 
-// Query builder (Squirrel)
-query := sq.Select("*").From("resources").Where(sq.Eq{"tenant_id": tenantID})
+// Query builder (Knex)
+const result = await knex('resources').select('*').where({ tenant_id: tenantId });
 ```
 
 **Reference Implementation (BAD):**
-```go
+```typescript
 // BAD: String concatenation
-query := "SELECT * FROM users WHERE name = '" + name + "'"
+const query = "SELECT * FROM users WHERE name = '" + name + "'";
 
-// BAD: fmt.Sprintf for values
-query := fmt.Sprintf("SELECT * FROM users WHERE id = '%s'", id)
+// BAD: Template literal interpolation for values
+const query = `SELECT * FROM users WHERE id = '${id}'`;
 
 // BAD: Unescaped identifier
-query := "SET search_path TO " + tenantID  // SQL injection via tenant
+const query = `SET search_path TO ${tenantId}`; // SQL injection via tenant
 ```
 
 **Check For:**
@@ -1003,7 +996,7 @@ query := "SET search_path TO " + tenantID  // SQL injection via tenant
 
 **Severity Ratings:**
 - CRITICAL: String concatenation with user input
-- CRITICAL: fmt.Sprintf with user values
+- CRITICAL: Template literal interpolation with user values
 - HIGH: Unescaped dynamic identifiers
 - MEDIUM: Raw SQL where builder would be safer
 - LOW: Inconsistent query patterns
@@ -1034,74 +1027,82 @@ Audit input validation patterns for production readiness.
 
 **MarsAI Standards (Source of Truth):**
 ---BEGIN STANDARDS---
-{INJECTED: "Frameworks & Libraries" section from core.md — specifically go-playground/validator/v10 reference}
+{INJECTED: "Frameworks & Libraries" section from core.md — specifically validation library reference}
 ---END STANDARDS---
 
 **Search Patterns:**
-- Files: `**/dto.go`, `**/handlers.go`, `**/value_objects/*.go`
-- Keywords: `validate:`, `BodyParser`, `IsValid()`, `Parse`, `required`
-- Standards-specific: `validator/v10`, `go-playground/validator`
+- Files: `**/dto.ts`, `**/handlers.ts`, `**/value-objects/*.ts`, `**/schemas/*.ts`
+- Keywords: `class-validator`, `zod`, `joi`, `@IsString`, `z.object`, `schema.validate`
+- Standards-specific: `class-validator`, `class-transformer`, `zod`
 
 **Reference Implementation (GOOD):**
-```go
-// DTO with validation tags
-type CreateRequest struct {
-    Name   string `json:"name" validate:"required,min=1,max=255"`
-    Type   string `json:"type" validate:"required,oneof=TYPE_A TYPE_B"`
-    Amount int    `json:"amount" validate:"gte=0,lte=1000000"`
+```typescript
+// DTO with validation decorators (class-validator)
+class CreateRequest {
+  @IsString()
+  @MinLength(1)
+  @MaxLength(255)
+  name: string;
+
+  @IsEnum(ResourceType)
+  type: string;
+
+  @IsInt()
+  @Min(0)
+  @Max(1000000)
+  amount: number;
 }
 
-// Handler with body parsing error handling
-func (h *Handler) Create(c *fiber.Ctx) error {
-    var payload CreateRequest
-    if err := c.BodyParser(&payload); err != nil {
-        return badRequest(c, span, logger, "invalid request body", err)
-    }
-    // Validate struct
-    if err := h.validator.Struct(payload); err != nil {
-        return badRequest(c, span, logger, "validation failed", err)
-    }
-    ...
+// Handler with body parsing and validation
+async function create(req: Request, res: Response) {
+  const payload = plainToInstance(CreateRequest, req.body);
+  const errors = await validate(payload);
+  if (errors.length > 0) {
+    return res.status(400).json({ error: 'Validation failed', details: errors });
+  }
+  // ...
 }
 
 // Value object with domain validation
-func (vo ValueObject) IsValid() bool {
-    if vo.value == "" || len(vo.value) > maxLength {
-        return false
-    }
-    return validPattern.MatchString(vo.value)
+class ValueObject {
+  private constructor(private readonly value: string) {}
+
+  static create(value: string): ValueObject {
+    if (!value || value.length > MAX_LENGTH) throw new InvalidInputError();
+    if (!VALID_PATTERN.test(value)) throw new InvalidInputError();
+    return new ValueObject(value);
+  }
 }
 ```
 
 **Reference Implementation (BAD):**
-```go
-// BAD: No validation tags
-type Request struct {
-    Name string `json:"name"`  // No validation!
+```typescript
+// BAD: No validation decorators
+interface Request {
+  name: string; // No validation!
 }
 
-// BAD: Ignoring body parse error
-payload := Request{}
-c.BodyParser(&payload)  // Error ignored!
+// BAD: Ignoring body parse errors
+const payload = req.body as CreateRequest; // No validation at all!
 
 // BAD: No bounds checking
-amount := c.QueryInt("amount")  // Could be negative or huge
+const amount = parseInt(req.query.amount as string); // Could be NaN, negative, or huge
 ```
 
 **Check Against MarsAI Standards For:**
-1. (HARD GATE) go-playground/validator/v10 used for struct validation per MarsAI core.md
-2. (HARD GATE) All DTOs have validate: tags on required fields
-3. BodyParser errors are handled (not ignored)
+1. (HARD GATE) Validation library (class-validator/zod/joi) used for DTO validation per MarsAI core.md
+2. (HARD GATE) All DTOs have validation decorators/schemas on required fields
+3. Body parsing errors are handled (not ignored)
 4. Query/path params validated before use
 5. Numeric bounds enforced (min/max)
 6. String length limits enforced
-7. Enum values constrained (oneof=)
-8. Value objects have IsValid() methods
+7. Enum values constrained
+8. Value objects have factory methods with validation
 9. File upload size/type validation
 
 **Severity Ratings:**
-- CRITICAL: BodyParser errors ignored
-- CRITICAL: HARD GATE violation — not using go-playground/validator/v10 per MarsAI standards
+- CRITICAL: Body parsing errors ignored
+- CRITICAL: HARD GATE violation — not using validation library per MarsAI standards
 - HIGH: No validation on user input DTOs
 - HIGH: Unbounded numeric inputs
 - MEDIUM: Missing string length limits
@@ -1133,125 +1134,124 @@ Audit telemetry and observability implementation for production readiness.
 
 **MarsAI Standards (Source of Truth):**
 ---BEGIN STANDARDS---
-{INJECTED: "Observability" section from bootstrap.md and "OpenTelemetry with lib-commons" section from sre.md}
+{INJECTED: "Observability" section from bootstrap.md and "OpenTelemetry" section from sre.md}
 ---END STANDARDS---
 
 **Search Patterns:**
-- Files: `**/observability*.go`, `**/telemetry*.go`, `**/handlers.go`
-- Keywords: `NewTrackingFromContext`, `tracer.Start`, `span`, `logger`, `metrics`
-- Standards-specific: `libCommons.NewTrackingFromContext`, `otel`, `OpenTelemetry`
+- Files: `**/observability*.ts`, `**/telemetry*.ts`, `**/tracing*.ts`, `**/handlers.ts`
+- Keywords: `tracer.startSpan`, `span`, `logger`, `metrics`, `opentelemetry`
+- Standards-specific: `@opentelemetry/sdk-node`, `otel`, `OpenTelemetry`
 
 **Reference Implementation (GOOD):**
-```go
+```typescript
 // Handler with proper telemetry
-func (h *Handler) DoSomething(c *fiber.Ctx) error {
-    ctx := c.UserContext()
-    logger, tracer, headerID, _ := libCommons.NewTrackingFromContext(ctx)
-    ctx, span := tracer.Start(ctx, "handler.DoSomething")
-    defer span.End()
+async function doSomething(req: Request, res: Response) {
+  const span = tracer.startSpan('handler.doSomething');
+  const ctx = trace.setSpan(context.active(), span);
 
-    span.SetAttributes(attribute.String("request_id", headerID))
+  span.setAttribute('request_id', req.headers['x-request-id'] ?? '');
 
-    // On error
-    span.RecordError(err)
-    span.SetStatus(codes.Error, err.Error())
-    logger.Errorf("operation failed: %v", err)
-
-    return nil
+  try {
+    // ... business logic
+  } catch (err) {
+    span.recordException(err as Error);
+    span.setStatus({ code: SpanStatusCode.ERROR, message: (err as Error).message });
+    logger.error('operation failed', { error: err });
+    throw err;
+  } finally {
+    span.end();
+  }
 }
 ```
 
 **Reference Implementation (GOOD — Trace Propagation & Sampling):**
-```go
+```typescript
 // W3C Trace Context propagation in outgoing HTTP requests
-import (
-    "go.opentelemetry.io/otel"
-    "go.opentelemetry.io/otel/propagation"
-)
+import { propagation, context } from '@opentelemetry/api';
 
-func (c *HTTPClient) Do(ctx context.Context, req *http.Request) (*http.Response, error) {
-    // Inject trace context into outgoing request headers
-    otel.GetTextMapPropagator().Inject(ctx, propagation.HeaderCarrier(req.Header))
-    return c.client.Do(req.WithContext(ctx))
+async function doRequest(url: string, options: RequestInit = {}): Promise<Response> {
+  const headers: Record<string, string> = {};
+  propagation.inject(context.active(), headers);
+  return fetch(url, { ...options, headers: { ...options.headers, ...headers } });
 }
 
 // Baggage propagation for business context
-import "go.opentelemetry.io/otel/baggage"
+import { propagation, baggage } from '@opentelemetry/api';
 
-func InjectBusinessContext(ctx context.Context, tenantID, userID string) context.Context {
-    tenantMember, _ := baggage.NewMember("tenantId", tenantID)
-    userMember, _ := baggage.NewMember("userId", userID)
-    bag, _ := baggage.New(tenantMember, userMember)
-    return baggage.ContextWithBaggage(ctx, bag)
+function injectBusinessContext(tenantId: string, userId: string) {
+  const bag = propagation.createBaggage({
+    tenantId: { value: tenantId },
+    userId: { value: userId },
+  });
+  return propagation.setBaggage(context.active(), bag);
 }
 
 // Span linking for async flows — consumer side
-func (c *Consumer) Handle(msg *Message) error {
-    producerCtx := otel.GetTextMapPropagator().Extract(context.Background(), propagation.MapCarrier(msg.Headers))
-    producerSpanCtx := trace.SpanContextFromContext(producerCtx)
+async function handleMessage(msg: Message) {
+  const producerCtx = propagation.extract(context.active(), msg.headers);
+  const producerSpanCtx = trace.getSpanContext(producerCtx);
 
-    ctx, span := c.tracer.Start(context.Background(), "consume."+msg.Type,
-        trace.WithLinks(trace.Link{SpanContext: producerSpanCtx}),
-    )
-    defer span.End()
-    return c.process(ctx, msg)
+  const span = tracer.startSpan(`consume.${msg.type}`, {
+    links: producerSpanCtx ? [{ context: producerSpanCtx }] : [],
+  });
+
+  try {
+    await processMessage(msg);
+  } finally {
+    span.end();
+  }
 }
 
 // Trace sampling configuration
-func initTracer(env string) *trace.TracerProvider {
-    var sampler trace.Sampler
-    switch env {
-    case "production":
-        sampler = trace.ParentBased(trace.TraceIDRatioBased(0.1))
-    case "staging":
-        sampler = trace.ParentBased(trace.TraceIDRatioBased(0.5))
-    default:
-        sampler = trace.AlwaysSample()
-    }
-    return trace.NewTracerProvider(trace.WithSampler(sampler))
+function initTracer(env: string) {
+  const sampler = env === 'production'
+    ? new ParentBasedSampler({ root: new TraceIdRatioBasedSampler(0.1) })
+    : env === 'staging'
+      ? new ParentBasedSampler({ root: new TraceIdRatioBasedSampler(0.5) })
+      : new AlwaysOnSampler();
+
+  return new NodeTracerProvider({ sampler });
 }
 
 // Custom span attributes for business context
-func (h *Handler) CreateOrder(c *fiber.Ctx) error {
-    ctx, span := h.tracer.Start(c.UserContext(), "handler.CreateOrder")
-    defer span.End()
-    span.SetAttributes(
-        attribute.String("order.id", order.ID.String()),
-        attribute.String("tenant.id", tenantID.String()),
-        attribute.Float64("order.amount", order.TotalAmount),
-    )
-    // ...
+async function createOrder(req: Request, res: Response) {
+  const span = tracer.startSpan('handler.createOrder');
+  span.setAttributes({
+    'order.id': order.id,
+    'tenant.id': tenantId,
+    'order.amount': order.totalAmount,
+  });
+  // ...
+  span.end();
 }
 ```
 
 **Reference Implementation (BAD — Trace Propagation):**
-```go
+```typescript
 // BAD: Outgoing HTTP request without trace context propagation
-func (c *HTTPClient) Do(ctx context.Context, req *http.Request) (*http.Response, error) {
-    return c.client.Do(req)  // No propagation — downstream sees a new disconnected trace
+async function doRequest(url: string): Promise<Response> {
+  return fetch(url); // No propagation — downstream sees a new disconnected trace
 }
 
 // BAD: Async message consumer starts fresh trace without linking to producer
-func (c *Consumer) Handle(msg *Message) error {
-    ctx, span := c.tracer.Start(context.Background(), "consume.event")
-    defer span.End()
-    return c.process(ctx, msg)  // No link to producer span — trace is disconnected
+async function handleMessage(msg: Message) {
+  const span = tracer.startSpan('consume.event');
+  await processMessage(msg); // No link to producer span — trace is disconnected
+  span.end();
 }
 
 // BAD: No sampling configuration (AlwaysSample in production)
-func initTracer() *trace.TracerProvider {
-    return trace.NewTracerProvider()  // Default: AlwaysSample — 100% of traces stored
-}
+const provider = new NodeTracerProvider(); // Default: AlwaysSample — 100% of traces stored
 ```
 
 **Check Against MarsAI Standards For:**
-1. (HARD GATE) lib-commons NewTrackingFromContext used for telemetry initialization per MarsAI standards
+1. (HARD GATE) OpenTelemetry SDK used for telemetry initialization per MarsAI standards
 2. (HARD GATE) OpenTelemetry integration (not custom tracing) per sre.md
 3. All handlers start spans with descriptive names
 4. Errors recorded to spans before returning
 5. Request IDs propagated through context
 6. Metrics initialized at startup per bootstrap.md observability section
-7. Structured logging with context (not fmt.Println)
+7. Structured logging with context (not console.log)
 8. Graceful telemetry shutdown
 9. Cross-service trace context propagation — outgoing HTTP requests MUST inject W3C Trace Context headers (`traceparent`, `tracestate`) using OpenTelemetry propagators
 10. Baggage propagation across service boundaries — business context (e.g., `tenantId`, `userId`, `correlationId`) MUST be propagated via OpenTelemetry Baggage for cross-service observability
@@ -1261,7 +1261,7 @@ func initTracer() *trace.TracerProvider {
 
 **Severity Ratings:**
 - CRITICAL: No tracing in handlers (HARD GATE violation per MarsAI standards)
-- CRITICAL: HARD GATE violation — not using lib-commons for telemetry
+- CRITICAL: HARD GATE violation — not using OpenTelemetry SDK for telemetry
 - HIGH: Errors not recorded to spans
 - HIGH: No trace context propagation in outgoing HTTP requests (downstream services cannot correlate traces — breaks distributed tracing)
 - HIGH: Async message flows break trace continuity (no span links between producer and consumer — message processing appears as disconnected traces)
@@ -1301,50 +1301,52 @@ Audit health check endpoints for production readiness.
 ---END STANDARDS---
 
 **Search Patterns:**
-- Files: `**/fiber_server.go`, `**/health*.go`, `**/routes.go`
+- Files: `**/health*.ts`, `**/routes.ts`, `**/app.ts`, `**/server.ts`
 - Keywords: `/health`, `/ready`, `/live`, `healthHandler`, `readinessHandler`
 - Standards-specific: `liveness`, `readiness`, `degraded`
 
 **Reference Implementation (GOOD):**
-```go
+```typescript
 // Liveness probe - always returns healthy if process is running
-func healthHandler(c *fiber.Ctx) error {
-    return c.SendString("healthy")
+function healthHandler(req: Request, res: Response) {
+  return res.send('healthy');
 }
 
 // Readiness probe - checks all dependencies
-func readinessHandler(deps *HealthDependencies) fiber.Handler {
-    return func(c *fiber.Ctx) error {
-        checks := fiber.Map{}
-        status := fiber.StatusOK
+function readinessHandler(deps: HealthDependencies) {
+  return async (req: Request, res: Response) => {
+    const checks: Record<string, string> = {};
+    let status = 200;
 
-        // Required dependency - fails readiness if down
-        if err := deps.DB.Ping(c.Context()); err != nil {
-            checks["database"] = "unhealthy"
-            status = fiber.StatusServiceUnavailable
-        } else {
-            checks["database"] = "healthy"
-        }
-
-        // Optional dependency - reports degraded but doesn't fail
-        if deps.Redis != nil {
-            if err := deps.Redis.Ping(c.Context()).Err(); err != nil {
-                checks["redis"] = "degraded"
-            } else {
-                checks["redis"] = "healthy"
-            }
-        }
-
-        return c.Status(status).JSON(fiber.Map{
-            "status": statusString(status),
-            "checks": checks,
-        })
+    // Required dependency - fails readiness if down
+    try {
+      await deps.db.raw('SELECT 1');
+      checks.database = 'healthy';
+    } catch {
+      checks.database = 'unhealthy';
+      status = 503;
     }
+
+    // Optional dependency - reports degraded but doesn't fail
+    if (deps.redis) {
+      try {
+        await deps.redis.ping();
+        checks.redis = 'healthy';
+      } catch {
+        checks.redis = 'degraded';
+      }
+    }
+
+    return res.status(status).json({
+      status: status === 200 ? 'healthy' : 'unhealthy',
+      checks,
+    });
+  };
 }
 
 // Register without auth middleware
-app.Get("/health", healthHandler)
-app.Get("/ready", readinessHandler(deps))
+app.get('/health', healthHandler);
+app.get('/ready', readinessHandler(deps));
 ```
 
 **Check Against MarsAI Standards For:**
@@ -1394,48 +1396,46 @@ Audit configuration management for production readiness.
 ---END STANDARDS---
 
 **Search Patterns:**
-- Files: `**/config.go`, `**/bootstrap/*.go`, `**/.env*`
-- Keywords: `env:`, `envDefault:`, `Validate()`, `LoadConfig`, `production`
-- Standards-specific: `envconfig`, `caarlos0/env`
+- Files: `**/config.ts`, `**/bootstrap/*.ts`, `**/.env*`
+- Keywords: `process.env`, `dotenv`, `@nestjs/config`, `Joi.object`, `z.object`
+- Standards-specific: `dotenv`, `@nestjs/config`, `convict`
 
 **Reference Implementation (GOOD):**
-```go
-// Config with validation
-type Config struct {
-    EnvName    string `env:"ENV_NAME" envDefault:"development"`
-    DBPassword string `env:"POSTGRES_PASSWORD"`
-    AuthEnabled bool  `env:"AUTH_ENABLED" envDefault:"false"`
-}
+```typescript
+// Config with validation (using zod)
+const configSchema = z.object({
+  envName: z.string().default('development'),
+  dbPassword: z.string().optional(),
+  authEnabled: z.coerce.boolean().default(false),
+  postgresSSLMode: z.string().default('disable'),
+});
 
 // Production validation
-func (c *Config) Validate() error {
-    if c.EnvName == "production" {
-        // Require auth in production
-        if !c.AuthEnabled {
-            return errors.New("AUTH_ENABLED must be true in production")
-        }
-        // Require DB password in production
-        if c.DBPassword == "" {
-            return errors.New("POSTGRES_PASSWORD required in production")
-        }
-        // Require TLS for databases
-        if c.PostgresSSLMode == "disable" {
-            return errors.New("POSTGRES_SSLMODE cannot be disable in production")
-        }
+function validateProductionConfig(cfg: Config): void {
+  if (cfg.envName === 'production') {
+    if (!cfg.authEnabled) {
+      throw new Error('AUTH_ENABLED must be true in production');
     }
-    return nil
+    if (!cfg.dbPassword) {
+      throw new Error('POSTGRES_PASSWORD required in production');
+    }
+    if (cfg.postgresSSLMode === 'disable') {
+      throw new Error('POSTGRES_SSLMODE cannot be disable in production');
+    }
+  }
 }
 
 // Load with validation
-func LoadConfig() (*Config, error) {
-    cfg := &Config{}
-    if err := envconfig.Process("", cfg); err != nil {
-        return nil, fmt.Errorf("load env: %w", err)
-    }
-    if err := cfg.Validate(); err != nil {
-        return nil, fmt.Errorf("validate: %w", err)
-    }
-    return cfg, nil
+function loadConfig(): Config {
+  const raw = {
+    envName: process.env.ENV_NAME,
+    dbPassword: process.env.POSTGRES_PASSWORD,
+    authEnabled: process.env.AUTH_ENABLED,
+    postgresSSLMode: process.env.POSTGRES_SSLMODE,
+  };
+  const cfg = configSchema.parse(raw);
+  validateProductionConfig(cfg);
+  return cfg;
 }
 ```
 
@@ -1483,48 +1483,43 @@ Audit database and cache connection management for production readiness.
 
 **MarsAI Standards (Source of Truth):**
 ---BEGIN STANDARDS---
-{INJECTED: "Core Dependency: lib-commons" section from core.md — specifically connection packages}
+{INJECTED: "Core Dependencies" section from core.md — specifically connection packages}
 ---END STANDARDS---
 
 **Search Patterns:**
-- Files: `**/config.go`, `**/database*.go`, `**/redis*.go`, `**/postgres*.go`
-- Keywords: `MaxOpenConns`, `MaxIdleConns`, `PoolSize`, `Timeout`, `SetConnMaxLifetime`
-- Standards-specific: `lib-commons`, `mpostgres`, `mredis`, `mmongo`
+- Files: `**/config.ts`, `**/database*.ts`, `**/redis*.ts`, `**/postgres*.ts`
+- Keywords: `pool`, `max`, `min`, `idleTimeoutMillis`, `connectionTimeoutMillis`, `ioredis`
+- Standards-specific: `knex`, `typeorm`, `prisma`, `ioredis`, `pg`
 
 **Reference Implementation (GOOD):**
-```go
+```typescript
 // Database pool configuration
-type DBConfig struct {
-    MaxOpenConnections int `env:"POSTGRES_MAX_OPEN_CONNS" envDefault:"25"`
-    MaxIdleConnections int `env:"POSTGRES_MAX_IDLE_CONNS" envDefault:"5"`
-    ConnMaxLifetime    int `env:"POSTGRES_CONN_MAX_LIFETIME_MINS" envDefault:"30"`
-}
-
-// Apply pool settings
-func ConfigurePool(db *sql.DB, cfg *DBConfig) {
-    db.SetMaxOpenConns(cfg.MaxOpenConnections)
-    db.SetMaxIdleConns(cfg.MaxIdleConnections)
-    db.SetConnMaxLifetime(time.Duration(cfg.ConnMaxLifetime) * time.Minute)
-}
+const dbConfig = {
+  pool: {
+    max: parseInt(process.env.POSTGRES_MAX_OPEN_CONNS ?? '25'),
+    min: parseInt(process.env.POSTGRES_MIN_IDLE_CONNS ?? '5'),
+    idleTimeoutMillis: parseInt(process.env.POSTGRES_IDLE_TIMEOUT_MS ?? '30000'),
+    acquireTimeoutMillis: parseInt(process.env.POSTGRES_ACQUIRE_TIMEOUT_MS ?? '10000'),
+  },
+};
 
 // Redis pool configuration
-type RedisConfig struct {
-    PoolSize       int `env:"REDIS_POOL_SIZE" envDefault:"10"`
-    MinIdleConns   int `env:"REDIS_MIN_IDLE_CONNS" envDefault:"2"`
-    ReadTimeoutMs  int `env:"REDIS_READ_TIMEOUT_MS" envDefault:"3000"`
-    WriteTimeoutMs int `env:"REDIS_WRITE_TIMEOUT_MS" envDefault:"3000"`
-    DialTimeoutMs  int `env:"REDIS_DIAL_TIMEOUT_MS" envDefault:"5000"`
-}
+const redisConfig = {
+  maxRetriesPerRequest: 3,
+  connectTimeout: parseInt(process.env.REDIS_CONNECT_TIMEOUT_MS ?? '5000'),
+  commandTimeout: parseInt(process.env.REDIS_COMMAND_TIMEOUT_MS ?? '3000'),
+  lazyConnect: true,
+};
 
 // Primary + Replica support
-type DatabaseConnections struct {
-    Primary *sql.DB
-    Replica *sql.DB  // Falls back to primary if not configured
+interface DatabaseConnections {
+  primary: Knex;
+  replica: Knex; // Falls back to primary if not configured
 }
 ```
 
 **Check Against MarsAI Standards For:**
-1. (HARD GATE) lib-commons connection packages used (mpostgres, mredis, mmongo) per core.md
+1. (HARD GATE) Project connection libraries used per core.md
 2. DB connection pool limits configured
 3. Redis pool settings configured
 4. Connection timeouts set (not infinite)
@@ -1536,7 +1531,7 @@ type DatabaseConnections struct {
 
 **Severity Ratings:**
 - CRITICAL: No connection pool limits (unbounded connections)
-- CRITICAL: HARD GATE violation — not using lib-commons connection packages
+- CRITICAL: HARD GATE violation — not using project connection libraries
 - HIGH: No connection timeouts (hang forever)
 - HIGH: No max lifetime (stale connections)
 - MEDIUM: Missing read replica support
@@ -1573,55 +1568,53 @@ Audit logging practices and PII protection for production readiness.
 ---END STANDARDS---
 
 **Search Patterns:**
-- Files: `**/*.go`
-- Keywords: `logger.`, `log.`, `Errorf`, `Infof`, `WithFields`, `password`, `token`, `secret`
-- Also search: `fmt.Print`, `fmt.Println` (should not be used for logging)
-- Standards-specific: `zap`, `zerolog`, structured logging library references
+- Files: `**/*.ts`
+- Keywords: `logger.`, `log.`, `error`, `info`, `warn`, `password`, `token`, `secret`
+- Also search: `console.log`, `console.error` (should not be used for logging in production)
+- Standards-specific: `winston`, `pino`, `bunyan`, structured logging library references
 
 **Reference Implementation (GOOD):**
-```go
+```typescript
 // Structured logging with context
-logger, tracer, requestID, _ := libCommons.NewTrackingFromContext(ctx)
-logger.WithFields(
-    "request_id", requestID,
-    "user_id", userID,
-    "action", "create_resource",
-).Info("resource created")
+logger.info('resource created', {
+  requestId,
+  userId,
+  action: 'create_resource',
+});
 
 // Production-safe error logging
-if isProduction {
-    // Don't include error details that might leak PII
-    logger.Errorf("operation failed: status=%d path=%s", code, path)
+if (isProduction) {
+  // Don't include error details that might leak PII
+  logger.error('operation failed', { status: code, path });
 } else {
-    // Development can have full details
-    logger.Errorf("operation failed: error=%v", err)
+  // Development can have full details
+  logger.error('operation failed', { error: err.message, stack: err.stack });
 }
 
 // Config DSN without password
-func (c *Config) DSN() string {
-    // Returns connection string without logging password
-    return fmt.Sprintf("host=%s port=%d user=%s dbname=%s",
-        c.Host, c.Port, c.User, c.DBName)
+function getDSN(config: Config): string {
+  // Returns connection string without logging password
+  return `host=${config.host} port=${config.port} user=${config.user} dbname=${config.dbName}`;
 }
 ```
 
 **Reference Implementation (BAD):**
-```go
-// BAD: fmt.Println for logging
-fmt.Println("User logged in:", userEmail)
+```typescript
+// BAD: console.log for logging
+console.log('User logged in:', userEmail);
 
 // BAD: Logging sensitive data
-logger.Infof("Login attempt: email=%s password=%s", email, password)
+logger.info(`Login attempt: email=${email} password=${password}`);
 
 // BAD: Logging full request body (might contain PII)
-logger.Debugf("Request body: %+v", requestBody)
+logger.debug('Request body:', requestBody);
 
 // BAD: Not using structured logging
-log.Printf("Error: %v", err)
+console.error('Error:', err);
 ```
 
 **Check Against MarsAI Standards For:**
-1. (HARD GATE) Structured logging used (not fmt.Print or log.Printf) per quality.md logging section
+1. (HARD GATE) Structured logging used (not console.log or console.error) per quality.md logging section
 2. Logger obtained from context (request tracking)
 3. No passwords/tokens logged
 4. Production mode sanitizes error details
@@ -1633,7 +1626,7 @@ log.Printf("Error: %v", err)
 **Severity Ratings:**
 - CRITICAL: Passwords/tokens logged
 - CRITICAL: PII logged in production
-- HIGH: fmt.Print used instead of logger (HARD GATE violation per MarsAI standards)
+- HIGH: console.log used instead of logger (HARD GATE violation per MarsAI standards)
 - HIGH: Full error details in production
 - MEDIUM: Missing request ID in logs
 - LOW: Inappropriate log levels
@@ -1668,60 +1661,60 @@ Audit idempotency implementation for production readiness.
 ---END STANDARDS---
 
 **Search Patterns:**
-- Files: `**/idempotency*.go`, `**/value_objects/*.go`, `**/redis/*.go`
-- Keywords: `IdempotencyKey`, `TryAcquire`, `MarkComplete`, `SetNX`, `idempotent`
+- Files: `**/idempotency*.ts`, `**/value-objects/*.ts`, `**/redis/*.ts`
+- Keywords: `idempotencyKey`, `tryAcquire`, `markComplete`, `setNX`, `idempotent`
 - Standards-specific: `IdempotencyRepository`, `idempotency middleware`
 
 **Reference Implementation (GOOD):**
-```go
+```typescript
 // Idempotency key value object
-type IdempotencyKey string
+const IDEMPOTENCY_KEY_MAX_LENGTH = 128;
+const IDEMPOTENCY_KEY_PATTERN = /^[A-Za-z0-9:_-]+$/;
 
-const (
-    idempotencyKeyMaxLength = 128
-    idempotencyKeyPattern   = `^[A-Za-z0-9:_-]+$`
-)
+class IdempotencyKey {
+  private constructor(private readonly value: string) {}
 
-func (key IdempotencyKey) IsValid() bool {
-    s := string(key)
-    if s == "" || len(s) > idempotencyKeyMaxLength {
-        return false
+  static create(value: string): IdempotencyKey {
+    if (!value || value.length > IDEMPOTENCY_KEY_MAX_LENGTH) {
+      throw new InvalidIdempotencyKeyError();
     }
-    return regexp.MustCompile(idempotencyKeyPattern).MatchString(s)
+    if (!IDEMPOTENCY_KEY_PATTERN.test(value)) {
+      throw new InvalidIdempotencyKeyError();
+    }
+    return new IdempotencyKey(value);
+  }
+
+  toString(): string { return this.value; }
 }
 
 // Redis-backed idempotency
-type IdempotencyRepository struct {
-    client *redis.Client
-    ttl    time.Duration  // e.g., 7 days
-}
+class IdempotencyRepository {
+  constructor(private readonly redis: Redis, private readonly ttlSeconds: number = 604800) {} // 7 days
 
-func (r *IdempotencyRepository) TryAcquire(ctx context.Context, key IdempotencyKey) (bool, error) {
+  async tryAcquire(key: IdempotencyKey): Promise<boolean> {
     // SetNX is atomic - only first caller wins
-    result, err := r.client.SetNX(ctx, r.keyName(key), "acquired", r.ttl).Result()
-    return result, err
-}
+    const result = await this.redis.set(this.keyName(key), 'acquired', 'EX', this.ttlSeconds, 'NX');
+    return result === 'OK';
+  }
 
-func (r *IdempotencyRepository) MarkComplete(ctx context.Context, key IdempotencyKey) error {
-    return r.client.Set(ctx, r.keyName(key), "complete", r.ttl).Err()
+  async markComplete(key: IdempotencyKey): Promise<void> {
+    await this.redis.set(this.keyName(key), 'complete', 'EX', this.ttlSeconds);
+  }
 }
 
 // Usage in handler
-func (h *Handler) ProcessCallback(c *fiber.Ctx) error {
-    key := extractIdempotencyKey(c)
+async function processCallback(req: Request, res: Response) {
+  const key = IdempotencyKey.create(req.headers['idempotency-key'] as string);
 
-    acquired, err := h.idempotency.TryAcquire(ctx, key)
-    if err != nil {
-        return internalError(c, "idempotency check failed", err)
-    }
-    if !acquired {
-        return c.Status(200).JSON(fiber.Map{"status": "already_processed"})
-    }
+  const acquired = await idempotency.tryAcquire(key);
+  if (!acquired) {
+    return res.status(200).json({ status: 'already_processed' });
+  }
 
-    // Process...
+  // Process...
 
-    h.idempotency.MarkComplete(ctx, key)
-    return c.JSON(result)
+  await idempotency.markComplete(key);
+  return res.json(result);
 }
 ```
 
@@ -1773,48 +1766,49 @@ Audit API documentation (Swagger/OpenAPI) for production readiness.
 ---END STANDARDS---
 
 **Search Patterns:**
-- Files: `**/main.go`, `**/handlers.go`, `**/dto.go`, `**/swagger/*`
-- Keywords: `@Summary`, `@Router`, `@Param`, `@Success`, `@Failure`, `@Security`
-- Standards-specific: `swaggo`, `swag init`, `docs/swagger.json`
+- Files: `**/main.ts`, `**/controllers/*.ts`, `**/dto.ts`, `**/swagger/*`, `**/openapi*.yaml`
+- Keywords: `@ApiOperation`, `@ApiResponse`, `@ApiProperty`, `@ApiTags`, `@swagger-jsdoc`
+- Standards-specific: `@nestjs/swagger`, `swagger-jsdoc`, `openapi`, `docs/swagger.json`
 
 **Reference Implementation (GOOD):**
-```go
-// Main entry with API metadata
-// @title           My API
-// @version         v1.0.0
-// @description     API description
-// @BasePath        /
-// @securityDefinitions.apikey BearerAuth
-// @in header
-// @name Authorization
+```typescript
+// NestJS controller with full OpenAPI documentation
+@ApiTags('resources')
+@ApiBearerAuth()
+@Controller('v1/resources')
+export class ResourcesController {
 
-// Handler with full documentation
-// @Summary      Create a resource
-// @Description  Creates a new resource with the given parameters
-// @Tags         resources
-// @Accept       json
-// @Produce      json
-// @Param        request body CreateRequest true "Resource to create"
-// @Success      201 {object} ResourceResponse
-// @Failure      400 {object} ErrorResponse "Invalid input"
-// @Failure      401 {object} ErrorResponse "Unauthorized"
-// @Failure      403 {object} ErrorResponse "Forbidden"
-// @Failure      500 {object} ErrorResponse "Internal error"
-// @Security     BearerAuth
-// @Router       /v1/resources [post]
-func (h *Handler) Create(c *fiber.Ctx) error { ... }
+  @Post()
+  @ApiOperation({ summary: 'Create a resource', description: 'Creates a new resource with the given parameters' })
+  @ApiResponse({ status: 201, type: ResourceResponse })
+  @ApiResponse({ status: 400, type: ErrorResponse, description: 'Invalid input' })
+  @ApiResponse({ status: 401, type: ErrorResponse, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, type: ErrorResponse, description: 'Forbidden' })
+  @ApiResponse({ status: 500, type: ErrorResponse, description: 'Internal error' })
+  async create(@Body() dto: CreateRequest): Promise<ResourceResponse> { ... }
+}
 
 // DTO with documentation
-type CreateRequest struct {
-    Name   string `json:"name" example:"my-resource" validate:"required"`
-    Type   string `json:"type" example:"TYPE_A" enums:"TYPE_A,TYPE_B"`
-    Amount int    `json:"amount" example:"100" minimum:"0" maximum:"1000000"`
+class CreateRequest {
+  @ApiProperty({ example: 'my-resource' })
+  @IsString()
+  name: string;
+
+  @ApiProperty({ example: 'TYPE_A', enum: ['TYPE_A', 'TYPE_B'] })
+  @IsEnum(ResourceType)
+  type: string;
+
+  @ApiProperty({ example: 100, minimum: 0, maximum: 1000000 })
+  @IsInt()
+  @Min(0)
+  @Max(1000000)
+  amount: number;
 }
 ```
 
 **Check Against MarsAI Standards For:**
-1. (HARD GATE) Swaggo annotations present per MarsAI api-patterns.md
-2. API title, version, description in main.go
+1. (HARD GATE) OpenAPI/Swagger annotations present per MarsAI api-patterns.md
+2. API title, version, description in OpenAPI config
 3. Security definitions (Bearer token)
 4. All endpoints have @Router annotation
 5. Request/response types documented
@@ -1867,7 +1861,7 @@ Audit technical debt indicators for production readiness.
 - `"in a real implementation"` or `"real implementation"`
 - `"temporary"` or `"temp fix"`
 - `"workaround"`
-- `panic("not implemented")`
+- `throw new Error("not implemented")`
 
 **Risk Assessment Criteria:**
 
@@ -1929,79 +1923,67 @@ Audit test coverage and testing patterns for production readiness.
 ---END STANDARDS---
 
 **Search Patterns:**
-- Files: `**/*_test.go`, `**/mocks/**/*.go`, `tests/**/*.go`
-- Keywords: `func Test`, `t.Run`, `mock.Mock`, `assert.`, `require.`
-- Standards-specific: `mockgen`, `testify`, `testcontainers`
+- Files: `**/*.spec.ts`, `**/*.test.ts`, `**/mocks/**/*.ts`, `**/__tests__/**/*.ts`
+- Keywords: `describe`, `it(`, `test(`, `expect(`, `jest.mock`, `vi.mock`
+- Standards-specific: `jest`, `vitest`, `supertest`, `testcontainers`
 
 **Reference Implementation (GOOD):**
-```go
+```typescript
 // Co-located test file
-// file: handler_test.go (next to handler.go)
+// file: handler.spec.ts (next to handler.ts)
 
-func TestHandler_Create(t *testing.T) {
+describe('Handler.create', () => {
+  it('should create a resource successfully', async () => {
     // Arrange
-    ctrl := gomock.NewController(t)
-    defer ctrl.Finish()
-
-    mockRepo := mocks.NewMockRepository(ctrl)
-    mockRepo.EXPECT().Save(gomock.Any(), gomock.Any()).Return(nil)
-
-    handler := NewHandler(mockRepo)
+    const mockRepo = { save: jest.fn().mockResolvedValue(undefined) };
+    const handler = new Handler(mockRepo);
 
     // Act
-    result, err := handler.Create(ctx, input)
+    const result = await handler.create(ctx, input);
 
     // Assert
-    require.NoError(t, err)
-    assert.Equal(t, expected, result)
-}
+    expect(result).toEqual(expected);
+    expect(mockRepo.save).toHaveBeenCalledWith(expect.any(Object));
+  });
+});
 
-// Table-driven tests for multiple cases
-func TestValidation(t *testing.T) {
-    tests := []struct {
-        name    string
-        input   string
-        wantErr bool
-    }{
-        {"valid input", "test", false},
-        {"empty input", "", true},
-        {"too long", strings.Repeat("a", 300), true},
-    }
+// Parameterized tests for multiple cases
+describe('Validation', () => {
+  const cases = [
+    { name: 'valid input', input: 'test', shouldThrow: false },
+    { name: 'empty input', input: '', shouldThrow: true },
+    { name: 'too long', input: 'a'.repeat(300), shouldThrow: true },
+  ];
 
-    for _, tt := range tests {
-        t.Run(tt.name, func(t *testing.T) {
-            err := Validate(tt.input)
-            if tt.wantErr {
-                assert.Error(t, err)
-            } else {
-                assert.NoError(t, err)
-            }
-        })
+  it.each(cases)('$name', async ({ input, shouldThrow }) => {
+    if (shouldThrow) {
+      await expect(validate(input)).rejects.toThrow();
+    } else {
+      await expect(validate(input)).resolves.not.toThrow();
     }
-}
+  });
+});
 
 // Integration test with testcontainers
-func TestIntegration_CreateResource(t *testing.T) {
-    if testing.Short() {
-        t.Skip("skipping integration test")
-    }
-    // Setup container...
-}
+describe('Integration: CreateResource', () => {
+  if (process.env.SKIP_INTEGRATION) return;
+  // Setup container...
+});
 ```
 
 **Check Against MarsAI Standards For:**
-1. (HARD GATE) Test files co-located with source (*_test.go) per quality.md testing section
-2. (HARD GATE) Mocks generated via mockgen (not hand-written) per MarsAI standards
-3. (HARD GATE) Assertions use testify (assert/require) per MarsAI standards
-4. Table-driven tests for multiple cases
-5. Integration tests in separate directory or with build tags
+1. (HARD GATE) Test files co-located with source (*.spec.ts / *.test.ts) per quality.md testing section
+2. (HARD GATE) Mocks use jest.mock/vi.mock (not hand-written implementations) per MarsAI standards
+3. (HARD GATE) Assertions use jest/vitest expect() per MarsAI standards
+4. Parameterized tests (it.each / test.each) for multiple cases
+5. Integration tests in separate directory or with configuration flags
 6. Test helpers/fixtures organized
-7. Parallel tests where appropriate (t.Parallel())
-8. Test cleanup with t.Cleanup() or defer
+7. Concurrent test execution where appropriate
+8. Test cleanup with afterEach/afterAll hooks
 
 **Severity Ratings:**
 - HIGH: Critical paths without tests (HARD GATE violation per MarsAI standards)
-- HIGH: Hand-written mocks (should use mockgen per MarsAI standards)
+- HIGH: Hand-written mocks (should use jest.mock per MarsAI standards)
 - MEDIUM: Missing table-driven tests for validators
 - MEDIUM: No integration tests
 - LOW: Tests not running in parallel
@@ -2014,7 +1996,7 @@ func TestIntegration_CreateResource(t *testing.T) {
 ### Summary
 - Test files found: X
 - Modules with tests: X/Y
-- Mock generation: mockgen / hand-written
+- Mock generation: jest.mock / hand-written
 - Integration tests: Yes/No
 
 ### Critical Issues
@@ -2038,61 +2020,59 @@ Audit dependency management for production readiness.
 ---END STANDARDS---
 
 **Search Patterns:**
-- Files: `go.mod`, `go.sum`, `**/vendor/**`
-- Commands: Run `go list -m -u all` mentally based on go.mod
-- Standards-specific: Check for required MarsAI dependencies in go.mod
+- Files: `package.json`, `package-lock.json`, `yarn.lock`, `pnpm-lock.yaml`
+- Commands: Run `npm audit` mentally based on package.json
+- Standards-specific: Check for required MarsAI dependencies in package.json
 
 **Reference Implementation (GOOD):**
-```go
-// go.mod with pinned versions
-module github.com/company/project
-
-go 1.24
-
-require (
-    github.com/gofiber/fiber/v2 v2.52.10  // Pinned, not "latest"
-    github.com/lib/pq v1.10.9
-    go.opentelemetry.io/otel v1.39.0
-)
-
-// Indirect deps managed automatically
-require (
-    github.com/valyala/fasthttp v1.52.0 // indirect
-)
+```json
+// package.json with pinned versions
+{
+  "name": "@company/project",
+  "dependencies": {
+    "@nestjs/core": "^10.3.0",
+    "ioredis": "^5.3.0",
+    "@opentelemetry/sdk-node": "^0.48.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "typescript": "^5.3.0"
+  }
+}
 ```
 
 **Reference Implementation (BAD):**
-```go
-// BAD: Using replace for production
-replace github.com/some/lib => ../local-lib
+```json
+// BAD: Using file: protocol for production
+{ "some-lib": "file:../local-lib" }
 
 // BAD: Unpinned versions
-require github.com/some/lib latest
+{ "some-lib": "*" }
 
 // BAD: Very old versions with known CVEs
-require github.com/dgrijalva/jwt-go v3.2.0  // Has CVE, use golang-jwt
+{ "jsonwebtoken": "^7.0.0" }  // Has CVEs, use latest
 ```
 
 **Check Against MarsAI Standards For:**
-1. (HARD GATE) Required MarsAI framework dependencies present in go.mod per core.md version table
-2. All dependencies pinned (no "latest")
-3. No local replace directives in production
-4. Known vulnerable packages identified
+1. (HARD GATE) Required MarsAI framework dependencies present in package.json per core.md version table
+2. All dependencies pinned (no "*" or unranged)
+3. No local file: protocol in production dependencies
+4. Known vulnerable packages identified (npm audit)
 5. Unused dependencies (not imported anywhere)
 6. Major version mismatches
-7. Deprecated packages (e.g., dgrijalva/jwt-go -> golang-jwt)
-8. go.sum exists and is committed
-9. Framework versions meet MarsAI minimum requirements (Go 1.24+, Fiber v2, etc.)
+7. Deprecated packages flagged by npm
+8. Lock file exists and is committed
+9. Framework versions meet MarsAI minimum requirements (Node.js 20+, TypeScript 5+, etc.)
 
 **Known Vulnerable Packages to Flag:**
-- github.com/dgrijalva/jwt-go (use golang-jwt/jwt)
-- github.com/pkg/sftp < v1.13.5
-- golang.org/x/crypto < recent
-- golang.org/x/net < recent
+- jsonwebtoken < 9.0.0 (multiple CVEs)
+- axios < 1.6.0 (SSRF vulnerability)
+- lodash < 4.17.21 (prototype pollution)
+- express < 4.19.0 (path traversal)
 
 **Severity Ratings:**
-- CRITICAL: Known CVE in dependency
-- CRITICAL: HARD GATE violation — required MarsAI framework dependency missing from go.mod
+- CRITICAL: Known CVE in dependency (npm audit critical)
+- CRITICAL: HARD GATE violation — required MarsAI framework dependency missing from package.json
 - HIGH: Local replace directive
 - HIGH: Deprecated package with security issues
 - MEDIUM: Significantly outdated dependencies
@@ -2125,60 +2105,59 @@ Audit performance patterns for production readiness.
 **Detected Stack:** {DETECTED_STACK}
 
 **Search Patterns:**
-- Files: `**/*.go`
-- Keywords: `for.*range`, `append(`, `make(`, `sync.Pool`, `SELECT *`, `N+1`
+- Files: `**/*.ts`
+- Keywords: `for`, `map(`, `push(`, `SELECT *`, `N+1`, `Promise.all`
 
 **Reference Implementation (GOOD):**
-```go
-// Pre-allocate slices when size is known
-items := make([]Item, 0, len(input))  // Capacity hint
-
-// Use sync.Pool for frequently allocated objects
-var bufferPool = sync.Pool{
-    New: func() interface{} {
-        return new(bytes.Buffer)
-    },
-}
-
+```typescript
 // Batch database operations
-func (r *Repo) CreateBatch(ctx context.Context, items []Item) error {
-    return r.db.WithContext(ctx).CreateInBatches(items, 100).Error
+async function createBatch(items: Item[]): Promise<void> {
+  const batchSize = 100;
+  for (let i = 0; i < items.length; i += batchSize) {
+    const batch = items.slice(i, i + batchSize);
+    await knex('items').insert(batch);
+  }
 }
 
 // Select only needed columns
-func (r *Repo) List(ctx context.Context) ([]Item, error) {
-    return r.db.WithContext(ctx).
-        Select("id", "name", "status").  // Not SELECT *
-        Find(&items).Error
+async function list(): Promise<Item[]> {
+  return knex('items').select('id', 'name', 'status'); // Not SELECT *
 }
 
-// Avoid N+1 with preloading
-func (r *Repo) GetWithRelations(ctx context.Context, id uuid.UUID) (*Item, error) {
-    return r.db.WithContext(ctx).
-        Preload("Children").
-        First(&item, id).Error
+// Avoid N+1 with eager loading
+async function getWithRelations(id: string): Promise<Item> {
+  return knex('items')
+    .where('items.id', id)
+    .join('children', 'children.parent_id', 'items.id')
+    .select('items.*', 'children.*');
 }
+
+// Bounded concurrent requests
+import pLimit from 'p-limit';
+const limit = pLimit(10);
+const results = await Promise.all(
+  urls.map(url => limit(() => fetch(url)))
+);
 ```
 
 **Reference Implementation (BAD):**
-```go
+```typescript
 // BAD: SELECT * fetches unnecessary data
-db.Find(&items)
+const items = await knex('items').select('*');
 
 // BAD: N+1 query pattern
-for _, item := range items {
-    db.Where("parent_id = ?", item.ID).Find(&children)  // Query per item!
+for (const item of items) {
+  const children = await knex('children').where('parent_id', item.id); // Query per item!
 }
 
-// BAD: Growing slice without capacity
-var items []Item
-for _, input := range inputs {
-    items = append(items, transform(input))  // Reallocates repeatedly
-}
+// BAD: Unbounded concurrent requests — overwhelms downstream
+const results = await Promise.all(
+  urls.map(url => fetch(url)) // No concurrency limit
+);
 
-// BAD: Large allocations in hot path without pooling
-func handleRequest() {
-    buf := make([]byte, 1<<20)  // 1MB allocation per request
+// BAD: Large buffer allocation per request without pooling
+function handleRequest() {
+  const buf = Buffer.alloc(1 << 20); // 1MB allocation per request
 }
 ```
 
@@ -2186,7 +2165,7 @@ func handleRequest() {
 1. SELECT * avoided (explicit column selection)
 2. N+1 queries prevented (use Preload/joins)
 3. Slice pre-allocation when size known
-4. sync.Pool for frequent allocations
+4. Object pooling for frequent allocations
 5. Batch operations for bulk inserts/updates
 6. Indexes exist for filtered/sorted columns
 7. Connection pooling configured
@@ -2197,7 +2176,7 @@ func handleRequest() {
 - HIGH: SELECT * on large tables
 - MEDIUM: Missing slice pre-allocation
 - MEDIUM: No batch operations for bulk data
-- LOW: Missing sync.Pool optimization
+- LOW: Missing object pooling optimization
 - LOW: Minor inefficiencies
 
 **Output Format:**
@@ -2230,93 +2209,68 @@ Audit concurrency patterns for production readiness.
 ---END STANDARDS---
 
 **Search Patterns:**
-- Files: `**/*.go`
-- Keywords: `go func`, `sync.Mutex`, `sync.RWMutex`, `chan`, `select {`, `sync.WaitGroup`
-- Standards-specific: `errgroup`, `semaphore`, `worker pool`
+- Files: `**/*.ts`
+- Keywords: `Promise.all`, `Promise.race`, `Worker`, `setInterval`, `async`, `concurrency`
+- Standards-specific: `p-limit`, `p-queue`, `worker_threads`, `bull`
 
 **Reference Implementation (GOOD):**
-```go
-// Mutex protecting shared state
-type Cache struct {
-    mu    sync.RWMutex
-    items map[string]Item
+```typescript
+// Bounded concurrent processing
+import pLimit from 'p-limit';
+const limit = pLimit(10); // Max 10 concurrent
+
+async function processAll(items: Item[]): Promise<void> {
+  const results = await Promise.allSettled(
+    items.map(item => limit(() => process(item)))
+  );
+  const errors = results.filter(r => r.status === 'rejected');
+  if (errors.length > 0) {
+    throw new AggregateError(errors.map(e => (e as PromiseRejectedResult).reason));
+  }
 }
 
-func (c *Cache) Get(key string) (Item, bool) {
-    c.mu.RLock()
-    defer c.mu.RUnlock()
-    item, ok := c.items[key]
-    return item, ok
+// Worker with AbortController for cancellation
+async function worker(signal: AbortSignal): Promise<void> {
+  while (!signal.aborted) {
+    const item = await getNextItem();
+    if (item) await process(item);
+    await new Promise(resolve => setTimeout(resolve, 100));
+  }
 }
 
-func (c *Cache) Set(key string, item Item) {
-    c.mu.Lock()
-    defer c.mu.Unlock()
-    c.items[key] = item
-}
+// Thread-safe cache with Map (single-threaded JS, but consistent patterns)
+class Cache<T> {
+  private items = new Map<string, T>();
 
-// WaitGroup for goroutine coordination
-func processAll(items []Item) error {
-    var wg sync.WaitGroup
-    errCh := make(chan error, len(items))
+  get(key: string): T | undefined {
+    return this.items.get(key);
+  }
 
-    for _, item := range items {
-        wg.Add(1)
-        go func(i Item) {
-            defer wg.Done()
-            if err := process(i); err != nil {
-                errCh <- err
-            }
-        }(item)  // Pass item to avoid closure capture
-    }
-
-    wg.Wait()
-    close(errCh)
-
-    // Collect errors
-    for err := range errCh {
-        return err
-    }
-    return nil
-}
-
-// Context for cancellation
-func worker(ctx context.Context) {
-    for {
-        select {
-        case <-ctx.Done():
-            return
-        case item := <-workCh:
-            process(item)
-        }
-    }
+  set(key: string, item: T): void {
+    this.items.set(key, item);
+  }
 }
 ```
 
 **Reference Implementation (BAD):**
-```go
-// BAD: Race condition - map access without lock
-var cache = make(map[string]Item)
-func Get(key string) Item { return cache[key] }  // Concurrent read/write!
+```typescript
+// BAD: Unbounded concurrent requests — overwhelms downstream
+const results = await Promise.all(
+  millionItems.map(item => process(item)) // Millions of concurrent promises!
+);
 
-// BAD: Goroutine leak - no way to stop
-go func() {
-    for {
-        process()  // Runs forever, no context check
-    }
-}()
+// BAD: No way to stop background task
+setInterval(() => {
+  process(); // Runs forever, no cleanup
+}, 1000);
 
-// BAD: Closure captures loop variable
-for _, item := range items {
-    go func() {
-        process(item)  // All goroutines see last item!
-    }()
-}
+// BAD: Fire-and-forget async — unhandled rejections
+items.forEach(item => {
+  process(item); // Missing await — errors silently lost
+});
 
-// BAD: Unbounded goroutine spawning
-for _, item := range millionItems {
-    go process(item)  // 1M goroutines!
-}
+// BAD: No error handling in concurrent operations
+await Promise.all(items.map(item => process(item))); // One failure rejects all
 ```
 
 **Check Against MarsAI Standards For:**
@@ -2327,13 +2281,13 @@ for _, item := range millionItems {
 5. Bounded concurrency (worker pools) per MarsAI patterns
 6. Channels closed by sender
 7. Select with default for non-blocking
-8. No goroutine leaks (all paths exit)
+8. No async leaks (all operations complete or are cancelled)
 
 **Severity Ratings:**
-- CRITICAL: Race condition on shared map (HARD GATE violation per MarsAI standards)
-- CRITICAL: Goroutine leak (no exit path)
-- HIGH: Loop variable capture bug
-- HIGH: Unbounded goroutine spawning
+- CRITICAL: Unbounded concurrent operations (HARD GATE violation per MarsAI standards)
+- CRITICAL: Async leak (no cleanup path)
+- HIGH: Fire-and-forget async operations without error handling
+- HIGH: Unbounded Promise.all without concurrency limit
 - MEDIUM: Missing context cancellation
 - LOW: Inefficient locking patterns
 
@@ -2363,13 +2317,13 @@ Audit database migration safety for production readiness.
 
 **MarsAI Standards (Source of Truth):**
 ---BEGIN STANDARDS---
-{INJECTED: "Core Dependency: lib-commons" section from core.md — database migration patterns}
+{INJECTED: "Core Dependencies" section from core.md — database migration patterns}
 ---END STANDARDS---
 
 **Search Patterns:**
-- Files: `migrations/*.sql`, `migrations/*.go`
+- Files: `migrations/*.sql`, `migrations/*.ts`, `**/migration*.ts`
 - Keywords: `DROP`, `ALTER`, `RENAME`, `NOT NULL`, `CREATE INDEX`
-- Standards-specific: `golang-migrate`, `lib-commons migration`
+- Standards-specific: migration tool (knex migrations, prisma migrate, typeorm migrations)
 
 **Reference Implementation (GOOD):**
 ```sql
@@ -2469,7 +2423,7 @@ CREATE INDEX CONCURRENTLY idx_orders_status ON orders(status);
 6. No destructive operations in up migrations
 7. Migrations are additive (safe rollback)
 8. Sequential numbering (no gaps)
-9. Migration tool matches MarsAI standard (golang-migrate or lib-commons)
+9. Migration tool matches MarsAI standard (knex migrations, prisma migrate, or typeorm migrations)
 10. NOT NULL columns MUST have DEFAULT values in ADD COLUMN migrations — adding a NOT NULL column without DEFAULT requires a full table rewrite lock on existing data, causing downtime on large tables
 11. CHECK constraints for domain-specific validation at database level — values validated only in application code MUST also have database-level CHECK constraints as a safety net
 12. Foreign key consistency — foreign keys MUST have matching column types and MUST define explicit cascading behavior (ON DELETE/ON UPDATE) rather than relying on database defaults
@@ -2527,22 +2481,24 @@ Audit container security and Dockerfile best practices for production readiness.
 **Reference Implementation (GOOD):**
 ```dockerfile
 # Multi-stage build
-FROM golang:1.24-alpine AS builder
+FROM node:20-alpine AS builder
 WORKDIR /app
-COPY go.mod go.sum ./
-RUN go mod download
+COPY package.json package-lock.json ./
+RUN npm ci --production=false
 COPY . .
-RUN CGO_ENABLED=0 go build -o /main cmd/app/main.go
+RUN npm run build
 
-# Distroless or minimal runtime image
-FROM gcr.io/distroless/static-debian12:nonroot
-WORKDIR /
-COPY --from=builder /main .
+# Minimal runtime image
+FROM node:20-alpine
+WORKDIR /app
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./
 # Non-root user
-USER nonroot:nonroot
+USER node
 # Healthcheck defined
-HEALTHCHECK --interval=30s --timeout=3s CMD ["/main", "-health"]
-ENTRYPOINT ["/main"]
+HEALTHCHECK --interval=30s --timeout=3s CMD ["node", "-e", "require('http').get('http://localhost:3000/health')"]
+ENTRYPOINT ["node", "dist/main.js"]
 ```
 
 **Check Against MarsAI Standards For:**
@@ -2586,21 +2542,21 @@ Audit HTTP security headers and hardening configuration for production readiness
 **Detected Stack:** {DETECTED_STACK}
 
 **Search Patterns:**
-- Files: `**/fiber_server.go`, `**/middleware*.go`
-- Keywords: `Helmet`, `CSRF`, `Secure`, `HttpOnly`, `SameSite`
+- Files: `**/server.ts`, `**/app.ts`, `**/middleware/*.ts`
+- Keywords: `helmet`, `csrf`, `secure`, `httpOnly`, `sameSite`
 
 **Reference Implementation (GOOD):**
-```go
-// Security headers
-app.Use(helmet.New(helmet.Config{
-    XSSProtection:             "1; mode=block",
-    ContentTypeNosniff:        "nosniff",
-    XFrameOptions:             "DENY",
-    HSTSMaxAge:                31536000,
-    HSTSExcludeSubdomains:     false,
-    HSTSPreloadEnabled:        true,
-    ContentSecurityPolicy:     "default-src 'self'",
-}))
+```typescript
+// Security headers with helmet
+import helmet from 'helmet';
+
+app.use(helmet({
+  contentSecurityPolicy: { directives: { defaultSrc: ["'self'"] } },
+  hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
+  frameguard: { action: 'deny' },
+  xContentTypeOptions: true,
+  xXssProtection: true,
+}));
 ```
 
 **Check For:**
@@ -2646,7 +2602,7 @@ Audit CI/CD pipelines for production readiness.
 **Search Patterns:**
 - Files: `.github/workflows/*.yml`, `.gitlab-ci.yml`, `Makefile`
 - Keywords: `test`, `lint`, `build`, `docker`, `sign`
-- Standards-specific: `golangci-lint`, `gosec`, `trivy`, `cosign`
+- Standards-specific: `eslint`, `npm audit`, `trivy`, `cosign`
 
 **Reference Implementation (GOOD):**
 ```yaml
@@ -2658,23 +2614,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
-      - run: go test -race -v ./...
-      - run: golangci-lint run
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm ci
+      - run: npm test
+      - run: npm run lint
 
   security:
     runs-on: ubuntu-latest
     steps:
-      - uses: securego/gosec@master
-        with:
-          args: ./...
+      - uses: actions/checkout@v4
+      - run: npm audit --audit-level=high
 ```
 
 **Check Against MarsAI Standards For:**
 1. (HARD GATE) CI pipeline exists (GitHub Actions/GitLab CI) per devops.md
 2. (HARD GATE) Tests run on PRs per MarsAI CI requirements
-3. Linting runs on PRs (golangci-lint)
-4. Security scanning (gosec, trivy) integrated
+3. Linting runs on PRs (eslint)
+4. Security scanning (npm audit, trivy) integrated
 5. Artifact signing (cosign/sigstore)
 6. Docker image build and push stages
 7. Automated deployment stages (if applicable)
@@ -2717,134 +2675,140 @@ Audit asynchronous processing reliability for production readiness.
 ---END STANDARDS---
 
 **Search Patterns:**
-- Files: `**/worker/*.go`, `**/queue/*.go`, `**/kafka/*.go`, `**/rabbitmq/*.go`
-- Keywords: `Ack`, `Nack`, `Retry`, `DeadLetter`, `DLQ`, `ConsumerGroup`
-- Standards-specific: `amqp`, `RabbitMQ`, `lib-commons messaging`
+- Files: `**/worker/*.ts`, `**/queue/*.ts`, `**/kafka/*.ts`, `**/rabbitmq/*.ts`, `**/bull/*.ts`
+- Keywords: `ack`, `nack`, `retry`, `deadLetter`, `DLQ`, `consumerGroup`
+- Standards-specific: `amqp`, `RabbitMQ`, `bullmq`, `kafkajs`
 
 **Reference Implementation (GOOD):**
-```go
+```typescript
 // Reliable consumer with DLQ strategy
-func (c *Consumer) Handle(msg *Message) error {
-    if err := c.process(msg); err != nil {
-        if msg.RetryCount >= maxRetries {
-            // Move to Dead Letter Queue
-            return c.dlq.Publish(msg)
-        }
-        // Retry with backoff
-        return c.RetryLater(msg, backoff(msg.RetryCount))
+async function handleMessage(msg: Message): Promise<void> {
+  try {
+    await process(msg);
+    await msg.ack();
+  } catch (err) {
+    if (msg.retryCount >= MAX_RETRIES) {
+      await dlq.publish(msg);
+      await msg.ack(); // Remove from main queue
+      return;
     }
-    return msg.Ack()
+    await msg.nack(false); // Retry with backoff
+  }
 }
 ```
 
 **Reference Implementation (GOOD — Outbox, Idempotency & Poison Messages):**
-```go
+```typescript
 // Transactional outbox pattern — event published within same DB transaction
-func (s *Service) CreateOrder(ctx context.Context, order *Order) error {
-    return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-        if err := tx.Create(order).Error; err != nil {
-            return err
-        }
-        outboxEvent := OutboxEvent{
-            AggregateID:   order.ID,
-            AggregateType: "Order",
-            EventType:     "OrderCreated",
-            Payload:       mustMarshal(order),
-            Status:        "pending",
-        }
-        return tx.Create(&outboxEvent).Error
-    })
+async function createOrder(order: Order): Promise<void> {
+  await knex.transaction(async (trx) => {
+    await trx('orders').insert(order);
+    await trx('outbox_events').insert({
+      aggregateId: order.id,
+      aggregateType: 'Order',
+      eventType: 'OrderCreated',
+      payload: JSON.stringify(order),
+      status: 'pending',
+    });
+  });
 }
 
 // Outbound webhook with retry and delivery tracking
-func (w *WebhookDelivery) Deliver(ctx context.Context, endpoint string, payload []byte) error {
-    var lastErr error
-    for attempt := 0; attempt < w.maxRetries; attempt++ {
-        resp, err := w.httpClient.Post(endpoint, "application/json", bytes.NewReader(payload))
-        if err == nil && resp.StatusCode >= 200 && resp.StatusCode < 300 {
-            w.trackDelivery(ctx, endpoint, "delivered", attempt+1)
-            return nil
-        }
-        lastErr = fmt.Errorf("attempt %d: status=%d err=%w", attempt+1, resp.StatusCode, err)
-        w.trackDelivery(ctx, endpoint, "retrying", attempt+1)
-        time.Sleep(exponentialBackoff(attempt))
+async function deliverWebhook(endpoint: string, payload: unknown): Promise<void> {
+  let lastErr: Error | undefined;
+  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    try {
+      const resp = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (resp.ok) {
+        await trackDelivery(endpoint, 'delivered', attempt + 1);
+        return;
+      }
+      lastErr = new Error(`attempt ${attempt + 1}: status=${resp.status}`);
+    } catch (err) {
+      lastErr = err as Error;
     }
-    w.trackDelivery(ctx, endpoint, "failed", w.maxRetries)
-    return fmt.Errorf("webhook delivery failed after %d attempts: %w", w.maxRetries, lastErr)
+    await trackDelivery(endpoint, 'retrying', attempt + 1);
+    await sleep(exponentialBackoff(attempt));
+  }
+  await trackDelivery(endpoint, 'failed', MAX_RETRIES);
+  throw new Error(`Webhook delivery failed after ${MAX_RETRIES} attempts: ${lastErr?.message}`);
 }
 
 // Idempotent message consumer with deduplication
-func (c *Consumer) HandleIdempotent(ctx context.Context, msg *Message) error {
-    if processed, _ := c.dedup.IsProcessed(ctx, msg.ID); processed {
-        logger.Info("duplicate message skipped", "msg_id", msg.ID)
-        return msg.Ack()
-    }
-    if err := c.process(ctx, msg); err != nil {
-        return err
-    }
-    c.dedup.MarkProcessed(ctx, msg.ID, 24*time.Hour)
-    return msg.Ack()
+async function handleIdempotent(msg: Message): Promise<void> {
+  const processed = await dedup.isProcessed(msg.id);
+  if (processed) {
+    logger.info('duplicate message skipped', { msgId: msg.id });
+    await msg.ack();
+    return;
+  }
+  await process(msg);
+  await dedup.markProcessed(msg.id, 24 * 60 * 60); // 24 hours
+  await msg.ack();
 }
 
 // Event ordering via partition key
-func (p *Producer) PublishOrderEvent(ctx context.Context, orderID string, event interface{}) error {
-    return p.channel.Publish(ctx, PublishOptions{
-        Exchange:     "orders",
-        RoutingKey:   "order.events",
-        PartitionKey: orderID,
-        Body:         mustMarshal(event),
-        Headers: map[string]interface{}{
-            "sequence": event.SequenceNumber,
-        },
-    })
+async function publishOrderEvent(orderId: string, event: DomainEvent): Promise<void> {
+  await channel.publish({
+    exchange: 'orders',
+    routingKey: 'order.events',
+    partitionKey: orderId,
+    body: JSON.stringify(event),
+    headers: { sequence: event.sequenceNumber },
+  });
 }
 
 // Poison message isolation (separate from DLQ)
-func (c *Consumer) HandleWithPoisonDetection(msg *Message) error {
-    var event DomainEvent
-    if err := json.Unmarshal(msg.Body, &event); err != nil {
-        c.poisonQueue.Publish(msg, fmt.Sprintf("deserialization failed: %v", err))
-        return msg.Ack()
+async function handleWithPoisonDetection(msg: Message): Promise<void> {
+  let event: DomainEvent;
+  try {
+    event = JSON.parse(msg.body);
+  } catch (err) {
+    await poisonQueue.publish(msg, `deserialization failed: ${(err as Error).message}`);
+    await msg.ack();
+    return;
+  }
+  try {
+    await process(event);
+    await msg.ack();
+  } catch (err) {
+    if (msg.retryCount >= MAX_RETRIES) {
+      await dlq.publish(msg);
+      await msg.ack();
+      return;
     }
-    if err := c.process(event); err != nil {
-        if msg.RetryCount >= maxRetries {
-            return c.dlq.Publish(msg)
-        }
-        return c.RetryLater(msg, backoff(msg.RetryCount))
-    }
-    return msg.Ack()
+    await msg.nack(false);
+  }
 }
 ```
 
 **Reference Implementation (BAD — Outbox, Idempotency & Poison Messages):**
-```go
+```typescript
 // BAD: Fire-and-forget webhook — no retry, no delivery tracking
-func (s *Service) NotifyWebhook(endpoint string, payload []byte) {
-    go func() {
-        http.Post(endpoint, "application/json", bytes.NewReader(payload))
-    }()
+function notifyWebhook(endpoint: string, payload: unknown): void {
+  fetch(endpoint, { method: 'POST', body: JSON.stringify(payload) });
+  // No await, no error handling!
 }
 
 // BAD: Event published OUTSIDE transaction — lost events on rollback
-func (s *Service) CreateOrder(ctx context.Context, order *Order) error {
-    if err := s.db.Create(order).Error; err != nil {
-        return err
-    }
-    return s.publisher.Publish("OrderCreated", order)
+async function createOrder(order: Order): Promise<void> {
+  await db.orders.insert(order);
+  await publisher.publish('OrderCreated', order); // Fails after DB commit = lost event
 }
 
 // BAD: Consumer without idempotency — processes duplicates
-func (c *Consumer) Handle(msg *Message) error {
-    return c.process(msg)
+async function handle(msg: Message): Promise<void> {
+  await process(msg);
 }
 
 // BAD: Poison messages treated same as processing failures
-func (c *Consumer) Handle(msg *Message) error {
-    var event DomainEvent
-    if err := json.Unmarshal(msg.Body, &event); err != nil {
-        return msg.Nack(true)  // Requeue — malformed message retried forever
-    }
-    return c.process(event)
+async function handle(msg: Message): Promise<void> {
+  const event = JSON.parse(msg.body); // Throws on malformed — requeued forever
+  await process(event);
 }
 ```
 
@@ -2855,7 +2819,7 @@ func (c *Consumer) Handle(msg *Message) error {
 4. Consumer groups for parallel processing
 5. Graceful shutdown of consumers (wait for processing to finish)
 6. Message durability settings (persistent queues)
-7. lib-commons messaging integration where applicable
+7. Project messaging library integration where applicable
 8. Outbound webhook delivery guarantees — webhook publishing MUST implement retry with exponential backoff and delivery status tracking (not fire-and-forget HTTP calls)
 9. At-least-once delivery patterns for event publishing — events MUST be published within the same transaction as the state change (transactional outbox pattern) to prevent lost events on rollback
 10. Idempotent message receivers — consumers MUST implement deduplication checks (idempotency keys, message ID tracking) before processing to handle at-least-once delivery without duplicate side effects
@@ -2900,61 +2864,65 @@ Audit core dependency usage and framework compliance for production readiness.
 
 **MarsAI Standards (Source of Truth):**
 ---BEGIN STANDARDS---
-{INJECTED: Sections 2 and 3 from core.md — "Core Dependency: lib-commons" and "Frameworks & Libraries"}
+{INJECTED: Sections 2 and 3 from core.md — "Core Dependencies" and "Frameworks & Libraries"}
 ---END STANDARDS---
 
 **Search Patterns:**
-- Files: `go.mod`, `go.sum`, `**/utils/*.go`, `**/helpers/*.go`, `**/common/*.go`
-- Keywords: `lib-commons`, `github.com/LerianStudio`, `go 1.`, `fiber`, `gorm`, `validator`
-- Also search: Custom utility packages that may duplicate lib-commons functionality
+- Files: `package.json`, `**/utils/*.ts`, `**/helpers/*.ts`, `**/common/*.ts`
+- Keywords: project shared library, `@nestjs`, `express`, `typeorm`, `prisma`, `class-validator`
+- Also search: Custom utility packages that may duplicate shared library functionality
 
 **Reference Implementation (GOOD):**
-```go
-// go.mod with lib-commons v2 and required frameworks
-module github.com/company/project
-
-go 1.24
-
-require (
-    github.com/LerianStudio/lib-commons/v2 v2.x.x   // lib-commons present
-    github.com/gofiber/fiber/v2 v2.52.x               // Fiber v2
-    gorm.io/gorm v1.25.x                              // GORM
-    github.com/go-playground/validator/v10 v10.x.x     // Validator
-    github.com/stretchr/testify v1.9.x                 // Testify
-)
+```json
+// package.json with required frameworks
+{
+  "name": "@company/project",
+  "dependencies": {
+    "@nestjs/core": "^10.3.x",
+    "@nestjs/common": "^10.3.x",
+    "typeorm": "^0.3.x",
+    "class-validator": "^0.14.x",
+    "class-transformer": "^0.5.x",
+    "@opentelemetry/sdk-node": "^0.48.x",
+    "ioredis": "^5.3.x"
+  },
+  "devDependencies": {
+    "jest": "^29.7.x",
+    "typescript": "^5.3.x"
+  }
+}
 ```
 
 **Reference Implementation (BAD):**
-```go
-// BAD: Custom utilities that duplicate lib-commons
-// internal/utils/database.go
-func ConnectDB(dsn string) (*sql.DB, error) {
-    // Custom connection logic duplicating lib-commons/mpostgres
+```typescript
+// BAD: Custom utilities that duplicate shared library functionality
+// src/utils/database.ts
+function connectDB(dsn: string) {
+  // Custom connection logic duplicating shared library
 }
 
-// BAD: Custom telemetry wrapper duplicating lib-commons
-// internal/common/tracing.go
-func StartSpan(ctx context.Context, name string) (context.Context, trace.Span) {
-    // Custom wrapper duplicating lib-commons/NewTrackingFromContext
+// BAD: Custom telemetry wrapper duplicating shared library
+// src/common/tracing.ts
+function startSpan(name: string) {
+  // Custom wrapper duplicating shared library telemetry
 }
 
-// BAD: Missing lib-commons entirely
-// go.mod without github.com/LerianStudio/lib-commons
+// BAD: Missing shared library entirely from package.json
 ```
 
 **Check Against MarsAI Standards For:**
-1. (HARD GATE) lib-commons v2 present in go.mod — this is mandatory per MarsAI standards
-2. (HARD GATE) No custom utility packages that duplicate lib-commons functionality (check utils/, helpers/, common/)
-3. Go version 1.24+ in go.mod
-4. Fiber v2 framework present
-5. GORM ORM present
-6. go-playground/validator/v10 present
-7. testify present for testing
-8. No alternative libraries used for functionality already covered by lib-commons
+1. (HARD GATE) Project shared library present in package.json — this is mandatory per MarsAI standards
+2. (HARD GATE) No custom utility packages that duplicate shared library functionality (check utils/, helpers/, common/)
+3. Node.js version 20+ (engines field or .nvmrc)
+4. TypeScript 5+ present
+5. Framework (NestJS/Express/Fastify) present
+6. Validation library (class-validator/zod) present
+7. Testing framework (jest/vitest) present for testing
+8. No alternative libraries used for functionality already covered by shared library
 
 **Severity Ratings:**
-- CRITICAL: lib-commons not in go.mod (HARD GATE violation per MarsAI standards)
-- CRITICAL: Custom utilities duplicating lib-commons functionality (HARD GATE violation)
+- CRITICAL: Project shared library not in package.json (HARD GATE violation per MarsAI standards)
+- CRITICAL: Custom utilities duplicating shared library functionality (HARD GATE violation)
 - HIGH: Framework versions below MarsAI minimum requirements
 - MEDIUM: Using alternative libraries for functionality covered by MarsAI stack
 - LOW: Minor version discrepancies
@@ -2964,14 +2932,14 @@ func StartSpan(ctx context.Context, name string) (context.Context, trace.Span) {
 ## Core Dependencies & Frameworks Audit Findings
 
 ### Summary
-- lib-commons v2 present: Yes/No
-- Go version: X (minimum 1.24)
+- Project shared library present: Yes/No
+- Node.js version: X (minimum 20)
 - Required frameworks present: X/Y
 - Custom utility packages found: [list]
-- lib-commons duplication detected: Yes/No
+- Shared library duplication detected: Yes/No
 
 ### Critical Issues
-[file:line or go.mod] - Description
+[file:line or package.json] - Description
 
 ### Recommendations
 1. ...
@@ -2991,18 +2959,28 @@ Audit naming conventions across the codebase for production readiness.
 ---END STANDARDS---
 
 **Search Patterns:**
-- Files: `**/*.go` for struct tags, `**/migrations/*.sql` for column names
-- Keywords: `json:"`, `db:"`, `gorm:"`, `column:`, `CREATE TABLE`
+- Files: `**/*.ts` for interfaces/types, `**/migrations/*.sql` for column names
+- Keywords: `interface`, `type`, `@Column`, `CREATE TABLE`
 - Also search: Query parameter handling for naming consistency
 
 **Reference Implementation (GOOD):**
-```go
-// Go struct with correct naming conventions
-type Account struct {
-    ID          uuid.UUID `json:"id" gorm:"column:id"`
-    DisplayName string    `json:"displayName" gorm:"column:display_name"`  // camelCase JSON, snake_case DB
-    AccountType string    `json:"accountType" gorm:"column:account_type"`
-    CreatedAt   time.Time `json:"createdAt" gorm:"column:created_at"`
+```typescript
+// TypeScript interface with correct naming conventions
+interface Account {
+  id: string;           // camelCase in TS
+  displayName: string;  // camelCase in TS and JSON response
+  accountType: string;  // camelCase in TS and JSON response
+  createdAt: Date;      // camelCase in TS and JSON response
+}
+
+// Entity with column mapping
+@Entity('accounts')
+class AccountEntity {
+  @Column({ name: 'display_name' })  // snake_case DB column
+  displayName: string;                // camelCase TS property
+
+  @Column({ name: 'account_type' })
+  accountType: string;
 }
 
 // Query parameters use snake_case
@@ -3018,13 +2996,13 @@ type Account struct {
 ```
 
 **Reference Implementation (BAD):**
-```go
+```typescript
 // BAD: Inconsistent JSON naming
-type Account struct {
-    ID          uuid.UUID `json:"id"`
-    DisplayName string    `json:"display_name"`   // snake_case in JSON — wrong! Use camelCase
-    AccountType string    `json:"account_type"`   // snake_case in JSON — wrong! Use camelCase
-    CreatedAt   time.Time `json:"CreatedAt"`      // PascalCase — wrong!
+interface Account {
+  id: string;
+  display_name: string;   // snake_case in response — wrong! Use camelCase
+  account_type: string;   // snake_case in response — wrong! Use camelCase
+  CreatedAt: Date;      // PascalCase — wrong!
 }
 
 // BAD: Mixed naming in query params
@@ -3032,11 +3010,11 @@ type Account struct {
 ```
 
 **Check Against MarsAI Standards For:**
-1. snake_case for database column names in migrations and GORM tags
-2. camelCase for JSON response body fields (json:"fieldName")
+1. snake_case for database column names in migrations and entity decorators
+2. camelCase for JSON response body fields and TypeScript properties
 3. snake_case for query parameters
-4. PascalCase for Go exported types and functions
-5. camelCase for Go unexported fields and variables
+4. PascalCase for TypeScript class names, interfaces, and types
+5. camelCase for TypeScript properties, variables, and functions
 6. Consistent naming convention within each context (no mixing)
 
 **Severity Ratings:**
@@ -3084,75 +3062,74 @@ Audit domain modeling patterns for production readiness.
 ---END STANDARDS---
 
 **Search Patterns:**
-- Files: `**/domain/*.go`, `**/entity/*.go`, `**/model/*.go`, `**/value_objects/*.go`
-- Keywords: `ToEntity`, `FromEntity`, `NewXxx`, `IsValid()`, `private fields`
-- Also search: `**/adapters/**/*.go` for mapping patterns
+- Files: `**/domain/*.ts`, `**/entities/*.ts`, `**/models/*.ts`, `**/value-objects/*.ts`
+- Keywords: `toEntity`, `fromEntity`, `create`, `isValid`, `private`, `readonly`
+- Also search: `**/adapters/**/*.ts`, `**/mappers/**/*.ts` for mapping patterns
 
 **Reference Implementation (GOOD):**
-```go
-// Always-valid domain model with private fields and constructor
-type Account struct {
-    id          uuid.UUID   // Private fields
-    name        string
-    accountType AccountType
-    status      Status
-    createdAt   time.Time
-}
+```typescript
+// Always-valid domain model with private fields and factory method
+class Account {
+  private constructor(
+    private readonly _id: string,
+    private readonly _name: string,
+    private readonly _accountType: AccountType,
+    private readonly _status: Status,
+    private readonly _createdAt: Date,
+  ) {}
 
-// Constructor enforces invariants
-func NewAccount(name string, accountType AccountType) (*Account, error) {
-    if name == "" {
-        return nil, ErrNameRequired
-    }
-    if !accountType.IsValid() {
-        return nil, ErrInvalidAccountType
-    }
-    return &Account{
-        id:          uuid.New(),
-        name:        name,
-        accountType: accountType,
-        status:      StatusActive,
-        createdAt:   time.Now(),
-    }, nil
-}
+  // Factory method enforces invariants
+  static create(name: string, accountType: AccountType): Account {
+    if (!name) throw new Error('Name is required');
+    if (!accountType.isValid()) throw new Error('Invalid account type');
+    return new Account(
+      randomUUID(),
+      name,
+      accountType,
+      Status.Active,
+      new Date(),
+    );
+  }
 
-// Exported getters (no setters for immutable fields)
-func (a *Account) ID() uuid.UUID       { return a.id }
-func (a *Account) Name() string        { return a.name }
-func (a *Account) Status() Status      { return a.status }
+  // Public getters (no setters for immutable fields)
+  get id(): string { return this._id; }
+  get name(): string { return this._name; }
+  get status(): Status { return this._status; }
+}
 
 // ToEntity/FromEntity mapping in adapters
-func (dto *CreateAccountDTO) ToEntity() (*domain.Account, error) {
-    return domain.NewAccount(dto.Name, domain.AccountType(dto.Type))
-}
+class AccountMapper {
+  static toEntity(dto: CreateAccountDTO): Account {
+    return Account.create(dto.name, new AccountType(dto.type));
+  }
 
-func FromEntity(account *domain.Account) *AccountResponse {
-    return &AccountResponse{
-        ID:     account.ID().String(),
-        Name:   account.Name(),
-        Status: string(account.Status()),
-    }
+  static fromEntity(account: Account): AccountResponse {
+    return {
+      id: account.id,
+      name: account.name,
+      status: account.status.toString(),
+    };
+  }
 }
 ```
 
 **Reference Implementation (BAD):**
-```go
-// BAD: Domain model with exported mutable fields and no constructor
-type Account struct {
-    ID          uuid.UUID `json:"id"`           // Exported + mutable!
-    Name        string    `json:"name"`         // Can be set to "" directly
-    AccountType string    `json:"account_type"` // No type safety
-    Status      string    `json:"status"`       // No validation
+```typescript
+// BAD: Domain model with public mutable fields and no constructor
+interface Account {
+  id: string;           // Public + mutable!
+  name: string;         // Can be set to "" directly
+  accountType: string;  // No type safety
+  status: string;       // No validation
 }
 
 // BAD: Direct field access without validation
-account := &Account{Name: ""}  // Invalid state allowed!
+const account: Account = { id: '', name: '', accountType: '', status: '' }; // Invalid state allowed!
 
-// BAD: No ToEntity/FromEntity — DTOs used directly as domain models
-func (h *Handler) Create(c *fiber.Ctx) error {
-    var account Account
-    c.BodyParser(&account)
-    repo.Save(ctx, &account)  // DTO goes straight to persistence!
+// BAD: No toEntity/fromEntity — DTOs used directly as domain models
+async function create(req: Request, res: Response) {
+  const account = req.body as Account;
+  await repo.save(account); // DTO goes straight to persistence!
 }
 ```
 
@@ -3205,74 +3182,66 @@ Audit linting configuration and code quality patterns for production readiness.
 ---END STANDARDS---
 
 **Search Patterns:**
-- Files: `.golangci.yml`, `.golangci.yaml`, `**/*.go`
-- Keywords: `//nolint`, `golangci-lint`, import grouping patterns
+- Files: `.eslintrc.*`, `eslint.config.*`, `**/*.ts`
+- Keywords: `eslint-disable`, `@typescript-eslint`, import grouping patterns
 - Also search: Magic numbers in business logic code
 
 **Reference Implementation (GOOD):**
-```go
-// Import ordemarsai: 3 groups (stdlib, external, internal)
-import (
-    "context"
-    "fmt"
-    "time"
+```typescript
+// Import ordering: 3 groups (node builtins, external, internal)
+import { readFile } from 'fs/promises';
+import path from 'path';
 
-    "github.com/gofiber/fiber/v2"
-    "github.com/google/uuid"
-    "go.opentelemetry.io/otel"
+import { Injectable } from '@nestjs/common';
+import { v4 as uuid } from 'uuid';
 
-    "github.com/company/project/internal/domain"
-)
+import { AccountService } from '../domain/account.service';
 
 // Named constants instead of magic numbers
-const (
-    maxRetries       = 3
-    defaultTimeout   = 30 * time.Second
-    maxPageSize      = 100
-    minPasswordLen   = 8
-)
+const MAX_RETRIES = 3;
+const DEFAULT_TIMEOUT_MS = 30_000;
+const MAX_PAGE_SIZE = 100;
+const MIN_PASSWORD_LENGTH = 8;
 
 // Using named constants in logic
-if retryCount >= maxRetries {
-    return ErrMaxRetriesExceeded
+if (retryCount >= MAX_RETRIES) {
+  throw new MaxRetriesExceededError();
 }
 ```
 
 **Reference Implementation (BAD):**
-```go
+```typescript
 // BAD: Import ordering not following convention
-import (
-    "github.com/company/project/internal/domain"
-    "fmt"
-    "github.com/gofiber/fiber/v2"
-    "context"
-)
+import { AccountService } from '../domain/account.service';
+import { readFile } from 'fs/promises';
+import { Injectable } from '@nestjs/common';
+import path from 'path';
 
 // BAD: Magic numbers in business logic
-if retryCount >= 3 {           // What is 3?
-    time.Sleep(30 * time.Second) // What is 30?
+if (retryCount >= 3) {                // What is 3?
+  await sleep(30_000);                // What is 30000?
 }
-if len(password) < 8 {          // What is 8?
-    return errors.New("too short")
+if (password.length < 8) {            // What is 8?
+  throw new Error('too short');
 }
-if pageSize > 100 {             // What is 100?
-    pageSize = 100
+if (pageSize > 100) {                 // What is 100?
+  pageSize = 100;
 }
 ```
 
 **Check Against MarsAI Standards For:**
-1. (HARD GATE) golangci-lint configuration exists per quality.md linting section
-2. Import ordering follows 3-group convention (stdlib, external, internal)
+1. (HARD GATE) eslint configuration exists per quality.md linting section
+2. Import ordering follows 3-group convention (node builtins, external, internal)
 3. Magic numbers replaced with named constants in business logic
-4. Required linters enabled in golangci-lint config
-5. No blanket //nolint without specific linter name
-6. Consistent code formatting (gofmt/goimports applied)
+4. Required rules enabled in eslint config
+5. No blanket eslint-disable without specific rule name
+6. Consistent code formatting (prettier applied)
 
 **Severity Ratings:**
-- HIGH: No golangci-lint configuration (HARD GATE violation per MarsAI standards)
+- HIGH: No eslint configuration (HARD GATE violation per MarsAI standards)
 - MEDIUM: Magic numbers in business logic
 - MEDIUM: Import ordering not following 3-group convention
-- MEDIUM: Blanket //nolint without justification
+- MEDIUM: Blanket eslint-disable without justification
 - LOW: Minor style inconsistencies
 
 **Output Format:**
@@ -3280,14 +3249,14 @@ if pageSize > 100 {             // What is 100?
 ## Linting & Code Quality Audit Findings
 
 ### Summary
-- golangci-lint config: Yes/No
+- eslint config: Yes/No
 - Import ordering violations: X files
 - Magic numbers found: Y locations
-- Blanket //nolint usage: Z locations
+- Blanket eslint-disable usage: Z locations
 
 ### Issues
-#### golangci-lint Configuration
-[config status and missing linters]
+#### eslint Configuration
+[config status and missing rules]
 
 #### Import Ordering
 [file:line] - Imports not following 3-group convention
@@ -3321,18 +3290,17 @@ Audit Makefile and development tooling for production readiness.
 ```makefile
 .PHONY: build test lint cover up down logs setup migrate seed generate swagger docker-build docker-push clean help check
 
-build: ## Build the application binary
-	go build -o bin/app cmd/app/main.go
+build: ## Build the application
+	npm run build
 
 test: ## Run all unit tests
-	go test -race -v ./...
+	npm test
 
 lint: ## Run linters
-	golangci-lint run
+	npm run lint
 
 cover: ## Run tests with coverage
-	go test -race -coverprofile=coverage.out ./...
-	go tool cover -html=coverage.out -o coverage.html
+	npm run test:cov
 
 up: ## Start local dependencies (docker-compose)
 	docker compose up -d
@@ -3344,20 +3312,19 @@ logs: ## Tail local dependency logs
 	docker compose logs -f
 
 setup: ## Initial project setup
-	go mod download
-	go install github.com/swaggo/swag/cmd/swag@latest
+	npm ci
 
 migrate: ## Run database migrations
-	migrate -path migrations -database "$$DATABASE_URL" up
+	npx knex migrate:latest
 
 seed: ## Seed database with test data
-	go run cmd/seed/main.go
+	npx knex seed:run
 
-generate: ## Run code generators (mockgen, etc.)
-	go generate ./...
+generate: ## Run code generators (prisma, etc.)
+	npm run generate
 
 swagger: ## Generate Swagger documentation
-	swag init -g cmd/app/main.go
+	npm run swagger
 
 docker-build: ## Build Docker image
 	docker build -t app:latest .
@@ -3443,56 +3410,54 @@ If multi-tenant IS detected, audit multi-tenant architecture patterns for produc
 ---END STANDARDS---
 
 **Search Patterns:**
-- Files: `**/tenant*.go`, `**/pool*.go`, `**/middleware*.go`, `**/context*.go`
-- Keywords: `tenantID`, `TenantManager`, `TenantContext`, `schema`, `search_path`
-- Also search: `**/jwt*.go`, `**/auth*.go` for tenant extraction
+- Files: `**/tenant*.ts`, `**/pool*.ts`, `**/middleware/*.ts`, `**/context*.ts`
+- Keywords: `tenantId`, `TenantManager`, `TenantContext`, `schema`, `search_path`
+- Also search: `**/jwt*.ts`, `**/auth*.ts` for tenant extraction
 
 **Reference Implementation (GOOD):**
-```go
-// TenantMiddleware with multi-module WithPG/WithMB options
-ttMiddleware := tmmiddleware.NewTenantMiddleware(
-    tmmiddleware.WithPG(pgOnboardingManager, constant.ModuleOnboarding),
-    tmmiddleware.WithPG(pgTransactionManager, constant.ModuleTransaction),
-    tmmiddleware.WithMB(mbOnboardingManager, constant.ModuleOnboarding),
-    tmmiddleware.WithMB(mbTransactionManager, constant.ModuleTransaction),
-    tmmiddleware.WithTenantCache(tenantCache),
-    tmmiddleware.WithTenantLoader(tenantClient),
-)
+```typescript
+// TenantMiddleware with multi-module connection injection
+const tenantMiddleware = new TenantMiddleware({
+  pgManagers: {
+    [Module.Onboarding]: pgOnboardingManager,
+    [Module.Transaction]: pgTransactionManager,
+  },
+  mbManagers: {
+    [Module.Onboarding]: mbOnboardingManager,
+    [Module.Transaction]: mbTransactionManager,
+  },
+  tenantCache,
+  tenantLoader: tenantClient,
+});
 
 // Module-specific connection from context
-db := tmcore.GetPGContext(ctx, constant.ModuleOnboarding)
+const db = getTenantConnection(req, Module.Onboarding);
 
 // Entity-scoped query — ALWAYS filter by organization_id + ledger_id
-func (r *Repo) Find(ctx context.Context, orgID, ledgerID, id uuid.UUID) (*Entity, error) {
-    db := tmcore.GetPGContext(ctx, constant.ModuleTransaction)
-    if db == nil {
-        return nil, fmt.Errorf("tenant postgres connection missing from context for module %s", constant.ModuleTransaction)
-    }
-    find := squirrel.Select(columnList...).
-        From(r.tableName).
-        Where(squirrel.Expr("organization_id = ?", orgID)).
-        Where(squirrel.Expr("ledger_id = ?", ledgerID)).
-        Where(squirrel.Expr("id = ?", id)).
-        PlaceholderFormat(squirrel.Dollar)
-    // ...
+async function find(req: Request, orgId: string, ledgerId: string, id: string): Promise<Entity> {
+  const db = getTenantConnection(req, Module.Transaction);
+  if (!db) throw new Error(`Tenant connection missing for module ${Module.Transaction}`);
+  return db('entities')
+    .where({ organization_id: orgId, ledger_id: ledgerId, id })
+    .first();
 }
 ```
 
 **Reference Implementation (BAD):**
-```go
+```typescript
 // BAD: Query without entity scoping — intra-tenant IDOR!
-func (r *Repo) FindByID(ctx context.Context, id uuid.UUID) (*Entity, error) {
-    db := tmcore.GetPGContext(ctx, constant.ModuleTransaction)
-    return db.QueryRowContext(ctx, "SELECT * FROM entities WHERE id = $1", id)
+async function findById(req: Request, id: string): Promise<Entity> {
+  const db = getTenantConnection(req, Module.Transaction);
+  return db('entities').where({ id }).first(); // No tenant filter!
 }
 
 // BAD: Tenant ID from request header (can be spoofed)
-func GetTenantID(c *fiber.Ctx) string {
-    return c.Get("X-Tenant-ID")  // User-controlled!
+function getTenantId(req: Request): string {
+  return req.headers['x-tenant-id'] as string; // User-controlled!
 }
 
-// BAD: Using GetPGContext without module in multi-module service — must use GetPGContext with module name
-db := tmcore.GetPGContext(ctx)  // WRONG: use GetPGContext(ctx, module) for multi-module services
+// BAD: Using connection without specifying module in multi-module service
+const db = getTenantConnection(req); // WRONG: must specify module
 ```
 
 **Check Against MarsAI Standards For:**
@@ -3557,54 +3522,46 @@ Audit license/copyright headers on source files for production readiness. If no 
 ---END STANDARDS---
 
 **Search Patterns:**
-- Files: `**/*.go` (check first 5 lines for copyright/license header)
+- Files: `**/*.ts` (check first 5 lines for copyright/license header)
 - Also check: `LICENSE`, `LICENSE.md`, `NOTICE` files in project root
 - Keywords: `Copyright`, `Licensed under`, `SPDX-License-Identifier`
 
 **Reference Implementation (GOOD):**
-```go
-// Copyright 2025 LerianStudio. All rights reserved.
+```typescript
+// Copyright 2025 V4-Company. All rights reserved.
 // Use of this source code is governed by the Apache License 2.0
 // that can be found in the LICENSE file.
 // SPDX-License-Identifier: Apache-2.0
 
-package domain
-
-import (
-    ...
-)
+import { Injectable } from '@nestjs/common';
 ```
 
 **Reference Implementation (BAD):**
-```go
+```typescript
 // BAD: No license header at all
-package domain
-
-import (
-    ...
-)
+import { Injectable } from '@nestjs/common';
 
 // BAD: Outdated year
-// Copyright 2020 LerianStudio. All rights reserved.
+// Copyright 2020 V4-Company. All rights reserved.
 // (If current year is 2025+)
 
 // BAD: Inconsistent header format
 /* This file is part of Project X
  * (c) Company Name
  */
-package domain
+import { Injectable } from '@nestjs/common';
 ```
 
 **Check Against MarsAI Standards For:**
 1. LICENSE file exists in project root
-2. All .go files have copyright/license header comment in first 5 lines
+2. All source files have copyright/license header comment in first 5 lines
 3. Consistent header format across all files
 4. Year in copyright is current or includes current year (e.g., "2024-2025")
 5. SPDX-License-Identifier present (preferred for machine-readability)
 6. License matches LICENSE file (e.g., Apache-2.0 header matches Apache-2.0 LICENSE)
 
 **Severity Ratings:**
-- HIGH: .go files missing license headers (if license headers are required)
+- HIGH: Source files missing license headers (if license headers are required)
 - MEDIUM: Inconsistent license header format across files
 - MEDIUM: License header does not match LICENSE file
 - LOW: Outdated year in copyright header
@@ -3616,7 +3573,7 @@ package domain
 
 ### Summary
 - LICENSE file present: Yes/No (type: Apache-2.0/MIT/etc.)
-- Total .go files: X
+- Total source files: X
 - Files with headers: Y/X
 - Consistent format: Yes/No
 - Year current: Yes/No
@@ -3645,25 +3602,8 @@ Audit nil/null pointer safety and dereference risks across the codebase for prod
 ---END STANDARDS---
 
 **Search Patterns:**
-- Go files: `**/*.go` — search for type assertions, map access, pointer receivers, channel operations, interface checks
 - TypeScript files: `**/*.ts`, `**/*.tsx` — search for nullable access, optional chaining, destructuring, Promise handling
-- Keywords (Go): `.(*`, `.(type)`, `map[`, `<-`, `func (`, `err != nil`, `if err`, `interface{}`
 - Keywords (TS): `?.`, `!.`, `as `, `.find(`, `.get(`, `undefined`, `null`
-
-**Go Nil Safety Patterns to Check:**
-
-| Pattern | Risk Level | What to Look For |
-|---------|:----------:|------------------|
-| Type assertion without ok | CRITICAL | `value := x.(Type)` — panics if wrong type. MUST use `value, ok := x.(Type)` |
-| Nil map write | CRITICAL | Writing to an uninitialized map panics. Check `make(map[...])` before writes |
-| Nil receiver method call | CRITICAL | `ptr.Method()` when ptr could be nil. Trace all pointer receivers |
-| Nil channel operations | CRITICAL | Send/receive on nil channel blocks forever. Check channel initialization |
-| Nil function call | CRITICAL | Calling a nil function variable panics |
-| Unguarded map read | HIGH | `value := m[key]` without `, ok` check — returns zero value silently |
-| Nil interface comparison | HIGH | Interface holding nil concrete value is NOT == nil. Check with reflect |
-| Error-then-use | HIGH | Using return value when `err != nil` — value may be nil/invalid |
-| Nil slice in API response | MEDIUM | `var items []T` serializes as JSON `null`, not `[]`. Use `make([]T, 0)` |
-| Nil map in API response | MEDIUM | `var m map[K]V` serializes as JSON `null`, not `{}`. Use `make(map[K]V)` |
 
 **TypeScript Null Safety Patterns to Check:**
 
@@ -3679,59 +3619,10 @@ Audit nil/null pointer safety and dereference risks across the codebase for prod
 | Non-null assertion abuse | MEDIUM | Excessive non-null assertion operator (!) bypasses TypeScript's null checks |
 
 **Tracing Methodology (MANDATORY — do not skip):**
-1. **Identify nil sources**: Function returns that can be nil/null, map lookups, type assertions, interface values, external API responses
-2. **Trace forward**: Follow nil-capable values through assignments, function arguments, struct/object fields
-3. **Trace backward**: For each dereference point, trace all callers to verify they handle nil returns
-4. **Find dereference points**: Method calls, field access, index access, channel operations on potentially nil values
-
-**Reference Implementation (GOOD — Go):**
-```go
-// GOOD: Type assertion with ok check
-value, ok := x.(MyType)
-if !ok {
-    return fmt.Errorf("unexpected type: %T", x)
-}
-
-// GOOD: Map access with ok check
-if conn, ok := pools[tenantID]; ok {
-    return conn, nil
-}
-
-// GOOD: Nil-safe API response
-func (s *Service) List(ctx context.Context) ([]Item, error) {
-    items := make([]Item, 0) // never nil — serializes as []
-    // ...
-    return items, nil
-}
-
-// GOOD: Error-then-use pattern
-result, err := repo.FindByID(ctx, id)
-if err != nil {
-    return nil, err // do NOT use result
-}
-// Safe to use result here
-```
-
-**Reference Implementation (BAD — Go):**
-```go
-// BAD: Type assertion without ok — PANICS on wrong type
-value := x.(MyType)
-
-// BAD: Nil map write — PANICS
-var m map[string]int
-m["key"] = 1
-
-// BAD: Error-then-use — result may be nil
-result, err := repo.FindByID(ctx, id)
-log.Info("found", "name", result.Name) // PANIC if err != nil
-if err != nil {
-    return nil, err
-}
-
-// BAD: Nil slice in response — JSON null instead of []
-var items []Item
-return items, nil // serializes as null
-```
+1. **Identify null sources**: Function returns that can be null/undefined, Map lookups, external API responses
+2. **Trace forward**: Follow nullable values through assignments, function arguments, object fields
+3. **Trace backward**: For each access point, trace all callers to verify they handle null returns
+4. **Find access points**: Property access, method calls, index access on potentially null/undefined values
 
 **Reference Implementation (GOOD — TypeScript):**
 ```typescript
@@ -3766,36 +3657,29 @@ const { name, email } = await findUser(id); // throws if null
 ```
 
 **Check Against Standards For:**
-1. (CRITICAL) All type assertions use the two-value `value, ok` form (Go)
-2. (CRITICAL) No writes to uninitialized maps
-3. (CRITICAL) All pointer receivers are nil-safe or callers guarantee non-nil
-4. (CRITICAL) No nil channel operations
-5. (HIGH) All map reads use `, ok` form or have prior existence guarantee
-6. (HIGH) Return values are not used after error check fails (error-then-use)
-7. (HIGH) Nullable values are checked before property access (TypeScript)
-8. (HIGH) Object destructuring only on guaranteed non-null values (TypeScript)
-9. (MEDIUM) API responses use initialized slices/maps (Go: `make()`, not `var`)
-10. (MEDIUM) Optional chaining covers full property chain (TypeScript)
-11. (MEDIUM) `Array.find()` and `Map.get()` results are checked before use (TypeScript)
-12. (LOW) Non-null assertion operator (!) is used sparingly with justification (TypeScript)
+1. (HIGH) Nullable values are checked before property access
+2. (HIGH) Object destructuring only on guaranteed non-null values
+3. (HIGH) Promise rejections are handled (try/catch around await, .catch() on promises)
+4. (MEDIUM) Optional chaining covers full property chain
+5. (MEDIUM) `Array.find()` and `Map.get()` results are checked before use
+6. (MEDIUM) API responses use initialized arrays/objects (never return undefined where array expected)
+7. (LOW) Non-null assertion operator (!) is used sparingly with justification
 
 **Severity Ratings:**
-- CRITICAL: Type assertion without ok (panics), nil map write (panics), nil receiver call (panics), nil channel (deadlocks), nil function call (panics)
-- HIGH: Unguarded map read (silent wrong data), error-then-use (nil dereference), nullable property access (TypeError), unhandled Promise rejection
-- MEDIUM: Nil slice/map in API response (JSON null vs []/{}), partial optional chaining, unchecked find()/get(), non-null assertion abuse
-- LOW: Missing nil documentation on exported functions, unnecessary nil checks on guaranteed non-nil values
+- HIGH: Nullable property access (TypeError), unhandled Promise rejection, object destructuring on nullable
+- MEDIUM: Partial optional chaining, unchecked find()/get(), non-null assertion abuse, undefined in API response where array/object expected
+- LOW: Missing null documentation on exported functions, unnecessary null checks on guaranteed non-null values
 
 **Output Format:**
 ```
 ## Nil/Null Safety Audit Findings
 
 ### Summary
-- Language(s) detected: {Go / TypeScript / Both}
-- Type assertions (Go): X total, Y unsafe (without ok)
-- Map operations (Go): X writes, Y to potentially nil maps
-- Pointer receivers (Go): X total, Y without nil safety
-- Nullable access (TS): X unguarded property accesses
-- API response consistency: X nil slices/maps found
+- Nullable access: X unguarded property accesses
+- Unhandled promises: X locations
+- Optional chaining issues: X partial chains
+- Non-null assertions: X locations
+- API response consistency: X undefined where array/object expected
 
 ### Critical Issues
 [file:line] - Description (pattern: {pattern name})
@@ -3830,25 +3714,10 @@ Audit resilience patterns (circuit breakers, retries, timeouts, bulkheads) acros
 ---END STANDARDS---
 
 **Search Patterns:**
-- Go files: `**/*.go` — search for circuit breaker, retry, timeout, backoff, bulkhead, errgroup patterns
 - TypeScript files: `**/*.ts`, `**/*.tsx` — search for circuit breaker, retry, timeout, abort, concurrency limiter patterns
 - Config files: `**/*.yaml`, `**/*.yml`, `**/*.json`, `**/*.toml` — search for timeout, retry, backoff configuration
-- Keywords (Go): `gobreaker`, `CircuitBreaker`, `retry`, `backoff`, `Timeout`, `context.WithTimeout`, `context.WithDeadline`, `http.Client`, `Transport`, `errgroup`, `semaphore`
 - Keywords (TS): `CircuitBreaker`, `cockatiel`, `opossum`, `p-retry`, `axios-retry`, `AbortController`, `setTimeout`, `Promise.race`, `semaphore`, `bulkhead`
 - Keywords (general): `timeout`, `retry`, `circuit`, `breaker`, `backoff`, `jitter`, `bulkhead`, `resilience`
-
-**Go Resilience Patterns to Check:**
-
-| Pattern | Risk Level | What to Look For |
-|---------|:----------:|------------------|
-| HTTP client without timeout | CRITICAL | `http.DefaultClient` or `&http.Client{}` with no `Timeout` set — blocks forever on slow downstream |
-| No circuit breaker on critical dependency | CRITICAL | Direct HTTP/gRPC calls to external services without circuit breaker wrapping |
-| Retry without backoff | HIGH | Retry loops using fixed delay or no delay — causes thundering herd on recovery |
-| Inner timeout >= outer timeout | HIGH | `context.WithTimeout` where child timeout >= parent — cascading failure risk |
-| No jitter on backoff | MEDIUM | Exponential backoff without randomization — synchronized retries across instances |
-| No bulkhead isolation | MEDIUM | All external calls sharing single connection pool / goroutine pool — one slow dependency exhausts all resources |
-| Hardcoded timeout values | LOW | Timeout durations as magic numbers instead of configuration — hard to tune in production |
-| No retry on transient errors | LOW | External calls that fail without retry on network/5xx errors — reduced availability |
 
 **TypeScript Resilience Patterns to Check:**
 
@@ -3868,90 +3737,24 @@ Audit resilience patterns (circuit breakers, retries, timeouts, bulkheads) acros
 3. **Example valid cascade**: API gateway 30s > service handler 25s > database query 10s > cache lookup 2s
 4. **Example INVALID cascade**: API gateway 30s > service handler 30s > database query 30s (all same = no cascading)
 
-**Reference Implementation (GOOD — Go):**
-```go
-// GOOD: Circuit breaker wrapping HTTP client
-cb := gobreaker.NewCircuitBreaker(gobreaker.Settings{
-    Name:        "downstream-api",
-    MaxRequests: 3,
-    Interval:    10 * time.Second,
-    Timeout:     30 * time.Second,
-    ReadyToTrip: func(counts gobreaker.Counts) bool {
-        return counts.ConsecutiveFailures > 5
-    },
-})
-
-result, err := cb.Execute(func() (interface{}, error) {
-    ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
-    defer cancel()
-    return client.Do(req.WithContext(ctx))
-})
-
-// GOOD: Retry with exponential backoff + jitter
-func retryWithBackoff(ctx context.Context, maxRetries int, fn func() error) error {
-    for attempt := 0; attempt < maxRetries; attempt++ {
-        if err := fn(); err != nil {
-            if !isRetryable(err) {
-                return err
-            }
-            base := time.Duration(1<<uint(attempt)) * 100 * time.Millisecond
-            jitter := time.Duration(rand.Int63n(int64(base / 2)))
-            select {
-            case <-time.After(base + jitter):
-            case <-ctx.Done():
-                return ctx.Err()
-            }
-            continue
-        }
-        return nil
-    }
-    return fmt.Errorf("max retries exceeded")
-}
-
-// GOOD: Timeout cascading (outer > inner)
-func handler(w http.ResponseWriter, r *http.Request) {
-    ctx, cancel := context.WithTimeout(r.Context(), 25*time.Second) // handler: 25s
-    defer cancel()
-
-    dbCtx, dbCancel := context.WithTimeout(ctx, 10*time.Second) // db: 10s < 25s
-    defer dbCancel()
-    data, err := db.QueryContext(dbCtx, query)
-}
-
-// GOOD: HTTP client with explicit timeouts
-client := &http.Client{
-    Timeout: 30 * time.Second,
-    Transport: &http.Transport{
-        ResponseHeaderTimeout: 10 * time.Second,
-        IdleConnTimeout:       90 * time.Second,
-        MaxIdleConnsPerHost:   10,
-    },
-}
+**Reference Implementation (GOOD — TypeScript):**
+```typescript
+// GOOD: Circuit breaker with cockatiel (already shown above)
+// See TypeScript reference implementations below
 ```
 
-**Reference Implementation (BAD — Go):**
-```go
-// BAD: http.DefaultClient — no timeout, blocks forever
-resp, err := http.DefaultClient.Do(req)
-
-// BAD: Custom client with no timeout
-client := &http.Client{}
-resp, err := client.Do(req)
-
-// BAD: Retry without backoff — thundering herd
-for i := 0; i < 3; i++ {
-    resp, err = client.Do(req)
-    if err == nil {
-        break
-    }
-    // No delay between retries!
-}
-
-// BAD: Inner timeout >= outer timeout — cascading failure
-ctx, cancel := context.WithTimeout(r.Context(), 10*time.Second) // outer: 10s
-defer cancel()
-dbCtx, dbCancel := context.WithTimeout(ctx, 10*time.Second) // inner: 10s (same!)
-defer dbCancel()
+**Timeout Cascading Reference (language-agnostic):**
+```
+// GOOD: Retry with exponential backoff + jitter (pseudocode)
+function retryWithBackoff(maxRetries, fn):
+    for attempt in 0..maxRetries:
+        result = fn()
+        if result.ok: return result
+        if !isRetryable(result.error): throw result.error
+        base = (2 ^ attempt) * 100ms
+        jitter = random(0, base / 2)
+        sleep(base + jitter)
+    throw MaxRetriesExceededError
 ```
 
 **Reference Implementation (GOOD — TypeScript):**
@@ -4009,7 +3812,7 @@ const results = await Promise.all(
 4. (HIGH) Timeout cascading is correct: outer timeout > inner timeout at every level
 5. (MEDIUM) Retry backoff includes jitter to prevent synchronized retries
 6. (MEDIUM) Bulkhead isolation exists between dependency pools (separate connection pools, bounded concurrency)
-7. (MEDIUM) Concurrency is bounded on parallel external calls (errgroup limit in Go, semaphore in TS)
+7. (MEDIUM) Concurrency is bounded on parallel external calls (p-limit, semaphore, or similar)
 8. (LOW) Timeout and retry values are configurable (not hardcoded magic numbers)
 9. (LOW) Transient errors are retried; non-transient errors fail fast
 
@@ -4024,7 +3827,7 @@ const results = await Promise.all(
 ## Resilience Patterns Audit Findings
 
 ### Summary
-- Language(s) detected: {Go / TypeScript / Both}
+- Language(s) detected: {TypeScript / Mixed}
 - HTTP clients audited: X total, Y without timeouts
 - Circuit breakers found: X (covering Y of Z external dependencies)
 - Retry patterns found: X total, Y without backoff, Z without jitter
@@ -4070,7 +3873,7 @@ Audit the codebase for hardcoded secrets, credentials, API keys, tokens, and sen
 ---END STANDARDS---
 
 **Search Patterns:**
-- All source files: `**/*.go`, `**/*.ts`, `**/*.tsx`, `**/*.js`, `**/*.jsx`, `**/*.py`, `**/*.java`
+- All source files: `**/*.ts`, `**/*.tsx`, `**/*.js`, `**/*.jsx`
 - Configuration files: `**/*.yaml`, `**/*.yml`, `**/*.json`, `**/*.toml`, `**/*.ini`, `**/*.conf`, `**/*.cfg`
 - Environment files: `**/*.env`, `**/*.env.*`, `.env.local`, `.env.production`
 - Key/certificate files: `**/*.pem`, `**/*.key`, `**/*.p12`, `**/*.pfx`, `**/*.crt`, `**/*.cer`
@@ -4106,23 +3909,6 @@ Audit the codebase for hardcoded secrets, credentials, API keys, tokens, and sen
 5. **Check for tracked key files**: `git ls-files '*.pem' '*.key'` — any results are CRITICAL
 
 **Reference Implementation (GOOD):**
-```go
-// GOOD: Secrets from environment variables
-dbURL := os.Getenv("DATABASE_URL")
-if dbURL == "" {
-    log.Fatal("DATABASE_URL environment variable is required")
-}
-
-// GOOD: API key from environment
-apiKey := os.Getenv("EXTERNAL_API_KEY")
-
-// GOOD: Secret from vault/secret manager
-secret, err := vault.ReadSecret(ctx, "secret/data/myapp/api-key")
-if err != nil {
-    return fmt.Errorf("failed to read secret: %w", err)
-}
-```
-
 ```typescript
 // GOOD: Secrets from environment
 const dbUrl = process.env.DATABASE_URL;
@@ -4148,19 +3934,17 @@ credentials.json
 ```
 
 **Reference Implementation (BAD):**
-```go
+```typescript
 // BAD: Hardcoded API key
-const APIKey = "sk-proj-abc123xyz789..."
+const API_KEY = 'sk-proj-abc123xyz789...';
 
 // BAD: Hardcoded database connection with password
-const DatabaseURL = "postgres://admin:SuperSecret123@db.example.com:5432/production"
+const DATABASE_URL = 'postgres://admin:SuperSecret123@db.example.com:5432/production';
 
 // BAD: Hardcoded AWS credentials
-const AWSAccessKey = "AKIAIOSFODNN7EXAMPLE"
-const AWSSecretKey = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
-```
+const AWS_ACCESS_KEY = 'AKIAIOSFODNN7EXAMPLE';
+const AWS_SECRET_KEY = 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY';
 
-```typescript
 // BAD: Inline token
 const headers = {
   Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
@@ -4256,13 +4040,12 @@ Audit API versioning strategy, backward compatibility practices, and deprecation
 ---END STANDARDS---
 
 **Search Patterns:**
-- Route definitions (Go): `**/*.go` — search for router groups, path prefixes, handler registrations
-- Route definitions (TS): `**/*.ts`, `**/*.tsx` — search for route decorators, Express/Fastify route registrations, controller paths
+- Route definitions: `**/*.ts`, `**/*.tsx` — search for route decorators, Express/Fastify route registrations, controller paths
 - API specs: `**/openapi*.yaml`, `**/openapi*.json`, `**/swagger*.yaml`, `**/swagger*.json`, `**/*.proto`
 - Config/Gateway: `**/nginx*.conf`, `**/traefik*.yaml`, `**/gateway*.yaml`, `**/kong*.yaml`
 - Keywords (versioning): `/v1/`, `/v2/`, `/v3/`, `/api/v`, `version`, `api-version`, `Accept-Version`, `X-API-Version`
 - Keywords (deprecation): `deprecated`, `Deprecated`, `@deprecated`, `Sunset`, `sunset`, `migration`, `breaking`
-- Keywords (routing): `Group`, `Router`, `Route`, `Controller`, `@Get`, `@Post`, `@Put`, `@Delete`, `HandleFunc`, `Handle`, `mux`, `chi`, `gin`, `echo`, `fiber`
+- Keywords (routing): `Router`, `Route`, `Controller`, `@Get`, `@Post`, `@Put`, `@Delete`, `app.use`, `app.get`, `app.post`
 - Keywords (compatibility): `breaking`, `backward`, `compatible`, `migration`, `changelog`
 
 **API Versioning Patterns to Check:**
@@ -4277,15 +4060,6 @@ Audit API versioning strategy, backward compatibility practices, and deprecation
 | No version negotiation | LOW | No mechanism for clients to request specific version via headers |
 | Mixed versioning strategies | MEDIUM | Some endpoints use URL versioning (`/v1/`), others use header versioning — inconsistent approach |
 | Deprecated code still in main paths | MEDIUM | Code marked `@deprecated` or `// Deprecated` is still in active request handling paths |
-
-**Go-Specific Patterns:**
-
-| Pattern | What to Look For |
-|---------|------------------|
-| Router group versioning | `r.Group("/v1")`, `chi.Route("/v1/", ...)`, `gin.Group("/v1")` |
-| Handler deprecation | Comments `// Deprecated:` on handler functions per Go convention |
-| Version constants | `const APIVersion = "v1"`, version in package names |
-| gRPC versioning | Package naming: `package api.v1`, `package api.v2` in `.proto` files |
 
 **TypeScript-Specific Patterns:**
 
@@ -4302,63 +4076,6 @@ Audit API versioning strategy, backward compatibility practices, and deprecation
 3. **Check all routes**: Map all registered routes and categorize as versioned or unversioned
 4. **Identify deprecated versions**: Find which versions are marked for deprecation and their sunset timeline
 5. **Check backward compatibility**: Look for breaking changes within a single version (field removals, type changes, required field additions)
-
-**Reference Implementation (GOOD — Go):**
-```go
-// GOOD: Consistent URL path versioning with router groups
-func SetupRoutes(r chi.Router) {
-    r.Route("/v1", func(r chi.Router) {
-        r.Get("/users", v1.ListUsers)
-        r.Post("/users", v1.CreateUser)
-        r.Get("/users/{id}", v1.GetUser)
-    })
-
-    r.Route("/v2", func(r chi.Router) {
-        r.Get("/users", v2.ListUsers)     // Enhanced response format
-        r.Post("/users", v2.CreateUser)    // New required fields
-        r.Get("/users/{id}", v2.GetUser)
-    })
-}
-
-// GOOD: Sunset header on deprecated version
-func V1DeprecationMiddleware(next http.Handler) http.Handler {
-    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        w.Header().Set("Sunset", "Sat, 01 Mar 2025 00:00:00 GMT")
-        w.Header().Set("Deprecation", "true")
-        w.Header().Set("Link", `</v2/docs>; rel="successor-version"`)
-        next.ServeHTTP(w, r)
-    })
-}
-
-// GOOD: Version constant and documentation
-const (
-    APIVersionV1 = "v1" // Deprecated: Use v2. Sunset date: 2025-03-01
-    APIVersionV2 = "v2" // Current stable version
-)
-```
-
-**Reference Implementation (BAD — Go):**
-```go
-// BAD: No versioning — breaking changes have no migration path
-func SetupRoutes(r chi.Router) {
-    r.Get("/users", ListUsers)       // No version prefix
-    r.Post("/users", CreateUser)     // If response format changes, all clients break
-    r.Get("/users/{id}", GetUser)
-}
-
-// BAD: Mixed versioning — some versioned, some not
-func SetupRoutes(r chi.Router) {
-    r.Get("/users", ListUsers)           // Unversioned
-    r.Get("/v2/users", v2.ListUsers)     // Versioned — inconsistent!
-    r.Get("/health", HealthCheck)        // Unversioned (acceptable for infra endpoints)
-}
-
-// BAD: Deprecated version with no sunset notice
-r.Route("/v1", func(r chi.Router) {
-    // No deprecation headers, no documentation, no sunset date
-    r.Get("/users", v1.ListUsers)
-})
-```
 
 **Reference Implementation (GOOD — TypeScript):**
 ```typescript
@@ -4475,22 +4192,9 @@ Audit graceful degradation and fallback behavior when downstream dependencies fa
 ---END STANDARDS---
 
 **Search Patterns:**
-- Go files: `**/*.go` — search for fallback handlers, circuit breakers, cached responses, feature flags, default values
 - TypeScript files: `**/*.ts`, `**/*.tsx` — search for fallback chains, error boundaries, feature flag SDKs, service workers
 - Config files: `**/*.yaml`, `**/*.yml`, `**/*.json` — search for feature flag configuration, fallback settings
-- Keywords (Go): `fallback`, `circuitbreaker`, `circuit_breaker`, `degrade`, `stale`, `cache.Get`, `default`, `feature`, `toggle`, `killswitch`, `kill_switch`, `singleflight`
-- Keywords (TS): `fallback`, `ErrorBoundary`, `errorBoundary`, `featureFlag`, `feature_flag`, `LaunchDarkly`, `unleash`, `serviceWorker`, `caches.match`
-
-**Go Graceful Degradation Patterns to Check:**
-
-| Pattern | Risk Level | What to Look For |
-|---------|:----------:|------------------|
-| No fallback for critical paths | CRITICAL | Payment, transaction, or auth endpoints with no fallback when downstream fails |
-| Single dependency crash | HIGH | Service panics or returns 500 when any single dependency (Redis, DB, external API) is unavailable |
-| No cached response capability | HIGH | Read-heavy endpoints with no cache-aside or stale-serve mechanism |
-| No feature flags | MEDIUM | New features deployed without feature flag or kill switch for rollback |
-| All-or-nothing responses | MEDIUM | Endpoints return full error instead of partial data with degraded indicator |
-| No degradation indicators | LOW | Responses do not signal degraded state to callers (missing headers, status fields) |
+- Keywords (TS): `fallback`, `ErrorBoundary`, `errorBoundary`, `featureFlag`, `feature_flag`, `LaunchDarkly`, `unleash`, `serviceWorker`, `caches.match`, `circuitBreaker`, `singleflight`
 
 **TypeScript Graceful Degradation Patterns to Check:**
 
@@ -4509,67 +4213,6 @@ Audit graceful degradation and fallback behavior when downstream dependencies fa
 3. **Check fallback existence**: For each dependency, verify there is a fallback path when it is unavailable
 4. **Verify cache-aside**: For read-heavy endpoints, verify cached/stale data can be served when primary source is down
 5. **Check kill switches**: For new or risky features, verify feature flags exist for quick disable
-
-**Reference Implementation (GOOD — Go):**
-```go
-// GOOD: Fallback to cached data when DB unavailable
-func (s *Service) GetProduct(ctx context.Context, id string) (*Product, error) {
-    product, err := s.repo.FindByID(ctx, id)
-    if err != nil {
-        // Fallback to cache
-        cached, cacheErr := s.cache.Get(ctx, "product:"+id)
-        if cacheErr == nil {
-            return cached.(*Product), nil // serve stale data
-        }
-        return nil, fmt.Errorf("product unavailable: %w", err)
-    }
-    // Update cache for future fallbacks
-    _ = s.cache.Set(ctx, "product:"+id, product, 10*time.Minute)
-    return product, nil
-}
-
-// GOOD: Circuit breaker with fallback handler
-func (s *Service) CallExternalAPI(ctx context.Context, req *Request) (*Response, error) {
-    resp, err := s.breaker.Execute(func() (interface{}, error) {
-        return s.client.Do(ctx, req)
-    })
-    if err != nil {
-        // Circuit open — return default response
-        return s.defaultResponse(req), nil
-    }
-    return resp.(*Response), nil
-}
-
-// GOOD: Feature flag for gradual rollout
-func (s *Service) ProcessPayment(ctx context.Context, payment *Payment) error {
-    if s.featureFlags.IsEnabled("new-payment-gateway") {
-        return s.newGateway.Process(ctx, payment)
-    }
-    return s.legacyGateway.Process(ctx, payment) // safe fallback
-}
-```
-
-**Reference Implementation (BAD — Go):**
-```go
-// BAD: No fallback — entire endpoint fails if Redis is down
-func (s *Service) GetProduct(ctx context.Context, id string) (*Product, error) {
-    cached, err := s.cache.Get(ctx, "product:"+id)
-    if err != nil {
-        return nil, fmt.Errorf("cache unavailable: %w", err) // no DB fallback
-    }
-    return cached.(*Product), nil
-}
-
-// BAD: No circuit breaker — hangs or crashes on external API failure
-func (s *Service) CallExternalAPI(ctx context.Context, req *Request) (*Response, error) {
-    return s.client.Do(ctx, req) // no timeout, no fallback, no breaker
-}
-
-// BAD: No kill switch — risky feature deployed with no way to disable
-func (s *Service) ProcessPayment(ctx context.Context, payment *Payment) error {
-    return s.newGateway.Process(ctx, payment) // no fallback to legacy
-}
-```
 
 **Reference Implementation (GOOD — TypeScript):**
 ```typescript
@@ -4674,24 +4317,9 @@ Audit caching patterns, invalidation strategies, and cache safety for production
 ---END STANDARDS---
 
 **Search Patterns:**
-- Go files: `**/*.go` — search for cache operations, singleflight, TTL configuration, Redis clients, in-memory caches
 - TypeScript files: `**/*.ts`, `**/*.tsx` — search for cache-aside patterns, LRU cache, ioredis, node-cache
 - Config files: `**/*.yaml`, `**/*.yml`, `**/*.env*` — search for cache TTL, Redis connection, eviction settings
-- Keywords (Go): `singleflight`, `go-cache`, `bigcache`, `freecache`, `ristretto`, `redis.Set`, `redis.Get`, `cache.Set`, `cache.Get`, `TTL`, `Expiration`, `SetEX`, `SetNX`
-- Keywords (TS): `node-cache`, `ioredis`, `createClient`, `cache.set`, `cache.get`, `lru-cache`, `LRUCache`, `cache.del`, `invalidate`, `Redis`, `ttl`
-
-**Go Caching Patterns to Check:**
-
-| Pattern | Risk Level | What to Look For |
-|---------|:----------:|------------------|
-| Unbounded cache growth | CRITICAL | Cache `Set` without TTL or max-size — leads to OOM under load |
-| No invalidation on writes | HIGH | Data mutated in DB but cache not invalidated — stale data served indefinitely |
-| Cache stampede vulnerability | HIGH | Multiple goroutines hit cache miss simultaneously — all hit DB. Check for `singleflight` |
-| Non-tenant-scoped keys | HIGH | Cache keys like `user:{id}` without tenant prefix in multi-tenant system — data leak |
-| Inconsistent TTL values | MEDIUM | Similar data types cached with wildly different TTLs — unpredictable staleness |
-| No cache warming | MEDIUM | Cold start after deploy/restart causes thundering herd to DB |
-| Missing cache metrics | LOW | No hit/miss/eviction counters — impossible to tune cache |
-| No cache versioning | LOW | Schema changes break cached data — no version prefix in keys |
+- Keywords (TS): `node-cache`, `ioredis`, `createClient`, `cache.set`, `cache.get`, `lru-cache`, `LRUCache`, `cache.del`, `invalidate`, `Redis`, `ttl`, `singleflight`
 
 **TypeScript Caching Patterns to Check:**
 
@@ -4713,78 +4341,6 @@ Audit caching patterns, invalidation strategies, and cache safety for production
 4. **Check stampede protection**: Verify singleflight, distributed locks, or request coalescing on cache miss paths
 5. **Check tenant isolation**: In multi-tenant systems, verify all cache keys include tenant context
 6. **Check consistency**: Verify TTL values are consistent for similar data types
-
-**Reference Implementation (GOOD — Go):**
-```go
-// GOOD: singleflight prevents cache stampede
-var group singleflight.Group
-
-func (s *Service) GetProduct(ctx context.Context, id string) (*Product, error) {
-    key := fmt.Sprintf("tenant:%s:product:%s", tenant.FromContext(ctx), id)
-
-    // Check cache first
-    if cached, err := s.cache.Get(ctx, key); err == nil {
-        return cached.(*Product), nil
-    }
-
-    // singleflight: only one goroutine fetches from DB
-    result, err, _ := group.Do(key, func() (interface{}, error) {
-        product, err := s.repo.FindByID(ctx, id)
-        if err != nil {
-            return nil, err
-        }
-        // Set with TTL
-        _ = s.cache.Set(ctx, key, product, 5*time.Minute)
-        return product, nil
-    })
-    if err != nil {
-        return nil, err
-    }
-    return result.(*Product), nil
-}
-
-// GOOD: Invalidate cache on write
-func (s *Service) UpdateProduct(ctx context.Context, id string, update *ProductUpdate) error {
-    if err := s.repo.Update(ctx, id, update); err != nil {
-        return err
-    }
-    key := fmt.Sprintf("tenant:%s:product:%s", tenant.FromContext(ctx), id)
-    _ = s.cache.Delete(ctx, key)
-    return nil
-}
-
-// GOOD: Bounded in-memory cache with TTL
-cache := ristretto.NewCache(&ristretto.Config{
-    NumCounters: 1e7,     // 10M counters
-    MaxCost:     1 << 30, // 1GB max
-    BufferItems: 64,
-})
-```
-
-**Reference Implementation (BAD — Go):**
-```go
-// BAD: No singleflight — cache stampede under load
-func (s *Service) GetProduct(ctx context.Context, id string) (*Product, error) {
-    if cached, err := s.cache.Get(ctx, id); err == nil { // no tenant prefix!
-        return cached.(*Product), nil
-    }
-    // Every concurrent request hits DB on cache miss
-    product, err := s.repo.FindByID(ctx, id)
-    if err != nil {
-        return nil, err
-    }
-    s.cache.Set(ctx, id, product, 0) // no TTL — lives forever
-    return product, nil
-}
-
-// BAD: No invalidation on write — stale data served
-func (s *Service) UpdateProduct(ctx context.Context, id string, update *ProductUpdate) error {
-    return s.repo.Update(ctx, id, update) // cache not invalidated
-}
-
-// BAD: Unbounded in-memory map as cache — OOM risk
-var cache = make(map[string]interface{}) // grows forever, never evicted
-```
 
 **Reference Implementation (GOOD — TypeScript):**
 ```typescript
@@ -4907,11 +4463,9 @@ Audit data encryption at rest, key management, and sensitive data protection for
 ---END STANDARDS---
 
 **Search Patterns:**
-- Go files: `**/*.go` — search for encryption libraries, hashing functions, sensitive field handling, key management
 - TypeScript files: `**/*.ts`, `**/*.tsx` — search for crypto modules, encryption utilities, password hashing
 - Config files: `**/*.yaml`, `**/*.yml`, `**/*.env*`, `**/docker-compose*` — search for encryption keys, database encryption settings
 - SQL/Migration files: `**/*.sql`, `**/migrations/**` — search for sensitive columns, pgcrypto, encryption extensions
-- Keywords (Go): `crypto/aes`, `crypto/cipher`, `bcrypt`, `scrypt`, `argon2`, `aes.NewCipher`, `gcm`, `Seal`, `Open`, `GenerateFromPassword`, `CompareHashAndPassword`
 - Keywords (TS): `crypto`, `createCipheriv`, `createDecipheriv`, `node-forge`, `bcrypt`, `argon2`, `scrypt`, `pbkdf2`
 - Keywords (DB): `pgcrypto`, `encrypt`, `decrypt`, `gen_salt`, `crypt`, `ENCRYPTED`, `BYTEA`
 - Keywords (Config): `ENCRYPTION_KEY`, `MASTER_KEY`, `KMS`, `vault`, `SECRET_KEY`, `CIPHER`
@@ -4935,18 +4489,6 @@ Audit data encryption at rest, key management, and sensitive data protection for
 5. **Check backups**: Verify database backup processes include encryption
 6. **Check algorithm strength**: Flag use of MD5, SHA1, DES, RC4, or other deprecated algorithms
 
-**Go Encryption Patterns to Check:**
-
-| Pattern | Risk Level | What to Look For |
-|---------|:----------:|------------------|
-| Plaintext passwords | CRITICAL | `password` field stored as `string` in DB without hashing |
-| Weak hash for passwords | CRITICAL | `md5.Sum`, `sha1.Sum`, `sha256.Sum` used for password hashing (use bcrypt/argon2 instead) |
-| Unencrypted financial data | CRITICAL | Credit card, bank account stored as plain `string` in DB |
-| Keys in source | HIGH | `ENCRYPTION_KEY`, `MASTER_KEY` hardcoded in Go files or committed .env |
-| No key rotation | MEDIUM | Single encryption key with no rotation mechanism or key versioning |
-| Weak algorithm | MEDIUM | DES, RC4, AES-ECB (use AES-GCM), MD5/SHA1 for integrity |
-| Unencrypted backups | HIGH | Backup commands/scripts without encryption flag |
-
 **TypeScript Encryption Patterns to Check:**
 
 | Pattern | Risk Level | What to Look For |
@@ -4957,72 +4499,6 @@ Audit data encryption at rest, key management, and sensitive data protection for
 | Keys in source | HIGH | Encryption keys hardcoded in TypeScript files |
 | No key rotation | MEDIUM | Static encryption key with no versioning |
 | Weak algorithm | MEDIUM | `createCipheriv('des', ...)`, `createCipheriv('aes-128-ecb', ...)` |
-
-**Reference Implementation (GOOD — Go):**
-```go
-// GOOD: Password hashing with bcrypt
-import "golang.org/x/crypto/bcrypt"
-
-func HashPassword(password string) (string, error) {
-    hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-    if err != nil {
-        return "", fmt.Errorf("hashing password: %w", err)
-    }
-    return string(hash), nil
-}
-
-func VerifyPassword(hash, password string) error {
-    return bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-}
-
-// GOOD: AES-256-GCM field encryption with key from Vault
-func EncryptField(plaintext []byte, key []byte) ([]byte, error) {
-    block, err := aes.NewCipher(key)
-    if err != nil {
-        return nil, err
-    }
-    gcm, err := cipher.NewGCM(block)
-    if err != nil {
-        return nil, err
-    }
-    nonce := make([]byte, gcm.NonceSize())
-    if _, err := io.ReadFull(rand.Reader, nonce); err != nil {
-        return nil, err
-    }
-    return gcm.Seal(nonce, nonce, plaintext, nil), nil
-}
-
-// GOOD: Key from Vault/KMS
-func GetEncryptionKey(ctx context.Context) ([]byte, error) {
-    secret, err := vaultClient.Logical().Read("secret/data/encryption-key")
-    if err != nil {
-        return nil, fmt.Errorf("reading encryption key from vault: %w", err)
-    }
-    return base64.StdEncoding.DecodeString(secret.Data["key"].(string))
-}
-```
-
-**Reference Implementation (BAD — Go):**
-```go
-// BAD: Plaintext password storage
-type User struct {
-    Email    string `db:"email"`
-    Password string `db:"password"` // stored as plain text!
-}
-
-// BAD: MD5 for password hashing — trivially crackable
-func HashPassword(password string) string {
-    hash := md5.Sum([]byte(password))
-    return hex.EncodeToString(hash[:])
-}
-
-// BAD: Encryption key hardcoded in source
-var encryptionKey = []byte("my-super-secret-key-1234567890ab")
-
-// BAD: AES-ECB mode — deterministic, leaks patterns
-block, _ := aes.NewCipher(key)
-block.Encrypt(ciphertext, plaintext) // ECB mode — do NOT use
-```
 
 **Reference Implementation (GOOD — TypeScript):**
 ```typescript
@@ -5126,29 +4602,12 @@ Audit resource leak risks including unclosed handles, connection leaks, and clea
 
 **MarsAI Standards (Source of Truth):**
 ---BEGIN STANDARDS---
-{INJECTED: Resource leak patterns — no dedicated standards file; patterns derived from Go/TypeScript runtime behavior and production failure analysis}
+{INJECTED: Resource leak patterns — no dedicated standards file; patterns derived from TypeScript runtime behavior and production failure analysis}
 ---END STANDARDS---
 
 **Search Patterns:**
-- Go files: `**/*.go` — search for HTTP response bodies, database rows/connections, file handles, tickers, timers, context cancellation
 - TypeScript files: `**/*.ts`, `**/*.tsx` — search for stream cleanup, event listeners, AbortController, finally blocks, using declarations
-- Keywords (Go): `resp.Body`, `rows.Close`, `rows.Next`, `tx.Rollback`, `tx.Commit`, `file.Close`, `ticker.Stop`, `timer.Stop`, `context.WithCancel`, `context.WithTimeout`, `defer`, `go func`
-- Keywords (TS): `finally`, `addEventListener`, `removeEventListener`, `AbortController`, `.destroy()`, `.close()`, `.end()`, `createReadStream`, `createWriteStream`, `using`, `Symbol.dispose`
-
-**Go Resource Leak Patterns to Check:**
-
-| Pattern | Risk Level | What to Look For |
-|---------|:----------:|------------------|
-| HTTP body not closed | CRITICAL | `http.Get`, `client.Do` without `defer resp.Body.Close()` — connection pool exhaustion |
-| DB rows not closed | CRITICAL | `db.Query` / `db.QueryContext` without `defer rows.Close()` — connection pool exhaustion |
-| DB rows not closed on error | CRITICAL | `rows.Close()` in happy path only — error branch leaks connection |
-| File handle not closed | HIGH | `os.Open`, `os.Create` without `defer file.Close()` — fd exhaustion under load |
-| Context not propagated | HIGH | `go func()` spawned without parent context — cannot cancel child goroutines |
-| Ticker/timer not stopped | HIGH | `time.NewTicker`, `time.NewTimer` in goroutine without `defer ticker.Stop()` — memory leak |
-| Transaction not rolled back | HIGH | `db.Begin` without `defer tx.Rollback()` — connection held on error path |
-| Defer after error check | MEDIUM | `defer resp.Body.Close()` before checking `err != nil` — panics on nil resp |
-| Defer ordering (LIFO) | MEDIUM | Defers execute in LIFO order — wrong order causes cleanup sequence issues |
-| Channel not closed | MEDIUM | Producer goroutine exits without closing channel — consumer goroutine leaks |
+- Keywords (TS): `finally`, `addEventListener`, `removeEventListener`, `AbortController`, `.destroy()`, `.close()`, `.end()`, `createReadStream`, `createWriteStream`, `using`, `Symbol.dispose`, `setInterval`, `clearInterval`
 
 **TypeScript Resource Leak Patterns to Check:**
 
@@ -5163,118 +4622,11 @@ Audit resource leak risks including unclosed handles, connection leaks, and clea
 | Missing using declaration | LOW | Resources that implement `Symbol.dispose` not using `using` keyword (TC39 proposal) |
 
 **Resource Leak Tracing Methodology (MANDATORY — do not skip):**
-1. **Find resource acquisitions**: Scan for all `open`, `create`, `new`, `begin`, `dial`, `connect` calls
-2. **Trace cleanup path**: For each acquisition, verify a corresponding `close`, `stop`, `rollback`, `release` exists
-3. **Check error paths**: Verify cleanup happens in error branches, not just happy path
-4. **Check goroutine context**: For each `go func()`, verify parent context is passed and cancellation propagates
-5. **Check defer placement**: Verify `defer` is called AFTER error check on the acquisition, not before
-6. **Check defer ordering**: Verify LIFO ordering does not cause incorrect cleanup sequence
-
-**Reference Implementation (GOOD — Go):**
-```go
-// GOOD: HTTP response body closed immediately after error check
-resp, err := http.Get(url)
-if err != nil {
-    return nil, fmt.Errorf("fetching %s: %w", url, err)
-}
-defer resp.Body.Close() // after error check — resp is guaranteed non-nil
-
-// GOOD: Database rows closed with defer
-rows, err := db.QueryContext(ctx, query, args...)
-if err != nil {
-    return nil, fmt.Errorf("querying: %w", err)
-}
-defer rows.Close() // closed on ALL exit paths
-
-// GOOD: Transaction with deferred rollback (safe even after commit)
-tx, err := db.BeginTx(ctx, nil)
-if err != nil {
-    return err
-}
-defer tx.Rollback() // no-op after successful commit
-
-if err := tx.Exec(ctx, stmt); err != nil {
-    return err // rollback will execute via defer
-}
-return tx.Commit()
-
-// GOOD: Context propagated to goroutine
-ctx, cancel := context.WithCancel(parentCtx)
-defer cancel()
-
-go func() {
-    select {
-    case <-ctx.Done():
-        return // goroutine exits when parent cancels
-    case msg := <-ch:
-        process(msg)
-    }
-}()
-
-// GOOD: Ticker stopped in goroutine
-func (s *Service) StartPolling(ctx context.Context) {
-    ticker := time.NewTicker(30 * time.Second)
-    defer ticker.Stop()
-
-    for {
-        select {
-        case <-ctx.Done():
-            return
-        case <-ticker.C:
-            s.poll(ctx)
-        }
-    }
-}
-```
-
-**Reference Implementation (BAD — Go):**
-```go
-// BAD: HTTP body never closed — connection pool exhaustion
-resp, err := http.Get(url)
-if err != nil {
-    return nil, err
-}
-// missing: defer resp.Body.Close()
-body, _ := io.ReadAll(resp.Body) // body open forever
-
-// BAD: defer before error check — panics on nil resp
-resp, err := http.Get(url)
-defer resp.Body.Close() // PANIC if err != nil (resp is nil)
-if err != nil {
-    return nil, err
-}
-
-// BAD: rows.Close() only in happy path — leaks on error
-rows, err := db.QueryContext(ctx, query)
-if err != nil {
-    return nil, err
-}
-for rows.Next() {
-    if err := rows.Scan(&item); err != nil {
-        return nil, err // rows NOT closed!
-    }
-    items = append(items, item)
-}
-rows.Close() // only reached on success
-
-// BAD: Context not propagated — goroutine cannot be cancelled
-go func() {
-    for {
-        data := fetchData() // runs forever, ignores parent context
-        process(data)
-        time.Sleep(time.Minute)
-    }
-}()
-
-// BAD: Ticker in goroutine never stopped — memory leak
-go func() {
-    ticker := time.NewTicker(time.Second)
-    // missing: defer ticker.Stop()
-    for range ticker.C {
-        doWork()
-    }
-}()
-```
+1. **Find resource acquisitions**: Scan for all `open`, `create`, `new`, `connect`, `createReadStream`, `createWriteStream` calls
+2. **Trace cleanup path**: For each acquisition, verify a corresponding `close`, `destroy`, `end`, `clearInterval` exists
+3. **Check error paths**: Verify cleanup happens in catch/finally blocks, not just happy path
+4. **Check component lifecycle**: For React components, verify useEffect cleanup functions remove listeners and intervals
+5. **Check AbortController**: For long-running fetch/operations, verify AbortController is used for cancellation
 
 **Reference Implementation (GOOD — TypeScript):**
 ```typescript
@@ -5342,36 +4694,29 @@ async function fetchData(url: string): Promise<Response> {
 ```
 
 **Check Against Standards For:**
-1. (CRITICAL) All HTTP response bodies are closed with `defer resp.Body.Close()` after error check (Go)
-2. (CRITICAL) All database rows are closed with `defer rows.Close()` — including error paths (Go)
-3. (CRITICAL) Streams and connections are closed in error paths (TypeScript)
-4. (HIGH) File handles are closed with `defer file.Close()` (Go) or finally/using (TypeScript)
-5. (HIGH) Context is propagated to all spawned goroutines (Go)
-6. (HIGH) Tickers and timers are stopped with `defer ticker.Stop()` in goroutines (Go)
-7. (HIGH) Transactions use `defer tx.Rollback()` before any operations (Go)
-8. (HIGH) `setInterval` has corresponding `clearInterval` on cleanup (TypeScript)
-9. (MEDIUM) `defer` is placed AFTER error check, not before (Go)
-10. (MEDIUM) Event listeners are removed on component unmount (TypeScript)
-11. (MEDIUM) AbortController is used for cancellable long-running operations (TypeScript)
-12. (MEDIUM) Channel producers close channels when done (Go)
-13. (LOW) Defer ordering (LIFO) does not cause incorrect cleanup sequence (Go)
+1. (CRITICAL) All streams and connections are closed in finally blocks — including error paths
+2. (CRITICAL) Database connections are properly released after use
+3. (HIGH) File handles are closed with finally/using
+4. (HIGH) `setInterval` has corresponding `clearInterval` on cleanup
+5. (HIGH) Database transactions are rolled back on error paths
+6. (MEDIUM) Event listeners are removed on component unmount
+7. (MEDIUM) AbortController is used for cancellable long-running operations
+8. (LOW) Missing using declaration for disposable resources (TC39 proposal)
 
 **Severity Ratings:**
-- CRITICAL: HTTP response body never closed (connection pool exhaustion), database rows/connections not closed on error paths (connection pool exhaustion), streams not closed on error (fd exhaustion)
-- HIGH: File handles not closed (fd exhaustion under load), context not propagated to goroutines (cannot cancel), tickers/timers not stopped (memory leak), transactions without deferred rollback (connection held), intervals not cleared (memory leak)
-- MEDIUM: Defer before error check (nil pointer panic), event listeners not removed on unmount (memory leak), no AbortController for fetch (cannot cancel), unclosed channels (goroutine leak)
-- LOW: Defer ordering issues (wrong cleanup sequence), redundant defer on auto-closed resources, missing using declaration for disposable resources
+- CRITICAL: Streams/connections not closed on error paths (resource exhaustion), database connections not released (pool exhaustion)
+- HIGH: File handles not closed (fd exhaustion under load), intervals not cleared (memory leak), transactions without rollback on error (connection held)
+- MEDIUM: Event listeners not removed on unmount (memory leak), no AbortController for fetch (cannot cancel)
+- LOW: Missing using declaration for disposable resources
 
 **Output Format:**
 ```
 ## Resource Leak Prevention Audit Findings
 
 ### Summary
-- HTTP response bodies: X found, Y properly closed
-- Database rows/connections: X queries, Y with defer rows.Close()
-- File handles: X opens, Y with defer/finally close
-- Goroutine context propagation: X goroutines, Y with parent context
-- Tickers/timers: X created, Y with defer Stop()
+- Streams/connections: X found, Y properly closed in finally blocks
+- Database connections: X queries, Y properly released
+- File handles: X opens, Y with finally/using close
 - Event listeners (TS): X added, Y with cleanup
 - Intervals (TS): X set, Y with clearInterval
 
@@ -5408,10 +4753,10 @@ Audit rate limiting implementation across the codebase for production readiness.
 ---END STANDARDS---
 
 **Search Patterns:**
-- Go files: `**/*.go` — search for rate limiting middleware, limiter configuration, Redis storage for rate limits
-- Config files: `**/*.env*`, `**/docker-compose*`, `**/config*.go` — search for RATE_LIMIT env vars
+- TypeScript files: `**/*.ts` — search for rate limiting middleware, limiter configuration, Redis storage for rate limits
+- Config files: `**/*.env*`, `**/docker-compose*`, `**/config*.ts` — search for RATE_LIMIT env vars
 - Middleware files: `**/middleware/**`, `**/bootstrap/**` — search for limiter registration
-- Keywords (Go): `limiter`, `ratelimit`, `rate_limit`, `RateLimit`, `RATE_LIMIT`, `fiber/middleware/limiter`, `MaxRequests`, `Expiration`, `KeyGenerator`, `LimitReached`, `429`, `Retry-After`
+- Keywords (TS): `limiter`, `rateLimit`, `rate-limit`, `RateLimit`, `RATE_LIMIT`, `express-rate-limit`, `rate-limiter-flexible`, `maxRequests`, `windowMs`, `429`, `Retry-After`
 - Keywords (Config): `RATE_LIMIT_ENABLED`, `RATE_LIMIT_MAX`, `RATE_LIMIT_EXPIRY_SEC`, `EXPORT_RATE_LIMIT`, `DISPATCH_RATE_LIMIT`
 
 **Rate Limiting Patterns to Check:**
@@ -5420,7 +4765,7 @@ Audit rate limiting implementation across the codebase for production readiness.
 |---------|:----------:|------------------|
 | No rate limiting at all | CRITICAL | No limiter middleware registered on any route |
 | Single-tier only | HIGH | Only global rate limit, no export/dispatch tiers |
-| In-memory storage only | HIGH | `fiber.Storage` not backed by Redis — rate limits not shared across instances |
+| In-memory storage only | HIGH | Rate limiter not backed by Redis — rate limits not shared across instances |
 | Hardcoded limits | MEDIUM | Rate limit values hardcoded in code instead of env vars |
 | No key generation strategy | HIGH | Default key generator (IP only) — no UserID or TenantID+IP |
 | Rate limiting disabled in production | CRITICAL | `RATE_LIMIT_ENABLED=false` with no production override |
@@ -5433,9 +4778,9 @@ Audit rate limiting implementation across the codebase for production readiness.
 3. **Dispatch tier**: Verify external integration endpoints (webhooks, external calls) have their own limiter (default: 50 req/60s)
 
 **Redis Storage Verification (MANDATORY — do not skip):**
-1. **Storage implementation**: Verify rate limiter uses Redis-backed storage implementing `fiber.Storage` interface
+1. **Storage implementation**: Verify rate limiter uses Redis-backed distributed storage
 2. **Key prefix**: Verify rate limit keys use `ratelimit:` prefix for namespace isolation
-3. **Sentinel errors**: Verify Redis operations use sentinel errors (not `fmt.Errorf`)
+3. **Sentinel errors**: Verify Redis operations use sentinel errors (not generic Error)
 4. **Graceful degradation**: Verify fallback behavior when Redis is unavailable
 
 **Production Safety Verification (MANDATORY — do not skip):**
@@ -5443,44 +4788,52 @@ Audit rate limiting implementation across the codebase for production readiness.
 2. **Key generation**: Verify key generator uses UserID > TenantID+IP > IP priority
 3. **Configuration via env vars**: Verify all limits are configurable via environment variables
 
-**Reference Implementation (GOOD — Go):**
-```go
+**Reference Implementation (GOOD — TypeScript):**
+```typescript
 // GOOD: Three-tier rate limiting with Redis storage
-rateLimitStorage := ratelimit.NewRedisStorage(redisConn)
+import { RateLimiterRedis } from 'rate-limiter-flexible';
 
-// Global limiter
-app.Use(limiter.New(limiter.Config{
-    Max:        cfg.RateLimit.Max,
-    Expiration: time.Duration(cfg.RateLimit.ExpirySec) * time.Second,
-    Storage:    rateLimitStorage,
-    KeyGenerator: func(c *fiber.Ctx) string {
-        // UserID > TenantID+IP > IP
-        if uid := c.Locals("userID"); uid != nil {
-            return fmt.Sprintf("user:%v", uid)
-        }
-        if tid := c.Locals("tenantID"); tid != nil {
-            return fmt.Sprintf("tenant:%v:ip:%s", tid, c.IP())
-        }
-        return c.IP()
-    },
-}))
+const globalLimiter = new RateLimiterRedis({
+  storeClient: redisClient,
+  points: cfg.rateLimit.max,            // from env vars
+  duration: cfg.rateLimit.windowSec,    // from env vars
+  keyPrefix: 'ratelimit:global',
+});
+
+// Key generator: UserID > TenantID+IP > IP
+function getKey(req: Request): string {
+  if (req.user?.id) return `user:${req.user.id}`;
+  if (req.user?.tenantId) return `tenant:${req.user.tenantId}:ip:${req.ip}`;
+  return req.ip;
+}
+
+app.use(async (req, res, next) => {
+  try {
+    await globalLimiter.consume(getKey(req));
+    next();
+  } catch {
+    res.set('Retry-After', String(cfg.rateLimit.windowSec));
+    res.status(429).json({ error: 'Too many requests' });
+  }
+});
 ```
 
-**Reference Implementation (BAD — Go):**
-```go
+**Reference Implementation (BAD — TypeScript):**
+```typescript
 // BAD: No rate limiting at all — DoS vulnerable
-app.Get("/api/v1/exports", exportHandler)
+app.get('/api/v1/exports', exportHandler);
 
-// BAD: Hardcoded limits, no Redis storage
-app.Use(limiter.New(limiter.Config{
-    Max:        100,           // hardcoded
-    Expiration: time.Minute,   // hardcoded
-    // No Storage — in-memory only, not shared across instances
-}))
+// BAD: Hardcoded limits, in-memory only
+import rateLimit from 'express-rate-limit';
+app.use(rateLimit({
+  max: 100,         // hardcoded
+  windowMs: 60000,  // hardcoded
+  // No store — in-memory only, not shared across instances
+}));
 
 // BAD: Rate limiting can be disabled in production
-if cfg.RateLimit.Enabled {
-    app.Use(rateLimiter)
+if (cfg.rateLimit.enabled) {
+  app.use(rateLimiter);
 }
 ```
 
@@ -5499,7 +4852,7 @@ if cfg.RateLimit.Enabled {
 **Severity Ratings:**
 - CRITICAL: No rate limiting middleware at all, rate limiting disabled in production
 - HIGH: Single-tier only (no export/dispatch tiers), in-memory storage only (not distributed), no key generation strategy (IP only), no graceful degradation on Redis failure
-- MEDIUM: Hardcoded rate limit values (not configurable), no Retry-After header, fmt.Errorf instead of sentinel errors
+- MEDIUM: Hardcoded rate limit values (not configurable), no Retry-After header, generic Error instead of sentinel/typed errors
 - LOW: Missing key prefix, rate limit logging not structured, no rate limit metrics/observability
 
 **Output Format:**
@@ -5544,10 +4897,10 @@ Audit CORS (Cross-Origin Resource Sharing) configuration across the codebase for
 ---END STANDARDS---
 
 **Search Patterns:**
-- Go files: `**/*.go` — search for CORS middleware configuration, origin validation, preflight handling
-- Config files: `**/*.env*`, `**/docker-compose*`, `**/config*.go` — search for CORS env vars
+- TypeScript files: `**/*.ts` — search for CORS middleware configuration, origin validation, preflight handling
+- Config files: `**/*.env*`, `**/docker-compose*`, `**/config*.ts` — search for CORS env vars
 - Middleware files: `**/middleware/**`, `**/bootstrap/**` — search for CORS and Helmet middleware registration
-- Keywords (Go): `cors`, `CORS`, `AllowOrigins`, `AllowMethods`, `AllowHeaders`, `fiber/middleware/cors`, `helmet`, `Helmet`, `HSTS`, `HSTSMaxAge`, `ContentSecurityPolicy`, `XFrameOptions`, `PermissionPolicy`
+- Keywords (TS): `cors`, `CORS`, `origin`, `allowedOrigins`, `cors()`, `helmet`, `Helmet`, `HSTS`, `contentSecurityPolicy`, `frameguard`
 - Keywords (Config): `CORS_ALLOWED_ORIGINS`, `CORS_ALLOWED_METHODS`, `CORS_ALLOWED_HEADERS`, `TLS_TERMINATED_UPSTREAM`, `SERVER_TLS_CERT_FILE`
 
 **CORS Patterns to Check:**
@@ -5574,7 +4927,7 @@ Recover → Request ID → CORS → Helmet (Security Headers) → Telemetry → 
 1. **No wildcard origins**: Verify `*` is rejected when `ENV_NAME=production`
 2. **No empty origins**: Verify empty `CORS_ALLOWED_ORIGINS` is rejected in production
 3. **HTTPS origins**: Verify production origins use `https://` (not `http://`)
-4. **Sentinel errors**: Verify validation uses sentinel errors (not `fmt.Errorf`)
+4. **Sentinel errors**: Verify validation uses sentinel errors (not generic Error)
 
 **Helmet Integration Verification (MANDATORY — do not skip):**
 1. **Security headers present**: Verify Helmet middleware is registered
@@ -5582,57 +4935,54 @@ Recover → Request ID → CORS → Helmet (Security Headers) → Telemetry → 
 3. **CSP configured**: Verify Content-Security-Policy header is set
 4. **Cross-origin policies**: Verify CrossOriginEmbedderPolicy, CrossOriginOpenerPolicy, CrossOriginResourcePolicy
 
-**Reference Implementation (GOOD — Go):**
-```go
+**Reference Implementation (GOOD — TypeScript):**
+```typescript
 // GOOD: Configuration-driven CORS with production validation
-app.Use(cors.New(cors.Config{
-    AllowOrigins: cfg.Server.CORSAllowedOrigins,  // From env vars
-    AllowMethods: cfg.Server.CORSAllowedMethods,
-    AllowHeaders: cfg.Server.CORSAllowedHeaders,
-}))
+import cors from 'cors';
 
-// GOOD: Production validation with sentinel errors
-var (
-    ErrCORSOriginsEmpty    = errors.New("CORS_ALLOWED_ORIGINS must be set in production")
-    ErrCORSOriginsWildcard = errors.New("CORS_ALLOWED_ORIGINS must not contain wildcard (*) in production")
-)
+app.use(cors({
+  origin: cfg.server.corsAllowedOrigins.split(','),  // From env vars
+  methods: cfg.server.corsAllowedMethods.split(','),
+  allowedHeaders: cfg.server.corsAllowedHeaders.split(','),
+}));
 
-func validateProductionConfig(cfg *Config) error {
-    if cfg.App.EnvName != "production" {
-        return nil
-    }
-    origins := strings.TrimSpace(cfg.Server.CORSAllowedOrigins)
-    if origins == "" {
-        return ErrCORSOriginsEmpty
-    }
-    if strings.Contains(origins, "*") {
-        return ErrCORSOriginsWildcard
-    }
-    return nil
+// GOOD: Production validation with typed errors
+class CORSOriginsEmptyError extends Error {
+  constructor() { super('CORS_ALLOWED_ORIGINS must be set in production'); }
+}
+class CORSOriginsWildcardError extends Error {
+  constructor() { super('CORS_ALLOWED_ORIGINS must not contain wildcard (*) in production'); }
+}
+
+function validateProductionConfig(cfg: Config): void {
+  if (cfg.app.envName !== 'production') return;
+  const origins = (cfg.server.corsAllowedOrigins ?? '').trim();
+  if (!origins) throw new CORSOriginsEmptyError();
+  if (origins.includes('*')) throw new CORSOriginsWildcardError();
 }
 ```
 
-**Reference Implementation (BAD — Go):**
-```go
+**Reference Implementation (BAD — TypeScript):**
+```typescript
 // BAD: Wildcard origins — allows any site to make requests
-cors.Config{AllowOrigins: "*"}
+app.use(cors({ origin: '*' }));
 
 // BAD: Hardcoded origins
-cors.Config{AllowOrigins: "https://app.example.com"}
+app.use(cors({ origin: 'https://app.example.com' }));
 
 // BAD: No CORS middleware at all
 
 // BAD: CORS after business logic — preflight fails
-app.Use(authMiddleware)
-app.Use(rateLimiter)
-app.Use(cors.New(corsCfg))  // Too late
+app.use(authMiddleware);
+app.use(rateLimiter);
+app.use(cors(corsConfig));  // Too late
 
 // BAD: Origin reflection without validation
-cors.Config{
-    AllowOriginsFunc: func(origin string) bool {
-        return true  // Effectively same as wildcard
-    },
-}
+app.use(cors({
+  origin: (origin, callback) => {
+    callback(null, true);  // Effectively same as wildcard
+  },
+}));
 ```
 
 **Check Against Standards For:**
@@ -5729,7 +5079,7 @@ After all explorers complete, generate this report:
 
 | Property | Value |
 |----------|-------|
-| **Detected Stack** | {Go / TypeScript / Frontend / Mixed} |
+| **Detected Stack** | {TypeScript / Frontend / Mixed} |
 | **Standards Loaded** | {list of loaded standards files} |
 | **Active Dimensions** | {43 base + 1 conditional (max 44)} |
 | **Max Possible Score** | {dynamic_max: 430 or 440} |
@@ -6250,7 +5600,7 @@ Status icons: PASS (>=7), WARN (4-6), FAIL (<4), N/A (conditional not active)
 | 11 | Telemetry & Observability | bootstrap.md + sre.md | Observability, OpenTelemetry | {PASS/FAIL} | {x}/10 |
 | 12 | Health Checks | sre.md | Health Checks | {PASS/FAIL} | {x}/10 |
 | 13 | Configuration Management | core.md | Configuration | {PASS/FAIL} | {x}/10 |
-| 14 | Connection Management | core.md | Core Dependency: lib-commons | {PASS/FAIL} | {x}/10 |
+| 14 | Connection Management | core.md | Core Dependencies | {PASS/FAIL} | {x}/10 |
 | 15 | Logging & PII Safety | quality.md | Logging | {PASS/FAIL} | {x}/10 |
 | 16 | Idempotency | idempotency.md | Full module | {PASS/FAIL} | {x}/10 |
 | 17 | API Documentation | api-patterns.md | OpenAPI (Swaggo) | {PASS/FAIL} | {x}/10 |
@@ -6264,7 +5614,7 @@ Status icons: PASS (>=7), WARN (4-6), FAIL (<4), N/A (conditional not active)
 | 25 | HTTP Hardening | (generic) | — | {PASS/FAIL} | {x}/10 |
 | 26 | CI/CD Pipeline | devops.md | CI section | {PASS/FAIL} | {x}/10 |
 | 27 | Async Reliability | messaging.md | RabbitMQ Worker Pattern | {PASS/FAIL} | {x}/10 |
-| 28 | Core Dependencies | core.md | lib-commons, Frameworks | {PASS/FAIL} | {x}/10 |
+| 28 | Core Dependencies | core.md | Frameworks & Libraries | {PASS/FAIL} | {x}/10 |
 | 29 | Naming Conventions | core.md + api-patterns.md | Naming conventions | {PASS/FAIL} | {x}/10 |
 | 30 | Domain Modeling | domain.md + domain-modeling.md | ToEntity, Always-Valid | {PASS/FAIL} | {x}/10 |
 | 31 | Linting & Code Quality | quality.md | Linting | {PASS/FAIL} | {x}/10 |
@@ -6383,7 +5733,7 @@ Status icons: PASS (>=7), WARN (4-6), FAIL (<4), N/A (conditional not active)
 | **Report Type** | Thorough |
 | **Standards Source** | MarsAI Development Standards (GitHub) |
 | **Standards Files Loaded** | {list} |
-| **Stack Detected** | {Go / TypeScript / Frontend / Mixed} |
+| **Stack Detected** | {TypeScript / Frontend / Mixed} |
 | **Dimensions** | {43 + conditional count} |
 ```
 
@@ -6636,18 +5986,18 @@ The reference implementations in this skill are derived from two sources:
 
 ### MarsAI Development Standards (Primary - Source of Truth)
 Standards loaded at runtime via WebFetch from `dev-team/docs/standards/`:
-- **golang/*.md** — Go-specific standards (core, bootstrap, security, domain, API patterns, quality, architecture, messaging, domain-modeling, idempotency, multi-tenant)
+- **Language-specific standards** — Loaded based on detected stack
 - **devops.md** — Container, Makefile, and infrastructure standards
 - **sre.md** — Observability and health check standards
 
-### Matcher Codebase (Legacy Reference)
-Original reference implementations derived from the Matcher codebase, which serves as the organizational standard for:
+### Reference Implementations (Legacy Reference)
+Original reference implementations that serve as the organizational standard for:
 - Hexagonal architecture per bounded context
-- lib-commons integration (telemetry, database, messaging)
-- lib-auth integration (JWT validation, tenant extraction)
-- Fiber HTTP framework conventions
+- Telemetry, database, and messaging integration
+- JWT validation and tenant extraction
+- HTTP framework conventions
 
-When auditing projects, findings are compared against MarsAI standards as the authoritative reference. Matcher patterns remain as supplementary examples.
+When auditing projects, findings are compared against MarsAI standards as the authoritative reference.
 
 ## Blocker Criteria
 
@@ -6655,7 +6005,7 @@ STOP and report if:
 
 | Decision Type | Blocker Condition | Required Action |
 |---|---|---|
-| Stack Detection | Cannot detect project stack (no go.mod, package.json, etc.) | STOP and ask user to specify stack |
+| Stack Detection | Cannot detect project stack (no package.json, tsconfig.json, etc.) | STOP and ask user to specify stack |
 | Standards Loading | WebFetch fails for critical MarsAI standards | STOP and report - audit requires standards as source of truth |
 | Batch Failure | Entire batch of agents fails to complete | STOP and report - investigate infrastructure issue |
 | Report File | Cannot write to docs/audits/ directory | STOP and report - ensure directory exists and is writable |

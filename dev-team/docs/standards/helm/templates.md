@@ -1,4 +1,4 @@
-# Helm Template Patterns (Lerian Standard)
+# Helm Template Patterns (V4-Company Standard)
 
 ## Deployment Pattern
 
@@ -100,7 +100,7 @@ The CI `gitops-update` workflow uses `yq` to update image tags independently. A 
 ```yaml
 {component}:
   image:
-    repository: ghcr.io/lerianstudio/{service-name}
+    repository: ghcr.io/V4-Company/{service-name}
     pullPolicy: IfNotPresent
     tag: "1.0.0"
 ```
@@ -113,7 +113,7 @@ The CI `gitops-update` workflow uses `yq` to update image tags independently. A 
 image: {{ $img | quote }}
 imagePullPolicy: Always
 {{- else }}
-image: "{{ $img.repository | default "ghcr.io/lerianstudio/{service-name}" }}:{{ $img.tag | default "latest" }}"
+image: "{{ $img.repository | default "ghcr.io/V4-Company/{service-name}" }}:{{ $img.tag | default "latest" }}"
 imagePullPolicy: {{ $img.pullPolicy | default "IfNotPresent" }}
 {{- end }}
 ```
@@ -124,7 +124,7 @@ imagePullPolicy: {{ $img.pullPolicy | default "IfNotPresent" }}
 1. EVERY container spec (main, sidecar, init, migration, job) MUST use this pattern
 2. The `kindIs "string"` branch provides backward compatibility during migration
 3. The `else` branch (map format) is the target state — new charts MUST use map format in values.yaml
-4. Default repository MUST match the ghcr.io/lerianstudio/{service-name} convention
+4. Default repository MUST match the ghcr.io/V4-Company/{service-name} convention
 5. Default tag SHOULD be "latest" for jobs/migrations, specific version for app containers
 6. Default pullPolicy: IfNotPresent for app containers, Always for jobs/migrations
 7. initContainers using well-known images (e.g., busybox:1.37) MAY use inline strings
@@ -146,9 +146,9 @@ Wrong paths = CrashLoopBackOff. This is the #1 deployment failure cause.
 </cannot_skip>
 
 ```text
-COMMON LERIAN PATTERNS:
-  Go API services: /health (liveness), /ready (readiness)
-  Go workers:      /health (liveness), /ready (readiness) on HEALTH_PORT
+COMMON V4-COMPANY PATTERNS:
+  API services:    /health (liveness), /ready (readiness)
+  Workers:         /health (liveness), /ready (readiness) on HEALTH_PORT
   Next.js:         /api/admin/health/ready
   Casdoor:         /api/health
 
@@ -159,11 +159,11 @@ VERIFY by reading application source code. Do NOT guess.
 
 ```text
 VERIFY health endpoints by reading application source code:
-  - Go: Look for mux.HandleFunc("/health", ...) or router.GET("/health", ...)
-  - Node.js: Look for app.get("/health", ...) or app.get("/api/admin/health/ready", ...)
+  - Node.js/Express: Look for app.get("/health", ...) or router.get("/health", ...)
+  - Next.js: Look for app/api/admin/health/ready/route.ts
 
 COMMON PATHS:
-  - /health           → Most Go services (liveness)
+  - /health           → Most API services (liveness)
   - /ready            → Readiness with dependency checks
   - /healthz          → Alternative convention
   - /api/admin/health/ready → Next.js services (product-console)
@@ -174,7 +174,7 @@ Wrong probe paths = CrashLoopBackOff.
 
 ---
 
-## Secrets Template (Lerian Pattern)
+## Secrets Template (V4-Company Pattern)
 
 ```text
 MUST include:
@@ -193,7 +193,7 @@ Pattern 1 (b64enc - explicit encoding):
   data:
     KEY: {{ .Values.secrets.KEY | default "" | b64enc | quote }}
 
-Pattern 2 (stringData - auto encoding, Lerian preferred):
+Pattern 2 (stringData - auto encoding, V4-Company preferred):
   stringData:
     {{- range $key, $value := .Values.{component}.secrets }}
     {{ $key }}: {{ $value | quote }}

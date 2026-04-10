@@ -28,7 +28,7 @@ Follow the visual-explainer skill workflow. Read the reference templates and CSS
    - Convert ascii/markdown tables into the `data-table` layout pattern.
    - If a section describes a flow or architecture, generate a corresponding Mermaid diagram and insert it using the `.mermaid-wrap` container with zoom controls.
 
-**Visual hierarchy**: Use the Lerian palette defined in the CSS patterns. Ensure code blocks are recessed (using the `.node--recessed` pattern if applicable) and callouts use the `.callout` pattern.
+**Visual hierarchy**: Use the V4-Company palette defined in the CSS patterns. Ensure code blocks are recessed (using the `.node--recessed` pattern if applicable) and callouts use the `.callout` pattern.
 
 Include responsive section navigation if appropriate. Write the final self-contained HTML to `~/.agent/diagrams/` and open it in the browser.
 

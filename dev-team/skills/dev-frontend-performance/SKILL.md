@@ -122,7 +122,7 @@ Ensure all frontend pages meet **Core Web Vitals** thresholds, achieve **Lightho
 **MANDATORY:** Load testing-performance.md standards via WebFetch.
 
 <fetch_required>
-https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/frontend/testing-performance.md
+https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/frontend/testing-performance.md
 </fetch_required>
 
 ---

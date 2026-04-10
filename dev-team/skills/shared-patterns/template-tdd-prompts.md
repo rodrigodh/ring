@@ -13,13 +13,13 @@ Canonical source for TDD dispatch prompts used by marsai:dev-cycle and marsai:de
 
 **Anti-Duplication Check:** Before accepting PROJECT_RULES.md content, verify entries (tech stack, external integrations, domain terminology) do not overlap or contradict MarsAI Standards; reject duplicates.
 
-See [standards-workflow.md](https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/skills/shared-patterns/standards-workflow.md) for the complete loading process.
+See [standards-workflow.md](https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/skills/shared-patterns/standards-workflow.md) for the complete loading process.
 
 ### What Each Source Provides (no OVERLAP)
 
 | Source | Provides | Examples |
 |--------|----------|----------|
-| **MarsAI Standards** | Technical patterns | Error handling, logging, testing, architecture, lib-commons, API structure |
+| **MarsAI Standards** | Technical patterns | Error handling, logging, testing, architecture, lib-common-js, API structure |
 | **PROJECT_RULES.md** | Project-specific only | External APIs, non-standard dirs, domain terminology, tech not in MarsAI |
 
 **⛔ PROJECT_RULES.md MUST not duplicate MarsAI Standards content.**
@@ -55,8 +55,11 @@ See [standards-workflow.md](https://raw.githubusercontent.com/LerianStudio/marsa
 
 Example failure output:
 ```text
-=== FAIL: TestUserAuthentication (0.00s)
-    auth_test.go:15: expected token to be valid, got nil
+ FAIL  src/auth/auth.service.spec.ts
+  ● UserAuthentication › should validate token
+    expect(received).toBeDefined()
+    Expected: defined
+    Received: undefined
 ```
 ```
 
@@ -76,7 +79,7 @@ Example failure output:
 
 ## ⛔ CRITICAL: all MarsAI Standards Apply from Task 1 (no DEFERRAL)
 
-**See [shared-anti-rationalization.md](https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/skills/shared-patterns/shared-anti-rationalization.md) → "Standards Deferral Anti-Rationalizations" section.**
+**See [shared-anti-rationalization.md](https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/skills/shared-patterns/shared-anti-rationalization.md) → "Standards Deferral Anti-Rationalizations" section.**
 
 **Summary:** MarsAI Standards are not phased. They apply IMMEDIATELY to every task. PM defines WHAT, MarsAI Standards define HOW.
 
@@ -94,14 +97,12 @@ Example failure output:
 
 **⛔ RING STANDARDS REQUIREMENTS (MANDATORY - all MUST BE IMPLEMENTED):**
 
-**You MUST WebFetch and implement all sections from MarsAI Standards for your language:**
-- **Go:** `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang.md`
-- **TypeScript:** `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/typescript.md`
+**You MUST WebFetch and implement all sections from MarsAI Standards:**
+- **TypeScript:** `https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/typescript.md`
 
-**⛔ HARD GATE: You MUST implement all sections listed in [standards-coverage-table.md](https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/skills/shared-patterns/standards-coverage-table.md).**
+**⛔ HARD GATE: You MUST implement all sections listed in [standards-coverage-table.md](https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/skills/shared-patterns/standards-coverage-table.md).**
 
-- **Go projects:** See `marsai:backend-engineer-golang → golang.md` section index (20 sections)
-- **TypeScript projects:** See `marsai:backend-engineer-typescript → typescript.md` section index (13 sections)
+- **TypeScript projects:** See `marsai:backend-engineer-typescript → typescript.md` section index (15 sections)
 
 **You CANNOT skip any section. Mark N/A only with explicit justification.**
 
@@ -125,7 +126,7 @@ Example failure output:
 
 ## Standards Coverage Table
 
-**You MUST output a Standards Coverage Table per [standards-coverage-table.md](https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/skills/shared-patterns/standards-coverage-table.md).**
+**You MUST output a Standards Coverage Table per [standards-coverage-table.md](https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/skills/shared-patterns/standards-coverage-table.md).**
 
 **Format:**
 ```markdown
@@ -148,9 +149,12 @@ Example failure output:
 
 Example pass output:
 ```text
-=== PASS: TestUserAuthentication (0.003s)
-PASS
-ok      myapp/auth    0.015s
+ PASS  src/auth/auth.service.spec.ts
+  UserAuthentication
+    ✓ should validate token (3 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       1 passed, 1 total
 ```
 ```
 
@@ -221,7 +225,7 @@ if "all STANDARDS MET" = no:
 
 ### Anti-Rationalization for Standards Compliance
 
-See [standards-coverage-table.md](https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/skills/shared-patterns/standards-coverage-table.md) for the complete anti-rationalization table.
+See [standards-coverage-table.md](https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/skills/shared-patterns/standards-coverage-table.md) for the complete anti-rationalization table.
 
 **Key rules:**
 - all sections from standards-coverage-table.md MUST be checked
@@ -339,7 +343,7 @@ See [standards-coverage-table.md](https://raw.githubusercontent.com/LerianStudio
 |------|--------|---------|
 | **Architecture patterns** | MarsAI Standards | Hexagonal, Clean Architecture, DDD |
 | **Error handling** | MarsAI Standards | No panic, wrap with context |
-| **Logging** | MarsAI Standards | Structured JSON (zerolog/zap or pino/winston) |
+| **Logging** | MarsAI Standards | Structured JSON (pino/winston) |
 | **Tracing** | MarsAI Standards | OpenTelemetry spans, trace_id propagation |
 | **Testing patterns** | MarsAI Standards | Table-driven tests, mocking |
 
@@ -357,7 +361,7 @@ See [standards-coverage-table.md](https://raw.githubusercontent.com/LerianStudio
 - Logging standards (MarsAI covers this)
 - Testing patterns (MarsAI covers this)
 - Architecture patterns (MarsAI covers this)
-- lib-commons usage (MarsAI covers this)
+- lib-common-js usage (MarsAI covers this)
 - Business rules (belongs in PRD/product docs)
 
 **Priority:** MarsAI Standards > PROJECT_RULES.md (project adds context, not patterns)

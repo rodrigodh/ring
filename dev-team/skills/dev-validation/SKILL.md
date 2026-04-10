@@ -26,9 +26,6 @@ related:
 
 verification:
   automated:
-    - command: "go test ./... 2>&1 | grep -c PASS"
-      description: "All tests pass"
-      success_pattern: "[1-9][0-9]*"
     - command: "cat docs/marsai:dev-cycle/current-cycle.json 2>/dev/null || cat docs/marsai:dev-refactor/current-cycle.json | jq '.gates[4].verdict'"
       description: "Review gate passed"
       success_pattern: "PASS"
@@ -74,7 +71,7 @@ See [shared-patterns/shared-pressure-resistance.md](../shared-patterns/shared-pr
 
 **Important:** "Different agent" means different human/entity. The same human using different agent roles (marsai:backend-engineer-* → marsai:code-reviewer) is STILL self-approval and PROHIBITED.
 
-See [CLAUDE.md](https://raw.githubusercontent.com/LerianStudio/marsai/main/CLAUDE.md) for the canonical validation policy.
+See [CLAUDE.md](https://raw.githubusercontent.com/V4-Company/marsai/main/CLAUDE.md) for the canonical validation policy.
 
 ---
 

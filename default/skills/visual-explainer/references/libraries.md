@@ -46,7 +46,7 @@ Always use `theme: 'base'` — it's the only theme where all `themeVariables` ar
     theme: 'base',
     look: 'classic',
     themeVariables: {
-      // Background and surfaces — Lerian palette
+      // Background and surfaces — V4-Company palette
       primaryColor: isDark ? '#3F3F46' : '#FFF8C2',          // dark: zinc-700, light: sunglow-100
       primaryBorderColor: isDark ? '#EDAC05' : '#EDAC05',   // sunglow-500
       primaryTextColor: isDark ? '#F4F4F5' : '#27272A',     // dark: zinc-100, light: zinc-800
@@ -566,13 +566,13 @@ instance.render({
 });
 ```
 
-### Lerian Theme Integration
+### V4-Company Theme Integration
 
-The component renders inside Shadow DOM, so Lerian's page-level CSS tokens do NOT affect the diff rendering. However, CSS custom properties cascade into Shadow DOM. Use these on the container element:
+The component renders inside Shadow DOM, so V4-Company's page-level CSS tokens do NOT affect the diff rendering. However, CSS custom properties cascade into Shadow DOM. Use these on the container element:
 
 ```css
 #diff-container {
-  --diffs-font-family: var(--font-mono);  /* Map to Lerian mono token */
+  --diffs-font-family: var(--font-mono);  /* Map to V4-Company mono token */
   --diffs-font-size: 13px;
   --diffs-line-height: 1.5;
   --diffs-tab-size: 4;

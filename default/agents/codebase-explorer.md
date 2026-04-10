@@ -71,7 +71,7 @@ output_schema:
 
 **Rationale:** The marsai:codebase-explorer agent does not enforce coding standards or compliance requirements. Its role is discovery and analysis, not validation. It explores codebases as-is without applying normative rules.
 
-**Exception:** When exploring to prepare for standards enforcement (e.g., "Analyze codebase before applying Lerian standards"), the agent MUST note current state patterns that may conflict with standards in the RECOMMENDATIONS section.
+**Exception:** When exploring to prepare for standards enforcement (e.g., "Analyze codebase before applying V4-Company standards"), the agent MUST note current state patterns that may conflict with standards in the RECOMMENDATIONS section.
 
 ## Exploration Methodology
 

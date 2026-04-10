@@ -8,11 +8,11 @@
   "plugins": [
     {
       "name": "marsai-default",
-      "description": "Core skills library for the Lerian Team: TDD, debugging, collaboration patterns, and proven techniques. Features parallel 7-reviewer code review system, systematic debugging, and workflow orchestration. 21 essential skills for software engineering excellence.",
+      "description": "Core skills library for the V4-Company Team: TDD, debugging, collaboration patterns, and proven techniques. Features parallel 7-reviewer code review system, systematic debugging, and workflow orchestration. 21 essential skills for software engineering excellence.",
       "version": "1.20.1",
       "source": "./default",
-      "homepage": "https://github.com/lerianstudio/marsai/tree/default",
-      "repository": "https://github.com/lerianstudio/marsai/tree/default",
+      "homepage": "https://github.com/V4-Company/marsai/tree/default",
+      "repository": "https://github.com/V4-Company/marsai/tree/default",
       "license": "MIT",
       "keywords": [
         "skills",
@@ -29,16 +29,15 @@
     },
     {
       "name": "marsai-dev-team",
-      "description": "11 specialized developer agents + 24 development skills + 8 slash commands: Backend 10-gate dev cycle + Frontend 9-gate dev cycle (accessibility, visual, E2E, performance) + Frontend refactoring + delivery verification + service discovery + cycle management. Go/TypeScript Backend specialists, DevOps Engineer, Frontend TypeScript specialist, Frontend Designer, QA Backend Analyst, QA Frontend Analyst, and SRE. Complete development team coverage with TDD, observability, and security best practices.",
+      "description": "12 specialized developer agents + 32 development skills + 9 slash commands: Backend 10-gate dev cycle + Frontend 9-gate dev cycle (accessibility, visual, E2E, performance) + Frontend refactoring + delivery verification + service discovery + cycle management. Backend TypeScript specialist, DevOps Engineer, Frontend TypeScript specialist, Frontend Designer, QA Backend Analyst, QA Frontend Analyst, and SRE. Complete development team coverage with TDD, observability, and security best practices.",
       "version": "1.49.0",
       "source": "./dev-team",
-      "homepage": "https://github.com/lerianstudio/marsai/tree/dev-team",
-      "repository": "https://github.com/lerianstudio/marsai/tree/dev-team",
+      "homepage": "https://github.com/V4-Company/marsai/tree/dev-team",
+      "repository": "https://github.com/V4-Company/marsai/tree/dev-team",
       "license": "MIT",
       "keywords": [
         "agents",
         "developers",
-        "golang",
         "backend",
         "devops",
         "frontend",

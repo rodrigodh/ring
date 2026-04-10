@@ -38,7 +38,7 @@ output_schema:
       required_when:
         invocation_context: "dev-refactor"
         prompt_contains: "**MODE: ANALYSIS only**"
-      description: "Comparison of codebase against Lerian/MarsAI standards. MANDATORY when invoked from dev-refactor skill. Optional otherwise."
+      description: "Comparison of codebase against V4-Company/MarsAI standards. MANDATORY when invoked from dev-refactor skill. Optional otherwise."
     - name: "Blockers"
       pattern: "^## Blockers"
       required: false
@@ -94,7 +94,7 @@ Invoke this agent when:
 ## Standards Loading (MANDATORY)
 
 <fetch_required>
-https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/frontend.md
+https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/frontend.md
 </fetch_required>
 
 MUST WebFetch the URL above before any implementation work.
@@ -148,7 +148,7 @@ See [shared-patterns/standards-workflow.md](../skills/shared-patterns/standards-
 
 | Setting | Value |
 |---------|-------|
-| **WebFetch URL** | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/frontend.md` |
+| **WebFetch URL** | `https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/frontend.md` |
 | **Standards File** | frontend.md |
 | **Prompt** | "Extract all frontend standards, patterns, and requirements" |
 
@@ -507,7 +507,7 @@ See [shared-patterns/standards-compliance-detection.md](../skills/shared-pattern
 
 | Setting | Value |
 |---------|-------|
-| **WebFetch URL** | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/frontend.md` |
+| **WebFetch URL** | `https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/frontend.md` |
 | **Standards File** | frontend.md |
 
 ### Sections to Check (MANDATORY)

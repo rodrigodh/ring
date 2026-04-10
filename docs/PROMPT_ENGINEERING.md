@@ -307,7 +307,7 @@ When documenting refactoring issues, agents MUST provide a Code Transformation C
 For EACH issue, output MUST include:
 
 - [ ] **Before (Current Code)** - Actual code extracted from the project with `file:line` reference
-- [ ] **After (MarsAI Standards)** - Transformed code following MarsAI/Lerian standards
+- [ ] **After (MarsAI Standards)** - Transformed code following MarsAI/V4-Company standards
 - [ ] **Standard References table** - Pattern, Source file, Section name, Line range
 - [ ] **Why This Transformation Matters** - Problem, Standard violated, Impact
 
@@ -326,7 +326,7 @@ For EACH issue, output MUST include:
 ```{language}
 // file: {path}:{start_line}-{new_end_line}
 // ✅ MarsAI Standard: {Pattern Name} ({standards_file}:{section})
-{transformed code using lib-commons patterns}
+{transformed code using MarsAI standards}
 ```
 
 ### Standard References
@@ -345,14 +345,14 @@ For EACH issue, output MUST include:
 **⛔ DO NOT hardcode line numbers.** Standards files change over time.
 
 **REQUIRED:** Derive exact `:{line_range}` values at runtime by:
-1. Reading the current standards file (e.g., `golang.md`, `typescript.md`)
+1. Reading the current standards file (e.g., `typescript.md`)
 2. Searching for the relevant section header
 3. Citing the actual line numbers from the live file
 
 **Example derivation:**
 ```
-Agent reads golang.md → Finds "## Configuration Loading" at line 99
-Agent cites: "Configuration Loading (golang.md:99-230)"
+Agent reads typescript.md → Finds "## Error Handling" at line 42
+Agent cites: "Error Handling (typescript.md:42-110)"
 ```
 
 ### Anti-Rationalization
@@ -394,8 +394,8 @@ The more assertive and explicit the language, the less room for AI to rationaliz
 ## Required Resources
 
 <fetch_required>
-https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang.md
-https://raw.githubusercontent.com/LerianStudio/marsai/main/CLAUDE.md
+https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/typescript.md
+https://raw.githubusercontent.com/V4-Company/marsai/main/CLAUDE.md
 </fetch_required>
 
 MUST fetch all URLs above before starting the task.
@@ -413,7 +413,6 @@ If any condition is true, STOP immediately and report blocker.
 ---
 
 <forbidden>
-- fmt.Println() in Go code
 - console.log() in TypeScript
 - Direct source code editing by orchestrator
 </forbidden>
@@ -422,7 +421,7 @@ Any occurrence = IMMEDIATE REJECTION.
 
 ---
 
-<dispatch_required agent="marsai:backend-engineer-golang">
+<dispatch_required agent="marsai:backend-engineer-typescript">
 Implement user authentication endpoint with JWT validation.
 </dispatch_required>
 
@@ -430,7 +429,7 @@ MUST use Task tool with specified agent.
 
 ---
 
-<parallel_dispatch agents="marsai:backend-engineer-golang, marsai:qa-analyst, marsai:devops-engineer, marsai:sre">
+<parallel_dispatch agents="marsai:backend-engineer-typescript, marsai:qa-analyst, marsai:devops-engineer, marsai:sre">
 Analyze codebase against MarsAI standards. All agents receive same context:
 - Codebase Report: docs/marsai:dev-refactor/{timestamp}/codebase-report.md
 - Project Rules: docs/PROJECT_RULES.md

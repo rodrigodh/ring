@@ -102,7 +102,7 @@ Invoke this agent when the task involves:
 
 ### Helm (Deep Expertise)
 
-> **⚠️ DELEGATION:** MUST delegate Lerian-specific Helm chart creation/modification to `marsai:helm-engineer` via the `marsai:dev-helm` skill. This agent handles generic Helm knowledge; Lerian conventions (naming, ConfigMap/Secrets split, dual-mode KEDA/Deployment, AWS RolesAnywhere sidecar, port allocation) are encoded in the specialist agent.
+> **⚠️ DELEGATION:** MUST delegate V4-Company-specific Helm chart creation/modification to `marsai:helm-engineer` via the `marsai:dev-helm` skill. This agent handles generic Helm knowledge; V4-Company conventions (naming, ConfigMap/Secrets split, dual-mode KEDA/Deployment, AWS RolesAnywhere sidecar, port allocation) are encoded in the specialist agent.
 
 - Helm chart development from scratch
 - Chart templating (values, helpers, named templates)
@@ -145,7 +145,6 @@ Invoke this agent when the task involves:
 
 ### Build & Release
 
-- GoReleaser configuration for Go binaries
 - npm/yarn build optimization
 - Semantic release automation
 - Changelog generation
@@ -183,7 +182,7 @@ Invoke this agent when the task involves:
 - **IaC**: Terraform (advanced), Terragrunt, Pulumi, CloudFormation, Ansible
 - **Cloud**: AWS, GCP, Azure, DigitalOcean
 - **Registries**: Docker Hub, ECR, GCR, Harbor
-- **Release**: GoReleaser, semantic-release, changesets
+- **Release**: semantic-release, changesets
 - **Scripting**: Bash, Python, Make
 - **Multi-Tenancy**: Tenant isolation, tenant provisioning, resource management
 
@@ -201,7 +200,7 @@ See [shared-patterns/standards-compliance-detection.md](../skills/shared-pattern
 
 | Setting            | Value                                                                                        |
 | ------------------ | -------------------------------------------------------------------------------------------- |
-| **WebFetch URL**   | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/devops.md` |
+| **WebFetch URL**   | `https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/devops.md` |
 | **Standards File** | devops.md                                                                                    |
 
 **Example sections from devops.md to check:**
@@ -218,7 +217,7 @@ See [shared-patterns/standards-compliance-detection.md](../skills/shared-pattern
 ## Standards Loading (MANDATORY)
 
 <fetch_required>
-https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/devops.md
+https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/devops.md
 </fetch_required>
 
 MUST WebFetch the URL above before any implementation work.
@@ -259,7 +258,7 @@ See standards-coverage-table.md for the authoritative list of sections to check.
 
 | Setting            | Value                                                                                        |
 | ------------------ | -------------------------------------------------------------------------------------------- |
-| **WebFetch URL**   | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/devops.md` |
+| **WebFetch URL**   | `https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/devops.md` |
 | **Standards File** | devops.md                                                                                    |
 | **Prompt**         | "Extract all DevOps standards, patterns, and requirements"                                   |
 
@@ -392,9 +391,9 @@ See [shared-patterns/standards-workflow.md](../skills/shared-patterns/standards-
 
 ## Standards Compliance Report (MANDATORY when invoked from marsai:dev-refactor)
 
-See [docs/AGENT_DESIGN.md](https://raw.githubusercontent.com/LerianStudio/marsai/main/docs/AGENT_DESIGN.md) for canonical output schema requirements.
+See [docs/AGENT_DESIGN.md](https://raw.githubusercontent.com/V4-Company/marsai/main/docs/AGENT_DESIGN.md) for canonical output schema requirements.
 
-When invoked from the `marsai:dev-refactor` skill with a codebase-report.md, you MUST produce a Standards Compliance section comparing the infrastructure against Lerian/MarsAI DevOps Standards.
+When invoked from the `marsai:dev-refactor` skill with a codebase-report.md, you MUST produce a Standards Compliance section comparing the infrastructure against V4-Company/MarsAI DevOps Standards.
 
 ### Sections to Check (MANDATORY)
 
@@ -462,7 +461,7 @@ When invoked from the `marsai:dev-refactor` skill with a codebase-report.md, you
 ```markdown
 ## Standards Compliance
 
-✅ **Fully Compliant** - Infrastructure follows all Lerian/MarsAI DevOps Standards.
+✅ **Fully Compliant** - Infrastructure follows all V4-Company/MarsAI DevOps Standards.
 
 No migration actions required.
 ```
@@ -472,7 +471,7 @@ No migration actions required.
 ```markdown
 ## Standards Compliance
 
-### Lerian/MarsAI Standards Comparison
+### V4-Company/MarsAI Standards Comparison
 
 | Category   | Current Pattern | Expected Pattern | Status           | File/Location        |
 | ---------- | --------------- | ---------------- | ---------------- | -------------------- |
@@ -668,7 +667,7 @@ terraform providers lock -platform=linux_amd64
 | --------------------- | ------------------------ | ------- | -------------------------------------------- |
 | Resource naming       | `terraform/main.tf`      | L15-20  | Follows `{env}-{service}-{resource}` pattern |
 | Helm values structure | `charts/app/values.yaml` | L1-50   | Matches nested structure                     |
-| Docker base image     | `Dockerfile`             | L1      | Uses same `golang:1.21-alpine` pattern       |
+| Docker base image     | `Dockerfile`             | L1      | Uses same `node:20-alpine` pattern            |
 ```
 
 #### Completeness Check
@@ -737,9 +736,9 @@ Stopping app_postgres_1 ... done
 
 ## What This Agent Does not Handle
 
-- Application code development (use `marsai:backend-engineer-golang`, `marsai:backend-engineer-typescript`, or `frontend-bff-engineer-typescript`)
+- Application code development (use `marsai:backend-engineer-typescript` or `frontend-bff-engineer-typescript`)
 - Production monitoring and incident response (use `marsai:sre`)
 - Test case design and execution (use `marsai:qa-analyst`)
 - Application performance optimization (use `marsai:sre`)
-- Business logic implementation (use `marsai:backend-engineer-golang`)
+- Business logic implementation (use `marsai:backend-engineer-typescript`)
 ```

@@ -33,7 +33,7 @@ output_schema:
       required: true
 ```
 
-**Used by:** `marsai:backend-engineer-golang`, `marsai:backend-engineer-typescript`, `frontend-bff-engineer-typescript`, `marsai:devops-engineer`, `marsai:qa-analyst`, `marsai:sre`, `finops-automation`
+**Used by:** `marsai:backend-engineer-typescript`, `frontend-bff-engineer-typescript`, `marsai:devops-engineer`, `marsai:qa-analyst`, `marsai:sre`, `finops-automation`
 
 ---
 
@@ -169,7 +169,7 @@ All marsai-dev-team agents include this in their `output_schema`:
 - name: "Standards Compliance"
   pattern: "^## Standards Compliance"
   required: false  # In schema, but MANDATORY when invoked from marsai:dev-refactor
-  description: "Comparison of codebase against Lerian/MarsAI standards. MANDATORY when invoked from marsai:dev-refactor skill."
+  description: "Comparison of codebase against V4-Company/MarsAI standards. MANDATORY when invoked from marsai:dev-refactor skill."
 ```
 
 ### Conditional Requirement: `invoked_from_dev_refactor`
@@ -204,7 +204,6 @@ All marsai-dev-team agents support Standards Compliance:
 
 | Agent | Standards Source | Categories Checked |
 |-------|------------------|-------------------|
-| `marsai:backend-engineer-golang` | `golang.md` | lib-commons, Error Handling, Logging, Config |
 | `marsai:backend-engineer-typescript` | `typescript.md` | Type Safety, Error Handling, Validation |
 | `marsai:devops-engineer` | `devops.md` | Dockerfile, docker-compose, CI/CD |
 | `frontend-bff-engineer-typescript` | `frontend.md` | Component patterns, State management |
@@ -218,7 +217,7 @@ All marsai-dev-team agents support Standards Compliance:
 ```markdown
 ## Standards Compliance
 
-Fully Compliant - Codebase follows all Lerian/MarsAI Standards.
+Fully Compliant - Codebase follows all V4-Company/MarsAI Standards.
 
 No migration actions required.
 ```
@@ -227,13 +226,13 @@ No migration actions required.
 ```markdown
 ## Standards Compliance
 
-### Lerian/MarsAI Standards Comparison
+### V4-Company/MarsAI Standards Comparison
 
 | Category | Current Pattern | Expected Pattern | Status | File/Location |
 |----------|----------------|------------------|--------|---------------|
-| Error Handling | Using panic() | Return error | Non-Compliant | handler.go:45 |
-| Logging | Uses fmt.Println | lib-commons/zap | Non-Compliant | service/*.go |
-| Config | os.Getenv direct | SetConfigFromEnvVars() | Non-Compliant | config.go:15 |
+| Error Handling | Untyped throw | Custom error classes | Non-Compliant | handler.ts:45 |
+| Logging | Uses console.log | Structured logger | Non-Compliant | service/*.ts |
+| Config | process.env direct | Validated config schema | Non-Compliant | config.ts:15 |
 
 ### Compliance Summary
 - **Total Violations:** 3
@@ -245,15 +244,14 @@ No migration actions required.
 ### Required Changes for Compliance
 
 1. **Error Handling Migration**
-   - Replace: `panic("error message")`
-   - With: `return fmt.Errorf("context: %w", err)`
-   - Files affected: handler.go, service.go
+   - Replace: `throw "error message"`
+   - With: `throw new AppError("context", { cause: err })`
+   - Files affected: handler.ts, service.ts
 
 2. **Logging Migration**
-   - Replace: `fmt.Println("debug info")`
-   - With: `logger.Info("debug info", zap.String("key", "value"))`
-   - Import: `import "github.com/LerianStudio/lib-commons/zap"`
-   - Files affected: internal/service/*.go
+   - Replace: `console.log("debug info")`
+   - With: `logger.info("debug info", { key: "value" })`
+   - Files affected: src/service/*.ts
 ```
 
 ### Cross-References

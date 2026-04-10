@@ -221,13 +221,13 @@ next build 2>&1 | grep -A 20 "Route (app)"
 
 ```typescript
 // CORRECT: Named imports (tree-shakeable)
-import { Button, Input } from '@lerianstudio/sindarian-ui';
+import { Button, Input } from '@V4-Company/sindarian-ui';
 
 // FORBIDDEN: Wildcard import (imports everything)
-import * as SindarianUI from '@lerianstudio/sindarian-ui';
+import * as SindarianUI from '@V4-Company/sindarian-ui';
 
 // FORBIDDEN: Default import of entire library
-import SindarianUI from '@lerianstudio/sindarian-ui';
+import SindarianUI from '@V4-Company/sindarian-ui';
 ```
 
 ---

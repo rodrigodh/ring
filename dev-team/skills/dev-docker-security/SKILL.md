@@ -29,7 +29,7 @@ input_schema:
       description: "Preferred base image (e.g., gcr.io/distroless/static-debian12)"
     - name: language
       type: string
-      enum: [go, typescript, python, rust, java]
+      enum: [typescript, python, rust, java]
       description: "Programming language of the application"
     - name: service_type
       type: string
@@ -151,7 +151,6 @@ Both policies share the same remediation — minimize the attack surface:
 - **Update base images regularly**
 
 ```dockerfile
-FROM gcr.io/distroless/static-debian12    # Go (statically compiled)
 FROM gcr.io/distroless/base-debian12      # Dynamically linked
 FROM node:22-alpine                        # Node.js
 ```
@@ -168,24 +167,6 @@ Not a Dockerfile concern — configured in the build pipeline (`sbom:` + `proven
 
 ## Step 3: Dockerfile Templates
 
-### Go Service
-
-```dockerfile
-FROM golang:1.24-alpine AS builder
-RUN apk add --no-cache ca-certificates tzdata
-WORKDIR /app
-COPY go.mod go.sum ./
-RUN go mod download
-COPY . .
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
-    go build -ldflags="-s -w" -o /app/server ./cmd/app
-
-FROM gcr.io/distroless/static-debian12
-COPY --from=builder /app/server /server
-EXPOSE 8080
-USER nonroot:nonroot
-ENTRYPOINT ["/server"]
-```
 
 ### Node.js Service
 

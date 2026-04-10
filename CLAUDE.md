@@ -30,7 +30,7 @@ When creating or modifying any agent in `*/agents/*.md`:
 2. **MUST NOT run reviewers sequentially** - dispatch in parallel
 3. **MUST NOT skip TDD's RED phase** - Test must fail before implementation
 4. **MUST NOT ignore skill when applicable** - "Simple task" is not an excuse
-5. **ZERO PANIC POLICY** - `panic()`, `log.Fatal()`, and `Must*` helpers are FORBIDDEN everywhere (including bootstrap/init). Return `(T, error)` instead. Only exception: `regexp.MustCompile()` with compile-time constants.
+5. **ZERO THROW POLICY** - Unhandled exceptions and `process.exit()` are FORBIDDEN everywhere. Use proper error handling with try/catch and return typed errors. Only exception: top-level process error handlers.
 6. **MUST NOT commit manually** - use `/marsai:commit` command
 7. **MUST NOT assume compliance** - VERIFY with evidence
 
@@ -39,7 +39,7 @@ When creating or modifying any agent in `*/agents/*.md`:
 All MarsAI components use the unified `marsai:` prefix. Plugin differentiation is handled internally.
 
 - ✅ `marsai:code-reviewer`
-- ✅ `marsai:backend-engineer-golang`
+- ✅ `marsai:backend-engineer-typescript`
 - ❌ `<missing ring prefix>` (FORBIDDEN: omitting the `marsai:` prefix)
 - ❌ `marsai-default:marsai:code-reviewer` (deprecated plugin-specific prefix)
 
@@ -74,7 +74,7 @@ Before committing changes to dev-team/docs/standards/*.md:
     - Add/remove row: `| N | [Section Name](#anchor) | Description |`
     - Update numbering if needed
 [ ] 3. Did you update `dev-team/skills/shared-patterns/standards-coverage-table.md`?
-    - Find the agent's section index (e.g., "marsai:backend-engineer-golang → golang.md")
+    - Find the agent's section index (e.g., "marsai:backend-engineer-typescript → typescript.md")
     - Add/remove the section row
 [ ] 4. Do the section counts match?
     - Count `## ` headers in standards file (excluding meta-sections)
@@ -98,7 +98,6 @@ If any checkbox is no → Fix before committing.
 
 | Standards File  | Agents That Use It                                                                             |
 | --------------- | ---------------------------------------------------------------------------------------------- |
-| `golang.md`     | `marsai:backend-engineer-golang`, `marsai:qa-analyst`                                              |
 | `typescript.md` | `marsai:backend-engineer-typescript`, `marsai:frontend-bff-engineer-typescript`, `marsai:qa-analyst` |
 | `frontend.md`   | `marsai:frontend-engineer`, `marsai:frontend-designer`                                             |
 | `devops.md`     | `marsai:devops-engineer`                                                                         |
@@ -112,14 +111,13 @@ MUST match `dev-team/skills/shared-patterns/standards-coverage-table.md`. See th
 
 | Agent                                   | Standards File             |
 | --------------------------------------- | -------------------------- |
-| `marsai:backend-engineer-golang`          | golang.md                  |
 | `marsai:backend-engineer-typescript`      | typescript.md              |
 | `marsai:frontend-bff-engineer-typescript` | typescript.md              |
 | `marsai:frontend-engineer`                | frontend.md                |
 | `marsai:frontend-designer`                | frontend.md                |
 | `marsai:devops-engineer`                  | devops.md                  |
 | `marsai:sre`                              | sre.md                     |
-| `marsai:qa-analyst`                       | golang.md or typescript.md |
+| `marsai:qa-analyst`                       | typescript.md              |
 
 **⛔ If section counts in skills don't match the coverage table → Update the skill.**
 
@@ -224,13 +222,12 @@ AI models naturally attempt to be "helpful" by making autonomous decisions. This
 | "[Common excuse AI might generate]" | [Why this thinking is incorrect] | **[MANDATORY action in bold]** |
 ```
 
-**Example from marsai:backend-engineer-golang.md:**
+**Example from marsai:backend-engineer-typescript.md:**
 
 ```markdown
 | Rationalization                          | Why It's WRONG                                     | Required Action           |
 | ---------------------------------------- | -------------------------------------------------- | ------------------------- |
-| "Codebase already uses lib-commons"      | Partial usage ≠ full compliance. Check everything. | **Verify all categories** |
-| "Already follows Lerian standards"       | Assumption ≠ verification. Prove it with evidence. | **Verify all categories** |
+| "Already follows project standards"      | Assumption ≠ verification. Prove it with evidence. | **Verify all categories** |
 | "Only checking what seems relevant"      | You don't decide relevance. The checklist does.    | **Verify all categories** |
 | "Code looks correct, skip verification"  | Looking correct ≠ being correct. Verify.           | **Verify all categories** |
 | "Previous refactor already checked this" | Each refactor is independent. Check again.         | **Verify all categories** |
@@ -421,13 +418,13 @@ MarsAI is a comprehensive skills library and workflow system for AI agents that 
 **Active Plugins:**
 
 - **marsai-default**: 22 core skills, 14 slash commands, 10 specialized agents
-- **marsai-dev-team**: 32 development skills, 9 slash commands, 12 developer agents (Backend Go, Backend TypeScript, DevOps, Frontend TypeScript, Frontend Designer, Frontend Engineer, Helm, QA Backend, QA Frontend, SRE, UI Engineer, Prompt Quality Reviewer)
+- **marsai-dev-team**: 26 development skills, 8 slash commands, 11 developer agents (Backend TypeScript, DevOps, Frontend TypeScript, Frontend Designer, Frontend Engineer, Helm, QA Backend, QA Frontend, SRE, UI Engineer, Prompt Quality Reviewer)
 
 **Note:** Plugin versions are managed in `.claude-plugin/marketplace.json`
 
-**Total: 54 skills (22 + 32) across 2 plugins**
-**Total: 22 agents (10 + 12) across 2 plugins**
-**Total: 23 commands (14 + 9) across 2 plugins**
+**Total: 48 skills (22 + 26) across 2 plugins**
+**Total: 21 agents (10 + 11) across 2 plugins**
+**Total: 22 commands (14 + 8) across 2 plugins**
 
 The architecture uses markdown-based skill definitions with YAML frontmatter, auto-discovered at session start via hooks, and executed through Claude Code's native Skill/Task tools.
 
@@ -448,7 +445,7 @@ See [README.md](README.md#installation) for detailed installation instructions.
 | Plugin           | Path           | Contents                         |
 | ---------------- | -------------- | -------------------------------- |
 | marsai-default     | `default/`     | 22 skills, 10 agents, 14 commands |
-| marsai-dev-team    | `dev-team/`    | 32 skills, 12 agents, 9 commands |
+| marsai-dev-team    | `dev-team/`    | 26 skills, 11 agents, 8 commands |
 
 Each plugin contains: `skills/`, `agents/`, `commands/`, `hooks/`
 
@@ -495,7 +492,7 @@ python default/hooks/generate-skills-ref.py # Generate skill overview
 | Code review | `/marsai:codereview` dispatches 7 parallel reviewers |
 | Pre-dev (small) | `/marsai:pre-dev-feature` → 5-gate workflow |
 | Pre-dev (large) | `/marsai:pre-dev-full` → 10-gate workflow |
-| Dev cycle - backend (10 gates) | `/marsai:dev-cycle [tasks-file]` → implementation→delivery-verification→devops→SRE→unit-testing→fuzz-testing→property-testing→integration-testing→chaos-testing→review→validation (see [dev-team/skills/dev-cycle/SKILL.md](dev-team/skills/dev-cycle/SKILL.md)) |
+| Dev cycle - backend (10 gates) | `/marsai:dev-cycle [tasks-file]` → implementation→delivery-verification→devops→SRE→unit-testing→integration-testing→chaos-testing→review→validation (see [dev-team/skills/dev-cycle/SKILL.md](dev-team/skills/dev-cycle/SKILL.md)) |
 | Dev cycle - frontend (9 gates) | `/marsai:dev-cycle-frontend [tasks-file]` → implementation→devops→accessibility→unit-testing→visual-testing→e2e-testing→performance→review→validation (see [dev-team/skills/dev-cycle-frontend/SKILL.md](dev-team/skills/dev-cycle-frontend/SKILL.md)) |
 | Refactor - frontend | `/marsai:dev-refactor-frontend` → dispatches 5-7 frontend agents in ANALYSIS mode → generates findings → tasks → handoff to `/marsai:dev-cycle-frontend` |
 
@@ -523,7 +520,7 @@ See [docs/WORKFLOWS.md](docs/WORKFLOWS.md) for detailed instructions.
 
 #### Agent/Skill/Command Invocation
 
-See [Unified MarsAI Namespace](#4-unified-ring-namespace-mandatory) above for invocation format. MUST use `marsai:{component}` (e.g., `marsai:code-reviewer`, `marsai:backend-engineer-golang`).
+See [Unified MarsAI Namespace](#4-unified-ring-namespace-mandatory) above for invocation format. MUST use `marsai:{component}` (e.g., `marsai:code-reviewer`, `marsai:backend-engineer-typescript`).
 
 ---
 
@@ -584,7 +581,7 @@ The system loads at SessionStart (from `default/` plugin):
 - Active plugins: 2 (`marsai-default`, `marsai-dev-team`)
 - Plugin versions: See `.claude-plugin/marketplace.json`
 - Core plugin: `default/` (22 skills, 10 agents, 14 commands)
-- Developer agents: `dev-team/` (32 skills, 12 agents, 9 commands)
+- Developer agents: `dev-team/` (26 skills, 11 agents, 8 commands)
 - Current git branch: `main`
 - Remote: `github.com/LerianStudio/marsai`
 

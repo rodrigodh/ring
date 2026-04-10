@@ -30,7 +30,7 @@ related:
 
 ## Overview
 
-See [CLAUDE.md](https://raw.githubusercontent.com/LerianStudio/marsai/main/CLAUDE.md) for canonical validation and gate requirements. This skill collects metrics and generates improvement reports.
+See [CLAUDE.md](https://raw.githubusercontent.com/V4-Company/marsai/main/CLAUDE.md) for canonical validation and gate requirements. This skill collects metrics and generates improvement reports.
 
 Continuous improvement system that tracks development cycle effectiveness through assertiveness scores, identifies recurring failure patterns, and generates actionable improvement suggestions.
 
@@ -347,7 +347,7 @@ Read `agent_outputs` from state file (`docs/marsai:dev-cycle/current-cycle.json`
 
 ```text
 Agents to analyze (if executed, not null):
-  - implementation: marsai:backend-engineer-golang | marsai:backend-engineer-typescript
+  - implementation: marsai:backend-engineer-typescript
   - devops: marsai:devops-engineer
   - marsai:sre: marsai:sre
   - testing: marsai:qa-analyst

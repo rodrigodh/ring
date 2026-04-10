@@ -257,7 +257,7 @@ For each new event:
   [ ] Is the event schema consistent between publisher and consumer?
 ```
 
-#### Dependencies (go.mod / package.json)
+#### Dependencies (package.json)
 ```
 For each new dependency added:
   [ ] Is it imported in at least one non-test file?
@@ -271,18 +271,12 @@ For each new dependency added:
 #### A. File Size Verification
 See [shared-patterns/file-size-enforcement.md](../shared-patterns/file-size-enforcement.md)
 
-**Go** (matches shared-patterns/file-size-enforcement.md):
+**TypeScript** (matches shared-patterns/file-size-enforcement.md):
 ```bash
-find . -name "*.go" \
-  ! -name "*_test.go" \
-  ! -path "*/docs/*" \
-  ! -path "*/mocks*" ! -path "*/generated/*" ! -path "*/gen/*" \
-  ! -name "*.pb.go" ! -name "*.gen.go" \
-  -exec wc -l {} + | awk '$1 > 300 && $NF != "total" {print}' | sort -rn
-
-# Also check test files separately (same threshold)
-find . -name "*_test.go" \
-  ! -path "*/mocks*" \
+find . \( -name "*.ts" -o -name "*.tsx" \) \
+  ! -path "*/node_modules/*" ! -path "*/dist/*" ! -path "*/build/*" \
+  ! -path "*/generated/*" ! -path "*/__mocks__/*" \
+  ! -name "*.d.ts" ! -name "*.gen.ts" \
   -exec wc -l {} + | awk '$1 > 300 && $NF != "total" {print}' | sort -rn
 ```
 
@@ -324,12 +318,12 @@ done
 **Reference:** quality.md → Linting (MANDATORY — 14 linters)
 
 ```bash
-# Go: Run golangci-lint
-if [ -f .golangci.yml ] || [ -f .golangci.yaml ]; then
-  golangci-lint run ./...
+# TypeScript: Run eslint
+if [ -f .eslintrc.json ] || [ -f .eslintrc.js ] || [ -f .eslintrc.yml ]; then
+  npx eslint . --ext .ts,.tsx
 else
-  echo "WARNING: Missing .golangci.yml — quality.md requires it (14 mandatory linters)"
-  echo "FLAG: PARTIAL — create .golangci.yml per quality.md → Linting (MANDATORY)"
+  echo "WARNING: Missing eslint config"
+  echo "FLAG: PARTIAL — create eslint config"
 fi
 
 # TypeScript: Run eslint
@@ -342,11 +336,11 @@ fi
 ```
 
 - Lint failures → **PARTIAL** (return to Gate 0: "Fix lint issues: [errors]")
-- Missing linter config in Go project → **PARTIAL** (quality.md requires .golangci.yml with 14 mandatory linters)
+- Missing linter config → **PARTIAL** (project should have eslint configuration)
 - Missing linter config in TypeScript project → **PARTIAL** (typescript.md requires eslint)
 
 #### D. Migration Safety Verification
-**Reference:** [migration-safety.md](../../docs/standards/golang/migration-safety.md) — Dangerous Operations Detection
+**Reference:** Migration safety standards — Dangerous Operations Detection
 
 This check only runs when the current branch contains new or modified SQL migration files.
 
@@ -434,46 +428,23 @@ fi
 - No migration files in branch → **SKIP** (check does not apply)
 
 #### E. Dependency Vulnerability Scanning
-**Reference:** [core.md § Dependency Management](../../docs/standards/golang/core.md)
+**Reference:** Dependency Management standards
 
 This check runs on every cycle to detect known vulnerabilities in dependencies.
 
 ```bash
 # Step E.1: Detect project language
-if [ -f "go.mod" ]; then
-  lang="go"
+if [ -f "package.json" ]; then
+  lang="typescript"
 elif [ -f "package.json" ]; then
   lang="typescript"
 else
-  echo "VULN_SCAN: ⚠️ SKIP — no go.mod or package.json found"
+  echo "VULN_SCAN: ⚠️ SKIP — no package.json found"
   lang="unknown"
 fi
 
 # Step E.2: Run vulnerability scanner
-if [ "$lang" = "go" ]; then
-  # govulncheck scans for known CVEs in Go dependencies
-  if command -v govulncheck &>/dev/null; then
-    vuln_output=$(govulncheck ./... 2>&1)
-    vuln_exit=$?
-    if [ $vuln_exit -ne 0 ]; then
-      echo "$vuln_output"
-      # Parse severity — govulncheck reports all as actionable
-      echo "VULN_SCAN: ⛔ FAIL — govulncheck found vulnerabilities"
-    else
-      echo "VULN_SCAN: ✅ PASS — no known vulnerabilities"
-    fi
-  else
-    echo "VULN_SCAN: ⚠️ WARNING — govulncheck not installed (go install golang.org/x/vuln/cmd/govulncheck@latest)"
-  fi
-
-  # Also verify module integrity
-  go_verify=$(go mod verify 2>&1)
-  if [ $? -ne 0 ]; then
-    echo "⛔ BLOCKING: go mod verify failed — module integrity compromised"
-    echo "$go_verify"
-  fi
-
-elif [ "$lang" = "typescript" ]; then
+if [ "$lang" = "typescript" ]; then
   # npm audit for Node.js projects
   if [ -f "package-lock.json" ]; then
     audit_output=$(npm audit --audit-level=high 2>&1)
@@ -497,13 +468,11 @@ elif [ "$lang" = "typescript" ]; then
 fi
 ```
 
-- Go: `govulncheck` finds vulnerability → **FAIL** (return to Gate 0: "Update vulnerable dependency or find alternative")
-- Go: `go mod verify` fails → **FAIL** (module tampered)
 - TypeScript: `npm audit --audit-level=high` finds high/critical → **FAIL**
 - Scanner not installed → **WARNING** (does not block, but flags for team to install)
 
 #### F. API Backward Compatibility (oasdiff + swaggo)
-**Reference:** [api-patterns.md § OpenAPI Documentation](../../docs/standards/golang/api-patterns.md#openapi-documentation-swaggo-mandatory)
+**Reference:** API patterns standards — OpenAPI Documentation
 
 This check only applies to services that have swaggo-generated OpenAPI specs (api/swagger.yaml or api/swagger.json).
 
@@ -561,15 +530,14 @@ fi
 - oasdiff not installed → **WARNING** (does not block, flags for installation)
 - Non-breaking changes (new endpoints, new optional fields) → **PASS**
 
-#### G. Multi-Tenant Dual-Mode Verification (Go backend only)
-**Reference:** [multi-tenant.md](../../docs/standards/golang/multi-tenant.md), [dev-multi-tenant SKILL.md § Sub-Package Import Reference](../dev-multi-tenant/SKILL.md)
+#### G. Multi-Tenant Dual-Mode Verification (if applicable)
 
-This check only applies to Go backend services. It verifies that all resource access uses lib-commons v4 resolvers (which work transparently in both single-tenant and multi-tenant mode).
+This check only applies to services with multi-tenant support.
 
 ```bash
-# Step G.1: Detect if this is a Go project
-if [ ! -f "go.mod" ]; then
-  echo "MT_DUALMODE: ⚠️ SKIP — not a Go project"
+# Step G.1: Detect if this project has multi-tenant support
+if [ ! -f "package.json" ]; then
+  echo "MT_DUALMODE: ⚠️ SKIP — no package.json found"
   exit 0
 fi
 
@@ -672,7 +640,7 @@ fi
 - Global DB singletons → **FAIL** (must use struct fields)
 - Hardcoded Redis/S3 keys → **WARNING** (may be false positive, verify manually)
 - Missing ctx on exported methods → **WARNING** (informational)
-- Not a Go project → **SKIP**
+- Not applicable → **SKIP**
 
 **Verdict integration:** ALL seven checks (A, B, C, D, E, F, G) must pass for overall PASS. Any FAIL in checks D, E, F, or G → overall verdict is **FAIL** (hard block, return to Gate 0). Any FAIL in checks A, B, C → overall verdict is **PARTIAL** (return to Gate 0 with fix instructions, max 2 retries). SKIP checks do not affect the verdict. WARNING checks are informational.
 

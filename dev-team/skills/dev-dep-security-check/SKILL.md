@@ -1,15 +1,15 @@
 ---
 name: marsai:dev-dep-security-check
 description: |
-  Intercepts and audits dependency installations (pip, npm, go) before they
+  Intercepts and audits dependency installations (pip, npm) before they
   execute. Validates package identity, checks for known vulnerabilities,
   flags suspicious signals (new package, single maintainer, recent name
   change), and enforces hash pinning in lockfiles. Acts as a supply-chain
-  gate for every `install` command in a Lerian codebase.
+  gate for every `install` command in a codebase.
 
 trigger: |
   - Adding a new dependency to any project
-  - Running pip install, npm install, go get, or equivalent
+  - Running pip install, npm install, or equivalent
   - Auditing existing dependencies for supply-chain risk
   - Reviewing a PR that adds or updates dependencies
   - Investigating a potential supply-chain compromise
@@ -34,7 +34,7 @@ input_schema:
       description: "install = intercept single command, audit = scan all deps in project, lockfile-check = verify lockfile integrity"
     - name: ecosystem
       type: string
-      enum: [pip, npm, go, cargo, all]
+      enum: [pip, npm, cargo, all]
       description: "Package ecosystem (auto-detected from command if omitted)"
     - name: severity_threshold
       type: string
@@ -73,7 +73,7 @@ output_schema:
 
 ## Overview
 
-Every `pip install`, `npm install`, and `go get` is a trust decision. This skill ensures that trust is verified before code enters your environment.
+Every `pip install` and `npm install` is a trust decision. This skill ensures that trust is verified before code enters your environment.
 
 Supply chain attacks exploit implicit trust in package ecosystems. A single compromised package can exfiltrate credentials, inject backdoors, or pivot into production infrastructure. This skill acts as a gate — intercepting install commands and validating packages before they execute.
 
@@ -82,7 +82,7 @@ Supply chain attacks exploit implicit trust in package ecosystems. A single comp
 - **New dependency** — any `install` command for a package not in the current lockfile
 - **Version change** — updating an existing dependency to a new version
 - **Full audit** — scanning all dependencies in a project for supply-chain risk
-- **PR review** — when a PR modifies dependency files (go.mod, package.json, requirements.txt, etc.)
+- **PR review** — when a PR modifies dependency files (package.json, requirements.txt, etc.)
 
 ## Pre-Install Checks
 
@@ -120,7 +120,6 @@ Query these sources for known vulnerabilities:
 | **Socket.dev** | npm, pip | Supply chain specific — detects install scripts, network access, obfuscation |
 | **PyPI JSON API** | pip | Package metadata, maintainers, release history |
 | **npm registry API** | npm | Package metadata, maintainers, install scripts |
-| **Go vulnerability DB** (vuln.go.dev) | Go | Official Go vulnerability database |
 
 ### 3. Behavioral Analysis
 
@@ -139,7 +138,6 @@ Detect suspicious package behaviors:
 
 | Ecosystem | Lockfile | Hash Mechanism | Action |
 |-----------|----------|----------------|--------|
-| Go | `go.sum` | SHA-256 (native) | Verify — Go handles this well |
 | npm | `package-lock.json` | `integrity` field (SHA-512) | Verify `integrity` present for ALL deps |
 | pip | `requirements.txt` | `--require-hashes` | **Enforce** — pip does NOT do this by default |
 | Cargo | `Cargo.lock` | `checksum` field | Verify |
@@ -173,7 +171,7 @@ risk_score = weighted_sum(
 ### Python (pip)
 
 ```bash
-# NEVER do this in a Lerian project:
+# NEVER do this in a V4-Company project:
 pip install <package>
 
 # ALWAYS do this:
@@ -205,23 +203,6 @@ npm ci  # Uses package-lock.json, fails if it doesn't match
 ```
 
 **Key risks:** `postinstall` scripts run with full user permissions. Dependency trees are deep (transitive deps). Name squatting is common.
-
-### Go
-
-```bash
-# Go has the best native supply chain security:
-# - go.sum provides cryptographic hash verification
-# - Go module proxy (proxy.golang.org) caches and serves verified modules
-# - GONOSUMCHECK, GONOSUMDB should NEVER be set in Lerian projects
-
-# Verify dependencies:
-go mod verify
-
-# Check for vulnerabilities:
-govulncheck ./...
-```
-
-**Key risks:** Go is stronger by default, but `replace` directives in `go.mod` can bypass verification. CGo packages can include native code.
 
 ## Audit Mode — Full Project Scan
 

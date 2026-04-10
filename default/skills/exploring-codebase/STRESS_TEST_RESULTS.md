@@ -190,10 +190,10 @@ Forces agent to acknowledge red flags at start:
 
 **Next step:** Re-run all 4 scenarios with agents that CAN access the hardened skill document to verify 100% compliance.
 
-**Current limitation:** Test agents running in Midaz repo can't access skill in `../ring/` directory.
+**Current limitation:** Test agents running in an external repo can't access skill in the ring directory.
 
 **Workaround options:**
-1. Copy skill to Midaz docs temporarily for testing
+1. Copy skill to external project docs temporarily for testing
 2. Test in ring repo directory instead
 3. Inline skill content in agent prompts
 
@@ -232,7 +232,7 @@ Forces agent to acknowledge red flags at start:
 ### For This Skill
 1. ✅ Hardening complete (8 anti-rationalization sections added)
 2. ⏳ Verification pending (need accessible testing environment)
-3. 📝 Consider adding more consequence examples from real Midaz scenarios
+3. Consider adding more consequence examples from real project scenarios
 
 ### For Other Skills
 1. **Use this methodology** - RED-GREEN-REFACTOR for all discipline-enforcing skills
@@ -259,7 +259,7 @@ Forces agent to acknowledge red flags at start:
 
 1. **Verify hardening** - Test with agents that can access the skill
 2. **Add to marsai:using-marsai** - Document this skill in the ring skill catalog
-3. **Create examples** - Add real Midaz exploration examples to skill
+3. **Create examples** - Add real exploration examples to skill
 4. **Monitor usage** - Collect data on whether agents follow the skill in production use
 
 ---

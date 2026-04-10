@@ -61,7 +61,7 @@ The resulting mermaid.live URL is permanent (the diagram state is encoded in the
 
 | Command/Skill | Relationship |
 |---------------|--------------|
-| `marsai:visual-explainer` | Use for rich, branded HTML visualizations with Lerian styling |
+| `marsai:visual-explainer` | Use for rich, branded HTML visualizations with V4-Company styling |
 | `/marsai:md-to-html` | Use to convert a full markdown document into a styled HTML page with diagrams |
 | `/marsai:brainstorm` | Use before diagramming to refine a design concept |
 | `/marsai:explore-codebase` | Use to understand architecture before diagramming it |

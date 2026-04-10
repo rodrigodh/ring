@@ -42,7 +42,7 @@ output_schema:
       required_when:
         invocation_context: "marsai:dev-refactor"
         prompt_contains: "**MODE: ANALYSIS only**"
-      description: "Comparison of codebase against Lerian/MarsAI standards. MANDATORY when invoked from marsai:dev-refactor skill. Optional otherwise."
+      description: "Comparison of codebase against V4-Company/MarsAI standards. MANDATORY when invoked from marsai:dev-refactor skill. Optional otherwise."
     - name: "Blockers"
       pattern: "^## Blockers"
       required: false
@@ -107,7 +107,7 @@ The BFF architecture supports two modes based on project dependencies:
 
 | Mode                         | Detection                                        | Implementation                                                           |
 | ---------------------------- | ------------------------------------------------ | ------------------------------------------------------------------------ |
-| **With sindarian-server**    | `@lerianstudio/sindarian-server` in package.json | Use decorators (@Controller, @Get, @Post, @injectable, @inject, @Module) |
+| **With sindarian-server**    | `@V4-Company/sindarian-server` in package.json | Use decorators (@Controller, @Get, @Post, @injectable, @inject, @Module) |
 | **Without sindarian-server** | No sindarian-server dependency                   | Same architecture, manual DI container (inversify), no decorators        |
 
 **⛔ CRITICAL:** Both modes follow IDENTICAL Clean Architecture. The only difference is decorator usage.
@@ -209,7 +209,7 @@ If api-design.md NOT exists:
 
 ```bash
 # Step 1: Check package.json
-cat package.json | grep "@lerianstudio/sindarian-server"
+cat package.json | grep "@V4-Company/sindarian-server"
 
 # If found → sindarian-server mode
 # If NOT found → vanilla inversify mode
@@ -227,7 +227,7 @@ cat package.json | grep "@lerianstudio/sindarian-server"
 | PROJECT_RULES.md               | Found                               | Path: docs/PROJECT_RULES.md |
 | MarsAI Standards (typescript.md) | Loaded                              | 20 sections fetched         |
 | **Architecture Mode**          | **sindarian-server** OR **vanilla** | Detected from package.json  |
-| lib-commons-js                 | Found/Not Found                     | For Lerian projects         |
+| lib-commons-js                 | Found/Not Found                     | For V4-Company projects         |
 ```
 
 ### Mode-Specific Patterns
@@ -407,12 +407,12 @@ Invoke this agent when the task involves:
 
 - **Language**: TypeScript (strict mode)
 - **Framework**: Next.js (latest stable for new projects, project version for existing codebases) - App Router
-- **BFF Framework**: @lerianstudio/sindarian-server (if available) OR vanilla inversify
+- **BFF Framework**: @V4-Company/sindarian-server (if available) OR vanilla inversify
 - **Dependency Injection**: Inversify (standalone) or sindarian-server DI (decorator-based)
 - **Validation**: Zod
 - **HTTP Client**: Native fetch with typed wrappers via HttpService pattern
 - **Authentication**: NextAuth.js, JWT, OAuth2
-- **Observability**: OpenTelemetry, structured logging (lib-commons-js for Lerian projects)
+- **Observability**: OpenTelemetry, structured logging (lib-commons-js for V4-Company projects)
 - **Testing**: Vitest (preferred), Jest, Testing Library
 - **Error Handling**: ApiException hierarchy, GlobalExceptionFilter
 - **Patterns**: Clean Architecture, Hexagonal Architecture, DDD, Repository, Use Case, Three-Layer DTO Mapping
@@ -431,7 +431,7 @@ See [shared-patterns/standards-compliance-detection.md](../skills/shared-pattern
 
 | Setting            | Value                                                                                            |
 | ------------------ | ------------------------------------------------------------------------------------------------ |
-| **WebFetch URL**   | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/typescript.md` |
+| **WebFetch URL**   | `https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/typescript.md` |
 | **Standards File** | typescript.md                                                                                    |
 
 **Example sections from typescript.md to check:**
@@ -451,7 +451,7 @@ See [shared-patterns/standards-compliance-detection.md](../skills/shared-pattern
 ## Standards Loading (MANDATORY)
 
 <fetch_required>
-https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/typescript.md
+https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/typescript.md
 </fetch_required>
 
 MUST WebFetch the URL above before any implementation work.
@@ -521,7 +521,7 @@ Refer to standards-coverage-table.md for required sections and enforcement detai
 
 | Setting            | Value                                                                                            |
 | ------------------ | ------------------------------------------------------------------------------------------------ |
-| **WebFetch URL**   | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/typescript.md` |
+| **WebFetch URL**   | `https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/typescript.md` |
 | **Standards File** | typescript.md                                                                                    |
 | **Prompt**         | "Extract all TypeScript coding standards, patterns, and requirements"                            |
 
@@ -625,7 +625,7 @@ See [shared-patterns/standards-workflow.md](../skills/shared-patterns/standards-
 
 ## Architecture Patterns
 
-You have deep expertise in Clean Architecture and Hexagonal Architecture. The **Lerian pattern** (simplified hexagonal without explicit DDD folders) is MANDATORY for all BFF services.
+You have deep expertise in Clean Architecture and Hexagonal Architecture. The **V4-Company pattern** (simplified hexagonal without explicit DDD folders) is MANDATORY for all BFF services.
 
 ### Strategic Patterns (Knowledge)
 
@@ -703,7 +703,7 @@ You have deep expertise in TDD. **TDD is MANDATORY when invoked by marsai:dev-cy
 
 1. **Load MarsAI Standards FIRST (MANDATORY):**
    ```
-   WebFetch: https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/typescript.md
+   WebFetch: https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/typescript.md
    Prompt: "Extract all TypeScript coding standards, patterns, and requirements"
    ```
 2. Read the requirements and acceptance criteria
@@ -738,7 +738,7 @@ FAIL  src/use-cases/get-user.test.ts
 
 1. **Load MarsAI Standards FIRST (MANDATORY):**
    ```
-   WebFetch: https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/typescript.md
+   WebFetch: https://raw.githubusercontent.com/V4-Company/marsai/main/dev-team/docs/standards/typescript.md
    Prompt: "Extract all TypeScript coding standards, patterns, and requirements"
    ```
 2. Review the test file and failure output from TDD-RED
@@ -852,15 +852,15 @@ If code is ALREADY compliant with all standards:
 
 ## Standards Compliance Report (MANDATORY when invoked from marsai:dev-refactor)
 
-See [docs/AGENT_DESIGN.md](https://raw.githubusercontent.com/LerianStudio/marsai/main/docs/AGENT_DESIGN.md) for canonical output schema requirements.
+See [docs/AGENT_DESIGN.md](https://raw.githubusercontent.com/V4-Company/marsai/main/docs/AGENT_DESIGN.md) for canonical output schema requirements.
 
-When invoked from the `marsai:dev-refactor` skill with a codebase-report.md, you MUST produce a Standards Compliance section comparing the BFF layer against Lerian/MarsAI TypeScript Standards.
+When invoked from the `marsai:dev-refactor` skill with a codebase-report.md, you MUST produce a Standards Compliance section comparing the BFF layer against V4-Company/MarsAI TypeScript Standards.
 
 ### ⛔ HARD GATE: always Compare all Categories
 
 **Every category MUST be checked and reported. No exceptions.**
 
-Canonical policy: see [CLAUDE.md](https://raw.githubusercontent.com/LerianStudio/marsai/main/CLAUDE.md) for the definitive standards compliance requirements.
+Canonical policy: see [CLAUDE.md](https://raw.githubusercontent.com/V4-Company/marsai/main/CLAUDE.md) for the definitive standards compliance requirements.
 
 **Anti-Rationalization:**
 
@@ -869,7 +869,7 @@ See [shared-patterns/shared-anti-rationalization.md](../skills/shared-patterns/s
 | Rationalization                        | Why It's WRONG                                     | Required Action           |
 | -------------------------------------- | -------------------------------------------------- | ------------------------- |
 | "Codebase already uses lib-commons-js" | Partial usage ≠ full compliance. Check everything. | **Verify all categories** |
-| "Already follows Lerian standards"     | Assumption ≠ verification. Prove it with evidence. | **Verify all categories** |
+| "Already follows V4-Company standards"     | Assumption ≠ verification. Prove it with evidence. | **Verify all categories** |
 
 ### Sections to Check (MANDATORY)
 
@@ -919,7 +919,7 @@ See [shared-patterns/shared-anti-rationalization.md](../skills/shared-patterns/s
 ```markdown
 ## Standards Compliance
 
-✅ **Fully Compliant** - BFF layer follows all Lerian/MarsAI TypeScript Standards.
+✅ **Fully Compliant** - BFF layer follows all V4-Company/MarsAI TypeScript Standards.
 
 No migration actions required.
 ```
@@ -929,7 +929,7 @@ No migration actions required.
 ```markdown
 ## Standards Compliance
 
-### Lerian/MarsAI Standards Comparison
+### V4-Company/MarsAI Standards Comparison
 
 | Category | Current Pattern    | Expected Pattern                   | Status           | File/Location         |
 | -------- | ------------------ | ---------------------------------- | ---------------- | --------------------- |
@@ -942,20 +942,20 @@ No migration actions required.
 
    - Replace: `console.log()` / `console.error()`
    - With: `const logger = createLogger({ service: 'my-bff' })`
-   - Import: `import { createLogger } from '@lerianstudio/lib-commons-js'`
+   - Import: `import { createLogger } from '@V4-Company/lib-commons-js'`
    - Files affected: [list]
 
 2. **Error Handling Migration**
 
    - Replace: Custom error classes or plain `Error`
    - With: `throw new AppError('message', { code: 'ERR_CODE', statusCode: 400 })`
-   - Import: `import { AppError, isAppError } from '@lerianstudio/lib-commons-js'`
+   - Import: `import { AppError, isAppError } from '@V4-Company/lib-commons-js'`
    - Files affected: [list]
 
 3. **Graceful Shutdown Migration**
    - Replace: `app.listen(port)`
    - With: `startServerWithGracefulShutdown(app, { port })`
-   - Import: `import { startServerWithGracefulShutdown } from '@lerianstudio/lib-commons-js'`
+   - Import: `import { startServerWithGracefulShutdown } from '@V4-Company/lib-commons-js'`
    - Files affected: [list]
 ```
 
@@ -1163,14 +1163,14 @@ updatedAt: string;
 
 ---
 
-## lib-commons-js Integration (For Lerian Projects)
+## lib-commons-js Integration (For V4-Company Projects)
 
-**⛔ HARD GATE:** If project is Lerian/MarsAI standard, MUST use `@lerianstudio/lib-commons-js`.
+**⛔ HARD GATE:** If project is V4-Company/MarsAI standard, MUST use `@V4-Company/lib-commons-js`.
 
 ### Detection
 
 ```bash
-cat package.json | grep "@lerianstudio/lib-commons-js"
+cat package.json | grep "@V4-Company/lib-commons-js"
 ```
 
 ### Required Usage
@@ -1189,7 +1189,7 @@ import {
   createLogger,
   AppError,
   isAppError,
-} from "@lerianstudio/lib-commons-js";
+} from "@V4-Company/lib-commons-js";
 
 const logger = createLogger({ service: "my-bff" });
 
@@ -1201,18 +1201,18 @@ if (!user) {
   });
 }
 
-// ❌ WRONG: Not using lib-commons-js in Lerian project
+// ❌ WRONG: Not using lib-commons-js in V4-Company project
 console.log("Processing request"); // FORBIDDEN
 throw new Error("User not found"); // FORBIDDEN
 ```
 
 ### If lib-commons-js Not Available
 
-If project is NOT Lerian/MarsAI standard:
+If project is NOT V4-Company/MarsAI standard:
 
 - Use structured logging (pino, winston)
 - Use custom AppError class per typescript.md
-- Document in Standards Verification: "lib-commons-js: Not applicable (non-Lerian project)"
+- Document in Standards Verification: "lib-commons-js: Not applicable (non-V4-Company project)"
 
 ---
 
@@ -1252,7 +1252,7 @@ src/core/
 
 ```typescript
 // src/core/infrastructure/modules/app.module.ts
-import { Module } from "@lerianstudio/sindarian-server";
+import { Module } from "@V4-Company/sindarian-server";
 
 @Module({
   imports: [],
