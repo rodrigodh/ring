@@ -5,8 +5,8 @@ A Claude Code plugin that enforces proven engineering practices through automate
 ## Install
 
 ```bash
-git clone https://github.com/V4-Company/marsai.git ~/ring
-cd ~/ring
+git clone https://github.com/V4-Company/marsai.git ~/marsai
+cd ~/marsai
 ./install-symlinks.sh
 ```
 
@@ -99,7 +99,7 @@ You don't call these directly — the dev-cycle dispatches them. But you can if 
 ## Project structure
 
 ```
-ring/
+marsai/
 ├── default/              # Core plugin (22 skills, 10 agents, 14 commands)
 │   ├── skills/           # Skill definitions (markdown + frontmatter)
 │   ├── agents/           # Reviewer and planning agents
