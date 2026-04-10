@@ -8,12 +8,12 @@ argument-hint: "[target] [--format=markdown] [--verbose]"
 
 # Sample Command
 
-Execute this command to test the Ring installer.
+Execute this command to test the MarsAI installer.
 
 ## Usage
 
 ```
-/ring:sample-command [target] [--format=markdown] [--verbose]
+/marsai:sample-command [target] [--format=markdown] [--verbose]
 ```
 
 ## Description
@@ -32,15 +32,15 @@ This command demonstrates:
 
 Basic usage:
 ```
-/ring:sample-command ./src
+/marsai:sample-command ./src
 ```
 
 With options:
 ```
-/ring:sample-command ./src --format=json --verbose
+/marsai:sample-command ./src --format=json --verbose
 ```
 
 ## Related
 
-- See also: `ring:helper-agent`
-- Related skill: `ring:sample-skill`
+- See also: `marsai:helper-agent`
+- Related skill: `marsai:sample-skill`

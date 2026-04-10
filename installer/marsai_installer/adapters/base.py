@@ -2,7 +2,7 @@
 Base adapter class for platform-specific transformations.
 
 All platform adapters must inherit from PlatformAdapter and implement
-the required abstract methods for transforming Ring components.
+the required abstract methods for transforming MarsAI components.
 """
 
 import logging
@@ -18,7 +18,7 @@ class PlatformAdapter(ABC):
     """
     Abstract base class for platform adapters.
 
-    Each platform adapter handles the transformation of Ring components
+    Each platform adapter handles the transformation of MarsAI components
     (skills, agents, commands) into the format required by the target platform.
     """
 
@@ -39,10 +39,10 @@ class PlatformAdapter(ABC):
     @abstractmethod
     def transform_skill(self, skill_content: str, metadata: Optional[Dict[str, Any]] = None) -> str:
         """
-        Transform a Ring skill to the target platform format.
+        Transform a MarsAI skill to the target platform format.
 
         Args:
-            skill_content: The original skill content in Ring format (markdown with YAML frontmatter)
+            skill_content: The original skill content in MarsAI format (markdown with YAML frontmatter)
             metadata: Optional metadata about the skill (name, path, etc.)
 
         Returns:
@@ -53,10 +53,10 @@ class PlatformAdapter(ABC):
     @abstractmethod
     def transform_agent(self, agent_content: str, metadata: Optional[Dict[str, Any]] = None) -> str:
         """
-        Transform a Ring agent to the target platform format.
+        Transform a MarsAI agent to the target platform format.
 
         Args:
-            agent_content: The original agent content in Ring format
+            agent_content: The original agent content in MarsAI format
             metadata: Optional metadata about the agent (name, path, etc.)
 
         Returns:
@@ -69,10 +69,10 @@ class PlatformAdapter(ABC):
         self, command_content: str, metadata: Optional[Dict[str, Any]] = None
     ) -> str:
         """
-        Transform a Ring command to the target platform format.
+        Transform a MarsAI command to the target platform format.
 
         Args:
-            command_content: The original command content in Ring format
+            command_content: The original command content in MarsAI format
             metadata: Optional metadata about the command (name, path, etc.)
 
         Returns:
@@ -93,7 +93,7 @@ class PlatformAdapter(ABC):
     @abstractmethod
     def get_component_mapping(self) -> Dict[str, Dict[str, str]]:
         """
-        Get the mapping of Ring component types to platform-specific directories.
+        Get the mapping of MarsAI component types to platform-specific directories.
 
         Returns:
             Dictionary mapping component types (agents, commands, skills) to
@@ -112,7 +112,7 @@ class PlatformAdapter(ABC):
         self, hook_content: str, metadata: Optional[Dict[str, Any]] = None
     ) -> Optional[str]:
         """
-        Transform a Ring hook to the target platform format.
+        Transform a MarsAI hook to the target platform format.
 
         Default implementation returns content unchanged. Override if platform
         requires hook transformation or does not support hooks.
@@ -124,7 +124,7 @@ class PlatformAdapter(ABC):
         Returns:
             Transformed content suitable for the target platform, or None if
             the platform does not support file-based hooks (e.g., OpenCode uses
-            plugin-based hooks which are incompatible with Ring's file-based hooks).
+            plugin-based hooks which are incompatible with MarsAI's file-based hooks).
         """
         return hook_content
 
@@ -133,7 +133,7 @@ class PlatformAdapter(ABC):
         Get platform-specific terminology mapping.
 
         Returns:
-            Dictionary mapping Ring terms to platform terms.
+            Dictionary mapping MarsAI terms to platform terms.
 
         Example:
             {"agent": "droid", "skill": "skill", "command": "command"}
@@ -142,10 +142,10 @@ class PlatformAdapter(ABC):
 
     def is_native_format(self) -> bool:
         """
-        Check if this platform uses Ring's native format.
+        Check if this platform uses MarsAI's native format.
 
         Returns:
-            True if the platform uses Ring format natively (no transformation needed)
+            True if the platform uses MarsAI format natively (no transformation needed)
         """
         return False
 
@@ -283,10 +283,10 @@ class PlatformAdapter(ABC):
 
     def replace_terminology(self, content: str) -> str:
         """
-        Replace Ring terminology with platform-specific terms.
+        Replace MarsAI terminology with platform-specific terms.
 
         Args:
-            content: Content with Ring terminology
+            content: Content with MarsAI terminology
 
         Returns:
             Content with platform-specific terminology
@@ -362,7 +362,7 @@ class PlatformAdapter(ABC):
             plugin_name: Name of the plugin this component belongs to
 
         Returns:
-            Filename with plugin prefix (e.g., "ring-default-code-reviewer.md")
+            Filename with plugin prefix (e.g., "marsai-default-code-reviewer.md")
         """
         base_filename = self.get_target_filename(source_filename, component_type)
         source_path = Path(base_filename)

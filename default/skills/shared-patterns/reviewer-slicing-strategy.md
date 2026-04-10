@@ -1,7 +1,7 @@
 # Review Slicing Strategy
 
 **Version:** 2.0.0
-**Applies to:** ring:requesting-code-review, ring:codereview command, ring:review-slicer agent
+**Applies to:** marsai:requesting-code-review, marsai:codereview command, marsai:review-slicer agent
 
 ---
 
@@ -19,7 +19,7 @@ Slicing solves this by giving each reviewer a focused, thematic subset of the di
 
 ## When We Slice
 
-The `ring:review-slicer` agent uses **three-phase adaptive reasoning** instead of rigid threshold tables:
+The `marsai:review-slicer` agent uses **three-phase adaptive reasoning** instead of rigid threshold tables:
 
 ### Phase 1: Volume Assessment (Hard Guardrails)
 
@@ -72,7 +72,7 @@ These inputs allow the slicer to assess cohesion structurally rather than relyin
 
 **Key design decision: every reviewer runs on every slice. No "relevant reviewer" routing.**
 
-The temptation is to route only "relevant" reviewers per slice — send `ring:security-reviewer` to the API slice but skip it for infrastructure. This is wrong for three reasons:
+The temptation is to route only "relevant" reviewers per slice — send `marsai:security-reviewer` to the API slice but skip it for infrastructure. This is wrong for three reasons:
 
 ### 1. The Best Findings Are the Unexpected Ones
 

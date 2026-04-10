@@ -1,4 +1,4 @@
-# Ring Architecture Documentation
+# MarsAI Architecture Documentation
 
 ## Table of Contents
 
@@ -13,13 +13,13 @@
 
 ## Overview
 
-Ring is a **Claude Code plugin marketplace** that provides a comprehensive skills library and workflow system with **2 active plugins** (54 skills, 22 agents, 23 commands). It extends Claude Code's capabilities through structured, reusable patterns that enforce proven software engineering practices across the software delivery value chain.
+MarsAI is a **Claude Code plugin marketplace** that provides a comprehensive skills library and workflow system with **2 active plugins** (54 skills, 22 agents, 23 commands). It extends Claude Code's capabilities through structured, reusable patterns that enforce proven software engineering practices across the software delivery value chain.
 
 ### Architecture Philosophy
 
-Ring operates on three core principles:
+MarsAI operates on three core principles:
 
-1. **Mandatory Workflows** - Critical skills (like ring:using-ring) enforce specific behaviors
+1. **Mandatory Workflows** - Critical skills (like marsai:using-marsai) enforce specific behaviors
 2. **Parallel Execution** - Review systems run concurrently for speed
 3. **Session Context** - Skills load automatically at session start
 4. **Modular Plugins** - Specialized plugins for different domains and teams
@@ -30,9 +30,9 @@ Ring operates on three core principles:
 ┌─────────────────────────────────────────────────────────────────────────────────┐
 │                              Claude Code                                         │
 │  ┌───────────────────────────────────────────────────────────────────────────┐  │
-│  │                          Ring Marketplace                                  │  │
+│  │                          MarsAI Marketplace                                  │  │
 │  │  ┌──────────────────────┐  ┌──────────────────────┐                       │  │
-│  │  │ ring-default         │  │ ring-dev-team        │                       │  │
+│  │  │ marsai-default         │  │ marsai-dev-team        │                       │  │
 │  │  │ Skills(22) Agents(10)│  │ Skills(32) Agents(12)│                       │  │
 │  │  │ Cmds(14) Hooks/Lib   │  │ Cmds(9)              │                       │  │
 │  │  └──────────────────────┘  └──────────────────────┘                       │  │
@@ -44,14 +44,14 @@ Ring operates on three core principles:
 
 ## Marketplace Structure
 
-Ring is organized as a monorepo marketplace with multiple plugin collections:
+MarsAI is organized as a monorepo marketplace with multiple plugin collections:
 
 ```
 ring/                                  # Monorepo root
 ├── .claude-plugin/
 │   └── marketplace.json              # Multi-plugin registry (2 active plugins)
-├── default/                          # Core plugin: ring-default
-└── dev-team/                         # Developer agents: ring-dev-team
+├── default/                          # Core plugin: marsai-default
+└── dev-team/                         # Developer agents: marsai-dev-team
 ```
 
 ### Active Plugins
@@ -60,8 +60,8 @@ _Versions managed in `.claude-plugin/marketplace.json`_
 
 | Plugin               | Description                          | Components                       |
 | -------------------- | ------------------------------------ | -------------------------------- |
-| **ring-default**     | Core skills library                  | 22 skills, 10 agents, 14 commands |
-| **ring-dev-team**    | Developer agents                     | 32 skills, 12 agents, 9 commands |
+| **marsai-default**     | Core skills library                  | 22 skills, 10 agents, 14 commands |
+| **marsai-dev-team**    | Developer agents                     | 32 skills, 12 agents, 9 commands |
 
 ## Component Hierarchy
 
@@ -93,59 +93,59 @@ skills/
 
 **Purpose:** Specialized agents that analyze code/designs or provide domain expertise using AI models
 
-**Structure (ring-default plugin):**
+**Structure (marsai-default plugin):**
 
 ```
 default/agents/
-├── code-reviewer.md           # Foundation review (`ring:code-reviewer`)
-├── business-logic-reviewer.md # Correctness review (`ring:business-logic-reviewer`)
-├── security-reviewer.md       # Safety review (`ring:security-reviewer`)
-├── test-reviewer.md           # Test coverage and quality review (`ring:test-reviewer`)
-├── nil-safety-reviewer.md     # Null/nil safety analysis (`ring:nil-safety-reviewer`)
-├── consequences-reviewer.md   # Ripple effect review (`ring:consequences-reviewer`)
-├── dead-code-reviewer.md      # Dead code analysis (`ring:dead-code-reviewer`)
-├── review-slicer.md           # Thematic file grouping for large PRs (`ring:review-slicer`)
-├── write-plan.md              # Implementation planning (`ring:write-plan`)
-└── codebase-explorer.md       # Deep architecture analysis (`ring:codebase-explorer`)
+├── code-reviewer.md           # Foundation review (`marsai:code-reviewer`)
+├── business-logic-reviewer.md # Correctness review (`marsai:business-logic-reviewer`)
+├── security-reviewer.md       # Safety review (`marsai:security-reviewer`)
+├── test-reviewer.md           # Test coverage and quality review (`marsai:test-reviewer`)
+├── nil-safety-reviewer.md     # Null/nil safety analysis (`marsai:nil-safety-reviewer`)
+├── consequences-reviewer.md   # Ripple effect review (`marsai:consequences-reviewer`)
+├── dead-code-reviewer.md      # Dead code analysis (`marsai:dead-code-reviewer`)
+├── review-slicer.md           # Thematic file grouping for large PRs (`marsai:review-slicer`)
+├── write-plan.md              # Implementation planning (`marsai:write-plan`)
+└── codebase-explorer.md       # Deep architecture analysis (`marsai:codebase-explorer`)
 ```
 
-**Structure (ring-dev-team plugin):**
+**Structure (marsai-dev-team plugin):**
 
 ```
 dev-team/agents/
-├── backend-engineer-golang.md         # Go backend specialist (`ring:backend-engineer-golang`)
-├── backend-engineer-typescript.md     # TypeScript backend specialist (`ring:backend-engineer-typescript`)
-├── devops-engineer.md                 # DevOps specialist (`ring:devops-engineer`)
-├── frontend-bff-engineer-typescript.md # BFF specialist (`ring:frontend-bff-engineer-typescript`)
-├── frontend-designer.md               # Visual design specialist (`ring:frontend-designer`)
-├── frontend-engineer.md               # Frontend engineer (`ring:frontend-engineer`)
-├── helm-engineer.md                   # Helm chart specialist (`ring:helm-engineer`)
-├── prompt-quality-reviewer.md         # Prompt quality specialist (`ring:prompt-quality-reviewer`)
-├── qa-analyst.md                      # Backend QA specialist (`ring:qa-analyst`)
-├── qa-analyst-frontend.md             # Frontend QA specialist (`ring:qa-analyst-frontend`)
-├── sre.md                             # Site reliability engineer (`ring:sre`)
-└── ui-engineer.md                     # UI component specialist (`ring:ui-engineer`)
+├── backend-engineer-golang.md         # Go backend specialist (`marsai:backend-engineer-golang`)
+├── backend-engineer-typescript.md     # TypeScript backend specialist (`marsai:backend-engineer-typescript`)
+├── devops-engineer.md                 # DevOps specialist (`marsai:devops-engineer`)
+├── frontend-bff-engineer-typescript.md # BFF specialist (`marsai:frontend-bff-engineer-typescript`)
+├── frontend-designer.md               # Visual design specialist (`marsai:frontend-designer`)
+├── frontend-engineer.md               # Frontend engineer (`marsai:frontend-engineer`)
+├── helm-engineer.md                   # Helm chart specialist (`marsai:helm-engineer`)
+├── prompt-quality-reviewer.md         # Prompt quality specialist (`marsai:prompt-quality-reviewer`)
+├── qa-analyst.md                      # Backend QA specialist (`marsai:qa-analyst`)
+├── qa-analyst-frontend.md             # Frontend QA specialist (`marsai:qa-analyst-frontend`)
+├── sre.md                             # Site reliability engineer (`marsai:sre`)
+└── ui-engineer.md                     # UI component specialist (`marsai:ui-engineer`)
 ```
 
 **Key Characteristics:**
 
 - Invoked via Claude's `Task` tool with `subagent_type`
 - Invoked with specialized subagent_type for domain-specific analysis
-- Review agents run in parallel (7 reviewers dispatch simultaneously via `/ring:codereview` command)
+- Review agents run in parallel (7 reviewers dispatch simultaneously via `/marsai:codereview` command)
 - Developer agents provide specialized domain expertise
 - Return structured reports with severity-based findings
 
-**Note:** Parallel review orchestration is handled by the `/ring:codereview` command
+**Note:** Parallel review orchestration is handled by the `/marsai:codereview` command
 
-**Standards Compliance Output (ring-dev-team agents):**
+**Standards Compliance Output (marsai-dev-team agents):**
 
-All ring-dev-team agents include a `## Standards Compliance` section in their output schema:
+All marsai-dev-team agents include a `## Standards Compliance` section in their output schema:
 
 ```yaml
 - name: "Standards Compliance"
   pattern: "^## Standards Compliance"
-  required: false # In schema, but MANDATORY when invoked from ring:dev-refactor
-  description: "MANDATORY when invoked from ring:dev-refactor skill"
+  required: false # In schema, but MANDATORY when invoked from marsai:dev-refactor
+  description: "MANDATORY when invoked from marsai:dev-refactor skill"
 ```
 
 **Conditional Requirement: `invoked_from_dev_refactor`**
@@ -153,21 +153,21 @@ All ring-dev-team agents include a `## Standards Compliance` section in their ou
 | Invocation Context            | Standards Compliance | Detection Mechanism                       |
 | ----------------------------- | -------------------- | ----------------------------------------- |
 | Direct agent call             | Optional             | N/A                                       |
-| Via `ring:dev-cycle` skill    | Optional             | N/A                                       |
-| Via `ring:dev-refactor` skill | **MANDATORY**        | Prompt contains `**MODE: ANALYSIS ONLY**` |
+| Via `marsai:dev-cycle` skill    | Optional             | N/A                                       |
+| Via `marsai:dev-refactor` skill | **MANDATORY**        | Prompt contains `**MODE: ANALYSIS ONLY**` |
 
 **How Enforcement Works:**
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
-│  User invokes: /ring:dev-refactor                          │
+│  User invokes: /marsai:dev-refactor                          │
 │         ↓                                                           │
-│  ring:dev-refactor skill dispatches agents with prompt:                  │
-│  "**MODE: ANALYSIS ONLY** - Compare codebase with Ring standards"   │
+│  marsai:dev-refactor skill dispatches agents with prompt:                  │
+│  "**MODE: ANALYSIS ONLY** - Compare codebase with MarsAI standards"   │
 │         ↓                                                           │
 │  Agent detects "**MODE: ANALYSIS ONLY**" in prompt                  │
 │         ↓                                                           │
-│  Agent loads Ring standards via WebFetch                            │
+│  Agent loads MarsAI standards via WebFetch                            │
 │         ↓                                                           │
 │  Agent produces Standards Compliance output (MANDATORY)             │
 └─────────────────────────────────────────────────────────────────────┘
@@ -175,21 +175,21 @@ All ring-dev-team agents include a `## Standards Compliance` section in their ou
 
 **Affected Agents:**
 
-- `ring:backend-engineer-golang` → loads `golang.md`
-- `ring:backend-engineer-typescript` → loads `typescript.md`
-- `ring:devops-engineer` → loads `devops.md`
-- `ring:frontend-bff-engineer-typescript` → loads `typescript.md`
-- `ring:frontend-designer` → loads `frontend.md`
-- `ring:qa-analyst` → loads `testing-*.md` (unit/fuzz/property/integration/chaos)
-- `ring:qa-analyst-frontend` → loads `frontend/testing-*.md` (accessibility/visual/e2e/performance)
-- `ring:sre` → loads `sre.md`
+- `marsai:backend-engineer-golang` → loads `golang.md`
+- `marsai:backend-engineer-typescript` → loads `typescript.md`
+- `marsai:devops-engineer` → loads `devops.md`
+- `marsai:frontend-bff-engineer-typescript` → loads `typescript.md`
+- `marsai:frontend-designer` → loads `frontend.md`
+- `marsai:qa-analyst` → loads `testing-*.md` (unit/fuzz/property/integration/chaos)
+- `marsai:qa-analyst-frontend` → loads `frontend/testing-*.md` (accessibility/visual/e2e/performance)
+- `marsai:sre` → loads `sre.md`
 
 **Output Format (when non-compliant):**
 
 ```markdown
 ## Standards Compliance
 
-### Lerian/Ring Standards Comparison
+### Lerian/MarsAI Standards Comparison
 
 | Category | Current Pattern | Expected Pattern | Status           | File/Location |
 | -------- | --------------- | ---------------- | ---------------- | ------------- |
@@ -222,31 +222,31 @@ All ring-dev-team agents include a `## Standards Compliance` section in their ou
 
 ```
 default/commands/
-├── brainstorm.md         # /ring:brainstorm - Socratic design refinement
-├── codereview.md         # /ring:codereview - Parallel 7-reviewer dispatch
-├── commit.md             # /ring:commit - Git commit with trailers
-├── create-handoff.md     # /ring:create-handoff - Create session handoff
-├── diagram.md            # /ring:diagram - Generate Mermaid diagrams
-├── execute-plan.md       # /ring:execute-plan - Batch execution
-├── explore-codebase.md   # /ring:explore-codebase - Deep architecture analysis
-├── interview-me.md       # /ring:interview-me - Interactive interview
-├── lint.md               # /ring:lint - Run linters and fix issues
-├── md-to-html.md         # /ring:md-to-html - Markdown to HTML
-├── release-guide.md      # /ring:release-guide - Release guidance
-├── visualize.md          # /ring:visualize - Visual system explanations
-├── worktree.md           # /ring:worktree - Git worktree creation
-└── write-plan.md         # /ring:write-plan - Implementation planning
+├── brainstorm.md         # /marsai:brainstorm - Socratic design refinement
+├── codereview.md         # /marsai:codereview - Parallel 7-reviewer dispatch
+├── commit.md             # /marsai:commit - Git commit with trailers
+├── create-handoff.md     # /marsai:create-handoff - Create session handoff
+├── diagram.md            # /marsai:diagram - Generate Mermaid diagrams
+├── execute-plan.md       # /marsai:execute-plan - Batch execution
+├── explore-codebase.md   # /marsai:explore-codebase - Deep architecture analysis
+├── interview-me.md       # /marsai:interview-me - Interactive interview
+├── lint.md               # /marsai:lint - Run linters and fix issues
+├── md-to-html.md         # /marsai:md-to-html - Markdown to HTML
+├── release-guide.md      # /marsai:release-guide - Release guidance
+├── visualize.md          # /marsai:visualize - Visual system explanations
+├── worktree.md           # /marsai:worktree - Git worktree creation
+└── write-plan.md         # /marsai:write-plan - Implementation planning
 
 dev-team/commands/
-├── dev-cancel.md           # /ring:dev-cancel - Cancel dev cycle
-├── dev-cycle.md            # /ring:dev-cycle - 10-gate development cycle
-├── dev-cycle-frontend.md   # /ring:dev-cycle-frontend - 9-gate frontend cycle
-├── dev-refactor.md         # /ring:dev-refactor - Standards refactoring
-├── dev-refactor-frontend.md # /ring:dev-refactor-frontend - Frontend standards refactor
-├── dev-report.md           # /ring:dev-report - Development reporting
-├── dev-service-discovery.md # /ring:dev-service-discovery - Service hierarchy scan
-├── dev-status.md           # /ring:dev-status - Development status
-└── migrate-v4.md           # /ring:migrate-v4 - V4 migration
+├── dev-cancel.md           # /marsai:dev-cancel - Cancel dev cycle
+├── dev-cycle.md            # /marsai:dev-cycle - 10-gate development cycle
+├── dev-cycle-frontend.md   # /marsai:dev-cycle-frontend - 9-gate frontend cycle
+├── dev-refactor.md         # /marsai:dev-refactor - Standards refactoring
+├── dev-refactor-frontend.md # /marsai:dev-refactor-frontend - Frontend standards refactor
+├── dev-report.md           # /marsai:dev-report - Development reporting
+├── dev-service-discovery.md # /marsai:dev-service-discovery - Service hierarchy scan
+├── dev-status.md           # /marsai:dev-status - Development status
+└── migrate-v4.md           # /marsai:migrate-v4 - V4 migration
 
 ```
 
@@ -288,26 +288,26 @@ default/hooks/
 ```
 .claude-plugin/
 └── marketplace.json    # Multi-plugin registry
-    ├── ring-default     # Core skills library
-    └── ring-dev-team    # Developer agents
+    ├── marsai-default     # Core skills library
+    └── marsai-dev-team    # Developer agents
 ```
 
 **marketplace.json Schema:**
 
 ```json
 {
-  "name": "ring",
+  "name": "marsai",
   "description": "...",
   "owner": { "name": "...", "email": "..." },
   "plugins": [
     {
-      "name": "ring-default",
+      "name": "marsai-default",
       "version": "...",
       "source": "./default",
       "keywords": ["skills", "tdd", "debugging", ...]
     },
     {
-      "name": "ring-dev-team",
+      "name": "marsai-dev-team",
       "version": "...",
       "source": "./dev-team",
       "keywords": ["developer", "agents"]
@@ -334,7 +334,7 @@ sequenceDiagram
     hooks.json->>session-start.sh: Execute initialization
     session-start.sh->>generate-skills-ref.py: Generate skills overview
     generate-skills-ref.py-->>session-start.sh: Return formatted reference
-    session-start.sh->>Claude Context: Inject skills + ring:using-ring content
+    session-start.sh->>Claude Context: Inject skills + marsai:using-marsai content
     Claude Context-->>User: Session ready with skills loaded
 ```
 
@@ -349,7 +349,7 @@ sequenceDiagram
     participant TodoWrite
 
     User->>Claude: Request task
-    Claude->>Claude: Check ring:using-ring mandatory workflow
+    Claude->>Claude: Check marsai:using-marsai mandatory workflow
     Claude->>Skill Tool: Invoke relevant skill
     Skill Tool->>SKILL.md: Load skill instructions
     SKILL.md-->>Claude: Return structured workflow
@@ -364,41 +364,41 @@ sequenceDiagram
     participant User
     participant Claude
     participant Task Tool
-    participant ring:code-reviewer
-    participant ring:business-logic-reviewer
-    participant ring:security-reviewer
-    participant ring:test-reviewer
-    participant ring:nil-safety-reviewer
-    participant ring:consequences-reviewer
-    participant DCR as ring:dead-code-reviewer
+    participant marsai:code-reviewer
+    participant marsai:business-logic-reviewer
+    participant marsai:security-reviewer
+    participant marsai:test-reviewer
+    participant marsai:nil-safety-reviewer
+    participant marsai:consequences-reviewer
+    participant DCR as marsai:dead-code-reviewer
 
-    User->>Claude: /ring:codereview
+    User->>Claude: /marsai:codereview
     Note over Claude: Command provides<br/>parallel review workflow
 
     Claude->>Task Tool: Dispatch 7 parallel tasks
 
     par Parallel Execution
-        Task Tool->>ring:code-reviewer: Review architecture
+        Task Tool->>marsai:code-reviewer: Review architecture
         and
-        Task Tool->>ring:business-logic-reviewer: Review correctness
+        Task Tool->>marsai:business-logic-reviewer: Review correctness
         and
-        Task Tool->>ring:security-reviewer: Review vulnerabilities
+        Task Tool->>marsai:security-reviewer: Review vulnerabilities
         and
-        Task Tool->>ring:test-reviewer: Review test coverage
+        Task Tool->>marsai:test-reviewer: Review test coverage
         and
-        Task Tool->>ring:nil-safety-reviewer: Review nil safety
+        Task Tool->>marsai:nil-safety-reviewer: Review nil safety
         and
-        Task Tool->>ring:consequences-reviewer: Review ripple effects
+        Task Tool->>marsai:consequences-reviewer: Review ripple effects
         and
         Task Tool->>DCR: Review dead code
     end
 
-    ring:code-reviewer-->>Claude: Return findings
-    ring:business-logic-reviewer-->>Claude: Return findings
-    ring:security-reviewer-->>Claude: Return findings
-    ring:test-reviewer-->>Claude: Return findings
-    ring:nil-safety-reviewer-->>Claude: Return findings
-    ring:consequences-reviewer-->>Claude: Return findings
+    marsai:code-reviewer-->>Claude: Return findings
+    marsai:business-logic-reviewer-->>Claude: Return findings
+    marsai:security-reviewer-->>Claude: Return findings
+    marsai:test-reviewer-->>Claude: Return findings
+    marsai:nil-safety-reviewer-->>Claude: Return findings
+    marsai:consequences-reviewer-->>Claude: Return findings
     DCR-->>Claude: Return findings
 
     Note over Claude: Aggregate & prioritize by severity
@@ -409,17 +409,17 @@ sequenceDiagram
 
 ### Native Tool Integration
 
-Ring leverages four primary Claude Code tools:
+MarsAI leverages four primary Claude Code tools:
 
 1. **Skill Tool**
 
-   - Invokes skills by name: `skill: "ring:test-driven-development"`
+   - Invokes skills by name: `skill: "marsai:test-driven-development"`
    - Skills expand into full instructions within conversation
    - Skill content becomes part of Claude's working context
 
 2. **Task Tool**
 
-   - Dispatches agents to subagent instances: `Task(subagent_type="ring:code-reviewer")`
+   - Dispatches agents to subagent instances: `Task(subagent_type="marsai:code-reviewer")`
    - Enables parallel execution (multiple Tasks in one message)
    - Returns structured reports from independent analysis
 
@@ -430,18 +430,18 @@ Ring leverages four primary Claude Code tools:
    - Provides progress visibility to users
 
 4. **SlashCommand Tool**
-   - Executes commands: `SlashCommand(command="/ring:brainstorm")`
+   - Executes commands: `SlashCommand(command="/marsai:brainstorm")`
    - Commands expand to skill/agent invocations
    - Provides user-friendly shortcuts
 
 ### Session Context Injection
 
-At session start, Ring injects two critical pieces of context:
+At session start, MarsAI injects two critical pieces of context:
 
 1. **Skills Quick Reference** - Auto-generated overview of all available skills
-2. **ring:using-ring Skill** - Mandatory workflow that enforces skill checking
+2. **marsai:using-marsai Skill** - Mandatory workflow that enforces skill checking
 
-This context becomes part of Claude's memory for the entire session, ensuring:
+This context becomes part of Claude's memory for the entire session, ensumarsai:
 
 - Claude knows which skills are available
 - Mandatory workflows are enforced
@@ -452,42 +452,42 @@ This context becomes part of Claude's memory for the entire session, ensuring:
 ### Pattern 1: Mandatory Skill Checking
 
 ```
-User Request → ring:using-ring check → Relevant skill?
+User Request → marsai:using-marsai check → Relevant skill?
     ├─ Yes → Invoke skill → Follow workflow
     └─ No → Proceed with task
 ```
 
-**Implementation:** The ring:using-ring skill is loaded at session start and contains strict instructions to check for relevant skills before ANY task.
+**Implementation:** The marsai:using-marsai skill is loaded at session start and contains strict instructions to check for relevant skills before ANY task.
 
 ### Pattern 2: Parallel Review Execution
 
 ```
-Review Request → /ring:codereview → ring:review-slicer (classify)
+Review Request → /marsai:codereview → marsai:review-slicer (classify)
     ├─ Small/focused PR → 7 Tasks in parallel (full diff)
     └─ Large/multi-theme PR → For EACH slice:
-        ├─ ring:code-reviewer           ─┐
-        ├─ ring:business-logic-reviewer  │
-        ├─ ring:security-reviewer        │
-        ├─ ring:test-reviewer            ┼─→ Merge + dedup → Handle by severity
-        ├─ ring:nil-safety-reviewer      │
-        ├─ ring:dead-code-reviewer       │
-        └─ ring:consequences-reviewer   ─┘
+        ├─ marsai:code-reviewer           ─┐
+        ├─ marsai:business-logic-reviewer  │
+        ├─ marsai:security-reviewer        │
+        ├─ marsai:test-reviewer            ┼─→ Merge + dedup → Handle by severity
+        ├─ marsai:nil-safety-reviewer      │
+        ├─ marsai:dead-code-reviewer       │
+        └─ marsai:consequences-reviewer   ─┘
 ```
 
-**Implementation:** The `ring:review-slicer` agent classifies files into thematic slices for large PRs (15+ files). For each slice, all 7 reviewers dispatch in parallel via a single message with 7 Task tool calls. Results are merged and deduplicated before consolidation. Small PRs skip slicing entirely (zero overhead).
+**Implementation:** The `marsai:review-slicer` agent classifies files into thematic slices for large PRs (15+ files). For each slice, all 7 reviewers dispatch in parallel via a single message with 7 Task tool calls. Results are merged and deduplicated before consolidation. Small PRs skip slicing entirely (zero overhead).
 
 ### Pattern 3: Skill-to-Command Mapping
 
 ```
-User: /ring:brainstorm
+User: /marsai:brainstorm
     ↓
 SlashCommand Tool
     ↓
 commands/brainstorm.md
     ↓
-"Use and follow the ring:brainstorming skill"
+"Use and follow the marsai:brainstorming skill"
     ↓
-Skill Tool: ring:brainstorming
+Skill Tool: marsai:brainstorming
     ↓
 skills/brainstorming/SKILL.md
 ```
@@ -517,7 +517,7 @@ Complex Skill → TodoWrite tracking
 
 **Interaction:**
 
-- Skills can invoke agents (e.g., ring:requesting-code-review skill dispatches review agents)
+- Skills can invoke agents (e.g., marsai:requesting-code-review skill dispatches review agents)
 - Agents don't typically invoke skills (they're independent analyzers)
 
 ### Skills ↔ Commands
@@ -529,9 +529,9 @@ Complex Skill → TodoWrite tracking
 
 **Example Mappings:**
 
-- `/ring:brainstorm` → `ring:brainstorming` skill
-- `/ring:write-plan` → `ring:writing-plans` skill
-- `/ring:codereview` → dispatches 7 parallel review agents (`ring:code-reviewer`, `ring:business-logic-reviewer`, `ring:security-reviewer`, `ring:test-reviewer`, `ring:nil-safety-reviewer`, `ring:consequences-reviewer`, `ring:dead-code-reviewer`)
+- `/marsai:brainstorm` → `marsai:brainstorming` skill
+- `/marsai:write-plan` → `marsai:writing-plans` skill
+- `/marsai:codereview` → dispatches 7 parallel review agents (`marsai:code-reviewer`, `marsai:business-logic-reviewer`, `marsai:security-reviewer`, `marsai:test-reviewer`, `marsai:nil-safety-reviewer`, `marsai:consequences-reviewer`, `marsai:dead-code-reviewer`)
 
 ### Skills ↔ Shared Patterns
 
@@ -554,7 +554,7 @@ See `skills/shared-patterns/todowrite-integration.md` for tracking setup
 
 - Hooks load skill metadata at session start
 - generate-skills-ref.py scans all SKILL.md frontmatter
-- session-start.sh injects ring:using-ring skill content
+- session-start.sh injects marsai:using-marsai skill content
 
 **Data Flow:**
 
@@ -566,7 +566,7 @@ SKILL.md frontmatter → generate-skills-ref.py → formatted overview → sessi
 
 **Relationship:** Agent dispatch via Task tool
 
-- Agents are invoked via `Task(subagent_type: "ring:{agent-name}")`
+- Agents are invoked via `Task(subagent_type: "marsai:{agent-name}")`
 - Review agents run in parallel for comprehensive analysis
 - Agent specialization determines depth and quality of analysis
 
@@ -594,7 +594,7 @@ SKILL.md frontmatter → generate-skills-ref.py → formatted overview → sessi
 
 ### 3. Mandatory Workflows
 
-**Decision:** Some skills (ring:using-ring) are non-negotiable
+**Decision:** Some skills (marsai:using-marsai) are non-negotiable
 **Rationale:** Prevents common failures, enforces best practices
 **Enforcement:** Loaded automatically, contains strict instructions
 
@@ -622,8 +622,8 @@ SKILL.md frontmatter → generate-skills-ref.py → formatted overview → sessi
 
 1. Create `{plugin}/agents/{name}.md` with agent definition
 2. Include YAML frontmatter: `name`, `description`, `version`
-3. Invoke via Task tool with `subagent_type="ring:{name}"`
-4. Review agents can run in parallel via `/ring:codereview`
+3. Invoke via Task tool with `subagent_type="marsai:{name}"`
+4. Review agents can run in parallel via `/marsai:codereview`
 5. Developer agents provide domain expertise via direct Task invocation
 
 ### Adding New Commands
@@ -687,7 +687,7 @@ SKILL.md frontmatter → generate-skills-ref.py → formatted overview → sessi
 
 ### Anti-Patterns to Avoid
 
-❌ Skipping skill checks (violates ring:using-ring)
+❌ Skipping skill checks (violates marsai:using-marsai)
 ❌ Running reviewers sequentially (3x slower)
 ❌ Implementing without tests (violates TDD)
 ❌ Claiming completion without verification
@@ -721,7 +721,7 @@ SKILL.md frontmatter → generate-skills-ref.py → formatted overview → sessi
 
 ## Summary
 
-Ring's architecture is designed for:
+MarsAI's architecture is designed for:
 
 - **Modularity** - Independent, composable components across multiple plugins
 - **Performance** - Parallel execution wherever possible (3x faster reviews)
@@ -737,14 +737,14 @@ _Component counts reflect current state; plugin versions managed in `.claude-plu
 | Component                 | Count      | Location               |
 | ------------------------- | ---------- | ---------------------- |
 | Active Plugins            | 2          | All plugin directories |
-| Skills (ring-default)     | 22         | `default/skills/`      |
-| Skills (ring-dev-team)    | 32         | `dev-team/skills/`     |
+| Skills (marsai-default)     | 22         | `default/skills/`      |
+| Skills (marsai-dev-team)    | 32         | `dev-team/skills/`     |
 | **Total Skills**          | **54**     | **All plugins**        |
-| Agents (ring-default)     | 10         | `default/agents/`      |
-| Agents (ring-dev-team)    | 12         | `dev-team/agents/`     |
+| Agents (marsai-default)     | 10         | `default/agents/`      |
+| Agents (marsai-dev-team)    | 12         | `dev-team/agents/`     |
 | **Total Agents**          | **22**     | **All plugins**        |
-| Commands (ring-default)   | 14         | `default/commands/`    |
-| Commands (ring-dev-team)  | 9          | `dev-team/commands/`   |
+| Commands (marsai-default)   | 14         | `default/commands/`    |
+| Commands (marsai-dev-team)  | 9          | `dev-team/commands/`   |
 | **Total Commands**        | **23**     | **All plugins**        |
 | Hooks                     | Per plugin | `{plugin}/hooks/`      |
 

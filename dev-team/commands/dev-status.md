@@ -1,5 +1,5 @@
 ---
-name: ring:dev-status
+name: marsai:dev-status
 description: Check the status of the current development cycle
 argument-hint: ""
 ---
@@ -9,7 +9,7 @@ Check the status of the current development cycle.
 ## Usage
 
 ```
-/ring:dev-status
+/marsai:dev-status
 ```
 
 ## MANDATORY: Load Full Skill
@@ -17,7 +17,7 @@ Check the status of the current development cycle.
 **This command MUST load the skill for complete workflow execution.**
 
 ```
-Use Skill tool: ring:cycle-management with mode=status
+Use Skill tool: marsai:cycle-management with mode=status
 ```
 
 The skill contains the complete workflow with:

@@ -66,12 +66,12 @@ DO NOT read/edit >3 files directly. This is a PROHIBITION.
 - "fix issues/remaining/findings" → Launch specialist agent
 - "apply fixes", "fix the X issues" → Launch specialist agent
 - "find where", "search for", "understand how" → Launch Explore agent
-- "draw a diagram", "explain architecture", "visualize", "comparison table" → Load ring:visual-explainer skill
+- "draw a diagram", "explain architecture", "visualize", "comparison table" → Load marsai:visual-explainer skill
 
 **If you think "this task is small" or "I can handle 5 files":**
 WRONG. Count > 3 = agent. No exceptions. Task size is irrelevant.
 
-**Full rules:** Use Skill tool with "ring:using-ring" if needed.
+**Full rules:** Use Skill tool with "marsai:using-marsai" if needed.
 '
 
 # Doubt-triggered questions pattern - when agents should ask vs proceed
@@ -130,12 +130,12 @@ generate_skills_overview() {
     fi
 
     # Ultimate fallback - minimal useful output
-    echo "# Ring Skills Quick Reference"
+    echo "# MarsAI Skills Quick Reference"
     echo ""
     echo "**Note:** Neither Python nor bash fallback available."
     echo "Skills are still accessible via the Skill tool."
     echo ""
-    echo "Run: \`Skill tool: ring:using-ring\` to see available workflows."
+    echo "Run: \`Skill tool: marsai:using-marsai\` to see available workflows."
     echo ""
     echo "To fix: Install Python 3.x or ensure generate-skills-ref.sh is executable."
 }
@@ -173,13 +173,13 @@ else
 fi
 
 # Escape outputs for JSON using RFC 8259 compliant escaping
-# Note: using-ring content is already included in skills_overview via generate-skills-ref.py
+# Note: using-marsai content is already included in skills_overview via generate-skills-ref.py
 overview_escaped=$(json_escape "$skills_overview")
 critical_rules_escaped=$(json_escape "$CRITICAL_RULES")
 doubt_questions_escaped=$(json_escape "$DOUBT_QUESTIONS")
 debug_log "Escaped: overview=${#overview_escaped}c rules=${#critical_rules_escaped}c doubt=${#doubt_questions_escaped}c"
 
-# Handoff auto-resume removed: now handled natively via Plan Mode (see /ring:create-handoff)
+# Handoff auto-resume removed: now handled natively via Plan Mode (see /marsai:create-handoff)
 
 # Build additionalContext
 additional_context="<ring-critical-rules>\n${critical_rules_escaped}\n</ring-critical-rules>\n\n<ring-doubt-questions>\n${doubt_questions_escaped}\n</ring-doubt-questions>\n\n<ring-skills-system>\n${overview_escaped}\n</ring-skills-system>"

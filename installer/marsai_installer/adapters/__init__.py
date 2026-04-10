@@ -1,14 +1,14 @@
-"""Platform adapters for Ring installer."""
+"""Platform adapters for MarsAI installer."""
 
 from pathlib import Path
 from typing import Dict, Optional, Type, TypeVar
 
-from ring_installer.adapters.base import PlatformAdapter
-from ring_installer.adapters.claude import ClaudeAdapter
-from ring_installer.adapters.codex import CodexAdapter
-from ring_installer.adapters.factory import FactoryAdapter
-from ring_installer.adapters.opencode import OpenCodeAdapter
-from ring_installer.adapters.pi import PiAdapter
+from marsai_installer.adapters.base import PlatformAdapter
+from marsai_installer.adapters.claude import ClaudeAdapter
+from marsai_installer.adapters.codex import CodexAdapter
+from marsai_installer.adapters.factory import FactoryAdapter
+from marsai_installer.adapters.opencode import OpenCodeAdapter
+from marsai_installer.adapters.pi import PiAdapter
 
 # TypeVar for adapter type hints
 AdapterT = TypeVar("AdapterT", bound=PlatformAdapter)

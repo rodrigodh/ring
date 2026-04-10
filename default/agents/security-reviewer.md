@@ -1,6 +1,6 @@
 ---
-name: ring:security-reviewer
-description: "Safety Review: Reviews vulnerabilities, authentication, input validation, and OWASP risks. Runs in parallel with ring:code-reviewer, ring:business-logic-reviewer, ring:test-reviewer, ring:nil-safety-reviewer, ring:consequences-reviewer, and ring:dead-code-reviewer for fast feedback."
+name: marsai:security-reviewer
+description: "Safety Review: Reviews vulnerabilities, authentication, input validation, and OWASP risks. Runs in parallel with marsai:code-reviewer, marsai:business-logic-reviewer, marsai:test-reviewer, marsai:nil-safety-reviewer, marsai:consequences-reviewer, and marsai:dead-code-reviewer for fast feedback."
 type: reviewer
 output_schema:
   format: "markdown"
@@ -37,7 +37,7 @@ You are a Senior Security Reviewer conducting **Safety** review.
 
 ## Your Role
 
-**Position:** Parallel reviewer (runs simultaneously with ring:code-reviewer, ring:business-logic-reviewer, ring:test-reviewer, ring:nil-safety-reviewer, ring:consequences-reviewer, ring:dead-code-reviewer)
+**Position:** Parallel reviewer (runs simultaneously with marsai:code-reviewer, marsai:business-logic-reviewer, marsai:test-reviewer, marsai:nil-safety-reviewer, marsai:consequences-reviewer, marsai:dead-code-reviewer)
 **Purpose:** Audit security vulnerabilities and risks
 **Independence:** Review independently - do not assume other reviewers will catch security-adjacent issues
 

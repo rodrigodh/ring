@@ -1,5 +1,5 @@
 ---
-name: ring:codereview
+name: marsai:codereview
 description: Run comprehensive parallel code review with all 7 specialized reviewers
 argument-hint: "[files-or-paths]"
 ---
@@ -58,7 +58,7 @@ fi
 
 **See [shared-patterns/reviewer-slicing-strategy.md](../skills/shared-patterns/reviewer-slicing-strategy.md) for full rationale.**
 
-After Mithril completes, determine whether the PR should be sliced into thematic groups for focused review. The slicer evaluates semantic cohesion between changed files — files that belong to the same package, import each other, or modify related functions are grouped together rather than split apart. This reuses the same logic as `ring:requesting-code-review` Step 2.7.
+After Mithril completes, determine whether the PR should be sliced into thematic groups for focused review. The slicer evaluates semantic cohesion between changed files — files that belong to the same package, import each other, or modify related functions are grouped together rather than split apart. This reuses the same logic as `marsai:requesting-code-review` Step 2.7.
 
 ⚠️ **SYNC NOTE:** This enhanced input collection logic is shared with `default/skills/requesting-code-review/SKILL.md` (Step 2.7). If you change the inputs or collection approach, update both locations.
 
@@ -106,8 +106,8 @@ CHANGE_SUMMARY=$(git diff "$BASE_REF" HEAD | grep -E '^@@.*@@' | sed 's/^@@ .* @
 **Dispatch the slicer agent:**
 
 ```
-Task tool (ring:review-slicer):
-  subagent_type: "ring:review-slicer"
+Task tool (marsai:review-slicer):
+  subagent_type: "marsai:review-slicer"
   description: "Classify PR files for adaptive cohesion-based review slicing"
   prompt: |
     ## Review Slicing Request
@@ -167,7 +167,7 @@ IF slicer agent fails:
 - Scoped diff: `git diff [BASE_REF] HEAD -- [slice files...]`
 - Filtered Mithril context: only sections mentioning files in the slice
 - Add to each reviewer prompt: `"Review Scope: Slice '[name]' — [description]"`
-- After all slices complete, merge results and deduplicate per Step 3-S-Merge in `ring:requesting-code-review` SKILL.md
+- After all slices complete, merge results and deduplicate per Step 3-S-Merge in `marsai:requesting-code-review` SKILL.md
 
 Gather the required context first:
 - WHAT_WAS_IMPLEMENTED: Summary of changes made
@@ -175,13 +175,13 @@ Gather the required context first:
 - BASE_SHA: Base commit for comparison (if applicable)
 - HEAD_SHA: Head commit for comparison (if applicable)
 - DESCRIPTION: Additional context about the changes
-- LANGUAGES: Go, TypeScript, or both (for ring:nil-safety-reviewer)
+- LANGUAGES: Go, TypeScript, or both (for marsai:nil-safety-reviewer)
 
 Then dispatch all 7 reviewers:
 
 ```
-Task tool #1 (ring:code-reviewer):
-  subagent_type: "ring:code-reviewer"
+Task tool #1 (marsai:code-reviewer):
+  subagent_type: "marsai:code-reviewer"
   description: "Review code quality and architecture"
   prompt: |
     WHAT_WAS_IMPLEMENTED: [summary of changes]
@@ -190,42 +190,42 @@ Task tool #1 (ring:code-reviewer):
     HEAD_SHA: [head commit if applicable]
     DESCRIPTION: [additional context]
 
-Task tool #2 (ring:business-logic-reviewer):
-  subagent_type: "ring:business-logic-reviewer"
+Task tool #2 (marsai:business-logic-reviewer):
+  subagent_type: "marsai:business-logic-reviewer"
   description: "Review business logic correctness"
   prompt: |
     [Same parameters as above]
 
-Task tool #3 (ring:security-reviewer):
-  subagent_type: "ring:security-reviewer"
+Task tool #3 (marsai:security-reviewer):
+  subagent_type: "marsai:security-reviewer"
   description: "Review security vulnerabilities"
   prompt: |
     [Same parameters as above]
 
-Task tool #4 (ring:test-reviewer):
-  subagent_type: "ring:test-reviewer"
+Task tool #4 (marsai:test-reviewer):
+  subagent_type: "marsai:test-reviewer"
   description: "Review test quality and coverage"
   prompt: |
     [Same parameters as above]
     Focus: Edge cases, error paths, test independence, assertion quality.
 
-Task tool #5 (ring:nil-safety-reviewer):
-  subagent_type: "ring:nil-safety-reviewer"
+Task tool #5 (marsai:nil-safety-reviewer):
+  subagent_type: "marsai:nil-safety-reviewer"
   description: "Review nil/null pointer safety"
   prompt: |
     [Same parameters as above]
     LANGUAGES: [Go|TypeScript|both]
     Focus: Nil sources, propagation paths, missing guards.
 
-Task tool #6 (ring:consequences-reviewer):
-  subagent_type: "ring:consequences-reviewer"
+Task tool #6 (marsai:consequences-reviewer):
+  subagent_type: "marsai:consequences-reviewer"
   description: "Review ripple effects and downstream consequences"
   prompt: |
     [Same parameters as above]
     Focus: Caller chain impact, consumer contract integrity, shared state consequences, downstream breakage.
 
-Task tool #7 (ring:dead-code-reviewer):
-  subagent_type: "ring:dead-code-reviewer"
+Task tool #7 (marsai:dead-code-reviewer):
+  subagent_type: "marsai:dead-code-reviewer"
   description: "Review orphaned and dead code across three rings"
   prompt: |
     [Same parameters as above]
@@ -244,7 +244,7 @@ Each reviewer returns:
 
 Consolidate all issues by severity across all seven reviewers.
 
-**If slicing was active:** Results are already merged and deduplicated per Step 3-S-Merge in `ring:requesting-code-review`. The dedup logic:
+**If slicing was active:** Results are already merged and deduplicated per Step 3-S-Merge in `marsai:requesting-code-review`. The dedup logic:
 - **Exact match:** Same reviewer + same file:line = keep one
 - **Fuzzy match:** Different reviewers/slices + same file:line + similar description = keep the more detailed one, note multi-reviewer confidence
 - **Cross-cutting:** Issues found across 2+ slices are tagged as cross-cutting concerns and surfaced prominently
@@ -258,9 +258,9 @@ When aggregating findings, detect and flag conflicting recommendations between r
 | Conflict Type | Resolution | Priority |
 |--------------|------------|----------|
 | Security vs Performance | Security recommendation wins | CRITICAL |
-| More tests vs Over-testing | Defer to ring:test-reviewer for test scope | MEDIUM |
-| More mocks vs Less mocks | Evaluate based on ring:test-reviewer guidance | MEDIUM |
-| Refactor vs Keep simple | Defer to ring:code-reviewer for architecture decisions | MEDIUM |
+| More tests vs Over-testing | Defer to marsai:test-reviewer for test scope | MEDIUM |
+| More mocks vs Less mocks | Evaluate based on marsai:test-reviewer guidance | MEDIUM |
+| Refactor vs Keep simple | Defer to marsai:code-reviewer for architecture decisions | MEDIUM |
 
 **Flagging Conflicts:**
 When reviewers provide contradictory guidance:
@@ -272,8 +272,8 @@ When reviewers provide contradictory guidance:
 **Example:**
 ```
 ⚠️ Conflict Detected:
-- ring:test-reviewer: "Add more mock isolation for external services"
-- ring:code-reviewer: "Current mocking approach is sufficient"
+- marsai:test-reviewer: "Add more mock isolation for external services"
+- marsai:code-reviewer: "Current mocking approach is sufficient"
 - Resolution: User decision required - see both perspectives above
 ```
 
@@ -527,7 +527,7 @@ Signs that a reviewer produced incomplete output:
 
 ## Mithril Installation
 
-Ring's pre-analysis pipeline requires [Mithril](https://github.com/LerianStudio/mithril), an external code analysis tool.
+MarsAI's pre-analysis pipeline requires [Mithril](https://github.com/LerianStudio/mithril), an external code analysis tool.
 
 ### Prerequisites
 
@@ -565,7 +565,7 @@ Do NOT set `GONOSUMCHECK` or `GONOSUMDB` environment variables, as these disable
 **This command MUST load the skill for complete workflow execution.**
 
 ```
-Use Skill tool: ring:requesting-code-review
+Use Skill tool: marsai:requesting-code-review
 ```
 
 The skill contains the complete workflow with:

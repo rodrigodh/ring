@@ -1,5 +1,5 @@
 ---
-name: ring:dev-dep-security-check
+name: marsai:dev-dep-security-check
 description: |
   Intercepts and audits dependency installations (pip, npm, go) before they
   execute. Validates package identity, checks for known vulnerabilities,
@@ -19,7 +19,7 @@ skip_when: |
   - Dependency is already vetted and pinned in lockfile
 
 related:
-  complementary: [ring:dev-docker-security, ring:dev-sre, ring:dev-implementation]
+  complementary: [marsai:dev-docker-security, marsai:dev-sre, marsai:dev-implementation]
 
 input_schema:
   required:

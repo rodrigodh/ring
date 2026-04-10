@@ -1,5 +1,5 @@
 ---
-name: ring:dev-service-discovery
+name: marsai:dev-service-discovery
 description: Scan project and identify Service, Modules, and Resources for tenant-manager
 argument-hint: "[project-path]"
 ---
@@ -9,7 +9,7 @@ Scan the current Go project and produce a visual report of the **Service → Mod
 ## Usage
 
 ```
-/ring:dev-service-discovery
+/marsai:dev-service-discovery
 ```
 
 No arguments needed. Runs in the current working directory.
@@ -34,7 +34,7 @@ A visual HTML page with:
 ## Skill Reference
 
 ```yaml
-Use Skill tool: ring:dev-service-discovery
+Use Skill tool: marsai:dev-service-discovery
 ```
 
 The skill contains the complete detection logic and visual report generation.

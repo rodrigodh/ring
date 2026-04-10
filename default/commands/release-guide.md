@@ -1,5 +1,5 @@
 ---
-name: ring:release-guide
+name: marsai:release-guide
 description: Generate an Ops Update Guide from git diff between two refs
 argument-hint: "[base-ref] [target-ref]"
 ---
@@ -9,10 +9,10 @@ Generate an internal Operations-facing update/migration guide based on git diff 
 ## Usage
 
 ```
-/ring:release-guide
+/marsai:release-guide
 ```
 
-This command invokes the `ring:release-guide-info` skill, which will interactively collect all required information:
+This command invokes the `marsai:release-guide-info` skill, which will interactively collect all required information:
 - Base ref (starting point)
 - Target ref (ending point)
 - Version (optional, auto-detected from tags)
@@ -30,9 +30,9 @@ The skill generates:
 
 | Command/Skill | Relationship |
 |---------------|--------------|
-| `ring:release-guide-info` skill | Full workflow with all options |
-| `/ring:commit` | Use after release guide to commit changes |
-| `ring:finishing-a-development-branch` | Complementary workflow for branch completion |
+| `marsai:release-guide-info` skill | Full workflow with all options |
+| `/marsai:commit` | Use after release guide to commit changes |
+| `marsai:finishing-a-development-branch` | Complementary workflow for branch completion |
 
 ---
 
@@ -41,7 +41,7 @@ The skill generates:
 **This command MUST load the skill for complete workflow execution.**
 
 ```
-Use Skill tool: ring:release-guide-info
+Use Skill tool: marsai:release-guide-info
 ```
 
 The skill contains the complete workflow with:

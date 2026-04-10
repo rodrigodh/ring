@@ -12,7 +12,7 @@ The `userMessage` field in hook output enables hooks to send **mandatory user-fa
 {
   "hookSpecificOutput": {
     "hookEventName": "SessionStart",
-    "userMessage": "🔄 **IMPORTANT: Ring marketplace updated!**\n⚠️ **ACTION REQUIRED:** Restart session.",
+    "userMessage": "🔄 **IMPORTANT: MarsAI marketplace updated!**\n⚠️ **ACTION REQUIRED:** Restart session.",
     "additionalContext": "<system-context>...</system-context>"
   }
 }
@@ -46,7 +46,7 @@ If Claude receives a `userMessage` and does NOT display it immediately → **aut
 ```bash
 # session-start.sh
 if marketplace_was_updated; then
-  update_message="🔄 **Ring marketplace updated!**\n⚠️ Restart session."
+  update_message="🔄 **MarsAI marketplace updated!**\n⚠️ Restart session."
   output_json_with_user_message "$update_message"
 fi
 ```
@@ -79,7 +79,7 @@ fi
 
 ## Implementation Layers
 
-Ring uses three enforcement layers to ensure compliance:
+MarsAI uses three enforcement layers to ensure compliance:
 
 ### Layer 1: Schema (Structural)
 
@@ -103,9 +103,9 @@ When a hook returns a `userMessage` field:
 **Verification:** If you see userMessage and don't show it immediately, you have failed.
 ```
 
-### Layer 3: Ring Skill (Defensive)
+### Layer 3: MarsAI Skill (Defensive)
 
-`ring:using-ring` skill includes mandatory userMessage check in first response protocol:
+`marsai:using-marsai` skill includes mandatory userMessage check in first response protocol:
 
 ```markdown
 ## MANDATORY FIRST RESPONSE PROTOCOL
@@ -157,9 +157,9 @@ Now, regarding your question about..."  ← CORRECT
 3. Verify Claude displays "TEST MESSAGE" at start of first response
 4. If not displayed → enforcement failed
 
-### Automated Test (ring:using-ring checklist)
+### Automated Test (marsai:using-marsai checklist)
 
-The `ring:using-ring` skill enforces userMessage check as first item in mandatory checklist:
+The `marsai:using-marsai` skill enforces userMessage check as first item in mandatory checklist:
 
 ```markdown
 Before responding to ANY user message:
@@ -230,5 +230,5 @@ Visual styling based on message type.
 ## See Also
 
 - `default/hooks/session-start.sh` - Implementation example
-- `default/skills/using-ring/SKILL.md` - Enforcement checklist
+- `default/skills/using-marsai/SKILL.md` - Enforcement checklist
 - `default/hooks/hooks.json` - Hook configuration

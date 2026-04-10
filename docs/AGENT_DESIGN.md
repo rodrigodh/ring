@@ -1,6 +1,6 @@
 # Agent Design Reference
 
-This document contains agent output schema archetypes and standards compliance requirements for Ring agents.
+This document contains agent output schema archetypes and standards compliance requirements for MarsAI agents.
 
 ---
 
@@ -33,7 +33,7 @@ output_schema:
       required: true
 ```
 
-**Used by:** `ring:backend-engineer-golang`, `ring:backend-engineer-typescript`, `frontend-bff-engineer-typescript`, `ring:devops-engineer`, `ring:qa-analyst`, `ring:sre`, `finops-automation`
+**Used by:** `marsai:backend-engineer-golang`, `marsai:backend-engineer-typescript`, `frontend-bff-engineer-typescript`, `marsai:devops-engineer`, `marsai:qa-analyst`, `marsai:sre`, `finops-automation`
 
 ---
 
@@ -59,7 +59,7 @@ output_schema:
       required: true
 ```
 
-**Used by:** `ring:frontend-designer`, `finops-analyzer`
+**Used by:** `marsai:frontend-designer`, `finops-analyzer`
 
 ---
 
@@ -91,11 +91,11 @@ output_schema:
       required: true
 ```
 
-**Used by:** `ring:code-reviewer`, `ring:business-logic-reviewer`, `ring:security-reviewer`, `ring:dead-code-reviewer`
+**Used by:** `marsai:code-reviewer`, `marsai:business-logic-reviewer`, `marsai:security-reviewer`, `marsai:dead-code-reviewer`
 
-**Note:** `ring:business-logic-reviewer` and `ring:security-reviewer` extend the base Reviewer Schema with additional domain-specific required sections:
-- `ring:business-logic-reviewer` adds: "Mental Execution Analysis", "Business Requirements Coverage", "Edge Cases Analysis"
-- `ring:security-reviewer` adds: "OWASP Top 10 Coverage", "Compliance Status"
+**Note:** `marsai:business-logic-reviewer` and `marsai:security-reviewer` extend the base Reviewer Schema with additional domain-specific required sections:
+- `marsai:business-logic-reviewer` adds: "Mental Execution Analysis", "Business Requirements Coverage", "Edge Cases Analysis"
+- `marsai:security-reviewer` adds: "OWASP Top 10 Coverage", "Compliance Status"
 
 ---
 
@@ -124,7 +124,7 @@ output_schema:
       required: true
 ```
 
-**Used by:** `ring:codebase-explorer`
+**Used by:** `marsai:codebase-explorer`
 
 ---
 
@@ -153,23 +153,23 @@ output_schema:
       required: true
 ```
 
-**Used by:** `ring:write-plan`
+**Used by:** `marsai:write-plan`
 
 ---
 
 ## Standards Compliance (Conditional Output Section)
 
-The `ring-dev-team` agents include a **Standards Compliance** output section that is conditionally required based on invocation context.
+The `marsai-dev-team` agents include a **Standards Compliance** output section that is conditionally required based on invocation context.
 
 ### Schema Definition
 
-All ring-dev-team agents include this in their `output_schema`:
+All marsai-dev-team agents include this in their `output_schema`:
 
 ```yaml
 - name: "Standards Compliance"
   pattern: "^## Standards Compliance"
-  required: false  # In schema, but MANDATORY when invoked from ring:dev-refactor
-  description: "Comparison of codebase against Lerian/Ring standards. MANDATORY when invoked from ring:dev-refactor skill."
+  required: false  # In schema, but MANDATORY when invoked from marsai:dev-refactor
+  description: "Comparison of codebase against Lerian/MarsAI standards. MANDATORY when invoked from marsai:dev-refactor skill."
 ```
 
 ### Conditional Requirement: `invoked_from_dev_refactor`
@@ -177,20 +177,20 @@ All ring-dev-team agents include this in their `output_schema`:
 | Context | Standards Compliance Required | Enforcement |
 |---------|------------------------------|-------------|
 | Direct agent invocation | Optional | Agent may include if relevant |
-| Via `ring:dev-cycle` | Optional | Agent may include if relevant |
-| Via `ring:dev-refactor` | **MANDATORY** | Prompt includes `MODE: ANALYSIS ONLY` |
+| Via `marsai:dev-cycle` | Optional | Agent may include if relevant |
+| Via `marsai:dev-refactor` | **MANDATORY** | Prompt includes `MODE: ANALYSIS ONLY` |
 
 **How It's Triggered:**
-1. User invokes `/ring:dev-refactor` command
+1. User invokes `/marsai:dev-refactor` command
 2. The skill dispatches agents with prompts starting with `**MODE: ANALYSIS ONLY**`
 3. This prompt pattern signals to agents that Standards Compliance output is MANDATORY
-4. Agents load Ring standards via WebFetch and produce comparison tables
+4. Agents load MarsAI standards via WebFetch and produce comparison tables
 
 **Detection in Agent Prompts:**
 ```text
 If prompt contains "**MODE: ANALYSIS ONLY**":
   → Standards Compliance section is MANDATORY
-  → Agent MUST load Ring standards via WebFetch
+  → Agent MUST load MarsAI standards via WebFetch
   → Agent MUST produce comparison tables
 
 If prompt does NOT contain "**MODE: ANALYSIS ONLY**":
@@ -200,17 +200,17 @@ If prompt does NOT contain "**MODE: ANALYSIS ONLY**":
 
 ### Affected Agents
 
-All ring-dev-team agents support Standards Compliance:
+All marsai-dev-team agents support Standards Compliance:
 
 | Agent | Standards Source | Categories Checked |
 |-------|------------------|-------------------|
-| `ring:backend-engineer-golang` | `golang.md` | lib-commons, Error Handling, Logging, Config |
-| `ring:backend-engineer-typescript` | `typescript.md` | Type Safety, Error Handling, Validation |
-| `ring:devops-engineer` | `devops.md` | Dockerfile, docker-compose, CI/CD |
+| `marsai:backend-engineer-golang` | `golang.md` | lib-commons, Error Handling, Logging, Config |
+| `marsai:backend-engineer-typescript` | `typescript.md` | Type Safety, Error Handling, Validation |
+| `marsai:devops-engineer` | `devops.md` | Dockerfile, docker-compose, CI/CD |
 | `frontend-bff-engineer-typescript` | `frontend.md` | Component patterns, State management |
-| `ring:frontend-designer` | `frontend.md` | Accessibility, Design patterns |
-| `ring:qa-analyst` | `qa.md` | Test coverage, Test patterns |
-| `ring:sre` | `sre.md` | Health endpoints, Logging, Tracing |
+| `marsai:frontend-designer` | `frontend.md` | Accessibility, Design patterns |
+| `marsai:qa-analyst` | `qa.md` | Test coverage, Test patterns |
+| `marsai:sre` | `sre.md` | Health endpoints, Logging, Tracing |
 
 ### Output Format Examples
 
@@ -218,7 +218,7 @@ All ring-dev-team agents support Standards Compliance:
 ```markdown
 ## Standards Compliance
 
-Fully Compliant - Codebase follows all Lerian/Ring Standards.
+Fully Compliant - Codebase follows all Lerian/MarsAI Standards.
 
 No migration actions required.
 ```
@@ -227,7 +227,7 @@ No migration actions required.
 ```markdown
 ## Standards Compliance
 
-### Lerian/Ring Standards Comparison
+### Lerian/MarsAI Standards Comparison
 
 | Category | Current Pattern | Expected Pattern | Status | File/Location |
 |----------|----------------|------------------|--------|---------------|

@@ -263,7 +263,7 @@ export class AuthController extends FastifyController {
   @Route("get", "/auth/sso")
   async getAuthorizationUrl(
     request: FastifyRequest<{
-      Querystring: GetAuthorizationUrlDTO;
+      Querystmarsai: GetAuthorizationUrlDTO;
     }>,
     reply: FastifyReply,
   ) {

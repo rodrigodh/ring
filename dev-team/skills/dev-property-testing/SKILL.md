@@ -1,5 +1,5 @@
 ---
-name: ring:dev-property-testing
+name: marsai:dev-property-testing
 description: |
   Gate 5 of development cycle - ensures property-based tests exist
   to verify domain invariants hold for all randomly generated inputs.
@@ -10,7 +10,7 @@ trigger: |
   - Verifies domain invariants via testing/quick package
 
 skip_when: |
-  - Not inside a development cycle (ring:dev-cycle)
+  - Not inside a development cycle (marsai:dev-cycle)
   - Task is documentation-only, configuration-only, or non-code
   - No domain logic with invariants was added or modified
   - Frontend-only project (property testing applies to backend domain logic)
@@ -21,11 +21,11 @@ NOT_skip_when: |
   - "Too abstract" - Properties are concrete: "balance never negative", "IDs always unique".
 
 sequence:
-  after: [ring:dev-fuzz-testing]
-  before: [ring:dev-integration-testing]
+  after: [marsai:dev-fuzz-testing]
+  before: [marsai:dev-integration-testing]
 
 related:
-  complementary: [ring:dev-cycle, ring:dev-fuzz-testing, ring:qa-analyst]
+  complementary: [marsai:dev-cycle, marsai:dev-fuzz-testing, marsai:qa-analyst]
 
 input_schema:
   required:
@@ -119,7 +119,7 @@ Ensure domain logic has **property-based tests** to verify invariants hold for a
 **MANDATORY:** Load testing-property.md standards via WebFetch.
 
 <fetch_required>
-https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/golang/testing-property.md
+https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang/testing-property.md
 </fetch_required>
 
 ---
@@ -144,7 +144,7 @@ if any REQUIRED input is missing:
 
 ```text
 Task tool:
-  subagent_type: "ring:qa-analyst"
+  subagent_type: "marsai:qa-analyst"
   prompt: |
     **MODE:** PROPERTY-BASED TESTING (Gate 5)
 

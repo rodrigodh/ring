@@ -83,7 +83,7 @@ Examples:
 - STOP and report if PROJECT_RULES.md is missing
 - HARD GATE: All 7 reviewers must pass before Gate 5
 - FORBIDDEN: Reading source code directly as orchestrator
-- REQUIRED: WebFetch Ring standards before implementation
+- REQUIRED: WebFetch MarsAI standards before implementation
 - MANDATORY: Save state after every gate transition
 ```
 
@@ -307,7 +307,7 @@ When documenting refactoring issues, agents MUST provide a Code Transformation C
 For EACH issue, output MUST include:
 
 - [ ] **Before (Current Code)** - Actual code extracted from the project with `file:line` reference
-- [ ] **After (Ring Standards)** - Transformed code following Ring/Lerian standards
+- [ ] **After (MarsAI Standards)** - Transformed code following MarsAI/Lerian standards
 - [ ] **Standard References table** - Pattern, Source file, Section name, Line range
 - [ ] **Why This Transformation Matters** - Problem, Standard violated, Impact
 
@@ -322,10 +322,10 @@ For EACH issue, output MUST include:
 {actual code from project}
 ```
 
-### After (Ring Standards)
+### After (MarsAI Standards)
 ```{language}
 // file: {path}:{start_line}-{new_end_line}
-// ✅ Ring Standard: {Pattern Name} ({standards_file}:{section})
+// ✅ MarsAI Standard: {Pattern Name} ({standards_file}:{section})
 {transformed code using lib-commons patterns}
 ```
 
@@ -336,7 +336,7 @@ For EACH issue, output MUST include:
 
 ### Why This Transformation Matters
 - **Problem:** {current issue}
-- **Ring Standard:** {which standard violated}
+- **MarsAI Standard:** {which standard violated}
 - **Impact:** {business/technical impact}
 ```
 
@@ -394,8 +394,8 @@ The more assertive and explicit the language, the less room for AI to rationaliz
 ## Required Resources
 
 <fetch_required>
-https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/golang.md
-https://raw.githubusercontent.com/LerianStudio/ring/main/CLAUDE.md
+https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang.md
+https://raw.githubusercontent.com/LerianStudio/marsai/main/CLAUDE.md
 </fetch_required>
 
 MUST fetch all URLs above before starting the task.
@@ -422,7 +422,7 @@ Any occurrence = IMMEDIATE REJECTION.
 
 ---
 
-<dispatch_required agent="ring:backend-engineer-golang">
+<dispatch_required agent="marsai:backend-engineer-golang">
 Implement user authentication endpoint with JWT validation.
 </dispatch_required>
 
@@ -430,9 +430,9 @@ MUST use Task tool with specified agent.
 
 ---
 
-<parallel_dispatch agents="ring:backend-engineer-golang, ring:qa-analyst, ring:devops-engineer, ring:sre">
-Analyze codebase against Ring standards. All agents receive same context:
-- Codebase Report: docs/ring:dev-refactor/{timestamp}/codebase-report.md
+<parallel_dispatch agents="marsai:backend-engineer-golang, marsai:qa-analyst, marsai:devops-engineer, marsai:sre">
+Analyze codebase against MarsAI standards. All agents receive same context:
+- Codebase Report: docs/marsai:dev-refactor/{timestamp}/codebase-report.md
 - Project Rules: docs/PROJECT_RULES.md
 </parallel_dispatch>
 

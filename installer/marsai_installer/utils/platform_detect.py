@@ -1,5 +1,5 @@
 """
-Platform detection utilities for Ring installer.
+Platform detection utilities for MarsAI installer.
 
 Provides functions to detect which AI platforms are installed on the system
 and retrieve their version information.
@@ -15,7 +15,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from ring_installer.adapters import SUPPORTED_PLATFORMS
+from marsai_installer.adapters import SUPPORTED_PLATFORMS
 
 logger = logging.getLogger(__name__)
 
@@ -385,7 +385,7 @@ def print_detection_report() -> None:
     """Print a human-readable report of detected platforms."""
     platforms = detect_installed_platforms()
 
-    print("Ring Installer - Platform Detection Report")
+    print("MarsAI Installer - Platform Detection Report")
     print("=" * 50)
 
     if not platforms:

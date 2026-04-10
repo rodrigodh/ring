@@ -1,22 +1,22 @@
 """
-Content transformers for Ring multi-platform installer.
+Content transformers for MarsAI multi-platform installer.
 
-This module provides transformers for converting Ring components
+This module provides transformers for converting MarsAI components
 (skills, agents, commands, hooks) to platform-specific formats.
 
 Supported Platforms:
-- Claude Code: Native Ring format (passthrough)
+- Claude Code: Native MarsAI format (passthrough)
 - Factory AI: Agents -> Droids transformation
 """
 
 from pathlib import Path
 from typing import Dict, Optional, Type
 
-from ring_installer.transformers.agent import (
+from marsai_installer.transformers.agent import (
     AgentTransformer,
     AgentTransformerFactory,
 )
-from ring_installer.transformers.base import (
+from marsai_installer.transformers.base import (
     BaseTransformer,
     FrontmatterTransformer,
     PassthroughTransformer,
@@ -25,17 +25,17 @@ from ring_installer.transformers.base import (
     TransformerPipeline,
     TransformResult,
 )
-from ring_installer.transformers.command import (
+from marsai_installer.transformers.command import (
     CommandTransformer,
     CommandTransformerFactory,
 )
-from ring_installer.transformers.hooks import (
+from marsai_installer.transformers.hooks import (
     HookTransformer,
     HookTransformerFactory,
     generate_hooks_json,
     parse_hooks_json,
 )
-from ring_installer.transformers.skill import (
+from marsai_installer.transformers.skill import (
     SkillTransformer,
     SkillTransformerFactory,
 )

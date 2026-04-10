@@ -15,7 +15,7 @@ This principle is NON-NEGOTIABLE for all dev-team skills.
 | Report to user | Make code changes |
 | Coordinate workflow | Validate standards compliance |
 | Aggregate findings | Analyze codebase patterns |
-| Generate task files | Load and apply Ring standards |
+| Generate task files | Load and apply MarsAI standards |
 
 ## FORBIDDEN Actions (Orchestrator)
 
@@ -33,10 +33,10 @@ This principle is NON-NEGOTIABLE for all dev-team skills.
 
 | Tool | On Source Files | Correct Action |
 |------|-----------------|----------------|
-| `Read` | ❌ FORBIDDEN | Dispatch `ring:codebase-explorer` or specialist agent |
+| `Read` | ❌ FORBIDDEN | Dispatch `marsai:codebase-explorer` or specialist agent |
 | `Edit` | ❌ FORBIDDEN | Dispatch specialist agent to make changes |
 | `Write` | ❌ FORBIDDEN | Dispatch specialist agent to create files |
-| `Grep` on code | ❌ FORBIDDEN | Dispatch `ring:codebase-explorer` for pattern discovery |
+| `Grep` on code | ❌ FORBIDDEN | Dispatch `marsai:codebase-explorer` for pattern discovery |
 | `Bash` (go/npm/yarn) | ❌ FORBIDDEN | Specialist agent runs commands |
 
 **Source files include:** `*.go`, `*.ts`, `*.tsx`, `*.jsx`, `*.py`, `*.java`, `*.rs`, `*.rb`
@@ -45,63 +45,63 @@ This principle is NON-NEGOTIABLE for all dev-team skills.
 - Task files (`tasks.md`, `findings.md`)
 - State files (`*-state.json`)
 - Report files (`*-report.md`)
-- Ring plugin files (when maintaining Ring itself, not via ring:dev-refactor)
+- MarsAI plugin files (when maintaining MarsAI itself, not via marsai:dev-refactor)
 
 ## REQUIRED Actions (Orchestrator)
 
-### ring-dev-team Agents (Implementation)
+### marsai-dev-team Agents (Implementation)
 
 ```
-✅ Task(subagent_type="ring:backend-engineer-golang", ...)
-✅ Task(subagent_type="ring:backend-engineer-typescript", ...)
-✅ Task(subagent_type="ring:frontend-engineer", ...)
-✅ Task(subagent_type="ring:frontend-designer", ...)
-✅ Task(subagent_type="ring:frontend-bff-engineer-typescript", ...)
-✅ Task(subagent_type="ring:devops-engineer", ...)
-✅ Task(subagent_type="ring:sre", ...)
-✅ Task(subagent_type="ring:qa-analyst", ...)
-✅ Task(subagent_type="ring:prompt-quality-reviewer", ...)
+✅ Task(subagent_type="marsai:backend-engineer-golang", ...)
+✅ Task(subagent_type="marsai:backend-engineer-typescript", ...)
+✅ Task(subagent_type="marsai:frontend-engineer", ...)
+✅ Task(subagent_type="marsai:frontend-designer", ...)
+✅ Task(subagent_type="marsai:frontend-bff-engineer-typescript", ...)
+✅ Task(subagent_type="marsai:devops-engineer", ...)
+✅ Task(subagent_type="marsai:sre", ...)
+✅ Task(subagent_type="marsai:qa-analyst", ...)
+✅ Task(subagent_type="marsai:prompt-quality-reviewer", ...)
 ```
 
-### ring-default Agents (Core)
+### marsai-default Agents (Core)
 
 ```
-✅ Task(subagent_type="ring:codebase-explorer", ...)
-✅ Task(subagent_type="ring:code-reviewer", ...)
-✅ Task(subagent_type="ring:business-logic-reviewer", ...)
-✅ Task(subagent_type="ring:security-reviewer", ...)
-✅ Task(subagent_type="ring:write-plan", ...)
+✅ Task(subagent_type="marsai:codebase-explorer", ...)
+✅ Task(subagent_type="marsai:code-reviewer", ...)
+✅ Task(subagent_type="marsai:business-logic-reviewer", ...)
+✅ Task(subagent_type="marsai:security-reviewer", ...)
+✅ Task(subagent_type="marsai:write-plan", ...)
 ```
 
 ## Gate/Step → Agent Mapping
 
-### ring:dev-cycle Gates
+### marsai:dev-cycle Gates
 
 | Gate | Specialized Agent | What Agent Does |
 |------|-------------------|-----------------|
-| 0 | `ring:backend-engineer-golang` | Implements Go code, adds observability, runs TDD |
-| 0 | `ring:backend-engineer-typescript` | Implements TS backend code, adds observability, runs TDD |
-| 0 | `ring:frontend-engineer` | Implements React/Next.js components, runs TDD |
-| 0 | `ring:frontend-bff-engineer-typescript` | Implements BFF layer, API aggregation |
-| 0 | `ring:frontend-designer` | Reviews UI/UX, accessibility, design system compliance |
-| 1 | `ring:devops-engineer` | Updates Dockerfile, docker-compose, Helm |
-| 2 | `ring:sre` | Validates observability implementation |
-| 3 | `ring:qa-analyst` | Writes tests, validates coverage |
-| 4 | `ring:code-reviewer` | Reviews code quality |
-| 4 | `ring:business-logic-reviewer` | Reviews business logic |
-| 4 | `ring:security-reviewer` | Reviews security |
+| 0 | `marsai:backend-engineer-golang` | Implements Go code, adds observability, runs TDD |
+| 0 | `marsai:backend-engineer-typescript` | Implements TS backend code, adds observability, runs TDD |
+| 0 | `marsai:frontend-engineer` | Implements React/Next.js components, runs TDD |
+| 0 | `marsai:frontend-bff-engineer-typescript` | Implements BFF layer, API aggregation |
+| 0 | `marsai:frontend-designer` | Reviews UI/UX, accessibility, design system compliance |
+| 1 | `marsai:devops-engineer` | Updates Dockerfile, docker-compose, Helm |
+| 2 | `marsai:sre` | Validates observability implementation |
+| 3 | `marsai:qa-analyst` | Writes tests, validates coverage |
+| 4 | `marsai:code-reviewer` | Reviews code quality |
+| 4 | `marsai:business-logic-reviewer` | Reviews business logic |
+| 4 | `marsai:security-reviewer` | Reviews security |
 
-### ring:dev-refactor Steps
+### marsai:dev-refactor Steps
 
 | Step | Specialized Agent | What Agent Does |
 |------|-------------------|-----------------|
-| 3 | `ring:codebase-explorer` | Deep architecture analysis, pattern discovery |
-| 4 | `ring:backend-engineer-golang` | Go standards compliance analysis |
-| 4 | `ring:backend-engineer-typescript` | TypeScript standards compliance analysis |
-| 4 | `ring:frontend-engineer` | Frontend standards compliance analysis |
-| 4 | `ring:qa-analyst` | Test coverage and pattern analysis |
-| 4 | `ring:devops-engineer` | DevOps setup analysis |
-| 4 | `ring:sre` | Observability analysis |
+| 3 | `marsai:codebase-explorer` | Deep architecture analysis, pattern discovery |
+| 4 | `marsai:backend-engineer-golang` | Go standards compliance analysis |
+| 4 | `marsai:backend-engineer-typescript` | TypeScript standards compliance analysis |
+| 4 | `marsai:frontend-engineer` | Frontend standards compliance analysis |
+| 4 | `marsai:qa-analyst` | Test coverage and pattern analysis |
+| 4 | `marsai:devops-engineer` | DevOps setup analysis |
+| 4 | `marsai:sre` | Observability analysis |
 
 ## Agent Selection Guide
 
@@ -111,35 +111,35 @@ This principle is NON-NEGOTIABLE for all dev-team skills.
 
 | File Type / Task | Agent to Dispatch |
 |------------------|-------------------|
-| `*.go` files | `ring:backend-engineer-golang` |
-| `*.ts` backend (Express, Fastify, NestJS) | `ring:backend-engineer-typescript` |
-| `*.tsx` / `*.jsx` React components | `ring:frontend-engineer` |
-| BFF / API Gateway layer | `ring:frontend-bff-engineer-typescript` |
-| UI/UX review, design system | `ring:frontend-designer` |
-| `Dockerfile`, `docker-compose.yml`, Helm | `ring:devops-engineer` |
-| Logging, tracing | `ring:sre` |
-| Test files (`*_test.go`, `*.spec.ts`) | `ring:qa-analyst` |
+| `*.go` files | `marsai:backend-engineer-golang` |
+| `*.ts` backend (Express, Fastify, NestJS) | `marsai:backend-engineer-typescript` |
+| `*.tsx` / `*.jsx` React components | `marsai:frontend-engineer` |
+| BFF / API Gateway layer | `marsai:frontend-bff-engineer-typescript` |
+| UI/UX review, design system | `marsai:frontend-designer` |
+| `Dockerfile`, `docker-compose.yml`, Helm | `marsai:devops-engineer` |
+| Logging, tracing | `marsai:sre` |
+| Test files (`*_test.go`, `*.spec.ts`) | `marsai:qa-analyst` |
 
 ### Code Review (Always Parallel)
 
 | Review Type | Agent to Dispatch |
 |-------------|-------------------|
-| Code quality, patterns, maintainability | `ring:code-reviewer` |
-| Business logic, domain correctness | `ring:business-logic-reviewer` |
-| Security vulnerabilities, auth, input validation | `ring:security-reviewer` |
+| Code quality, patterns, maintainability | `marsai:code-reviewer` |
+| Business logic, domain correctness | `marsai:business-logic-reviewer` |
+| Security vulnerabilities, auth, input validation | `marsai:security-reviewer` |
 
 ### Research & Analysis
 
 | Task Type | Agent to Dispatch |
 |-----------|-------------------|
-| Codebase architecture understanding | `ring:codebase-explorer` |
+| Codebase architecture understanding | `marsai:codebase-explorer` |
 
 ### Planning & Quality
 
 | Task Type | Agent to Dispatch |
 |-----------|-------------------|
-| Implementation planning | `ring:write-plan` |
-| Prompt/agent quality analysis | `ring:prompt-quality-reviewer` |
+| Implementation planning | `marsai:write-plan` |
+| Prompt/agent quality analysis | `marsai:prompt-quality-reviewer` |
 
 ## Agent Responsibilities (Implementation)
 
@@ -163,11 +163,11 @@ This principle is NON-NEGOTIABLE for all dev-team skills.
 |-----------------|----------------|-----------------|
 | "This is a simple change, I can do it myself" | Simple ≠ exempt. Agents have standards loaded. You don't. | **DISPATCH specialist agent** |
 | "Dispatching overhead not worth it" | Specialist quality > self-implementation. Dispatch is investment. | **DISPATCH specialist agent** |
-| "I already know Go/TypeScript" | Knowing language ≠ knowing Ring standards. Agent has standards. | **DISPATCH specialist agent** |
+| "I already know Go/TypeScript" | Knowing language ≠ knowing MarsAI standards. Agent has standards. | **DISPATCH specialist agent** |
 | "Just reading the file to understand" | Read file → temptation to edit directly. Agent reads for you. | **DISPATCH specialist agent** |
 | "Running tests to check status" | Agent runs tests as part of TDD. You orchestrate, not operate. | **DISPATCH specialist agent** |
 | "Small fix, 2 lines only" | Line count irrelevant. all code changes require specialist. | **DISPATCH specialist agent** |
-| "Agent will do same thing I would" | Agent has Ring standards loaded. You're guessing without them. | **DISPATCH specialist agent** |
+| "Agent will do same thing I would" | Agent has MarsAI standards loaded. You're guessing without them. | **DISPATCH specialist agent** |
 
 ## Red Flags - STOP Immediately
 
@@ -179,7 +179,7 @@ This principle is NON-NEGOTIABLE for all dev-team skills.
 | About to use Edit on source | "Just a quick fix..." | No fix is "quick" without standards |
 | About to use Write on source | "I'll create this file..." | Agent creates with observability |
 | Running `go test` or `npm test` | "Checking if tests pass..." | Agent runs tests in TDD cycle |
-| Analyzing code patterns | "Looking for the pattern..." | ring:codebase-explorer analyzes |
+| Analyzing code patterns | "Looking for the pattern..." | marsai:codebase-explorer analyzes |
 | "This is faster than dispatching" | Speed over quality | Agent quality > your speed |
 | "The agent would do the same" | Assuming equivalence | Agent has standards, you don't |
 | "It's just one line" | Minimizing scope | Scope is irrelevant |
@@ -199,7 +199,7 @@ This principle is NON-NEGOTIABLE for all dev-team skills.
    git checkout -- .
    ```
 4. **DISPATCH** the correct specialist agent with the ORIGINAL task
-5. **Agent implements** from scratch following TDD and Ring standards
+5. **Agent implements** from scratch following TDD and MarsAI standards
 
 **Sunk cost of direct work is IRRELEVANT. Specialist dispatch is MANDATORY.**
 
@@ -229,7 +229,7 @@ I violated the ORCHESTRATOR principle by directly [editing/reading/analyzing] so
 **Recovery actions:**
 1. Discarding direct changes: `git checkout -- <files>`
 2. Dispatching specialist agent: `[agent-name]`
-3. Agent will implement correctly with Ring standards
+3. Agent will implement correctly with MarsAI standards
 
 **Proceeding with correct workflow...**
 ```

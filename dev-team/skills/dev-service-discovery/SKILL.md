@@ -1,5 +1,5 @@
 ---
-name: ring:dev-service-discovery
+name: marsai:dev-service-discovery
 description: |
   Scans the current Go project and identifies the Service → Module → Resource
   hierarchy for tenant-manager registration. Detects service name and type,
@@ -19,7 +19,7 @@ trigger: |
   - User wants to know what to provision in tenant-manager for a service
   - User asks "what services/modules/resources does this project have?"
   - User needs to register a service in the tenant-manager catalog
-  - Before running ring:dev-multi-tenant on a new service
+  - Before running marsai:dev-multi-tenant on a new service
   - User asks about MongoDB indexes in a project
 
 skip_when: |
@@ -36,7 +36,7 @@ NOT_skip_when: |
   - "Already know the modules" → Knowledge ≠ verified. Run the scan.
 
 related:
-  complementary: [ring:dev-multi-tenant, ring:dev-devops, ring:exploring-codebase]
+  complementary: [marsai:dev-multi-tenant, marsai:dev-devops, marsai:exploring-codebase]
 
 output_schema:
   format: html
@@ -312,7 +312,7 @@ Store results for Phase 4 report:
 
 ## Phase 4: Generate Visual Report
 
-**MANDATORY: Invoke `Skill("ring:visual-explainer")` to produce the report.**
+**MANDATORY: Invoke `Skill("marsai:visual-explainer")` to produce the report.**
 
 Read `default/skills/visual-explainer/templates/data-table.html` first to absorb table patterns.
 
@@ -528,7 +528,7 @@ Linux: xdg-open docs/service-discovery.html
 | "I already know the modules" | Knowledge ≠ evidence. The scan catches things you miss. | **Run the scan** |
 | "This service is simple, just one module" | Simple services may still have multiple resource types. | **Run the scan** |
 | "Redis should be included as a resource" | Redis uses key prefixing (`GetKeyContext`), not per-tenant provisioning. It is not a tenant-manager resource. | **Exclude Redis from resources** |
-| "The report doesn't need to be visual" | Visual reports are for human decision-making. A JSON dump is not actionable. | **Generate HTML via ring:visual-explainer** |
+| "The report doesn't need to be visual" | Visual reports are for human decision-making. A JSON dump is not actionable. | **Generate HTML via marsai:visual-explainer** |
 | "WithModule not found, so no modules" | Fall back to component structure or ApplicationName. A service always has at least one module. | **Use Strategy B or C** |
 | "No index scripts needed, EnsureIndexes handles it" | In-code indexes run at app startup — but only if the app has connected. Scripts are needed for pre-provisioning, CI/CD, and dedicated tenant databases where the app hasn't booted yet. | **Generate scripts for all in-code indexes** |
 | "I'll just run the indexes manually" | Manual index creation is error-prone and not reproducible. Scripts are idempotent, documented, and version-controlled. | **Generate scripts** |

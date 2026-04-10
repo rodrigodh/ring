@@ -1,5 +1,5 @@
 ---
-name: ring:dev-helm
+name: marsai:dev-helm
 description: |
   Mandatory skill for creating and maintaining Helm charts following Lerian conventions.
   Enforces standardized chart structure, values organization, template patterns,
@@ -19,15 +19,15 @@ NOT_skip_when: |
 
 skip_when: |
   - Modifying only application code (no chart changes)
-  - Working on non-Helm deployment (docker-compose only) → Use ring:dev-devops
+  - Working on non-Helm deployment (docker-compose only) → Use marsai:dev-devops
 
 sequence:
-  after: [ring:dev-devops]
-  before: [ring:dev-sre]
+  after: [marsai:dev-devops]
+  before: [marsai:dev-sre]
 
 related:
-  complementary: [ring:dev-devops, ring:dev-sre, ring:dev-implementation]
-  similar: [ring:dev-devops]
+  complementary: [marsai:dev-devops, marsai:dev-sre, marsai:dev-implementation]
+  similar: [marsai:dev-devops]
 
 input_schema:
   required:
@@ -92,14 +92,14 @@ verification:
 This skill enforces Lerian's Helm chart conventions across all services. Every Helm chart MUST follow these patterns to ensure consistency, security, and operability across the platform.
 
 **Reference standards:** [`dev-team/docs/standards/helm/`](../../docs/standards/helm/index.md)
-**Executor agent:** `ring:helm-engineer`
+**Executor agent:** `marsai:helm-engineer`
 
 ## CRITICAL: Role Clarification
 
 | Who | Responsibility |
 |-----|----------------|
-| **This Skill (ring:dev-helm)** | Orchestrates the workflow: validates input, dispatches agent, verifies output |
-| **Agent (ring:helm-engineer)** | Executes: reads app source, creates chart files, validates with helm lint |
+| **This Skill (marsai:dev-helm)** | Orchestrates the workflow: validates input, dispatches agent, verifies output |
+| **Agent (marsai:helm-engineer)** | Executes: reads app source, creates chart files, validates with helm lint |
 
 ---
 
@@ -184,13 +184,13 @@ environment variables. Do NOT guess. Missing env vars are the #1 cause of CrashL
 
 ## Step 5: Dispatch Agent
 
-<dispatch_required agent="ring:helm-engineer">
+<dispatch_required agent="marsai:helm-engineer">
 Create/update Helm chart following Lerian conventions.
 </dispatch_required>
 
 ```yaml
 Task:
-  subagent_type: "ring:helm-engineer"
+  subagent_type: "marsai:helm-engineer"
   description: "Create Helm chart for {service_name}"
   prompt: |
     ⛔ MANDATORY: Create Helm chart following Lerian conventions.

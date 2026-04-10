@@ -1,7 +1,7 @@
 """
-Factory AI adapter - converts Ring format to Factory's droid-based format.
+Factory AI adapter - converts MarsAI format to Factory's droid-based format.
 
-Factory AI uses similar concepts to Ring but with different terminology:
+Factory AI uses similar concepts to MarsAI but with different terminology:
 - agents -> droids
 - skills -> skills (same)
 - commands -> commands (same)
@@ -12,7 +12,7 @@ import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
-from ring_installer.adapters.base import PlatformAdapter
+from marsai_installer.adapters.base import PlatformAdapter
 
 
 class FactoryAdapter(PlatformAdapter):
@@ -73,7 +73,7 @@ class FactoryAdapter(PlatformAdapter):
 
     def transform_skill(self, skill_content: str, metadata: Optional[Dict[str, Any]] = None) -> str:
         """
-        Transform a Ring skill for Factory AI.
+        Transform a MarsAI skill for Factory AI.
 
         Updates terminology and adjusts frontmatter for Factory compatibility.
 
@@ -101,7 +101,7 @@ class FactoryAdapter(PlatformAdapter):
 
     def transform_agent(self, agent_content: str, metadata: Optional[Dict[str, Any]] = None) -> str:
         """
-        Transform a Ring agent to a Factory AI droid.
+        Transform a MarsAI agent to a Factory AI droid.
 
         Converts agent format to Factory's droid format, updating terminology
         and structure as needed.
@@ -142,7 +142,7 @@ class FactoryAdapter(PlatformAdapter):
         Colons are NOT allowed in droid names (they're used for custom: model syntax).
 
         Example:
-            plugin=default, name=code-reviewer -> ring-default-code-reviewer
+            plugin=default, name=code-reviewer -> marsai-default-code-reviewer
         """
         result = dict(frontmatter)
 
@@ -174,7 +174,7 @@ class FactoryAdapter(PlatformAdapter):
         self, command_content: str, metadata: Optional[Dict[str, Any]] = None
     ) -> str:
         """
-        Transform a Ring command for Factory AI.
+        Transform a MarsAI command for Factory AI.
 
         Factory command format:
         - Optional YAML frontmatter with `description` and `argument-hint`
@@ -228,7 +228,7 @@ class FactoryAdapter(PlatformAdapter):
         self, hook_content: str, metadata: Optional[Dict[str, Any]] = None
     ) -> Optional[str]:
         """
-        Transform a Ring hook for Factory AI.
+        Transform a MarsAI hook for Factory AI.
 
         Key transformation: Replace Claude Code plugin paths with Factory paths.
         Factory hooks are installed directly to ~/.factory/hooks/, not in a plugin.
@@ -281,7 +281,7 @@ class FactoryAdapter(PlatformAdapter):
         Get the component mapping for Factory AI.
 
         Returns:
-            Mapping of Ring components to Factory AI directories
+            Mapping of MarsAI components to Factory AI directories
         """
         return {
             "agents": {"target_dir": "droids", "extension": ".md"},
@@ -469,13 +469,13 @@ class FactoryAdapter(PlatformAdapter):
         Get Factory AI terminology.
 
         Returns:
-            Mapping of Ring terms to Factory AI terms
+            Mapping of MarsAI terms to Factory AI terms
         """
         return {"agent": "droid", "skill": "skill", "command": "command", "hook": "trigger"}
 
     def is_native_format(self) -> bool:
         """
-        Check if this platform uses Ring's native format.
+        Check if this platform uses MarsAI's native format.
 
         Returns:
             False - Factory AI requires transformation
@@ -680,7 +680,7 @@ class FactoryAdapter(PlatformAdapter):
             placeholders = []
             masked = text
 
-        # Ring-specific context patterns
+        # MarsAI-specific context patterns
         # NOTE: Factory droid names use hyphens, not colons (colons reserved for custom: prefix)
         ring_contexts = [
             # Task tool subagent_type references: ring-plugin:name -> ring-plugin-name
@@ -691,8 +691,8 @@ class FactoryAdapter(PlatformAdapter):
             (r'"ring-([^:]+):([^"]+)"', r'"ring-\1-\2"'),
             (r"'ring-([^:]+):([^']+)'", r"'ring-\1-\2'"),
             # Tool references with -agent suffix
-            (r'"ring:([^"]*)-agent"', r'"ring-\1-droid"'),
-            (r"'ring:([^']*)-agent'", r"'ring-\1-droid'"),
+            (r'"marsai:([^"]*)-agent"', r'"ring-\1-droid"'),
+            (r"'marsai:([^']*)-agent'", r"'ring-\1-droid'"),
             # Don't rename subagent_type field name - Factory Task tool uses it
             # Only transform subagent -> subdroid in prose
             (r"\bsubagent\b(?!_type)", "subdroid"),
@@ -779,7 +779,7 @@ class FactoryAdapter(PlatformAdapter):
 
         Returns:
             Filename with plugin prefix
-            (e.g., "code-reviewer.md" from "default" plugin -> "ring-default-code-reviewer.md")
+            (e.g., "code-reviewer.md" from "default" plugin -> "marsai-default-code-reviewer.md")
         """
         from pathlib import Path
 

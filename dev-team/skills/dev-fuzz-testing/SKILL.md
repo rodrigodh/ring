@@ -1,5 +1,5 @@
 ---
-name: ring:dev-fuzz-testing
+name: marsai:dev-fuzz-testing
 description: |
   Gate 4 of development cycle - ensures fuzz tests exist with proper seed corpus
   to discover edge cases, crashes, and unexpected input handling.
@@ -10,7 +10,7 @@ trigger: |
   - Discovers crashes and edge cases via random input generation
 
 skip_when: |
-  - Not inside a development cycle (ring:dev-cycle)
+  - Not inside a development cycle (marsai:dev-cycle)
   - Task is documentation-only, configuration-only, or non-code
   - No functions accept external or user-controlled input
   - Frontend-only project (fuzz testing applies to backend code)
@@ -21,11 +21,11 @@ NOT_skip_when: |
   - "Code is simple" - Simple code can still crash on unexpected input.
 
 sequence:
-  after: [ring:dev-unit-testing]
-  before: [ring:dev-property-testing]
+  after: [marsai:dev-unit-testing]
+  before: [marsai:dev-property-testing]
 
 related:
-  complementary: [ring:dev-cycle, ring:dev-unit-testing, ring:qa-analyst]
+  complementary: [marsai:dev-cycle, marsai:dev-unit-testing, marsai:qa-analyst]
 
 input_schema:
   required:
@@ -115,7 +115,7 @@ Ensure critical parsing and input handling code has **fuzz tests** to discover c
 **MANDATORY:** Load testing-fuzz.md standards via WebFetch.
 
 <fetch_required>
-https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/golang/testing-fuzz.md
+https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang/testing-fuzz.md
 </fetch_required>
 
 ---
@@ -142,7 +142,7 @@ if language != "go":
 
 ```text
 Task tool:
-  subagent_type: "ring:qa-analyst"
+  subagent_type: "marsai:qa-analyst"
   prompt: |
     **MODE:** FUZZ TESTING (Gate 4)
 

@@ -1,5 +1,5 @@
 ---
-name: ring:dev-llms-txt
+name: marsai:dev-llms-txt
 description: |
   Generates or audits llms.txt files for Lerian repositories following the llmstxt.org
   specification. Creates LLM-friendly entry points that help AI agents, coding assistants,
@@ -17,7 +17,7 @@ skip_when: |
   - Repository is private/internal and does not need LLM discoverability
 
 related:
-  complementary: [ring:dev-cycle, ring:dev-implementation]
+  complementary: [marsai:dev-cycle, marsai:dev-implementation]
 
 input_schema:
   required:

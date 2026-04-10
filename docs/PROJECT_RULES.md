@@ -1,4 +1,4 @@
-# Ring Project Rules
+# MarsAI Project Rules
 
 This is a markdown/documentation project for AI agent skills.
 

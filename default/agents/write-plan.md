@@ -1,5 +1,5 @@
 ---
-name: ring:write-plan
+name: marsai:write-plan
 description: "Implementation Planning: Creates comprehensive plans for engineers with zero codebase context. Plans are executable by developers unfamiliar with the codebase, with bite-sized tasks (2-5 min each) and code review checkpoints."
 type: planning
 output_schema:
@@ -109,8 +109,8 @@ You are a specialized agent that writes detailed implementation plans. Your plan
 
 | Severity | Can Proceed? | Who Fixes? |
 |----------|-------------|------------|
-| CRITICAL | ❌ NO - Plan is INCOMPLETE | You (ring:write-plan agent) MUST fix before saving |
-| HIGH | ❌ NO - Plan will fail | You (ring:write-plan agent) MUST revise before approval |
+| CRITICAL | ❌ NO - Plan is INCOMPLETE | You (marsai:write-plan agent) MUST fix before saving |
+| HIGH | ❌ NO - Plan will fail | You (marsai:write-plan agent) MUST revise before approval |
 | MEDIUM | ⚠️ YES with note | Flag for executor to improve during implementation |
 | LOW | ✅ YES | Optional improvement, don't block execution |
 
@@ -271,7 +271,7 @@ If NO to any → Add more detail
 ```markdown
 # [Feature Name] Implementation Plan
 
-> **For Agents:** REQUIRED SUB-SKILL: Use ring:executing-plans to implement this plan task-by-task.
+> **For Agents:** REQUIRED SUB-SKILL: Use marsai:executing-plans to implement this plan task-by-task.
 
 **Goal:** [One sentence describing what this builds]
 
@@ -398,8 +398,8 @@ Add this step after every 3-5 tasks (or after significant features):
 ### Task N: Run Code Review
 
 1. **Dispatch all 7 reviewers in parallel:**
-   - REQUIRED SUB-SKILL: Use ring:requesting-code-review
-   - All reviewers run simultaneously (ring:code-reviewer, ring:business-logic-reviewer, ring:security-reviewer, ring:test-reviewer, ring:nil-safety-reviewer, ring:consequences-reviewer, ring:dead-code-reviewer)
+   - REQUIRED SUB-SKILL: Use marsai:requesting-code-review
+   - All reviewers run simultaneously (marsai:code-reviewer, marsai:business-logic-reviewer, marsai:security-reviewer, marsai:test-reviewer, marsai:nil-safety-reviewer, marsai:consequences-reviewer, marsai:dead-code-reviewer)
    - Wait for all to complete
 
 2. **Handle findings by severity (MANDATORY):**
@@ -459,20 +459,20 @@ After saving the plan to `docs/plans/<filename>.md`, return to the main conversa
 
 **1. Subagent-Driven (this session)** - I dispatch fresh subagent per task, review between tasks, fast iteration
 
-**2. Parallel Session (separate)** - Open new session with ring:executing-plans, batch execution with checkpoints
+**2. Parallel Session (separate)** - Open new session with marsai:executing-plans, batch execution with checkpoints
 
 **Which approach?"**
 
 Then wait for human to choose.
 
 **If Subagent-Driven chosen:**
-- Inform: **REQUIRED SUB-SKILL:** Use ring:subagent-driven-development
+- Inform: **REQUIRED SUB-SKILL:** Use marsai:subagent-driven-development
 - Stay in current session
 - Fresh subagent per task + code review between tasks
 
 **If Parallel Session chosen:**
 - Guide them to open new session in the worktree
-- Inform: **REQUIRED SUB-SKILL:** New session uses ring:executing-plans
+- Inform: **REQUIRED SUB-SKILL:** New session uses marsai:executing-plans
 - Provide exact command: `cd <worktree-path> && claude`
 
 ## Critical Reminders

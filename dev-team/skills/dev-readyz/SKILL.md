@@ -1,5 +1,5 @@
 ---
-name: ring:dev-readyz
+name: marsai:dev-readyz
 description: |
   Implements comprehensive readiness probes (/readyz) and startup self-probes for
   Lerian services. Goes beyond basic K8s liveness: validates every external dependency
@@ -32,12 +32,12 @@ NOT_skip_when: |
   - "Service is simple" → Simple services still connect to databases. No exceptions.
 
 sequence:
-  after: [ring:dev-implementation]
-  parallel_with: [ring:dev-sre]
-  before: [ring:dev-devops]
+  after: [marsai:dev-implementation]
+  parallel_with: [marsai:dev-sre]
+  before: [marsai:dev-devops]
 
 related:
-  complementary: [ring:dev-cycle, ring:dev-sre, ring:dev-devops, ring:dev-service-discovery]
+  complementary: [marsai:dev-cycle, marsai:dev-sre, marsai:dev-devops, marsai:dev-service-discovery]
   standards: [docs/standards/golang/bootstrap.md, docs/standards/sre.md, docs/standards/helm/templates.md]
 
 input_schema:

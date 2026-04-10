@@ -1,5 +1,5 @@
 ---
-name: ring:ui-engineer
+name: marsai:ui-engineer
 description: UI Implementation Engineer specialized in translating product-designer outputs (ux-criteria.md, user-flows.md, wireframes/) into production-ready React/Next.js components with Design System compliance and accessibility standards.
 type: specialist
 output_schema:
@@ -38,7 +38,7 @@ output_schema:
       required_when:
         invocation_context: "dev-refactor"
         prompt_contains: "**MODE: ANALYSIS only**"
-      description: "Comparison of codebase against Lerian/Ring standards. MANDATORY when invoked from dev-refactor skill. Optional otherwise."
+      description: "Comparison of codebase against Lerian/MarsAI standards. MANDATORY when invoked from dev-refactor skill. Optional otherwise."
     - name: "Blockers"
       pattern: "^## Blockers"
       required: false
@@ -94,7 +94,7 @@ Invoke this agent when:
 ## Standards Loading (MANDATORY)
 
 <fetch_required>
-https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/frontend.md
+https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/frontend.md
 </fetch_required>
 
 MUST WebFetch the URL above before any implementation work.
@@ -115,7 +115,7 @@ See [shared-patterns/standards-workflow.md](../skills/shared-patterns/standards-
 |------|-------------|
 | **ALL sections apply** | You CANNOT generate code that violates ANY section |
 | **No cherry-picking** | All 13 Frontend sections MUST be followed |
-| **Coverage table is authoritative** | See `ring:ui-engineer → frontend.md` section for full list |
+| **Coverage table is authoritative** | See `marsai:ui-engineer → frontend.md` section for full list |
 | **Product Designer compliance** | MUST also validate against UX criteria outputs |
 
 **The 13 sections you MUST follow:**
@@ -126,7 +126,7 @@ See [shared-patterns/standards-workflow.md](../skills/shared-patterns/standards-
 | 8-10 | Component Patterns, Accessibility, Performance | ✅ |
 | 11-13 | Directory Structure, Forbidden Patterns, Standards Categories | ✅ |
 
-**Additional ring:ui-engineer requirements (from coverage table):**
+**Additional marsai:ui-engineer requirements (from coverage table):**
 
 | # | Check | Source | MANDATORY |
 |---|-------|--------|-----------|
@@ -148,7 +148,7 @@ See [shared-patterns/standards-workflow.md](../skills/shared-patterns/standards-
 
 | Setting | Value |
 |---------|-------|
-| **WebFetch URL** | `https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/frontend.md` |
+| **WebFetch URL** | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/frontend.md` |
 | **Standards File** | frontend.md |
 | **Prompt** | "Extract all frontend standards, patterns, and requirements" |
 
@@ -164,7 +164,7 @@ See [shared-patterns/standards-workflow.md](../skills/shared-patterns/standards-
 | Check | Status | Details |
 |-------|--------|---------|
 | PROJECT_RULES.md | Found/Not Found | Path: docs/PROJECT_RULES.md |
-| Ring Standards (frontend.md) | Loaded | 13 sections fetched |
+| MarsAI Standards (frontend.md) | Loaded | 13 sections fetched |
 | Product Designer Outputs | Found/Not Found | ux-criteria.md, user-flows.md, wireframes/ |
 ```
 
@@ -507,7 +507,7 @@ See [shared-patterns/standards-compliance-detection.md](../skills/shared-pattern
 
 | Setting | Value |
 |---------|-------|
-| **WebFetch URL** | `https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/frontend.md` |
+| **WebFetch URL** | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/frontend.md` |
 | **Standards File** | frontend.md |
 
 ### Sections to Check (MANDATORY)

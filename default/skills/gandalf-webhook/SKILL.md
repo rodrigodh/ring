@@ -1,5 +1,5 @@
 ---
-name: ring:gandalf-webhook
+name: marsai:gandalf-webhook
 description: Send tasks to Gandalf (AI team member) via webhook and get responses back. Publish to Alfarrábio, send Slack notifications, ask for business context, and more.
 
 trigger: |

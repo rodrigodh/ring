@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from ring_installer.adapters import (
+from marsai_installer.adapters import (
     ADAPTER_REGISTRY,
     SUPPORTED_PLATFORMS,
     ClaudeAdapter,
@@ -20,7 +20,7 @@ from ring_installer.adapters import (
     list_platforms,
     register_adapter,
 )
-from ring_installer.adapters.codex import CodexAdapter as ImportedCodexAdapter
+from marsai_installer.adapters.codex import CodexAdapter as ImportedCodexAdapter
 
 # ==============================================================================
 # Tests for get_adapter() factory function
@@ -184,7 +184,7 @@ class TestCodexAdapter:
 
     def test_get_flat_filename_returns_generated_name(self, adapter):
         result = adapter.get_flat_filename("sample-agent.md", "agent", "default")
-        assert result == "ring-default-sample-agent"
+        assert result == "marsai-default-sample-agent"
 
     def test_transform_skill_rewrites_frontmatter_and_references(self, adapter, sample_skill_content):
         result = adapter.transform_skill(
@@ -193,14 +193,14 @@ class TestCodexAdapter:
                 "name": "sample-skill",
                 "plugin": "default",
                 "component_type": "skill",
-                "codex_name": "ring-default-sample-skill",
-                "codex_alias_map": {"sample-agent": "ring-default-sample-agent"},
+                "codex_name": "marsai-default-sample-skill",
+                "codex_alias_map": {"sample-agent": "marsai-default-sample-agent"},
             },
         )
-        assert "name: ring-default-sample-skill" in result
+        assert "name: marsai-default-sample-skill" in result
         assert "ring-platform: codex" in result
-        assert "ring-default-sample-agent" in result
-        assert "ring:sample-agent" not in result
+        assert "marsai-default-sample-agent" in result
+        assert "marsai:sample-agent" not in result
 
     def test_transform_agent_is_passthrough(self, adapter, sample_agent_content):
         result = adapter.transform_agent(sample_agent_content)
@@ -217,7 +217,7 @@ class TestCodexAdapter:
                 "name": "sample-agent",
                 "plugin": "dev-team",
                 "component_type": "agent",
-                "codex_name": "ring-dev-team-sample-agent",
+                "codex_name": "marsai-dev-team-sample-agent",
                 "codex_alias_map": {},
             },
         )
@@ -350,7 +350,7 @@ class TestFactoryAdapter:
 
         # Check terminology changes
         # The word "agent" in the content should be replaced with "droid"
-        # (except in ring: references which use a different pattern)
+        # (except in marsai: references which use a different pattern)
         assert "Droid" in result or "droid" in result
 
     def test_transform_agent_frontmatter_preserves_subagent_type(self, adapter, minimal_agent_content):
@@ -393,7 +393,7 @@ Use this agent for review.
         result = adapter.transform_agent(content, {"plugin": "default", "name": "code-reviewer"})
 
         # Factory droid names use hyphens, not colons
-        assert "name: ring-default-code-reviewer" in result
+        assert "name: marsai-default-code-reviewer" in result
         assert ":" not in result.split("name:")[1].split("\n")[0]  # No colon in name value
 
     def test_replace_agent_references_respects_protected_regions(self, adapter):
@@ -436,8 +436,8 @@ Use this agent for review.
         assert result == "test-skill.md"
 
     def test_replace_ring_references(self, adapter):
-        """FactoryAdapter should replace ring:*-agent references with hyphenated droid names."""
-        content = 'Use "ring:code-agent" for analysis.'
+        """FactoryAdapter should replace marsai:*-agent references with hyphenated droid names."""
+        content = 'Use "marsai:code-agent" for analysis.'
         result = adapter.transform_skill(content)
 
         # Factory uses hyphens, not colons in droid names
@@ -551,17 +551,17 @@ Read-only droid.
     def test_get_flat_filename_for_agent(self, adapter):
         """get_flat_filename() should generate prefixed filename (no -droid suffix)."""
         result = adapter.get_flat_filename("code-reviewer.md", "agent", "default")
-        assert result == "ring-default-code-reviewer.md"
+        assert result == "marsai-default-code-reviewer.md"
 
     def test_get_flat_filename_strips_agent_suffix(self, adapter):
         """get_flat_filename() should strip -agent suffix."""
         result = adapter.get_flat_filename("code-agent.md", "agent", "default")
-        assert result == "ring-default-code.md"
+        assert result == "marsai-default-code.md"
 
     def test_get_flat_filename_for_command(self, adapter):
         """get_flat_filename() should work for non-agent types too."""
         result = adapter.get_flat_filename("test-command.md", "command", "dev-team")
-        assert result == "ring-dev-team-test-command.md"
+        assert result == "marsai-dev-team-test-command.md"
 
     def test_requires_hooks_in_settings(self, adapter):
         """FactoryAdapter requires hooks to be merged into settings.json."""

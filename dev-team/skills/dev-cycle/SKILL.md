@@ -1,5 +1,5 @@
 ---
-name: ring:dev-cycle
+name: marsai:dev-cycle
 description: |
   Main orchestrator for the 10-gate development cycle system. Loads tasks/subtasks
   from PM team output and executes through implementation → devops → SRE → unit testing → fuzz testing → property testing → integration testing (write) → chaos testing (write) → review → validation
@@ -17,7 +17,7 @@ skip_when: |
   - Task is documentation-only, research-only, or planning-only
   - User explicitly requested manual workflow without gates
   - Already inside a specific gate skill execution (avoid nesting)
-  - Frontend project (use ring:dev-cycle-frontend instead)
+  - Frontend project (use marsai:dev-cycle-frontend instead)
 
 prerequisites: |
   - Tasks file exists with structured subtasks
@@ -31,17 +31,17 @@ NOT_skip_when: |
   - "Already did N gates" → Sunk cost is irrelevant. Complete all gates.
 
 sequence:
-  before: [ring:dev-feedback-loop]
+  before: [marsai:dev-feedback-loop]
 
 related:
-  complementary: [ring:dev-implementation, ring:dev-devops, ring:dev-sre, ring:dev-unit-testing, ring:requesting-code-review, ring:dev-validation, ring:dev-feedback-loop, ring:dev-delivery-verification]
+  complementary: [marsai:dev-implementation, marsai:dev-devops, marsai:dev-sre, marsai:dev-unit-testing, marsai:requesting-code-review, marsai:dev-validation, marsai:dev-feedback-loop, marsai:dev-delivery-verification]
 
 verification:
   automated:
-    - command: "test -f docs/ring:dev-cycle/current-cycle.json || test -f docs/ring:dev-refactor/current-cycle.json"
-      description: "State file exists (ring:dev-cycle or ring:dev-refactor)"
+    - command: "test -f docs/marsai:dev-cycle/current-cycle.json || test -f docs/marsai:dev-refactor/current-cycle.json"
+      description: "State file exists (marsai:dev-cycle or marsai:dev-refactor)"
       success_pattern: "exit 0"
-    - command: "cat docs/ring:dev-cycle/current-cycle.json 2>/dev/null || cat docs/ring:dev-refactor/current-cycle.json | jq '.current_gate'"
+    - command: "cat docs/marsai:dev-cycle/current-cycle.json 2>/dev/null || cat docs/marsai:dev-refactor/current-cycle.json | jq '.current_gate'"
       description: "Current gate is valid"
       success_pattern: '[0-5]|0\.5'
   manual:
@@ -53,10 +53,10 @@ verification:
 
 ## Standards Loading (MANDATORY)
 
-**Before any gate execution, you MUST load Ring standards:**
+**Before any gate execution, you MUST load MarsAI standards:**
 
 <fetch_required>
-https://raw.githubusercontent.com/LerianStudio/ring/main/CLAUDE.md
+https://raw.githubusercontent.com/LerianStudio/marsai/main/CLAUDE.md
 </fetch_required>
 
 Fetch URL above and extract: Agent Modification Verification requirements, Anti-Rationalization Tables requirements, and Critical Rules.
@@ -66,7 +66,7 @@ Fetch URL above and extract: Agent Modification Verification requirements, Anti-
 - CLAUDE.md not accessible
 </block_condition>
 
-If any condition is true, STOP and report blocker. Cannot proceed without Ring standards.
+If any condition is true, STOP and report blocker. Cannot proceed without MarsAI standards.
 
 ## Overview
 
@@ -78,7 +78,7 @@ The development cycle orchestrator loads tasks/subtasks from PM team output (or 
 
 This keeps test code current with each feature while avoiding redundant container spin-ups during development.
 
-**MUST announce at start:** "I'm using the ring:dev-cycle skill to orchestrate task execution through 11 gates (Gate 0–9, including 0.5 Delivery Verification). Gates 6-7 write tests per unit but execute at end of cycle."
+**MUST announce at start:** "I'm using the marsai:dev-cycle skill to orchestrate task execution through 11 gates (Gate 0–9, including 0.5 Delivery Verification). Gates 6-7 write tests per unit but execute at end of cycle."
 
 ## ⛔ CRITICAL: Specialized Agents Perform All Tasks
 
@@ -96,14 +96,14 @@ See [shared-patterns/shared-orchestrator-principle.md](../shared-patterns/shared
 
 | Action | Tool | Purpose |
 |--------|------|---------|
-| Read task files | `Read` | Load task definitions from `docs/pre-dev/*/tasks.md` or `docs/ring:dev-refactor/*/tasks.md` |
-| Read state files | `Read` | Load/verify `docs/ring:dev-cycle/current-cycle.json` or `docs/ring:dev-refactor/current-cycle.json` |
+| Read task files | `Read` | Load task definitions from `docs/pre-dev/*/tasks.md` or `docs/marsai:dev-refactor/*/tasks.md` |
+| Read state files | `Read` | Load/verify `docs/marsai:dev-cycle/current-cycle.json` or `docs/marsai:dev-refactor/current-cycle.json` |
 | Read PROJECT_RULES.md | `Read` | Load project-specific rules |
 | Write state files | `Write` | Persist cycle state to JSON |
 | Track progress | `TodoWrite` | Maintain task list |
 | Dispatch agents | `Task` | Send work to specialist agents |
 | Ask user questions | `AskUserQuestion` | Get execution mode, approvals |
-| WebFetch standards | `WebFetch` | Load Ring standards |
+| WebFetch standards | `WebFetch` | Load MarsAI standards |
 
 ### What Orchestrator CANNOT Do (FORBIDDEN)
 
@@ -112,7 +112,7 @@ See [shared-patterns/shared-orchestrator-principle.md](../shared-patterns/shared
 - Write source code (`Write`/`Create` on `*.go`, `*.ts`) - Agent writes code, not orchestrator
 - Edit source code (`Edit` on `*.go`, `*.ts`, `*.tsx`) - Agent edits code, not orchestrator
 - Run tests (`Execute` with `go test`, `npm test`) - Agent runs tests in TDD cycle
-- Analyze code (Direct pattern analysis) - `ring:codebase-explorer` analyzes
+- Analyze code (Direct pattern analysis) - `marsai:codebase-explorer` analyzes
 - Make architectural decisions (Choosing patterns/libraries) - User decides, agent implements
 </forbidden>
 
@@ -136,10 +136,10 @@ This is not negotiable:
 │  CORRECT WORKFLOW ORDER                                         │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                 │
-│  1. Load task file (Read docs/pre-dev/*/tasks.md or docs/ring:dev-refactor/*/tasks.md) │
+│  1. Load task file (Read docs/pre-dev/*/tasks.md or docs/marsai:dev-refactor/*/tasks.md) │
 │  2. Ask execution mode (AskUserQuestion)                        │
 │  3. Determine state path + Check/Load state (see State Path Selection) │
-│  4. WebFetch Ring Standards                                     │
+│  4. WebFetch MarsAI Standards                                     │
 │  5. ⛔ LOAD SUB-SKILL for current gate (Skill tool)            │
 │  6. Execute sub-skill instructions (dispatch agent via Task)    │
 │  7. Wait for agent completion                                   │
@@ -159,17 +159,17 @@ This is not negotiable:
 **Before dispatching any agent, you MUST load the corresponding sub-skill first.**
 
 <cannot_skip>
-- Gate 0: `Skill("ring:dev-implementation")` → then `Task(subagent_type="ring:backend-engineer-*", ...)`
-- Gate 0.5: `Skill("ring:dev-delivery-verification")` → Verify all requirements are DELIVERED (not just created). Catches dead code, unwired structs, unregistered middleware. Also runs 7 automated checks: (A) file size ≤300 lines, (B) license headers, (C) linting, (D) migration safety, (E) vulnerability scanning, (F) API backward compatibility, (G) multi-tenant dual-mode. FAIL → return to Gate 0 with explicit fix instructions.
-- Gate 1: `Skill("ring:dev-devops")` → then `Task(subagent_type="ring:devops-engineer", ...)`
-- Gate 2: `Skill("ring:dev-sre")` → then `Task(subagent_type="ring:sre", ...)`
-- Gate 3: `Skill("ring:dev-unit-testing")` → then `Task(subagent_type="ring:qa-analyst", test_mode="unit", ...)`
-- Gate 4: `Skill("ring:dev-fuzz-testing")` → then `Task(subagent_type="ring:qa-analyst", test_mode="fuzz", ...)`
-- Gate 5: `Skill("ring:dev-property-testing")` → then `Task(subagent_type="ring:qa-analyst", test_mode="property", ...)`
-- Gate 6: `Skill("ring:dev-integration-testing")` → per unit: write/update tests + compile check (no execution); end of cycle: execute
-- Gate 7: `Skill("ring:dev-chaos-testing")` → per unit: write/update tests + compile check (no execution); end of cycle: execute
-- Gate 8: `Skill("ring:requesting-code-review")` → then 5x `Task(...)` in parallel
-- Gate 9: `Skill("ring:dev-validation")` → N/A (verification only)
+- Gate 0: `Skill("marsai:dev-implementation")` → then `Task(subagent_type="marsai:backend-engineer-*", ...)`
+- Gate 0.5: `Skill("marsai:dev-delivery-verification")` → Verify all requirements are DELIVERED (not just created). Catches dead code, unwired structs, unregistered middleware. Also runs 7 automated checks: (A) file size ≤300 lines, (B) license headers, (C) linting, (D) migration safety, (E) vulnerability scanning, (F) API backward compatibility, (G) multi-tenant dual-mode. FAIL → return to Gate 0 with explicit fix instructions.
+- Gate 1: `Skill("marsai:dev-devops")` → then `Task(subagent_type="marsai:devops-engineer", ...)`
+- Gate 2: `Skill("marsai:dev-sre")` → then `Task(subagent_type="marsai:sre", ...)`
+- Gate 3: `Skill("marsai:dev-unit-testing")` → then `Task(subagent_type="marsai:qa-analyst", test_mode="unit", ...)`
+- Gate 4: `Skill("marsai:dev-fuzz-testing")` → then `Task(subagent_type="marsai:qa-analyst", test_mode="fuzz", ...)`
+- Gate 5: `Skill("marsai:dev-property-testing")` → then `Task(subagent_type="marsai:qa-analyst", test_mode="property", ...)`
+- Gate 6: `Skill("marsai:dev-integration-testing")` → per unit: write/update tests + compile check (no execution); end of cycle: execute
+- Gate 7: `Skill("marsai:dev-chaos-testing")` → per unit: write/update tests + compile check (no execution); end of cycle: execute
+- Gate 8: `Skill("marsai:requesting-code-review")` → then 5x `Task(...)` in parallel
+- Gate 9: `Skill("marsai:dev-validation")` → N/A (verification only)
 </cannot_skip>
 
 Between "WebFetch standards" and "Task(agent)" there MUST be "Skill(sub-skill)".
@@ -191,7 +191,7 @@ Between "WebFetch standards" and "Task(agent)" there MUST be "Skill(sub-skill)".
 
 ```yaml
 Task tool:
-  subagent_type: "ring:backend-engineer-golang"
+  subagent_type: "marsai:backend-engineer-golang"
   prompt: |
     **CUSTOM CONTEXT (from user):**
     {state.custom_prompt}
@@ -237,7 +237,7 @@ Task tool:
 | "It's just one small file" | File count doesn't determine agent need. Language does. | **DISPATCH specialist agent** |
 | "I already loaded the standards" | Loading standards ≠ permission to implement. Standards are for AGENTS. | **DISPATCH specialist agent** |
 | "Agent dispatch adds overhead" | Overhead ensures compliance. Skip = skip verification. | **DISPATCH specialist agent** |
-| "I can write Go/TypeScript" | Knowing language ≠ having Ring standards loaded. Agent has them. | **DISPATCH specialist agent** |
+| "I can write Go/TypeScript" | Knowing language ≠ having MarsAI standards loaded. Agent has them. | **DISPATCH specialist agent** |
 | "Just a quick fix" | "Quick" is irrelevant. all source changes require specialist. | **DISPATCH specialist agent** |
 | "I'll read the file first to understand" | Reading source → temptation to edit. Agent reads for you. | **DISPATCH specialist agent** |
 | "Let me check if tests pass first" | Agent runs tests in TDD cycle. You don't run tests. | **DISPATCH specialist agent** |
@@ -451,16 +451,16 @@ Day 4: Production incident from Day 1 code
 
 | Gate | Skill | Purpose | Agent | Per Unit | Standards Module |
 |------|-------|---------|-------|----------|------------------|
-| 0 | ring:dev-implementation | Write code following TDD (single-tenant) | Based on task language/domain | Write + Run | core.md, domain.md |
-| 1 | ring:dev-devops | Infrastructure and deployment | ring:devops-engineer | Write + Run | devops.md |
-| 2 | ring:dev-sre | Observability (health, logging, tracing) | ring:sre | Write + Run | sre.md |
-| 3 | ring:dev-unit-testing | Unit tests for acceptance criteria | ring:qa-analyst (test_mode: unit) | Write + Run | testing-unit.md |
-| 4 | ring:dev-fuzz-testing | Fuzz tests for edge cases and crashes | ring:qa-analyst (test_mode: fuzz) | Write + Run | testing-fuzz.md |
-| 5 | ring:dev-property-testing | Property-based tests for domain invariants | ring:qa-analyst (test_mode: property) | Write + Run | testing-property.md |
-| 6 | ring:dev-integration-testing | Integration tests with testcontainers | ring:qa-analyst (test_mode: integration) | **Write only** | testing-integration.md |
-| 7 | ring:dev-chaos-testing | Chaos tests for failure scenarios | ring:qa-analyst (test_mode: chaos) | **Write only** | testing-chaos.md |
-| 8 | ring:requesting-code-review | Parallel code review (7 reviewers) | ring:code-reviewer, ring:business-logic-reviewer, ring:security-reviewer, ring:nil-safety-reviewer, ring:test-reviewer, ring:consequences-reviewer, ring:dead-code-reviewer | Run | N/A |
-| 9 | ring:dev-validation | Final acceptance validation | N/A (verification) | Run | N/A |
+| 0 | marsai:dev-implementation | Write code following TDD (single-tenant) | Based on task language/domain | Write + Run | core.md, domain.md |
+| 1 | marsai:dev-devops | Infrastructure and deployment | marsai:devops-engineer | Write + Run | devops.md |
+| 2 | marsai:dev-sre | Observability (health, logging, tracing) | marsai:sre | Write + Run | sre.md |
+| 3 | marsai:dev-unit-testing | Unit tests for acceptance criteria | marsai:qa-analyst (test_mode: unit) | Write + Run | testing-unit.md |
+| 4 | marsai:dev-fuzz-testing | Fuzz tests for edge cases and crashes | marsai:qa-analyst (test_mode: fuzz) | Write + Run | testing-fuzz.md |
+| 5 | marsai:dev-property-testing | Property-based tests for domain invariants | marsai:qa-analyst (test_mode: property) | Write + Run | testing-property.md |
+| 6 | marsai:dev-integration-testing | Integration tests with testcontainers | marsai:qa-analyst (test_mode: integration) | **Write only** | testing-integration.md |
+| 7 | marsai:dev-chaos-testing | Chaos tests for failure scenarios | marsai:qa-analyst (test_mode: chaos) | **Write only** | testing-chaos.md |
+| 8 | marsai:requesting-code-review | Parallel code review (7 reviewers) | marsai:code-reviewer, marsai:business-logic-reviewer, marsai:security-reviewer, marsai:nil-safety-reviewer, marsai:test-reviewer, marsai:consequences-reviewer, marsai:dead-code-reviewer | Run | N/A |
+| 9 | marsai:dev-validation | Final acceptance validation | N/A (verification) | Run | N/A |
 
 **All gates are MANDATORY. No exceptions. No skip reasons.**
 
@@ -468,7 +468,7 @@ Day 4: Production incident from Day 1 code
 
 ## Integrated PM → Dev Workflow
 
-**PM Team Output** → **Dev Team Execution** (`/ring:dev-cycle`)
+**PM Team Output** → **Dev Team Execution** (`/marsai:dev-cycle`)
 
 | Input Type | Path | Structure |
 |------------|------|-----------|
@@ -535,23 +535,23 @@ The state file path depends on the **source of tasks**:
 
 | Task Source | State Path | Use Case |
 |-------------|------------|----------|
-| `docs/ring:dev-refactor/*/tasks.md` | `docs/ring:dev-refactor/current-cycle.json` | Refactoring existing code |
-| `docs/pre-dev/*/tasks.md` | `docs/ring:dev-cycle/current-cycle.json` | New feature development |
-| Any other path | `docs/ring:dev-cycle/current-cycle.json` | Default for manual tasks |
+| `docs/marsai:dev-refactor/*/tasks.md` | `docs/marsai:dev-refactor/current-cycle.json` | Refactoring existing code |
+| `docs/pre-dev/*/tasks.md` | `docs/marsai:dev-cycle/current-cycle.json` | New feature development |
+| Any other path | `docs/marsai:dev-cycle/current-cycle.json` | Default for manual tasks |
 
 **Detection Logic:**
 ```text
-if source_file contains "docs/ring:dev-refactor/" THEN
-  state_path = "docs/ring:dev-refactor/current-cycle.json"
+if source_file contains "docs/marsai:dev-refactor/" THEN
+  state_path = "docs/marsai:dev-refactor/current-cycle.json"
 else
-  state_path = "docs/ring:dev-cycle/current-cycle.json"
+  state_path = "docs/marsai:dev-cycle/current-cycle.json"
 ```
 
 **Store state_path in the state object itself** so resume knows where to look.
 
 ### State File Structure
 
-State is persisted to `{state_path}` (either `docs/ring:dev-cycle/current-cycle.json` or `docs/ring:dev-refactor/current-cycle.json`):
+State is persisted to `{state_path}` (either `docs/marsai:dev-cycle/current-cycle.json` or `docs/marsai:dev-refactor/current-cycle.json`):
 
 ```json
 {
@@ -560,7 +560,7 @@ State is persisted to `{state_path}` (either `docs/ring:dev-cycle/current-cycle.
   "started_at": "ISO timestamp",
   "updated_at": "ISO timestamp",
   "source_file": "path/to/tasks.md",
-  "state_path": "docs/ring:dev-cycle/current-cycle.json | docs/ring:dev-refactor/current-cycle.json",
+  "state_path": "docs/marsai:dev-cycle/current-cycle.json | docs/marsai:dev-refactor/current-cycle.json",
   "cycle_type": "feature | refactor",
   "execution_mode": "manual_per_subtask|manual_per_task|automatic",
   "commit_timing": "per_subtask|per_task|at_end",
@@ -634,7 +634,7 @@ State is persisted to `{state_path}` (either `docs/ring:dev-cycle/current-cycle.
       "artifacts": {},
       "agent_outputs": {
         "implementation": {
-          "agent": "ring:backend-engineer-golang",
+          "agent": "marsai:backend-engineer-golang",
           "output": "## Summary\n...",
           "timestamp": "ISO timestamp",
           "duration_ms": 0,
@@ -648,7 +648,7 @@ State is persisted to `{state_path}` (either `docs/ring:dev-cycle/current-cycle.
           }
         },
         "devops": {
-          "agent": "ring:devops-engineer",
+          "agent": "marsai:devops-engineer",
           "output": "## Summary\n...",
           "timestamp": "ISO timestamp",
           "duration_ms": 0,
@@ -664,7 +664,7 @@ State is persisted to `{state_path}` (either `docs/ring:dev-cycle/current-cycle.
           }
         },
         "sre": {
-          "agent": "ring:sre",
+          "agent": "marsai:sre",
           "output": "## Summary\n...",
           "timestamp": "ISO timestamp",
           "duration_ms": 0,
@@ -680,7 +680,7 @@ State is persisted to `{state_path}` (either `docs/ring:dev-cycle/current-cycle.
           }
         },
         "unit_testing": {
-          "agent": "ring:qa-analyst",
+          "agent": "marsai:qa-analyst",
           "test_mode": "unit",
           "output": "## Summary\n...",
           "verdict": "PASS",
@@ -700,7 +700,7 @@ State is persisted to `{state_path}` (either `docs/ring:dev-cycle/current-cycle.
           }
         },
         "fuzz_testing": {
-          "agent": "ring:qa-analyst",
+          "agent": "marsai:qa-analyst",
           "test_mode": "fuzz",
           "output": "## Summary\n...",
           "verdict": "PASS",
@@ -717,7 +717,7 @@ State is persisted to `{state_path}` (either `docs/ring:dev-cycle/current-cycle.
           }
         },
         "property_testing": {
-          "agent": "ring:qa-analyst",
+          "agent": "marsai:qa-analyst",
           "test_mode": "property",
           "output": "## Summary\n...",
           "verdict": "PASS",
@@ -734,7 +734,7 @@ State is persisted to `{state_path}` (either `docs/ring:dev-cycle/current-cycle.
           }
         },
         "integration_testing": {
-          "agent": "ring:qa-analyst",
+          "agent": "marsai:qa-analyst",
           "test_mode": "integration",
           "output": "## Summary\n...",
           "verdict": "PASS",
@@ -754,7 +754,7 @@ State is persisted to `{state_path}` (either `docs/ring:dev-cycle/current-cycle.
           }
         },
         "chaos_testing": {
-          "agent": "ring:qa-analyst",
+          "agent": "marsai:qa-analyst",
           "test_mode": "chaos",
           "output": "## Summary\n...",
           "verdict": "PASS",
@@ -776,7 +776,7 @@ State is persisted to `{state_path}` (either `docs/ring:dev-cycle/current-cycle.
           "timestamp": "ISO timestamp",
           "duration_ms": 0,
           "code_reviewer": {
-            "agent": "ring:code-reviewer",
+            "agent": "marsai:code-reviewer",
             "output": "...",
             "verdict": "PASS",
             "timestamp": "...",
@@ -790,7 +790,7 @@ State is persisted to `{state_path}` (either `docs/ring:dev-cycle/current-cycle.
             }
           },
           "business_logic_reviewer": {
-            "agent": "ring:business-logic-reviewer",
+            "agent": "marsai:business-logic-reviewer",
             "output": "...",
             "verdict": "PASS",
             "timestamp": "...",
@@ -804,7 +804,7 @@ State is persisted to `{state_path}` (either `docs/ring:dev-cycle/current-cycle.
             }
           },
           "security_reviewer": {
-            "agent": "ring:security-reviewer",
+            "agent": "marsai:security-reviewer",
             "output": "...",
             "verdict": "PASS",
             "timestamp": "...",
@@ -836,7 +836,7 @@ State is persisted to `{state_path}` (either `docs/ring:dev-cycle/current-cycle.
 
 ### Structured Error/Issue Schemas
 
-**These schemas enable `ring:dev-feedback-loop` to analyze issues without parsing raw output.**
+**These schemas enable `marsai:dev-feedback-loop` to analyze issues without parsing raw output.**
 
 #### Standards Compliance Gap Schema
 
@@ -1031,12 +1031,12 @@ After each gate, the state file MUST reflect:
 │  └── no → ASK: "Is this a LEGACY project (created without PM workflow)?"   │
 │       │                                                                     │
 │       ├── YES (legacy project) → LEGACY PROJECT ANALYSIS:                   │
-│       │   Step 1: Dispatch ring:codebase-explorer (technical info only)          │
+│       │   Step 1: Dispatch marsai:codebase-explorer (technical info only)          │
 │       │   Step 2: Ask 3 questions (what agent can't determine):             │
 │       │     1. What do you need help with?                                  │
 │       │     2. Any external APIs not visible in code?                       │
-│       │     3. Any specific technology not in Ring Standards?               │
-│       │   Step 3: Generate PROJECT_RULES.md (deduplicated from Ring)        │
+│       │     3. Any specific technology not in MarsAI Standards?               │
+│       │   Step 3: Generate PROJECT_RULES.md (deduplicated from MarsAI)        │
 │       │   Note: Business rules belong in PRD, not in PROJECT_RULES          │
 │       │   → Proceed to Step 1                                               │
 │       │                                                                     │
@@ -1050,7 +1050,7 @@ After each gate, the state file MUST reflect:
 │           │                                                                 │
 │           └── no (no PM docs) → ⛔ HARD BLOCK:                              │
 │               "PM documents are REQUIRED for new projects.                  │
-│                Run /ring:pre-dev-full or /ring:pre-dev-feature first."               │
+│                Run /marsai:pre-dev-full or /marsai:pre-dev-feature first."               │
 │               → STOP (cycle cannot proceed)                                 │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -1094,7 +1094,7 @@ Use AskUserQuestion:
 
 #### Options
 
-(a) Yes, this is a legacy project (b) No, this is a new project following Ring workflow
+(a) Yes, this is a legacy project (b) No, this is a new project following MarsAI workflow
 
 #### If YES (legacy)
 
@@ -1118,8 +1118,8 @@ For legacy projects, analyze codebase for TECHNICAL information only:
 │ Since this is a legacy project, I'll analyze the codebase       │
 │ for TECHNICAL information (not business rules).                 │
 │                                                                 │
-│ Step 1: Automated analysis (ring:codebase-explorer)                  │
-│ Step 2: Ask for project-specific tech not in Ring Standards     │
+│ Step 1: Automated analysis (marsai:codebase-explorer)                  │
+│ Step 2: Ask for project-specific tech not in MarsAI Standards     │
 │ Step 3: Generate PROJECT_RULES.md (deduplicated)                │
 │                                                                 │
 │ Note: Business rules belong in PRD/product docs, not here.      │
@@ -1129,11 +1129,11 @@ For legacy projects, analyze codebase for TECHNICAL information only:
 
 #### Step 0.2.1a: Automated Codebase Analysis (MANDATORY)
 
-**⛔ You MUST use the Task tool to dispatch ring:codebase-explorer. This is not implicit.**
+**⛔ You MUST use the Task tool to dispatch marsai:codebase-explorer. This is not implicit.**
 
 #### Dispatch Agent
 
-Dispatch ring:codebase-explorer to analyze the legacy project for TECHNICAL information:
+Dispatch marsai:codebase-explorer to analyze the legacy project for TECHNICAL information:
 
 ```text
 Action: Use Task tool with EXACTLY these parameters:
@@ -1146,7 +1146,7 @@ Action: Use Task tool with EXACTLY these parameters:
 ```yaml
 # Agent 1: Codebase Explorer - Technical Analysis
 Task tool:
-  subagent_type: "ring:codebase-explorer"
+  subagent_type: "marsai:codebase-explorer"
   description: "Analyze legacy project for PROJECT_RULES.md"
   prompt: |
     Analyze this LEGACY codebase to extract technical information for PROJECT_RULES.md.
@@ -1198,7 +1198,7 @@ Task tool:
 #### Verification (MANDATORY)
 
 After agent completes, confirm:
-- [ ] `ring:codebase-explorer` returned "## Technical Analysis (Legacy Project)" section
+- [ ] `marsai:codebase-explorer` returned "## Technical Analysis (Legacy Project)" section
 - [ ] Output contains non-empty content for: Tech Stack, External Integrations, Configuration
 
 **If agent failed or returned empty output → Re-dispatch. Cannot proceed without technical analysis.**
@@ -1228,7 +1228,7 @@ Use AskUserQuestion for each:
 |---|----------|--------------------------------|
 | 1 | **What do you need help with?** (Current task/feature/fix) | Future intent, not in code |
 | 2 | **Any external APIs or services not visible in code?** (Third-party integrations planned) | Planned integrations, not yet in code |
-| 3 | **Any specific technology not in Ring Standards?** (Message broker, cache, etc.) | Project-specific tech not in Ring |
+| 3 | **Any specific technology not in MarsAI Standards?** (Message broker, cache, etc.) | Project-specific tech not in MarsAI |
 
 **Note:** Business rules belong in PRD/product docs, not in PROJECT_RULES.md.
 
@@ -1242,13 +1242,13 @@ Create tool:
   content: |
     # Project Rules
     
-    > Ring Standards apply automatically. This file documents only what Ring does not cover.
-    > For error handling, logging, testing, architecture, lib-commons → See Ring Standards (auto-loaded by agents)
+    > MarsAI Standards apply automatically. This file documents only what MarsAI does not cover.
+    > For error handling, logging, testing, architecture, lib-commons → See MarsAI Standards (auto-loaded by agents)
     > Generated from legacy project analysis.
     
-    ## What Ring Standards Already Cover (DO not ADD HERE)
+    ## What MarsAI Standards Already Cover (DO not ADD HERE)
     
-    The following are defined in Ring Standards and MUST not be duplicated:
+    The following are defined in MarsAI Standards and MUST not be duplicated:
     - Error handling patterns (no panic, wrap errors)
     - Logging standards (structured JSON, zerolog/zap)
     - Testing patterns (table-driven tests, mocks)
@@ -1259,9 +1259,9 @@ Create tool:
     
     ---
     
-    ## Tech Stack (Not in Ring Standards)
+    ## Tech Stack (Not in MarsAI Standards)
     
-    [From ring:codebase-explorer: Technologies not covered by Ring Standards]
+    [From marsai:codebase-explorer: Technologies not covered by MarsAI Standards]
     [e.g., specific message broker, specific cache, DB if not PostgreSQL]
     
     | Technology | Purpose | Notes |
@@ -1270,7 +1270,7 @@ Create tool:
     
     ## Non-Standard Directory Structure
     
-    [From ring:codebase-explorer: Directories that deviate from Ring's standard API structure]
+    [From marsai:codebase-explorer: Directories that deviate from MarsAI's standard API structure]
     [e.g., workers/, consumers/, polling/]
     
     | Directory | Purpose | Pattern |
@@ -1279,7 +1279,7 @@ Create tool:
     
     ## External Integrations
     
-    [From ring:codebase-explorer: Third-party services specific to this project]
+    [From marsai:codebase-explorer: Third-party services specific to this project]
     
     | Service | Purpose | Docs |
     |---------|---------|------|
@@ -1287,7 +1287,7 @@ Create tool:
     
     ## Environment Configuration
     
-    [From ring:codebase-explorer: Project-specific env vars not covered by Ring]
+    [From marsai:codebase-explorer: Project-specific env vars not covered by MarsAI]
     
     | Variable | Purpose | Example |
     |----------|---------|---------|
@@ -1304,8 +1304,8 @@ Create tool:
     ---
     
     *Generated: [ISO timestamp]*
-    *Source: Legacy project analysis (ring:codebase-explorer)*
-    *Ring Standards Version: [version from WebFetch]*
+    *Source: Legacy project analysis (marsai:codebase-explorer)*
+    *MarsAI Standards Version: [version from WebFetch]*
 ```
 
 #### Present to User
@@ -1316,7 +1316,7 @@ Create tool:
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                 │
 │ I analyzed your codebase using:                                 │
-│   • ring:codebase-explorer (technical patterns, stack, structure)    │
+│   • marsai:codebase-explorer (technical patterns, stack, structure)    │
 │                                                                 │
 │ Combined with your input on:                                    │
 │   • Current development goal                                    │
@@ -1325,7 +1325,7 @@ Create tool:
 │                                                                 │
 │ Generated: docs/PROJECT_RULES.md                                │
 │                                                                 │
-│ Note: Ring Standards (error handling, logging, testing, etc.)   │
+│ Note: MarsAI Standards (error handling, logging, testing, etc.)   │
 │ are not duplicated - agents load them automatically via WebFetch│
 │                                                                 │
 │ Please review the file and make any corrections needed.         │
@@ -1354,13 +1354,13 @@ For NEW projects (not legacy), ask about PM documents:
 │ 📋 NEW PROJECT - PM DOCUMENTS CHECK                             │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                 │
-│ Since this is a new project following Ring workflow, you        │
+│ Since this is a new project following MarsAI workflow, you        │
 │ should have PM documents from the pre-dev workflow.             │
 │                                                                 │
 │ Do you have any of these PM documents?                          │
 │   • PRD (Product Requirements Document)                         │
 │   • TRD (Technical Requirements Document)                       │
-│   • Feature Map (from ring:pre-dev-feature-map skill)                │
+│   • Feature Map (from marsai:pre-dev-feature-map skill)                │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
 ```
@@ -1398,8 +1398,8 @@ docs/pre-dev/{feature-name}/
 
 #### Common Patterns
 
-- `/ring:pre-dev-full` output: `docs/pre-dev/{feature}/prd.md`, `trd.md`, `feature-map.md`
-- `/ring:pre-dev-feature` output: `docs/pre-dev/{feature}/prd.md`, `feature-map.md`
+- `/marsai:pre-dev-full` output: `docs/pre-dev/{feature}/prd.md`, `trd.md`, `feature-map.md`
+- `/marsai:pre-dev-feature` output: `docs/pre-dev/{feature}/prd.md`, `feature-map.md`
 - Custom locations: User may have docs in different paths (e.g., `requirements/`, `specs/`)
 
 #### Then
@@ -1430,28 +1430,28 @@ Read tool:
 
 #### Extract PROJECT_RULES.md Content from PM Documents
 
-**⛔ DEDUPLICATION RULE:** Extract only what Ring Standards DO NOT cover.
+**⛔ DEDUPLICATION RULE:** Extract only what MarsAI Standards DO NOT cover.
 
 | From PRD | Extract For PROJECT_RULES.md | Note |
 |----------|------------------------------|------|
 | Domain terms, entities | Domain Terminology | Technical names only |
 | External service mentions | External Integrations | Third-party APIs |
 | ~~Business rules~~ | ~~N/A~~ | ❌ Stays in PRD, not PROJECT_RULES |
-| ~~Architecture~~ | ~~N/A~~ | ❌ Ring Standards covers this |
+| ~~Architecture~~ | ~~N/A~~ | ❌ MarsAI Standards covers this |
 
 | From TRD | Extract For PROJECT_RULES.md | Note |
 |----------|------------------------------|------|
-| Tech stack not in Ring | Tech Stack (Not in Ring) | Only non-standard tech |
+| Tech stack not in MarsAI | Tech Stack (Not in MarsAI) | Only non-standard tech |
 | External APIs | External Integrations | Third-party services |
 | Non-standard directories | Non-Standard Directory Structure | Workers, consumers, etc. |
-| ~~Architecture decisions~~ | ~~N/A~~ | ❌ Ring Standards covers this |
-| ~~Database patterns~~ | ~~N/A~~ | ❌ Ring Standards covers this |
+| ~~Architecture decisions~~ | ~~N/A~~ | ❌ MarsAI Standards covers this |
+| ~~Database patterns~~ | ~~N/A~~ | ❌ MarsAI Standards covers this |
 
 | From Feature Map | Extract For PROJECT_RULES.md | Note |
 |------------------|------------------------------|------|
-| Technology choices not in Ring | Tech Stack (Not in Ring) | Only if not in Ring |
+| Technology choices not in MarsAI | Tech Stack (Not in MarsAI) | Only if not in MarsAI |
 | External dependencies | External Integrations | Third-party services |
-| ~~Architecture~~ | ~~N/A~~ | ❌ Ring Standards covers this |
+| ~~Architecture~~ | ~~N/A~~ | ❌ MarsAI Standards covers this |
 
 #### Generate PROJECT_RULES.md
 
@@ -1461,17 +1461,17 @@ Create tool:
   content: |
     # Project Rules
     
-    > ⛔ IMPORTANT: Ring Standards are not automatic. Agents MUST WebFetch them before implementation.
-    > This file documents only project-specific information not covered by Ring Standards.
+    > ⛔ IMPORTANT: MarsAI Standards are not automatic. Agents MUST WebFetch them before implementation.
+    > This file documents only project-specific information not covered by MarsAI Standards.
     > Generated from PM documents (PRD/TRD/Feature Map).
     >
-    > Ring Standards URLs:
-    > - Go: https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/golang.md
-    > - TypeScript: https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/typescript.md
+    > MarsAI Standards URLs:
+    > - Go: https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang.md
+    > - TypeScript: https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/typescript.md
     
-    ## What Ring Standards Cover (DO not DUPLICATE HERE)
+    ## What MarsAI Standards Cover (DO not DUPLICATE HERE)
     
-    The following are defined in Ring Standards and MUST not be duplicated in this file:
+    The following are defined in MarsAI Standards and MUST not be duplicated in this file:
     - Error handling patterns (no panic, wrap errors)
     - Logging standards (structured JSON via lib-commons)
     - Testing patterns (table-driven tests, mocks)
@@ -1482,13 +1482,13 @@ Create tool:
     - Database connections (PostgreSQL, MongoDB, Redis via lib-commons)
     - Bootstrap pattern (config.go, service.go, server.go)
     
-    **Agents MUST WebFetch Ring Standards and output Standards Coverage Table.**
+    **Agents MUST WebFetch MarsAI Standards and output Standards Coverage Table.**
     
     ---
     
-    ## Tech Stack (Not in Ring Standards)
+    ## Tech Stack (Not in MarsAI Standards)
     
-    [From TRD/Feature Map: only technologies not covered by Ring Standards]
+    [From TRD/Feature Map: only technologies not covered by MarsAI Standards]
     
     | Technology | Purpose | Notes |
     |------------|---------|-------|
@@ -1496,7 +1496,7 @@ Create tool:
     
     ## Non-Standard Directory Structure
     
-    [From TRD: Directories that deviate from Ring's standard API structure]
+    [From TRD: Directories that deviate from MarsAI's standard API structure]
     
     | Directory | Purpose | Pattern |
     |-----------|---------|---------|
@@ -1512,7 +1512,7 @@ Create tool:
     
     ## Environment Configuration
     
-    [From TRD: Project-specific env vars not covered by Ring]
+    [From TRD: Project-specific env vars not covered by MarsAI]
     
     | Variable | Purpose | Example |
     |----------|---------|---------|
@@ -1529,7 +1529,7 @@ Create tool:
     ---
     
     *Generated from: [PRD path], [TRD path], [Feature Map path]*
-    *Ring Standards Version: [version from WebFetch]*
+    *MarsAI Standards Version: [version from WebFetch]*
     *Generated: [ISO timestamp]*
 ```
 
@@ -1539,12 +1539,12 @@ If any section is empty or incomplete, ask supplementary questions:
 
 | Missing Section | Supplementary Question |
 |-----------------|------------------------|
-| Tech Stack (Not in Ring) | "Any technology not covered by Ring Standards (message broker, cache, etc.)?" |
+| Tech Stack (Not in MarsAI) | "Any technology not covered by MarsAI Standards (message broker, cache, etc.)?" |
 | External Integrations | "Any third-party APIs or external services?" |
 | Domain Terminology | "What are the main entities/classes in this codebase?" |
 | Non-Standard Directories | "Any directories that don't follow standard API structure (workers, consumers)?" |
 
-**Note:** Do not ask about architecture, error handling, logging, testing - Ring Standards covers these.
+**Note:** Do not ask about architecture, error handling, logging, testing - MarsAI Standards covers these.
 
 #### After Generation
 
@@ -1564,15 +1564,15 @@ Present to user for review, then proceed to Step 1.
 │ You MUST create PRD, TRD, and/or Feature Map documents first    │
 │ using PM team skills:                                           │
 │                                                                 │
-│   /ring:pre-dev-full     → For features ≥2 days (9 gates)           │
-│   /ring:pre-dev-feature  → For features <2 days (4 gates)           │
+│   /marsai:pre-dev-full     → For features ≥2 days (9 gates)           │
+│   /marsai:pre-dev-feature  → For features <2 days (4 gates)           │
 │                                                                 │
 │ These commands will guide you through creating:                 │
 │   • PRD (Product Requirements Document)                         │
 │   • TRD (Technical Requirements Document)                       │
 │   • Feature Map (technology choices, feature relationships)     │
 │                                                                 │
-│ After completing pre-dev workflow, run /ring:dev-cycle again.        │
+│ After completing pre-dev workflow, run /marsai:dev-cycle again.        │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
 ```
@@ -1585,7 +1585,7 @@ STOP EXECUTION. Do not proceed to Step 1.
 
 | Rationalization | Why It's WRONG | Required Action |
 |-----------------|----------------|-----------------|
-| "Skip PM docs, I'll add them later" | Later = never. No PM docs = no project context = agents guessing. | **Run /ring:pre-dev-full or /ring:pre-dev-feature NOW** |
+| "Skip PM docs, I'll add them later" | Later = never. No PM docs = no project context = agents guessing. | **Run /marsai:pre-dev-full or /marsai:pre-dev-feature NOW** |
 | "Project is simple, doesn't need PM docs" | Simple projects still need domain context defined upfront. | **Create PM documents first** |
 | "I know what I want to build" | Your knowledge ≠ documented knowledge agents can use. | **Document in PRD/TRD/Feature Map** |
 | "PM workflow takes too long" | PM workflow takes 30-60 min. Rework from unclear requirements takes days. | **Invest time upfront** |
@@ -1597,12 +1597,12 @@ STOP EXECUTION. Do not proceed to Step 1.
 
 | User Says | Your Response |
 |-----------|---------------|
-| "Just skip this, I'll create PM docs later" | "PM documents are REQUIRED for new projects. Without them, agents cannot understand your project's domain context or technical requirements. Run `/ring:pre-dev-full` or `/ring:pre-dev-feature` first." |
+| "Just skip this, I'll create PM docs later" | "PM documents are REQUIRED for new projects. Without them, agents cannot understand your project's domain context or technical requirements. Run `/marsai:pre-dev-full` or `/marsai:pre-dev-feature` first." |
 | "I don't need formal documents" | "PM documents are the source of truth for PROJECT_RULES.md. Development cannot start without documented requirements." |
-| "This is just a quick prototype" | "Even prototypes need clear requirements. `/ring:pre-dev-feature` takes ~30 minutes and prevents hours of rework." |
+| "This is just a quick prototype" | "Even prototypes need clear requirements. `/marsai:pre-dev-feature` takes ~30 minutes and prevents hours of rework." |
 | "I already explained what I want verbally" | "Verbal explanations cannot be used by agents. Requirements MUST be documented in PRD/TRD/Feature Map files." |
-| "It's a legacy project but skip the questions" | "The legacy analysis (ring:codebase-explorer + 3 questions) is the only way I can understand your project. It takes ~5 minutes and enables me to help you effectively." |
-| "I'll fill in PROJECT_RULES.md myself" | "That works! Create `docs/PROJECT_RULES.md` with: Tech Stack (not in Ring), External Integrations, Domain Terminology. Do not duplicate Ring Standards content. Then run `/ring:dev-cycle` again." |
+| "It's a legacy project but skip the questions" | "The legacy analysis (marsai:codebase-explorer + 3 questions) is the only way I can understand your project. It takes ~5 minutes and enables me to help you effectively." |
+| "I'll fill in PROJECT_RULES.md myself" | "That works! Create `docs/PROJECT_RULES.md` with: Tech Stack (not in MarsAI), External Integrations, Domain Terminology. Do not duplicate MarsAI Standards content. Then run `/marsai:dev-cycle` again." |
 
 ---
 
@@ -1612,18 +1612,18 @@ STOP EXECUTION. Do not proceed to Step 1.
 
 **Input:** Custom instructions string without a task file path
 
-**Example:** `/ring:dev-cycle "Add webhook notification support for account status changes"`
+**Example:** `/marsai:dev-cycle "Add webhook notification support for account status changes"`
 
-When custom instructions are provided without a tasks file, ring:dev-cycle generates tasks internally:
+When custom instructions are provided without a tasks file, marsai:dev-cycle generates tasks internally:
 
 1. **Detect instructions-only mode:** No task file argument AND instructions string provided
 2. **Analyze prompt:** Extract intent, scope, and requirements from the prompt
-3. **Explore codebase:** Dispatch `ring:codebase-explorer` to understand project structure
+3. **Explore codebase:** Dispatch `marsai:codebase-explorer` to understand project structure
 4. **Generate tasks:** Create task structure internally based on prompt + codebase analysis
 
 ```yaml
 Task tool:
-  subagent_type: "ring:codebase-explorer"
+  subagent_type: "marsai:codebase-explorer"
   prompt: |
     Analyze this codebase to support the following implementation request:
     
@@ -1635,23 +1635,23 @@ Task tool:
     3. Acceptance criteria for each task
     4. Files that will need modification
     
-    Output as structured task list compatible with ring:dev-cycle.
+    Output as structured task list compatible with marsai:dev-cycle.
 ```
 
 5. **Present generated tasks:** Show user the auto-generated task breakdown
 6. **Confirm with user:** "I generated X tasks from your prompt. Proceed?"
 7. **Set state:**
-   - `state_path = "docs/ring:dev-cycle/current-cycle.json"`
+   - `state_path = "docs/marsai:dev-cycle/current-cycle.json"`
    - `cycle_type = "prompt"`
    - `source_prompt = "[user's prompt]"`
-   - Generate `tasks` array from ring:codebase-explorer output
+   - Generate `tasks` array from marsai:codebase-explorer output
 8. **Continue to execution mode selection** (Step 1 substeps 7-9)
 
 **Anti-Rationalization for Prompt-Only Mode:**
 
 | Rationalization | Why It's WRONG | Required Action |
 |-----------------|----------------|-----------------|
-| "Skip codebase exploration, I understand the prompt" | Prompt understanding ≠ codebase understanding. Explorer provides context. | **Always run ring:codebase-explorer** |
+| "Skip codebase exploration, I understand the prompt" | Prompt understanding ≠ codebase understanding. Explorer provides context. | **Always run marsai:codebase-explorer** |
 | "Generate minimal tasks to go faster" | Minimal tasks = missed requirements. Comprehensive breakdown prevents rework. | **Generate complete task breakdown** |
 | "User knows what they want, skip confirmation" | User intent ≠ generated tasks. Confirmation prevents wrong implementation. | **Always confirm generated tasks** |
 
@@ -1662,14 +1662,14 @@ Task tool:
 **Input:** `path/to/tasks.md` or `path/to/pre-dev/{feature}/` with optional second argument for custom instructions
 
 **Examples:**
-- `/ring:dev-cycle tasks.md`
-- `/ring:dev-cycle tasks.md "Focus on error handling"`
+- `/marsai:dev-cycle tasks.md`
+- `/marsai:dev-cycle tasks.md "Focus on error handling"`
 
 1. **Detect input:** File → Load directly | Directory → Load tasks.md + discover subtasks/
 2. **Build order:** Read tasks, check for subtasks (ST-XXX-01, 02...) or TDD autonomous mode
 3. **Determine state path:**
-   - if source_file contains `docs/ring:dev-refactor/` → `state_path = "docs/ring:dev-refactor/current-cycle.json"`, `cycle_type = "refactor"`
-   - else → `state_path = "docs/ring:dev-cycle/current-cycle.json"`, `cycle_type = "feature"`
+   - if source_file contains `docs/marsai:dev-refactor/` → `state_path = "docs/marsai:dev-refactor/current-cycle.json"`, `cycle_type = "refactor"`
+   - else → `state_path = "docs/marsai:dev-cycle/current-cycle.json"`, `cycle_type = "feature"`
 4. **Capture and validate custom instructions:** If second argument provided:
    - **Sanitize input:** Trim whitespace, strip control characters (except newlines)
    - **Store validated value:** Set `custom_prompt` field (empty string if not provided)
@@ -1687,8 +1687,8 @@ Task tool:
 ### Resume Cycle (--resume flag)
 
 1. **Find existing state file:**
-   - Check `docs/ring:dev-cycle/current-cycle.json` first
-   - If not found, check `docs/ring:dev-refactor/current-cycle.json`
+   - Check `docs/marsai:dev-cycle/current-cycle.json` first
+   - If not found, check `docs/marsai:dev-refactor/current-cycle.json`
    - If neither exists → Error: "No cycle to resume"
 2. Load found state file, validate (state_path is stored in the state object)
 3. Display: cycle started, tasks completed/total, current task/subtask/gate, paused reason
@@ -1705,7 +1705,7 @@ Task tool:
 
 ## Input Validation
 
-Task files are generated by `/pre-dev-*` or `/ring:dev-refactor`, which handle content validation. The ring:dev-cycle performs basic format checks:
+Task files are generated by `/pre-dev-*` or `/marsai:dev-refactor`, which handle content validation. The marsai:dev-cycle performs basic format checks:
 
 ### Format Checks
 
@@ -1813,7 +1813,7 @@ Multi-tenant state is detected here and passed to Gate 0 (implementation) and Ga
 
 ## Step 2: Gate 0 - Implementation (Per Execution Unit)
 
-**REQUIRED SUB-SKILL:** Use ring:dev-implementation
+**REQUIRED SUB-SKILL:** Use marsai:dev-implementation
 
 **Execution Unit:** Task (if no subtasks) or Subtask (if task has subtasks)
 
@@ -1826,16 +1826,16 @@ MUST execute the **Before Gate 0 (task start)** row from the State Persistence C
 
 CANNOT proceed to sub-steps 2.1–2.3 without completing this checkpoint.
 
-### ⛔ MANDATORY: Invoke ring:dev-implementation Skill (not inline execution)
+### ⛔ MANDATORY: Invoke marsai:dev-implementation Skill (not inline execution)
 
 See [shared-patterns/shared-orchestrator-principle.md](../shared-patterns/shared-orchestrator-principle.md) for full details.
 
 **⛔ FORBIDDEN: Executing TDD-RED/GREEN logic directly from this step.**
-MUST invoke the ring:dev-implementation skill via the Skill tool; it handles all TDD phases, agent selection, agent dispatch, standards verification, and fix iteration.
+MUST invoke the marsai:dev-implementation skill via the Skill tool; it handles all TDD phases, agent selection, agent dispatch, standards verification, and fix iteration.
 
 ### ⛔ Post-Generation Panic Check (MANDATORY)
 
-After ring:dev-implementation completes, verify generated code:
+After marsai:dev-implementation completes, verify generated code:
 
 | Check | Command | Expected | If Found |
 |-------|---------|----------|----------|
@@ -1856,7 +1856,7 @@ See [shared-patterns/file-size-enforcement.md](../shared-patterns/file-size-enfo
 - **Gate 0.5:** Delivery verification skill runs 7 checks: (A) file-size, (B) license headers, (C) linting, (D) migration safety, (E) vulnerability scanning, (F) API backward compatibility, (G) multi-tenant dual-mode. Any FAIL → return to Gate 0 with specific fix instructions.
 - **Gate 8:** Code reviewers MUST flag any file > 300 lines as a MEDIUM+ issue (blocking).
 
-### Step 2.1: Prepare Input for ring:dev-implementation Skill
+### Step 2.1: Prepare Input for marsai:dev-implementation Skill
 
 ```text
 Gather from current execution unit:
@@ -1877,14 +1877,14 @@ implementation_input = {
 }
 ```
 
-### Step 2.2: Invoke ring:dev-implementation Skill
+### Step 2.2: Invoke marsai:dev-implementation Skill
 
 ```text
 1. Record gate start timestamp
 
-2. REQUIRED: Invoke ring:dev-implementation skill with structured input:
+2. REQUIRED: Invoke marsai:dev-implementation skill with structured input:
 
-   Skill("ring:dev-implementation") with input:
+   Skill("marsai:dev-implementation") with input:
      unit_id: implementation_input.unit_id
      requirements: implementation_input.requirements
      language: implementation_input.language
@@ -1924,7 +1924,7 @@ implementation_input = {
 ### Step 2.3: Gate 0 Complete
 
 ```text
-5. When ring:dev-implementation skill returns PASS:
+5. When marsai:dev-implementation skill returns PASS:
 
    REQUIRED: Parse from skill output:
    - agent_used: extract from "## Implementation Summary"
@@ -1934,7 +1934,7 @@ implementation_input = {
    - standards_compliance: extract from Standards Coverage Table
 
    - agent_outputs.implementation = {
-       skill: "ring:dev-implementation",
+       skill: "marsai:dev-implementation",
        agent: "[agent used by skill]",
        output: "[full skill output]",
        timestamp: "[ISO timestamp]",
@@ -1961,7 +1961,7 @@ implementation_input = {
    ┌─────────────────────────────────────────────────┐
    │ ✓ GATE 0 COMPLETE                              │
    ├─────────────────────────────────────────────────┤
-   │ Skill: ring:dev-implementation                  │
+   │ Skill: marsai:dev-implementation                  │
    │ Agent: [agent_used]                             │
    │ TDD-RED:   FAIL captured ✓                     │
    │ TDD-GREEN: PASS verified ✓                     │
@@ -1980,7 +1980,7 @@ implementation_input = {
 
 ```text
 1. Load Skill:
-   Skill("ring:dev-delivery-verification")
+   Skill("marsai:dev-delivery-verification")
 
 2. Invoke with Gate 0 outputs:
    - unit_id: current task/subtask ID
@@ -2031,7 +2031,7 @@ implementation_input = {
    ┌─────────────────────────────────────────────────┐
    │ ✓ GATE 0.5 COMPLETE                            │
    ├─────────────────────────────────────────────────┤
-   │ Skill: ring:dev-delivery-verification           │
+   │ Skill: marsai:dev-delivery-verification           │
    │ Requirements: [delivered]/[total] DELIVERED     │
    │ Dead Code: [N] items                            │
    │ Verdict: [PASS|PARTIAL|FAIL]                    │
@@ -2049,29 +2049,29 @@ implementation_input = {
 
 | Rationalization | Why It's WRONG | Required Action |
 |-----------------|----------------|-----------------|
-| "I can run TDD-RED/GREEN directly from here" | Inline TDD = skipping the skill. Skill has iteration logic and validation. | **Invoke Skill("ring:dev-implementation")** |
-| "I already know which agent to dispatch" | Agent selection is the SKILL's job, not the orchestrator's. | **Invoke Skill("ring:dev-implementation")** |
-| "The TDD steps are documented here, I'll follow them" | These steps are REFERENCE, not EXECUTABLE. The skill is executable. | **Invoke Skill("ring:dev-implementation")** |
-| "Skill adds overhead for simple tasks" | Overhead = compliance checks. Simple ≠ exempt. | **Invoke Skill("ring:dev-implementation")** |
-| "I'll dispatch the agent and verify output myself" | Self-verification skips the skill's re-dispatch loop. | **Invoke Skill("ring:dev-implementation")** |
-| "Agent already did TDD internally" | Internal ≠ verified by skill. Skill validates output structure. | **Invoke Skill("ring:dev-implementation")** |
+| "I can run TDD-RED/GREEN directly from here" | Inline TDD = skipping the skill. Skill has iteration logic and validation. | **Invoke Skill("marsai:dev-implementation")** |
+| "I already know which agent to dispatch" | Agent selection is the SKILL's job, not the orchestrator's. | **Invoke Skill("marsai:dev-implementation")** |
+| "The TDD steps are documented here, I'll follow them" | These steps are REFERENCE, not EXECUTABLE. The skill is executable. | **Invoke Skill("marsai:dev-implementation")** |
+| "Skill adds overhead for simple tasks" | Overhead = compliance checks. Simple ≠ exempt. | **Invoke Skill("marsai:dev-implementation")** |
+| "I'll dispatch the agent and verify output myself" | Self-verification skips the skill's re-dispatch loop. | **Invoke Skill("marsai:dev-implementation")** |
+| "Agent already did TDD internally" | Internal ≠ verified by skill. Skill validates output structure. | **Invoke Skill("marsai:dev-implementation")** |
 
 ---
 
 ## Step 3: Gate 1 - DevOps (Per Execution Unit)
 
-**REQUIRED SUB-SKILLS:** Use ring:dev-devops, then ring:dev-docker-security (audit)
+**REQUIRED SUB-SKILLS:** Use marsai:dev-devops, then marsai:dev-docker-security (audit)
 
 ### ⛔ HARD GATE: Required Artifacts MUST Be Created
 
 **Gate 1 is a BLOCKING gate.** DevOps agent MUST create all required artifacts. If any artifact is missing:
 - You CANNOT proceed to Gate 2
-- You MUST re-dispatch to ring:devops-engineer to create missing artifacts
+- You MUST re-dispatch to marsai:devops-engineer to create missing artifacts
 - You MUST verify all artifacts exist before proceeding
 
 ### Required Artifacts
 
-**See [shared-patterns/standards-coverage-table.md](../skills/shared-patterns/standards-coverage-table.md) → "ring:devops-engineer → devops.md" for all required sections.**
+**See [shared-patterns/standards-coverage-table.md](../skills/shared-patterns/standards-coverage-table.md) → "marsai:devops-engineer → devops.md" for all required sections.**
 
 **Key artifacts from devops.md:**
 - Containers (Dockerfile + Docker Compose)
@@ -2079,7 +2079,7 @@ implementation_input = {
 - Infrastructure as Code (if applicable)
 - Helm charts (if K8s deployment)
 
-### Step 3.1: Prepare Input for ring:dev-devops Skill
+### Step 3.1: Prepare Input for marsai:dev-devops Skill
 
 ```text
 Gather from previous gates:
@@ -2103,14 +2103,14 @@ devops_input = {
 }
 ```
 
-### Step 3.2: Invoke ring:dev-devops Skill
+### Step 3.2: Invoke marsai:dev-devops Skill
 
 ```text
 1. Record gate start timestamp
 
-2. Invoke ring:dev-devops skill with structured input:
+2. Invoke marsai:dev-devops skill with structured input:
 
-   Skill("ring:dev-devops") with input:
+   Skill("marsai:dev-devops") with input:
      unit_id: devops_input.unit_id
      language: devops_input.language
      service_type: devops_input.service_type
@@ -2123,7 +2123,7 @@ devops_input = {
      existing_compose: devops_input.existing_compose
 
    The skill handles:
-   - Dispatching ring:devops-engineer agent
+   - Dispatching marsai:devops-engineer agent
    - Dockerfile creation/update
    - docker-compose.yml configuration
    - .env.example documentation
@@ -2143,7 +2143,7 @@ devops_input = {
    
    if skill output contains "Status: FAIL" or "Ready for Gate 2: no":
      → Gate 1 BLOCKED.
-     → Skill already dispatched fixes to ring:devops-engineer
+     → Skill already dispatched fixes to marsai:devops-engineer
      → Skill already re-ran verification
      → If "ESCALATION" in output: STOP and report to user
 
@@ -2153,10 +2153,10 @@ devops_input = {
 ### Step 3.2.1: Docker Security Audit
 
 ```text
-After ring:dev-devops PASSES, run Docker Hub Health Score compliance audit
+After marsai:dev-devops PASSES, run Docker Hub Health Score compliance audit
 on the created/updated Dockerfile:
 
-   Skill("ring:dev-docker-security") with input:
+   Skill("marsai:dev-docker-security") with input:
      dockerfile_path: [extract from devops "## Files Changed" table, or default to "Dockerfile"]
      language: devops_input.language
      service_type: devops_input.service_type
@@ -2173,15 +2173,15 @@ on the created/updated Dockerfile:
      → Proceed to Step 3.3.
 
    if skill output contains "Result: FAIL":
-     → Re-dispatch ring:devops-engineer with the failing policies
-     → Re-run ring:dev-docker-security audit
+     → Re-dispatch marsai:devops-engineer with the failing policies
+     → Re-run marsai:dev-docker-security audit
      → Max 3 total attempts (2 retries). If still FAIL: STOP and report to user
 ```
 
 ### Step 3.3: Gate 1 Complete
 
 ```text
-5. When ring:dev-devops skill returns PASS:
+5. When marsai:dev-devops skill returns PASS:
    
    Parse from skill output:
    - status: extract from "## DevOps Summary"
@@ -2190,7 +2190,7 @@ on the created/updated Dockerfile:
    - verification_passed: extract from "## Verification Results"
    
    - agent_outputs.devops = {
-       skill: "ring:dev-devops",
+       skill: "marsai:dev-devops",
        output: "[full skill output]",
        artifacts_created: ["Dockerfile", "docker-compose.yml", ".env.example"],
        verification_passed: true,
@@ -2217,9 +2217,9 @@ on the created/updated Dockerfile:
 
 ## Step 4: Gate 2 - SRE (Per Execution Unit)
 
-**REQUIRED SUB-SKILL:** Use `ring:dev-sre`
+**REQUIRED SUB-SKILL:** Use `marsai:dev-sre`
 
-### Step 4.1: Prepare Input for ring:dev-sre Skill
+### Step 4.1: Prepare Input for marsai:dev-sre Skill
 
 ```text
 Gather from previous gates:
@@ -2231,7 +2231,7 @@ sre_input = {
   // REQUIRED - from Gate 0 context
   language: state.current_unit.language,  // "go" | "typescript" | "python"
   service_type: state.current_unit.service_type,  // "api" | "worker" | "batch" | "cli"
-  implementation_agent: agent_outputs.implementation.agent,  // e.g., "ring:backend-engineer-golang"
+  implementation_agent: agent_outputs.implementation.agent,  // e.g., "marsai:backend-engineer-golang"
   implementation_files: agent_outputs.implementation.files_changed,  // list of files from Gate 0
   
   // OPTIONAL - additional context
@@ -2241,14 +2241,14 @@ sre_input = {
 }
 ```
 
-### Step 4.2: Invoke ring:dev-sre Skill
+### Step 4.2: Invoke marsai:dev-sre Skill
 
 ```text
 1. Record gate start timestamp
 
-2. Invoke ring:dev-sre skill with structured input:
+2. Invoke marsai:dev-sre skill with structured input:
 
-   Skill("ring:dev-sre") with input:
+   Skill("marsai:dev-sre") with input:
      unit_id: sre_input.unit_id
      language: sre_input.language
      service_type: sre_input.service_type
@@ -2290,7 +2290,7 @@ sre_input = {
 ### Step 4.3: Gate 2 Complete
 
 ```text
-5. When ring:dev-sre skill returns PASS:
+5. When marsai:dev-sre skill returns PASS:
    
    Parse from skill output:
    - status: extract from "## Validation Result"
@@ -2298,7 +2298,7 @@ sre_input = {
    - iterations: extract from "Iterations:" line
    
    - agent_outputs.sre = {
-       skill: "ring:dev-sre",
+       skill: "marsai:dev-sre",
        output: "[full skill output]",
        validation_result: "PASS",
        instrumentation_coverage: "[X%]",
@@ -2317,7 +2317,7 @@ sre_input = {
 
 ### Gate 2 Anti-Rationalization Table
 
-See [ring:dev-sre/SKILL.md](../dev-sre/SKILL.md) for complete anti-rationalization tables covering:
+See [marsai:dev-sre/SKILL.md](../dev-sre/SKILL.md) for complete anti-rationalization tables covemarsai:
 - Observability deferral rationalizations
 - Instrumentation coverage rationalizations
 - Context propagation rationalizations
@@ -2326,15 +2326,15 @@ See [ring:dev-sre/SKILL.md](../dev-sre/SKILL.md) for complete anti-rationalizati
 
 | User Says | Your Response |
 |-----------|---------------|
-| "Skip SRE validation, we'll add observability later" | "Observability is MANDATORY for Gate 2. Invoking ring:dev-sre skill now." |
-| "SRE found issues but let's continue" | "Gate 2 is a HARD GATE. ring:dev-sre skill handles fix dispatch and re-validation." |
-| "Instrumentation coverage is low but code works" | "90%+ instrumentation coverage is REQUIRED. ring:dev-sre skill will not pass until met." |
+| "Skip SRE validation, we'll add observability later" | "Observability is MANDATORY for Gate 2. Invoking marsai:dev-sre skill now." |
+| "SRE found issues but let's continue" | "Gate 2 is a HARD GATE. marsai:dev-sre skill handles fix dispatch and re-validation." |
+| "Instrumentation coverage is low but code works" | "90%+ instrumentation coverage is REQUIRED. marsai:dev-sre skill will not pass until met." |
 
 ## Step 5: Gate 3 - Unit Testing (Per Execution Unit)
 
-**REQUIRED SUB-SKILL:** Use `ring:dev-unit-testing`
+**REQUIRED SUB-SKILL:** Use `marsai:dev-unit-testing`
 
-### Step 5.1: Prepare Input for ring:dev-unit-testing Skill
+### Step 5.1: Prepare Input for marsai:dev-unit-testing Skill
 
 ```text
 Gather from previous gates:
@@ -2347,20 +2347,20 @@ testing_input = {
   language: state.current_unit.language,  // "go" | "typescript" | "python"
   
   // OPTIONAL - additional context
-  coverage_threshold: 85,  // Ring minimum, PROJECT_RULES.md can raise
+  coverage_threshold: 85,  // MarsAI minimum, PROJECT_RULES.md can raise
   gate0_handoff: agent_outputs.implementation,  // full Gate 0 output
   existing_tests: [check for existing test files]
 }
 ```
 
-### Step 5.2: Invoke ring:dev-unit-testing Skill
+### Step 5.2: Invoke marsai:dev-unit-testing Skill
 
 ```text
 1. Record gate start timestamp
 
-2. Invoke ring:dev-unit-testing skill with structured input:
+2. Invoke marsai:dev-unit-testing skill with structured input:
 
-   Skill("ring:dev-unit-testing") with input:
+   Skill("marsai:dev-unit-testing") with input:
      unit_id: testing_input.unit_id
      acceptance_criteria: testing_input.acceptance_criteria
      implementation_files: testing_input.implementation_files
@@ -2370,7 +2370,7 @@ testing_input = {
      existing_tests: testing_input.existing_tests
 
    The skill handles:
-   - Dispatching ring:qa-analyst agent
+   - Dispatching marsai:qa-analyst agent
    - Test creation following TDD methodology
    - Coverage measurement and validation (85%+ required)
    - Traceability matrix (AC → Test mapping)
@@ -2400,7 +2400,7 @@ testing_input = {
 ### Step 5.3: Gate 3 Complete
 
 ```text
-5. When ring:dev-unit-testing skill returns PASS:
+5. When marsai:dev-unit-testing skill returns PASS:
    
    Parse from skill output:
    - coverage_actual: extract percentage from "## Coverage Report"
@@ -2409,7 +2409,7 @@ testing_input = {
    - iterations: extract from "Iterations:" line
    
    - agent_outputs.testing = {
-       skill: "ring:dev-unit-testing",
+       skill: "marsai:dev-unit-testing",
        output: "[full skill output]",
        verdict: "PASS",
        coverage_actual: [X%],
@@ -2458,7 +2458,7 @@ testing_input = {
 
 ### Gate 3 Thresholds
 
-- **Minimum:** 85% (Ring standard - CANNOT be lowered)
+- **Minimum:** 85% (MarsAI standard - CANNOT be lowered)
 - **Project-specific:** Can be higher if defined in `docs/PROJECT_RULES.md`
 - **Validation:** Threshold < 85% → Use 85%
 
@@ -2466,17 +2466,17 @@ testing_input = {
 
 | User Says | Your Response |
 |-----------|---------------|
-| "84% is close enough" | "85% is Ring minimum. ring:dev-unit-testing skill enforces this." |
-| "Skip testing, deadline" | "Testing is MANDATORY. ring:dev-unit-testing skill handles iterations." |
-| "Manual testing covers it" | "Gate 3 requires executable unit tests. Invoking ring:dev-unit-testing now." |
+| "84% is close enough" | "85% is MarsAI minimum. marsai:dev-unit-testing skill enforces this." |
+| "Skip testing, deadline" | "Testing is MANDATORY. marsai:dev-unit-testing skill handles iterations." |
+| "Manual testing covers it" | "Gate 3 requires executable unit tests. Invoking marsai:dev-unit-testing now." |
 
 ## Step 6: Gate 4 - Fuzz Testing (Per Execution Unit)
 
-**REQUIRED SUB-SKILL:** Use `ring:dev-fuzz-testing`
+**REQUIRED SUB-SKILL:** Use `marsai:dev-fuzz-testing`
 
 **MANDATORY GATE:** All code paths MUST have fuzz tests to discover edge cases and crashes.
 
-### Step 6.1: Prepare Input for ring:dev-fuzz-testing Skill
+### Step 6.1: Prepare Input for marsai:dev-fuzz-testing Skill
 
 ```text
 Gather from previous gates:
@@ -2492,21 +2492,21 @@ fuzz_testing_input = {
 }
 ```
 
-### Step 6.2: Invoke ring:dev-fuzz-testing Skill
+### Step 6.2: Invoke marsai:dev-fuzz-testing Skill
 
 ```text
 1. Record gate start timestamp
 
-2. Invoke ring:dev-fuzz-testing skill with structured input:
+2. Invoke marsai:dev-fuzz-testing skill with structured input:
 
-   Skill("ring:dev-fuzz-testing") with input:
+   Skill("marsai:dev-fuzz-testing") with input:
      unit_id: fuzz_testing_input.unit_id
      implementation_files: fuzz_testing_input.implementation_files
      language: fuzz_testing_input.language
      gate3_handoff: fuzz_testing_input.gate3_handoff
 
    The skill handles:
-   - Dispatching ring:qa-analyst agent (test_mode: fuzz)
+   - Dispatching marsai:qa-analyst agent (test_mode: fuzz)
    - Fuzz function creation (FuzzXxx naming)
    - Seed corpus generation (minimum 5 entries)
    - f.Add() pattern validation
@@ -2538,11 +2538,11 @@ fuzz_testing_input = {
 
 ## Step 7: Gate 5 - Property-Based Testing (Per Execution Unit)
 
-**REQUIRED SUB-SKILL:** Use `ring:dev-property-testing`
+**REQUIRED SUB-SKILL:** Use `marsai:dev-property-testing`
 
 **MANDATORY GATE:** Domain invariants MUST be verified with property-based tests.
 
-### Step 7.1: Prepare Input for ring:dev-property-testing Skill
+### Step 7.1: Prepare Input for marsai:dev-property-testing Skill
 
 ```text
 Gather from previous gates:
@@ -2558,21 +2558,21 @@ property_testing_input = {
 }
 ```
 
-### Step 7.2: Invoke ring:dev-property-testing Skill
+### Step 7.2: Invoke marsai:dev-property-testing Skill
 
 ```text
 1. Record gate start timestamp
 
-2. Invoke ring:dev-property-testing skill with structured input:
+2. Invoke marsai:dev-property-testing skill with structured input:
 
-   Skill("ring:dev-property-testing") with input:
+   Skill("marsai:dev-property-testing") with input:
      unit_id: property_testing_input.unit_id
      implementation_files: property_testing_input.implementation_files
      language: property_testing_input.language
      domain_invariants: property_testing_input.domain_invariants
 
    The skill handles:
-   - Dispatching ring:qa-analyst agent (test_mode: property)
+   - Dispatching marsai:qa-analyst agent (test_mode: property)
    - Property function creation (TestProperty_* naming)
    - quick.Check pattern validation
    - Invariant verification
@@ -2604,13 +2604,13 @@ property_testing_input = {
 
 ## Step 8: Gate 6 - Integration Testing (Per Execution Unit — WRITE ONLY)
 
-**REQUIRED SUB-SKILL:** Use `ring:dev-integration-testing`
+**REQUIRED SUB-SKILL:** Use `marsai:dev-integration-testing`
 
 **MANDATORY GATE:** All code MUST have integration tests using testcontainers.
 
 **⛔ DEFERRED EXECUTION:** Per unit, this gate writes/updates integration test code and verifies compilation. Tests are NOT executed here (no containers). Actual execution happens at end of cycle (Step 12.1).
 
-### Step 8.1: Prepare Input for ring:dev-integration-testing Skill
+### Step 8.1: Prepare Input for marsai:dev-integration-testing Skill
 
 ```text
 Gather from previous gates:
@@ -2632,14 +2632,14 @@ integration_testing_input = {
 // from Step 1.5 (cycle-level auto-detection) when the unit doesn't define them.
 ```
 
-### Step 8.2: Invoke ring:dev-integration-testing Skill (Write Mode)
+### Step 8.2: Invoke marsai:dev-integration-testing Skill (Write Mode)
 
 ```text
 1. Record gate start timestamp
 
-2. REQUIRED: Invoke ring:dev-integration-testing skill with structured input:
+2. REQUIRED: Invoke marsai:dev-integration-testing skill with structured input:
 
-   Skill("ring:dev-integration-testing") with input:
+   Skill("marsai:dev-integration-testing") with input:
      unit_id: integration_testing_input.unit_id
      integration_scenarios: integration_testing_input.integration_scenarios
      external_dependencies: integration_testing_input.external_dependencies
@@ -2649,7 +2649,7 @@ integration_testing_input = {
      implementation_files: integration_testing_input.implementation_files
 
    In write_only mode, the skill handles:
-   - Dispatching ring:qa-analyst agent (test_mode: integration)
+   - Dispatching marsai:qa-analyst agent (test_mode: integration)
    - Writing/updating integration test code for current unit's changes
    - Verifying test compilation (go build ./... or tsc --noEmit)
    - Verifying build tags (//go:build integration) present
@@ -2697,13 +2697,13 @@ integration_testing_input = {
 
 ## Step 9: Gate 7 - Chaos Testing (Per Execution Unit — WRITE ONLY)
 
-**REQUIRED SUB-SKILL:** Use `ring:dev-chaos-testing`
+**REQUIRED SUB-SKILL:** Use `marsai:dev-chaos-testing`
 
 **MANDATORY GATE:** All external dependencies MUST have chaos tests for failure scenarios.
 
 **⛔ DEFERRED EXECUTION:** Per unit, this gate writes/updates chaos test code and verifies compilation. Tests are NOT executed here (no Toxiproxy). Actual execution happens at end of cycle (Step 12.1).
 
-### Step 9.1: Prepare Input for ring:dev-chaos-testing Skill
+### Step 9.1: Prepare Input for marsai:dev-chaos-testing Skill
 
 ```text
 Gather from previous gates:
@@ -2723,14 +2723,14 @@ chaos_testing_input = {
 // from Step 1.5 (cycle-level auto-detection) when the unit doesn't define them.
 ```
 
-### Step 9.2: Invoke ring:dev-chaos-testing Skill (Write Mode)
+### Step 9.2: Invoke marsai:dev-chaos-testing Skill (Write Mode)
 
 ```text
 1. Record gate start timestamp
 
-2. REQUIRED: Invoke ring:dev-chaos-testing skill with structured input:
+2. REQUIRED: Invoke marsai:dev-chaos-testing skill with structured input:
 
-   Skill("ring:dev-chaos-testing") with input:
+   Skill("marsai:dev-chaos-testing") with input:
      unit_id: chaos_testing_input.unit_id
      external_dependencies: chaos_testing_input.external_dependencies
      language: chaos_testing_input.language
@@ -2738,7 +2738,7 @@ chaos_testing_input = {
      gate6_handoff: chaos_testing_input.gate6_handoff
 
    In write_only mode, the skill handles:
-   - Dispatching ring:qa-analyst agent (test_mode: chaos)
+   - Dispatching marsai:qa-analyst agent (test_mode: chaos)
    - Writing/updating chaos test code for current unit's dependencies
    - Verifying test compilation
    - Verifying dual-gate pattern (CHAOS=1 + testing.Short())
@@ -2781,9 +2781,9 @@ chaos_testing_input = {
 
 ## Step 10: Gate 8 - Review (Per Execution Unit)
 
-**REQUIRED SUB-SKILL:** Use `ring:requesting-code-review`
+**REQUIRED SUB-SKILL:** Use `marsai:requesting-code-review`
 
-### Step 10.1: Prepare Input for ring:requesting-code-review Skill
+### Step 10.1: Prepare Input for marsai:requesting-code-review Skill
 
 ```text
 Gather from previous gates:
@@ -2802,14 +2802,14 @@ review_input = {
 }
 ```
 
-### Step 10.2: Invoke ring:requesting-code-review Skill
+### Step 10.2: Invoke marsai:requesting-code-review Skill
 
 ```text
 1. Record gate start timestamp
 
-2. Invoke ring:requesting-code-review skill with structured input:
+2. Invoke marsai:requesting-code-review skill with structured input:
 
-   Skill("ring:requesting-code-review") with input:
+   Skill("marsai:requesting-code-review") with input:
      unit_id: review_input.unit_id
      base_sha: review_input.base_sha
      head_sha: review_input.head_sha
@@ -2820,7 +2820,7 @@ review_input = {
 
    The skill handles:
    - Dispatching all 7 reviewers in PARALLEL (single message with 7 Task calls)
-   - ring:code-reviewer, ring:business-logic-reviewer, ring:security-reviewer, ring:nil-safety-reviewer, ring:test-reviewer, ring:consequences-reviewer, ring:dead-code-reviewer
+   - marsai:code-reviewer, marsai:business-logic-reviewer, marsai:security-reviewer, marsai:nil-safety-reviewer, marsai:test-reviewer, marsai:consequences-reviewer, marsai:dead-code-reviewer
    - Aggregating issues by severity (CRITICAL/HIGH/MEDIUM/LOW/COSMETIC)
    - Dispatching fixes to implementation agent for blocking issues
    - Re-running all 7 reviewers after fixes
@@ -2850,7 +2850,7 @@ review_input = {
 ### Step 10.3: Gate 8 Complete
 
 ```text
-5. When ring:requesting-code-review skill returns PASS:
+5. When marsai:requesting-code-review skill returns PASS:
 
    Parse from skill output:
    - reviewers_passed: extract from "## Reviewer Verdicts" (should be "5/5")
@@ -2860,7 +2860,7 @@ review_input = {
    - iterations: extract from "Iterations:" line
 
    - agent_outputs.review = {
-       skill: "ring:requesting-code-review",
+       skill: "marsai:requesting-code-review",
        output: "[full skill output]",
        iterations: [count],
        timestamp: "[ISO timestamp]",
@@ -2987,12 +2987,12 @@ For current execution unit:
 
 0. **COMMIT CHECK (before checkpoint):**
    - if `commit_timing == "per_subtask"`:
-     - Execute `/ring:commit` command with message: `feat({unit_id}): {unit_title}`
+     - Execute `/marsai:commit` command with message: `feat({unit_id}): {unit_title}`
      - Include all changed files from this subtask
    - else: Skip commit (will happen at task or cycle end)
 
 0b. **VISUAL CHANGE REPORT (MANDATORY - before checkpoint):**
-   - MANDATORY: Invoke `Skill("ring:visual-explainer")` to generate a code-diff HTML report for this execution unit
+   - MANDATORY: Invoke `Skill("marsai:visual-explainer")` to generate a code-diff HTML report for this execution unit
    - Read `default/skills/visual-explainer/templates/code-diff.html` to absorb the patterns before generating
    - Content sourced from state JSON `agent_outputs` for the current unit:
      * **TDD Output:** `tdd_red` (failing test with failure_output) + `tdd_green` (implementation with pass_output)
@@ -3000,11 +3000,11 @@ For current execution unit:
       * **Review Verdicts:** Summary of all 7 reviewer verdicts from Gate 8
      * **Acceptance Criteria:** Status from Gate 9 validation
    - HTML includes: KPI cards (files changed, tests added, review iterations, gate pass/fail summary), per-file diff panels, review issues section (if any Medium+ issues were found and fixed)
-   - Save to: `docs/ring:dev-cycle/reports/unit-{unit_id}-report.html`
+   - Save to: `docs/marsai:dev-cycle/reports/unit-{unit_id}-report.html`
    - Open in browser:
      ```text
-     macOS: open docs/ring:dev-cycle/reports/unit-{unit_id}-report.html
-     Linux: xdg-open docs/ring:dev-cycle/reports/unit-{unit_id}-report.html
+     macOS: open docs/marsai:dev-cycle/reports/unit-{unit_id}-report.html
+     Linux: xdg-open docs/marsai:dev-cycle/reports/unit-{unit_id}-report.html
      ```
    - Tell the user the file path
    - See [shared-patterns/anti-rationalization-visual-report.md](../shared-patterns/anti-rationalization-visual-report.md) for anti-rationalization table
@@ -3026,23 +3026,23 @@ For current execution unit:
 
 0. **COMMIT CHECK (before task checkpoint):**
    - if `commit_timing == "per_task"`:
-     - Execute `/ring:commit` command with message: `feat({task_id}): {task_title}`
+     - Execute `/marsai:commit` command with message: `feat({task_id}): {task_title}`
      - Include all changed files from this task (all subtasks combined)
    - else if `commit_timing == "per_subtask"`: Already committed per subtask
    - else: Skip commit (will happen at cycle end)
 
 0b. **VISUAL CHANGE REPORT (MANDATORY - before task checkpoint):**
-   - MANDATORY: Invoke `Skill("ring:visual-explainer")` to generate an aggregate code-diff HTML report for all subtasks in this task
+   - MANDATORY: Invoke `Skill("marsai:visual-explainer")` to generate an aggregate code-diff HTML report for all subtasks in this task
    - Read `default/skills/visual-explainer/templates/code-diff.html` to absorb the patterns before generating
    - Content aggregated from all subtask executions:
      * **Task Overview:** Task ID, title, all subtask IDs and their gate statuses
      * **Combined File Changes:** All files modified across all subtasks with before/after diff panels
      * **Aggregate Metrics:** Total tests added, total review iterations, total lines changed
-   - Save to: `docs/ring:dev-cycle/reports/task-{task_id}-report.html`
+   - Save to: `docs/marsai:dev-cycle/reports/task-{task_id}-report.html`
    - Open in browser:
      ```text
-     macOS: open docs/ring:dev-cycle/reports/task-{task_id}-report.html
-     Linux: xdg-open docs/ring:dev-cycle/reports/task-{task_id}-report.html
+     macOS: open docs/marsai:dev-cycle/reports/task-{task_id}-report.html
+     Linux: xdg-open docs/marsai:dev-cycle/reports/task-{task_id}-report.html
      ```
    - Tell the user the file path
    - See [shared-patterns/anti-rationalization-visual-report.md](../shared-patterns/anti-rationalization-visual-report.md) for anti-rationalization table
@@ -3062,14 +3062,14 @@ After completing all subtasks of a task:
 
 1. Set task status = "completed"
 
-2. **⛔ MANDATORY: Run ring:dev-feedback-loop skill**
+2. **⛔ MANDATORY: Run marsai:dev-feedback-loop skill**
 
    ```yaml
    Skill tool:
-     skill: "ring:dev-feedback-loop"
+     skill: "marsai:dev-feedback-loop"
    ```
 
-   **Note:** ring:dev-feedback-loop manages its own TodoWrite tracking internally.
+   **Note:** marsai:dev-feedback-loop manages its own TodoWrite tracking internally.
    
    The skill will:
    - Add its own todo item for tracking
@@ -3118,9 +3118,9 @@ After completing all subtasks of a task:
    │ Assertiveness Score: XX% (Rating)               │
    │                                                  │
    │ Prompt Quality by Agent:                        │
-   │   ring:backend-engineer-golang: 90% (Excellent)     │
-   │   ring:qa-analyst: 75% (Acceptable)                 │
-   │   ring:code-reviewer: 88% (Good)               │
+   │   marsai:backend-engineer-golang: 90% (Excellent)     │
+   │   marsai:qa-analyst: 75% (Acceptable)                 │
+   │   marsai:code-reviewer: 88% (Good)               │
    │                                                  │
    │ Improvements Suggested: N                       │
    │ Feedback Location:                              │
@@ -3161,7 +3161,7 @@ After completing all subtasks of a task:
      - Save state
      - Output: "Cycle paused for integration testing.
                 Test task [task_id] integration and run:
-                /ring:dev-cycle --resume
+                /marsai:dev-cycle --resume
                 when ready to continue."
      - STOP execution
 
@@ -3169,7 +3169,7 @@ After completing all subtasks of a task:
      - Set status = "paused"
      - Save state
      - Output: "Cycle paused after task [task_id]. Resume with:
-                /ring:dev-cycle --resume"
+                /marsai:dev-cycle --resume"
      - STOP execution
 ```
 
@@ -3186,9 +3186,9 @@ All units have written/updated test code during their Gate 6-7 passes. Now execu
 ```text
 1. Record deferred execution start timestamp
 
-2. REQUIRED: Invoke ring:dev-integration-testing skill in EXECUTE mode:
+2. REQUIRED: Invoke marsai:dev-integration-testing skill in EXECUTE mode:
 
-   Skill("ring:dev-integration-testing") with input:
+   Skill("marsai:dev-integration-testing") with input:
      mode: "execute"
      all_test_files: [aggregate gate_progress.integration_testing.test_files from all units]
      language: state.language
@@ -3199,9 +3199,9 @@ All units have written/updated test code during their Gate 6-7 passes. Now execu
    - Reporting pass/fail per test file
    - If failures: dispatching fixes and re-running (max 3 iterations)
 
-3. REQUIRED: Invoke ring:dev-chaos-testing skill in EXECUTE mode:
+3. REQUIRED: Invoke marsai:dev-chaos-testing skill in EXECUTE mode:
 
-   Skill("ring:dev-chaos-testing") with input:
+   Skill("marsai:dev-chaos-testing") with input:
      mode: "execute"
      all_test_files: [aggregate gate_progress.chaos_testing.test_files from all units]
      language: state.language
@@ -3257,7 +3257,7 @@ All units have written/updated test code during their Gate 6-7 passes. Now execu
 3. MANDATORY: ⛔ Save state to file — Write tool → [state.state_path]
 ```
 
-**Note:** The full ring:dev-multi-tenant skill (12 gates) is now used ONLY for migrating legacy codebases that were written before dual-mode was standard. For new development via dev-cycle, all multi-tenant compliance is handled by Gate 0 (implementation) + Gate 0.5G (verification).
+**Note:** The full marsai:dev-multi-tenant skill (12 gates) is now used ONLY for migrating legacy codebases that were written before dual-mode was standard. For new development via dev-cycle, all multi-tenant compliance is handled by Gate 0 (implementation) + Gate 0.5G (verification).
 
 ---
 
@@ -3265,7 +3265,7 @@ All units have written/updated test code during their Gate 6-7 passes. Now execu
 
 0. **FINAL COMMIT CHECK (before completion):**
    - if `commit_timing == "at_end"`:
-     - Execute `/ring:commit` command with message: `feat({cycle_id}): complete dev cycle for {feature_name}`
+     - Execute `/marsai:commit` command with message: `feat({cycle_id}): complete dev cycle for {feature_name}`
      - Include all changed files from the entire cycle
    - else: Already committed per subtask or per task
 
@@ -3273,14 +3273,14 @@ All units have written/updated test code during their Gate 6-7 passes. Now execu
 2. **Update state:** `status = "completed"`, `completed_at = timestamp`
 3. **Generate report:** Task | Subtasks | Duration | Review Iterations | Status | Commit Status
 
-4. **⛔ MANDATORY: Run ring:dev-feedback-loop skill for cycle metrics**
+4. **⛔ MANDATORY: Run marsai:dev-feedback-loop skill for cycle metrics**
 
    ```yaml
    Skill tool:
-     skill: "ring:dev-feedback-loop"
+     skill: "marsai:dev-feedback-loop"
    ```
 
-   **Note:** ring:dev-feedback-loop manages its own TodoWrite tracking internally.
+   **Note:** marsai:dev-feedback-loop manages its own TodoWrite tracking internally.
 
    **After feedback-loop completes, update state:**
    - Set `feedback_loop_completed = true` at cycle level in state file
@@ -3299,18 +3299,18 @@ All units have written/updated test code during their Gate 6-7 passes. Now execu
 
 ```bash
 # Full PM workflow then dev execution
-/ring:pre-dev-full my-feature
-/ring:dev-cycle docs/pre-dev/my-feature/
+/marsai:pre-dev-full my-feature
+/marsai:dev-cycle docs/pre-dev/my-feature/
 
 # Simple PM workflow then dev execution
-/ring:pre-dev-feature my-feature
-/ring:dev-cycle docs/pre-dev/my-feature/tasks.md
+/marsai:pre-dev-feature my-feature
+/marsai:dev-cycle docs/pre-dev/my-feature/tasks.md
 
 # Manual task file
-/ring:dev-cycle docs/tasks/sprint-001.md
+/marsai:dev-cycle docs/tasks/sprint-001.md
 
 # Resume interrupted cycle
-/ring:dev-cycle --resume
+/marsai:dev-cycle --resume
 ```
 
 ## Error Recovery
@@ -3349,17 +3349,17 @@ Base metrics per [shared-patterns/output-execution-report.md](../shared-patterns
 | Validation | - | pending |
 
 ### State File Location
-`docs/ring:dev-cycle/current-cycle.json` (feature) or `docs/ring:dev-refactor/current-cycle.json` (refactor)
+`docs/marsai:dev-cycle/current-cycle.json` (feature) or `docs/marsai:dev-refactor/current-cycle.json` (refactor)
 
 ---
 
 ## Frontend Handoff
 
-When the backend dev cycle completes, it produces a handoff file for the frontend dev cycle (`ring:dev-cycle-frontend`). This enables the frontend cycle to verify E2E tests exercise the correct API endpoints and use the right type contracts.
+When the backend dev cycle completes, it produces a handoff file for the frontend dev cycle (`marsai:dev-cycle-frontend`). This enables the frontend cycle to verify E2E tests exercise the correct API endpoints and use the right type contracts.
 
 ### Handoff File
 
-**Path:** `docs/ring:dev-cycle/handoff-frontend.json`
+**Path:** `docs/marsai:dev-cycle/handoff-frontend.json`
 
 **Generated:** Automatically after Gate 9 (Validation) passes for all tasks.
 
@@ -3407,4 +3407,4 @@ When the backend dev cycle completes, it produces a handoff file for the fronten
 
 ### When No Handoff Exists
 
-If `docs/ring:dev-cycle/handoff-frontend.json` does not exist, the frontend cycle proceeds without it. The frontend engineer defines API contracts inline based on `PROJECT_RULES.md` or user input. This is common for greenfield frontend-only projects.
+If `docs/marsai:dev-cycle/handoff-frontend.json` does not exist, the frontend cycle proceeds without it. The frontend engineer defines API contracts inline based on `PROJECT_RULES.md` or user input. This is common for greenfield frontend-only projects.

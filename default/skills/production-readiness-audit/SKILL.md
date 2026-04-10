@@ -1,13 +1,13 @@
 ---
-name: ring:production-readiness-audit
-description: Comprehensive Ring-standards-aligned 44-dimension production readiness audit. Detects project stack, loads Ring standards via WebFetch, and runs in batches of 10 explorers appending incrementally to a single report file. Categories - Structure (pagination, errors, routes, bootstrap, runtime, core deps, naming, domain modeling, nil-safety, api-versioning, resource-leaks), Security (auth, IDOR, SQL, validation, secret-scanning, data-encryption, multi-tenant, rate-limiting, cors), Operations (telemetry, health, config, connections, logging, resilience, graceful-degradation), Quality (idempotency, docs, debt, testing, dependencies, performance, concurrency, migrations, linting, caching), Infrastructure (containers, hardening, cicd, async, makefile, license). Produces scored report (0-430, max 440 with multi-tenant) with severity ratings and standards cross-reference.
+name: marsai:production-readiness-audit
+description: Comprehensive MarsAI-standards-aligned 44-dimension production readiness audit. Detects project stack, loads MarsAI standards via WebFetch, and runs in batches of 10 explorers appending incrementally to a single report file. Categories - Structure (pagination, errors, routes, bootstrap, runtime, core deps, naming, domain modeling, nil-safety, api-versioning, resource-leaks), Security (auth, IDOR, SQL, validation, secret-scanning, data-encryption, multi-tenant, rate-limiting, cors), Operations (telemetry, health, config, connections, logging, resilience, graceful-degradation), Quality (idempotency, docs, debt, testing, dependencies, performance, concurrency, migrations, linting, caching), Infrastructure (containers, hardening, cicd, async, makefile, license). Produces scored report (0-430, max 440 with multi-tenant) with severity ratings and standards cross-reference.
 
 trigger: |
   - Preparing a service for production deployment
   - Conducting periodic security or quality review of a codebase
   - Onboarding to assess codebase health and maturity
   - Evaluating technical debt before a major release
-  - Validating compliance with Ring engineering standards
+  - Validating compliance with MarsAI engineering standards
 
 skip_when: |
   - Project is a prototype or throwaway proof-of-concept not heading to production
@@ -28,7 +28,7 @@ skip_when: |
 >
 > MUST NOT add new dimensions without first implementing modularization to prevent further bloat.
 
-A comprehensive, multi-agent audit system that evaluates codebase production readiness across **44 dimensions in 5 categories**, aligned with **Ring development standards** as the source of truth. This skill detects the project stack, loads relevant standards via WebFetch, and runs explorer agents in **batches of 10**, appending results incrementally to a single report file to prevent context bloat while maintaining thorough coverage.
+A comprehensive, multi-agent audit system that evaluates codebase production readiness across **44 dimensions in 5 categories**, aligned with **MarsAI development standards** as the source of truth. This skill detects the project stack, loads relevant standards via WebFetch, and runs explorer agents in **batches of 10**, appending results incrementally to a single report file to prevent context bloat while maintaining thorough coverage.
 
 ## When This Skill Activates
 
@@ -38,8 +38,8 @@ Use this skill when:
 - Conducting periodic security/quality reviews
 - Onboarding to understand codebase health
 - Evaluating technical debt before major releases
-- Validating compliance with Ring engineering standards
-- Assessing a codebase's maturity level against Ring standards
+- Validating compliance with MarsAI engineering standards
+- Assessing a codebase's maturity level against MarsAI standards
 
 ## Audit Dimensions
 
@@ -113,7 +113,7 @@ Use this skill when:
 
 ## Execution Protocol
 
-This skill runs **up to 44 explorer agents in 5 batches of up to 10**, writing results incrementally to a single report file. Before dispatch, it detects the project stack and loads Ring standards as the source of truth.
+This skill runs **up to 44 explorer agents in 5 batches of up to 10**, writing results incrementally to a single report file. Before dispatch, it detects the project stack and loads MarsAI standards as the source of truth.
 
 ### Output File
 
@@ -133,7 +133,7 @@ All results are appended to: `docs/audits/production-readiness-{YYYY-MM-DDTHH:MM
 
 ### Step 0: Stack Detection
 
-Before running any explorers, detect the project stack to determine which Ring standards to load.
+Before running any explorers, detect the project stack to determine which MarsAI standards to load.
 
 **Detection via Glob:**
 
@@ -160,9 +160,9 @@ Grep("MULTI_TENANT") → if found in env/config files: MULTI_TENANT=true
 
 **Stack determines which standards are loaded in Step 0.5.**
 
-### Step 0.5: Load Ring Standards
+### Step 0.5: Load MarsAI Standards
 
-Based on detected stack, load Ring development standards via WebFetch from the canonical source of truth. Store fetched content for injection into explorer prompts.
+Based on detected stack, load MarsAI development standards via WebFetch from the canonical source of truth. Store fetched content for injection into explorer prompts.
 
 **WebFetch URL Map** (from `dev-team/docs/standards/golang/index.md`):
 
@@ -170,29 +170,29 @@ If **GO=true**, WebFetch these and store content:
 
 | Module | Variable | URL |
 |--------|----------|-----|
-| core.md | `standards_core` | `https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/golang/core.md` |
-| bootstrap.md | `standards_bootstrap` | `https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/golang/bootstrap.md` |
-| security.md | `standards_security` | `https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/golang/security.md` |
-| domain.md | `standards_domain` | `https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/golang/domain.md` |
-| api-patterns.md | `standards_api` | `https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/golang/api-patterns.md` |
-| quality.md | `standards_quality` | `https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/golang/quality.md` |
-| architecture.md | `standards_arch` | `https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/golang/architecture.md` |
-| messaging.md | `standards_messaging` | `https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/golang/messaging.md` |
-| domain-modeling.md | `standards_dm` | `https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/golang/domain-modeling.md` |
-| idempotency.md | `standards_idempotency` | `https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/golang/idempotency.md` |
+| core.md | `standards_core` | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang/core.md` |
+| bootstrap.md | `standards_bootstrap` | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang/bootstrap.md` |
+| security.md | `standards_security` | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang/security.md` |
+| domain.md | `standards_domain` | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang/domain.md` |
+| api-patterns.md | `standards_api` | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang/api-patterns.md` |
+| quality.md | `standards_quality` | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang/quality.md` |
+| architecture.md | `standards_arch` | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang/architecture.md` |
+| messaging.md | `standards_messaging` | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang/messaging.md` |
+| domain-modeling.md | `standards_dm` | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang/domain-modeling.md` |
+| idempotency.md | `standards_idempotency` | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang/idempotency.md` |
 
 If **MULTI_TENANT=true**, also WebFetch:
 
 | Module | Variable | URL |
 |--------|----------|-----|
-| multi-tenant.md | `standards_multitenant` | `https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/golang/multi-tenant.md` |
+| multi-tenant.md | `standards_multitenant` | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang/multi-tenant.md` |
 
 **Always** WebFetch (stack-independent):
 
 | Module | Variable | URL |
 |--------|----------|-----|
-| devops.md | `standards_devops` | `https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/devops.md` |
-| sre.md | `standards_sre` | `https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/sre.md` |
+| devops.md | `standards_devops` | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/devops.md` |
+| sre.md | `standards_sre` | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/sre.md` |
 
 **Fallback:** If any WebFetch fails, note the failure in the audit report and proceed with existing generic patterns for that dimension. Do not abort the audit.
 
@@ -328,7 +328,7 @@ Audit pagination implementation across the codebase for production readiness.
 
 **Detected Stack:** {DETECTED_STACK}
 
-**Ring Standards (Source of Truth):**
+**MarsAI Standards (Source of Truth):**
 ---BEGIN STANDARDS---
 {INJECTED: "Pagination Patterns" section from api-patterns.md}
 ---END STANDARDS---
@@ -373,18 +373,18 @@ pagination.SetCursor(cursor.Next, cursor.Prev)
 return libHTTP.OK(c, pagination)
 ```
 
-**Check Against Ring Standards For:**
-1. (HARD GATE) Consistent pagination response structure matching Ring standards across all list endpoints
+**Check Against MarsAI Standards For:**
+1. (HARD GATE) Consistent pagination response structure matching MarsAI standards across all list endpoints
 2. (HARD GATE) Maximum limit enforcement via `ValidateParameters` (MAX_PAGINATION_LIMIT, default 100)
 3. Correct strategy per entity type: offset for admin entities, cursor for transaction entities
 4. No mixing of both strategies in the same endpoint (page + cursor in same response is FORBIDDEN)
 5. Proper error handling for invalid pagination params
 6. Default values when params missing
-7. Response field names match Ring API conventions (camelCase JSON)
+7. Response field names match MarsAI API conventions (camelCase JSON)
 
 **Severity Ratings:**
 - CRITICAL: No limit validation (allows unlimited queries)
-- CRITICAL: HARD GATE violation per Ring standards — pagination response structure missing entirely
+- CRITICAL: HARD GATE violation per MarsAI standards — pagination response structure missing entirely
 - HIGH: Inconsistent pagination structures across endpoints
 - HIGH: Missing `ValidateParameters` call on list endpoints
 - MEDIUM: Using offset pagination on high-volume transaction tables
@@ -421,7 +421,7 @@ Audit error handling framework usage for production readiness.
 
 **Detected Stack:** {DETECTED_STACK}
 
-**Ring Standards (Source of Truth):**
+**MarsAI Standards (Source of Truth):**
 ---BEGIN STANDARDS---
 {INJECTED: "Error Codes Convention" and "Error Handling" sections from domain.md}
 ---END STANDARDS---
@@ -527,24 +527,24 @@ return c.Status(422).JSON(fiber.Map{"error": "The email field is required and mu
 // @Failure 400 "Bad request"   // No response body schema defined
 ```
 
-**Check Against Ring Standards For:**
-1. (HARD GATE) Explicit nil checks with error returns instead of panic for validation per Ring standards
-2. (HARD GATE) Named error variables (sentinel errors) per module following Ring error codes convention
+**Check Against MarsAI Standards For:**
+1. (HARD GATE) Explicit nil checks with error returns instead of panic for validation per MarsAI standards
+2. (HARD GATE) Named error variables (sentinel errors) per module following MarsAI error codes convention
 3. (HARD GATE) No panic() in non-test production code
 4. Proper error wrapping with %w
 5. errors.Is/errors.As for error matching
 6. No swallowed errors (_, err := ignored)
-7. HTTP error responses follow Ring ErrorResponse structure from domain.md
+7. HTTP error responses follow MarsAI ErrorResponse structure from domain.md
 8. RFC 7807 Problem Details format compliance — error responses MUST include: `type`, `title`, `status`, `detail`, `instance` fields
 9. Consistent error response schema across all endpoints — every endpoint MUST return the same JSON error structure (no mixed formats)
 10. Machine-readable error codes for programmatic client consumption — every error response MUST include a stable, enumerated `code` field (not free-text messages)
 11. Error response examples documented in API annotations (Swaggo `@Failure` tags with response schema)
 
 **Severity Ratings:**
-- CRITICAL: panic() in production code paths (HARD GATE violation per Ring standards)
+- CRITICAL: panic() in production code paths (HARD GATE violation per MarsAI standards)
 - CRITICAL: Swallowed errors in critical paths
 - HIGH: Generic error messages without context
-- HIGH: Error response format does not match Ring standards
+- HIGH: Error response format does not match MarsAI standards
 - HIGH: Inconsistent error response format across endpoints (some return `{"error": "msg"}`, others `{"message": "msg", "code": "X"}`)
 - MEDIUM: No RFC 7807 Problem Details compliance (error responses lack `type`, `title`, `status`, `detail`, `instance` structure)
 - MEDIUM: Error codes not machine-readable (free-text error messages only, no stable enumerated codes for programmatic consumption)
@@ -576,7 +576,7 @@ Audit route organization and handler structure for production readiness.
 
 **Detected Stack:** {DETECTED_STACK}
 
-**Ring Standards (Source of Truth):**
+**MarsAI Standards (Source of Truth):**
 ---BEGIN STANDARDS---
 {INJECTED: "Architecture Patterns" and "Directory Structure" sections from architecture.md}
 ---END STANDARDS---
@@ -608,17 +608,17 @@ func NewHandler(deps ...interface{}) (*Handler, error) {
 }
 ```
 
-**Check Against Ring Standards For:**
+**Check Against MarsAI Standards For:**
 1. (HARD GATE) Hexagonal structure: `internal/{module}/adapters/http/` per architecture.md
 2. (HARD GATE) Centralized route registration per module
 3. Handler constructors validate all dependencies
-4. Consistent URL patterns (v1, kebab-case, plural resources) per Ring conventions
+4. Consistent URL patterns (v1, kebab-case, plural resources) per MarsAI conventions
 5. All routes use protected() wrapper (no public endpoints without explicit exemption)
-6. Clear separation: routes.go vs handlers.go per Ring directory structure
+6. Clear separation: routes.go vs handlers.go per MarsAI directory structure
 
 **Severity Ratings:**
 - CRITICAL: Unprotected routes (missing auth middleware)
-- CRITICAL: HARD GATE violation — project does not follow hexagonal architecture per Ring standards
+- CRITICAL: HARD GATE violation — project does not follow hexagonal architecture per MarsAI standards
 - HIGH: Scattered route definitions
 - MEDIUM: Handler accepts nil dependencies
 - LOW: Inconsistent URL naming conventions
@@ -647,7 +647,7 @@ Audit application bootstrap and initialization for production readiness.
 
 **Detected Stack:** {DETECTED_STACK}
 
-**Ring Standards (Source of Truth):**
+**MarsAI Standards (Source of Truth):**
 ---BEGIN STANDARDS---
 {INJECTED: "Bootstrap" section from bootstrap.md}
 ---END STANDARDS---
@@ -694,17 +694,17 @@ func InitServers(opts *Options) (*Service, error) {
 }
 ```
 
-**Check Against Ring Standards For:**
+**Check Against MarsAI Standards For:**
 1. (HARD GATE) Staged initialization order per bootstrap.md (config -> logger -> telemetry -> infra)
 2. (HARD GATE) Cleanup handlers for failed startup
 3. (HARD GATE) Graceful shutdown support
-4. Module initialization in dependency order per Ring bootstrap pattern
+4. Module initialization in dependency order per MarsAI bootstrap pattern
 5. Error propagation (not just logging and continuing)
 6. Production vs development mode handling
 
 **Severity Ratings:**
-- CRITICAL: No graceful shutdown (HARD GATE violation per Ring standards)
-- CRITICAL: HARD GATE violation — bootstrap does not follow Ring staged initialization pattern
+- CRITICAL: No graceful shutdown (HARD GATE violation per MarsAI standards)
+- CRITICAL: HARD GATE violation — bootstrap does not follow MarsAI staged initialization pattern
 - HIGH: Resources not cleaned up on startup failure
 - HIGH: Errors logged but not returned
 - MEDIUM: Initialization order issues
@@ -796,7 +796,7 @@ Audit authentication and authorization implementation for production readiness.
 
 **Detected Stack:** {DETECTED_STACK}
 
-**Ring Standards (Source of Truth):**
+**MarsAI Standards (Source of Truth):**
 ---BEGIN STANDARDS---
 {INJECTED: "Access Manager Integration" section from security.md}
 ---END STANDARDS---
@@ -833,16 +833,16 @@ func parseTokenClaims(tokenString string, secret []byte) (jwt.MapClaims, error) 
 }
 ```
 
-**Check Against Ring Standards For:**
+**Check Against MarsAI Standards For:**
 1. (HARD GATE) All routes protected via Access Manager integration per security.md
 2. (HARD GATE) lib-auth used for JWT validation (not custom JWT parsing)
-3. Resource/action authorization granularity per Ring access control model
+3. Resource/action authorization granularity per MarsAI access control model
 4. Token expiration enforcement
 5. Tenant extraction from JWT claims
 6. Auth bypass for health/ready endpoints only
 
 **Severity Ratings:**
-- CRITICAL: Unprotected data endpoints (HARD GATE violation per Ring standards)
+- CRITICAL: Unprotected data endpoints (HARD GATE violation per MarsAI standards)
 - CRITICAL: JWT parsed but not validated
 - CRITICAL: HARD GATE violation — not using lib-auth for access management
 - HIGH: Missing token expiration check
@@ -1032,7 +1032,7 @@ Audit input validation patterns for production readiness.
 
 **Detected Stack:** {DETECTED_STACK}
 
-**Ring Standards (Source of Truth):**
+**MarsAI Standards (Source of Truth):**
 ---BEGIN STANDARDS---
 {INJECTED: "Frameworks & Libraries" section from core.md — specifically go-playground/validator/v10 reference}
 ---END STANDARDS---
@@ -1088,8 +1088,8 @@ c.BodyParser(&payload)  // Error ignored!
 amount := c.QueryInt("amount")  // Could be negative or huge
 ```
 
-**Check Against Ring Standards For:**
-1. (HARD GATE) go-playground/validator/v10 used for struct validation per Ring core.md
+**Check Against MarsAI Standards For:**
+1. (HARD GATE) go-playground/validator/v10 used for struct validation per MarsAI core.md
 2. (HARD GATE) All DTOs have validate: tags on required fields
 3. BodyParser errors are handled (not ignored)
 4. Query/path params validated before use
@@ -1101,7 +1101,7 @@ amount := c.QueryInt("amount")  // Could be negative or huge
 
 **Severity Ratings:**
 - CRITICAL: BodyParser errors ignored
-- CRITICAL: HARD GATE violation — not using go-playground/validator/v10 per Ring standards
+- CRITICAL: HARD GATE violation — not using go-playground/validator/v10 per MarsAI standards
 - HIGH: No validation on user input DTOs
 - HIGH: Unbounded numeric inputs
 - MEDIUM: Missing string length limits
@@ -1131,7 +1131,7 @@ Audit telemetry and observability implementation for production readiness.
 
 **Detected Stack:** {DETECTED_STACK}
 
-**Ring Standards (Source of Truth):**
+**MarsAI Standards (Source of Truth):**
 ---BEGIN STANDARDS---
 {INJECTED: "Observability" section from bootstrap.md and "OpenTelemetry with lib-commons" section from sre.md}
 ---END STANDARDS---
@@ -1244,8 +1244,8 @@ func initTracer() *trace.TracerProvider {
 }
 ```
 
-**Check Against Ring Standards For:**
-1. (HARD GATE) lib-commons NewTrackingFromContext used for telemetry initialization per Ring standards
+**Check Against MarsAI Standards For:**
+1. (HARD GATE) lib-commons NewTrackingFromContext used for telemetry initialization per MarsAI standards
 2. (HARD GATE) OpenTelemetry integration (not custom tracing) per sre.md
 3. All handlers start spans with descriptive names
 4. Errors recorded to spans before returning
@@ -1260,7 +1260,7 @@ func initTracer() *trace.TracerProvider {
 13. Custom span attributes for business-relevant data — spans MUST include domain-specific attributes (e.g., `order.id`, `tenant.id`, `transaction.amount`) for meaningful trace filtering
 
 **Severity Ratings:**
-- CRITICAL: No tracing in handlers (HARD GATE violation per Ring standards)
+- CRITICAL: No tracing in handlers (HARD GATE violation per MarsAI standards)
 - CRITICAL: HARD GATE violation — not using lib-commons for telemetry
 - HIGH: Errors not recorded to spans
 - HIGH: No trace context propagation in outgoing HTTP requests (downstream services cannot correlate traces — breaks distributed tracing)
@@ -1295,7 +1295,7 @@ Audit health check endpoints for production readiness.
 
 **Detected Stack:** {DETECTED_STACK}
 
-**Ring Standards (Source of Truth):**
+**MarsAI Standards (Source of Truth):**
 ---BEGIN STANDARDS---
 {INJECTED: "Health Checks" section from sre.md}
 ---END STANDARDS---
@@ -1347,18 +1347,18 @@ app.Get("/health", healthHandler)
 app.Get("/ready", readinessHandler(deps))
 ```
 
-**Check Against Ring Standards For:**
+**Check Against MarsAI Standards For:**
 1. (HARD GATE) /health endpoint exists (liveness) per sre.md
 2. (HARD GATE) /ready endpoint exists (readiness) per sre.md
 3. Health endpoints bypass auth middleware
 4. Database connectivity checked in readiness
 5. Message queue connectivity checked
-6. Optional deps don't fail readiness (just report degraded) per Ring health check pattern
+6. Optional deps don't fail readiness (just report degraded) per MarsAI health check pattern
 7. Response includes individual check status
 8. Appropriate HTTP status codes (200 vs 503)
 
 **Severity Ratings:**
-- CRITICAL: No health endpoints at all (HARD GATE violation per Ring standards)
+- CRITICAL: No health endpoints at all (HARD GATE violation per MarsAI standards)
 - HIGH: No readiness probe (only liveness)
 - HIGH: Health endpoints require auth
 - MEDIUM: Missing dependency checks in readiness
@@ -1388,7 +1388,7 @@ Audit configuration management for production readiness.
 
 **Detected Stack:** {DETECTED_STACK}
 
-**Ring Standards (Source of Truth):**
+**MarsAI Standards (Source of Truth):**
 ---BEGIN STANDARDS---
 {INJECTED: "Configuration" section from core.md}
 ---END STANDARDS---
@@ -1439,8 +1439,8 @@ func LoadConfig() (*Config, error) {
 }
 ```
 
-**Check Against Ring Standards For:**
-1. (HARD GATE) All config loaded from env vars (not hardcoded) per Ring core.md configuration section
+**Check Against MarsAI Standards For:**
+1. (HARD GATE) All config loaded from env vars (not hardcoded) per MarsAI core.md configuration section
 2. (HARD GATE) Production-specific validation exists
 3. Sensible defaults for non-production
 4. Auth required in production
@@ -1450,7 +1450,7 @@ func LoadConfig() (*Config, error) {
 9. Config validation fails fast (at startup)
 
 **Severity Ratings:**
-- CRITICAL: Hardcoded secrets in code (HARD GATE violation per Ring standards)
+- CRITICAL: Hardcoded secrets in code (HARD GATE violation per MarsAI standards)
 - CRITICAL: No production validation
 - HIGH: Auth can be disabled in production
 - HIGH: TLS not enforced in production
@@ -1481,7 +1481,7 @@ Audit database and cache connection management for production readiness.
 
 **Detected Stack:** {DETECTED_STACK}
 
-**Ring Standards (Source of Truth):**
+**MarsAI Standards (Source of Truth):**
 ---BEGIN STANDARDS---
 {INJECTED: "Core Dependency: lib-commons" section from core.md — specifically connection packages}
 ---END STANDARDS---
@@ -1523,7 +1523,7 @@ type DatabaseConnections struct {
 }
 ```
 
-**Check Against Ring Standards For:**
+**Check Against MarsAI Standards For:**
 1. (HARD GATE) lib-commons connection packages used (mpostgres, mredis, mmongo) per core.md
 2. DB connection pool limits configured
 3. Redis pool settings configured
@@ -1567,7 +1567,7 @@ Audit logging practices and PII protection for production readiness.
 
 **Detected Stack:** {DETECTED_STACK}
 
-**Ring Standards (Source of Truth):**
+**MarsAI Standards (Source of Truth):**
 ---BEGIN STANDARDS---
 {INJECTED: "Logging" section from quality.md}
 ---END STANDARDS---
@@ -1620,7 +1620,7 @@ logger.Debugf("Request body: %+v", requestBody)
 log.Printf("Error: %v", err)
 ```
 
-**Check Against Ring Standards For:**
+**Check Against MarsAI Standards For:**
 1. (HARD GATE) Structured logging used (not fmt.Print or log.Printf) per quality.md logging section
 2. Logger obtained from context (request tracking)
 3. No passwords/tokens logged
@@ -1633,7 +1633,7 @@ log.Printf("Error: %v", err)
 **Severity Ratings:**
 - CRITICAL: Passwords/tokens logged
 - CRITICAL: PII logged in production
-- HIGH: fmt.Print used instead of logger (HARD GATE violation per Ring standards)
+- HIGH: fmt.Print used instead of logger (HARD GATE violation per MarsAI standards)
 - HIGH: Full error details in production
 - MEDIUM: Missing request ID in logs
 - LOW: Inappropriate log levels
@@ -1662,7 +1662,7 @@ Audit idempotency implementation for production readiness.
 
 **Detected Stack:** {DETECTED_STACK}
 
-**Ring Standards (Source of Truth):**
+**MarsAI Standards (Source of Truth):**
 ---BEGIN STANDARDS---
 {INJECTED: Full module content from idempotency.md}
 ---END STANDARDS---
@@ -1725,18 +1725,18 @@ func (h *Handler) ProcessCallback(c *fiber.Ctx) error {
 }
 ```
 
-**Check Against Ring Standards For:**
+**Check Against MarsAI Standards For:**
 1. (HARD GATE) Idempotency keys for financial/critical operations per idempotency.md
 2. (HARD GATE) Atomic acquire mechanism (SetNX or similar)
 3. TTL to prevent unbounded storage
-4. Key validation (format, length) per Ring idempotency patterns
+4. Key validation (format, length) per MarsAI idempotency patterns
 5. Proper state transitions (acquired -> complete/failed)
 6. Retry-safe (failed operations can be retried)
 7. Idempotency for webhook callbacks
 8. Idempotency for payment operations
 
 **Severity Ratings:**
-- CRITICAL: No idempotency for financial operations (HARD GATE violation per Ring standards)
+- CRITICAL: No idempotency for financial operations (HARD GATE violation per MarsAI standards)
 - HIGH: Non-atomic acquire (race conditions)
 - HIGH: No TTL (memory leak)
 - MEDIUM: Missing key validation
@@ -1767,7 +1767,7 @@ Audit API documentation (Swagger/OpenAPI) for production readiness.
 
 **Detected Stack:** {DETECTED_STACK}
 
-**Ring Standards (Source of Truth):**
+**MarsAI Standards (Source of Truth):**
 ---BEGIN STANDARDS---
 {INJECTED: Swaggo/OpenAPI subsection from "Pagination Patterns" in api-patterns.md}
 ---END STANDARDS---
@@ -1812,8 +1812,8 @@ type CreateRequest struct {
 }
 ```
 
-**Check Against Ring Standards For:**
-1. (HARD GATE) Swaggo annotations present per Ring api-patterns.md
+**Check Against MarsAI Standards For:**
+1. (HARD GATE) Swaggo annotations present per MarsAI api-patterns.md
 2. API title, version, description in main.go
 3. Security definitions (Bearer token)
 4. All endpoints have @Router annotation
@@ -1826,7 +1826,7 @@ type CreateRequest struct {
 11. Swagger UI accessible
 
 **Severity Ratings:**
-- HIGH: No Swagger annotations at all (HARD GATE violation per Ring standards)
+- HIGH: No Swagger annotations at all (HARD GATE violation per MarsAI standards)
 - HIGH: Missing security definitions
 - MEDIUM: Endpoints without documentation
 - MEDIUM: Error responses not documented
@@ -1923,7 +1923,7 @@ Audit test coverage and testing patterns for production readiness.
 
 **Detected Stack:** {DETECTED_STACK}
 
-**Ring Standards (Source of Truth):**
+**MarsAI Standards (Source of Truth):**
 ---BEGIN STANDARDS---
 {INJECTED: "Testing" section from quality.md}
 ---END STANDARDS---
@@ -1989,10 +1989,10 @@ func TestIntegration_CreateResource(t *testing.T) {
 }
 ```
 
-**Check Against Ring Standards For:**
+**Check Against MarsAI Standards For:**
 1. (HARD GATE) Test files co-located with source (*_test.go) per quality.md testing section
-2. (HARD GATE) Mocks generated via mockgen (not hand-written) per Ring standards
-3. (HARD GATE) Assertions use testify (assert/require) per Ring standards
+2. (HARD GATE) Mocks generated via mockgen (not hand-written) per MarsAI standards
+3. (HARD GATE) Assertions use testify (assert/require) per MarsAI standards
 4. Table-driven tests for multiple cases
 5. Integration tests in separate directory or with build tags
 6. Test helpers/fixtures organized
@@ -2000,8 +2000,8 @@ func TestIntegration_CreateResource(t *testing.T) {
 8. Test cleanup with t.Cleanup() or defer
 
 **Severity Ratings:**
-- HIGH: Critical paths without tests (HARD GATE violation per Ring standards)
-- HIGH: Hand-written mocks (should use mockgen per Ring standards)
+- HIGH: Critical paths without tests (HARD GATE violation per MarsAI standards)
+- HIGH: Hand-written mocks (should use mockgen per MarsAI standards)
 - MEDIUM: Missing table-driven tests for validators
 - MEDIUM: No integration tests
 - LOW: Tests not running in parallel
@@ -2032,7 +2032,7 @@ Audit dependency management for production readiness.
 
 **Detected Stack:** {DETECTED_STACK}
 
-**Ring Standards (Source of Truth):**
+**MarsAI Standards (Source of Truth):**
 ---BEGIN STANDARDS---
 {INJECTED: "Frameworks & Libraries" section from core.md — specifically the version table}
 ---END STANDARDS---
@@ -2040,7 +2040,7 @@ Audit dependency management for production readiness.
 **Search Patterns:**
 - Files: `go.mod`, `go.sum`, `**/vendor/**`
 - Commands: Run `go list -m -u all` mentally based on go.mod
-- Standards-specific: Check for required Ring dependencies in go.mod
+- Standards-specific: Check for required MarsAI dependencies in go.mod
 
 **Reference Implementation (GOOD):**
 ```go
@@ -2073,8 +2073,8 @@ require github.com/some/lib latest
 require github.com/dgrijalva/jwt-go v3.2.0  // Has CVE, use golang-jwt
 ```
 
-**Check Against Ring Standards For:**
-1. (HARD GATE) Required Ring framework dependencies present in go.mod per core.md version table
+**Check Against MarsAI Standards For:**
+1. (HARD GATE) Required MarsAI framework dependencies present in go.mod per core.md version table
 2. All dependencies pinned (no "latest")
 3. No local replace directives in production
 4. Known vulnerable packages identified
@@ -2082,7 +2082,7 @@ require github.com/dgrijalva/jwt-go v3.2.0  // Has CVE, use golang-jwt
 6. Major version mismatches
 7. Deprecated packages (e.g., dgrijalva/jwt-go -> golang-jwt)
 8. go.sum exists and is committed
-9. Framework versions meet Ring minimum requirements (Go 1.24+, Fiber v2, etc.)
+9. Framework versions meet MarsAI minimum requirements (Go 1.24+, Fiber v2, etc.)
 
 **Known Vulnerable Packages to Flag:**
 - github.com/dgrijalva/jwt-go (use golang-jwt/jwt)
@@ -2092,11 +2092,11 @@ require github.com/dgrijalva/jwt-go v3.2.0  // Has CVE, use golang-jwt
 
 **Severity Ratings:**
 - CRITICAL: Known CVE in dependency
-- CRITICAL: HARD GATE violation — required Ring framework dependency missing from go.mod
+- CRITICAL: HARD GATE violation — required MarsAI framework dependency missing from go.mod
 - HIGH: Local replace directive
 - HIGH: Deprecated package with security issues
 - MEDIUM: Significantly outdated dependencies
-- MEDIUM: Framework versions below Ring minimum requirements
+- MEDIUM: Framework versions below MarsAI minimum requirements
 - LOW: Minor version behind
 
 **Output Format:**
@@ -2224,7 +2224,7 @@ Audit concurrency patterns for production readiness.
 
 **Detected Stack:** {DETECTED_STACK}
 
-**Ring Standards (Source of Truth):**
+**MarsAI Standards (Source of Truth):**
 ---BEGIN STANDARDS---
 {INJECTED: "Concurrency Patterns" section from architecture.md}
 ---END STANDARDS---
@@ -2319,18 +2319,18 @@ for _, item := range millionItems {
 }
 ```
 
-**Check Against Ring Standards For:**
+**Check Against MarsAI Standards For:**
 1. (HARD GATE) Maps protected by mutex when shared per architecture.md concurrency patterns
 2. Loop variables not captured in closures
 3. Goroutines have cancellation (context)
 4. WaitGroup used for coordination
-5. Bounded concurrency (worker pools) per Ring patterns
+5. Bounded concurrency (worker pools) per MarsAI patterns
 6. Channels closed by sender
 7. Select with default for non-blocking
 8. No goroutine leaks (all paths exit)
 
 **Severity Ratings:**
-- CRITICAL: Race condition on shared map (HARD GATE violation per Ring standards)
+- CRITICAL: Race condition on shared map (HARD GATE violation per MarsAI standards)
 - CRITICAL: Goroutine leak (no exit path)
 - HIGH: Loop variable capture bug
 - HIGH: Unbounded goroutine spawning
@@ -2361,7 +2361,7 @@ Audit database migration safety for production readiness.
 
 **Detected Stack:** {DETECTED_STACK}
 
-**Ring Standards (Source of Truth):**
+**MarsAI Standards (Source of Truth):**
 ---BEGIN STANDARDS---
 {INJECTED: "Core Dependency: lib-commons" section from core.md — database migration patterns}
 ---END STANDARDS---
@@ -2460,8 +2460,8 @@ CREATE INDEX CONCURRENTLY idx_orders_status ON orders(status);
 -- CONCURRENTLY cannot run inside a transaction — this file cannot execute atomically
 ```
 
-**Check Against Ring Standards For:**
-1. (HARD GATE) All migrations have up AND down files per Ring migration patterns
+**Check Against MarsAI Standards For:**
+1. (HARD GATE) All migrations have up AND down files per MarsAI migration patterns
 2. (HARD GATE) CREATE INDEX uses CONCURRENTLY
 3. New NOT NULL columns have DEFAULT
 4. DROP/ALTER use IF EXISTS
@@ -2469,7 +2469,7 @@ CREATE INDEX CONCURRENTLY idx_orders_status ON orders(status);
 6. No destructive operations in up migrations
 7. Migrations are additive (safe rollback)
 8. Sequential numbering (no gaps)
-9. Migration tool matches Ring standard (golang-migrate or lib-commons)
+9. Migration tool matches MarsAI standard (golang-migrate or lib-commons)
 10. NOT NULL columns MUST have DEFAULT values in ADD COLUMN migrations — adding a NOT NULL column without DEFAULT requires a full table rewrite lock on existing data, causing downtime on large tables
 11. CHECK constraints for domain-specific validation at database level — values validated only in application code MUST also have database-level CHECK constraints as a safety net
 12. Foreign key consistency — foreign keys MUST have matching column types and MUST define explicit cascading behavior (ON DELETE/ON UPDATE) rather than relying on database defaults
@@ -2477,7 +2477,7 @@ CREATE INDEX CONCURRENTLY idx_orders_status ON orders(status);
 14. Data migration scripts MUST be separate from schema migrations — mixing data transformations with schema changes in the same migration file makes rollback unsafe
 
 **Severity Ratings:**
-- CRITICAL: NOT NULL without default (HARD GATE violation per Ring standards)
+- CRITICAL: NOT NULL without default (HARD GATE violation per MarsAI standards)
 - CRITICAL: Missing down migration (HARD GATE violation)
 - CRITICAL: NOT NULL ADD COLUMN without DEFAULT (locks entire table for rewrite on large datasets — causes production downtime)
 - HIGH: Non-concurrent index creation
@@ -2514,7 +2514,7 @@ Audit container security and Dockerfile best practices for production readiness.
 
 **Detected Stack:** {DETECTED_STACK}
 
-**Ring Standards (Source of Truth):**
+**MarsAI Standards (Source of Truth):**
 ---BEGIN STANDARDS---
 {INJECTED: "Containers" section from devops.md}
 ---END STANDARDS---
@@ -2545,17 +2545,17 @@ HEALTHCHECK --interval=30s --timeout=3s CMD ["/main", "-health"]
 ENTRYPOINT ["/main"]
 ```
 
-**Check Against Ring Standards For:**
+**Check Against MarsAI Standards For:**
 1. (HARD GATE) Multi-stage builds (builder vs runtime) per devops.md containers section
-2. (HARD GATE) Non-root user execution (`USER nonroot` or numeric ID) per Ring standards
-3. Minimal/Distroless runtime images per Ring container patterns
+2. (HARD GATE) Non-root user execution (`USER nonroot` or numeric ID) per MarsAI standards
+3. Minimal/Distroless runtime images per MarsAI container patterns
 4. Pinned base image versions (not `latest`)
 5. `COPY` used instead of `ADD` (unless extracting tar)
 6. .dockerignore file exists and excludes secrets/git
 7. Sensitive args not passed as build-args (secrets)
 
 **Severity Ratings:**
-- CRITICAL: Running as root in production image (HARD GATE violation per Ring standards)
+- CRITICAL: Running as root in production image (HARD GATE violation per MarsAI standards)
 - CRITICAL: HARD GATE violation — no multi-stage build per devops.md
 - HIGH: Secrets in Dockerfile/history
 - MEDIUM: Using `latest` tag
@@ -2638,7 +2638,7 @@ Audit CI/CD pipelines for production readiness.
 
 **Detected Stack:** {DETECTED_STACK}
 
-**Ring Standards (Source of Truth):**
+**MarsAI Standards (Source of Truth):**
 ---BEGIN STANDARDS---
 {INJECTED: CI section from devops.md}
 ---END STANDARDS---
@@ -2670,9 +2670,9 @@ jobs:
           args: ./...
 ```
 
-**Check Against Ring Standards For:**
+**Check Against MarsAI Standards For:**
 1. (HARD GATE) CI pipeline exists (GitHub Actions/GitLab CI) per devops.md
-2. (HARD GATE) Tests run on PRs per Ring CI requirements
+2. (HARD GATE) Tests run on PRs per MarsAI CI requirements
 3. Linting runs on PRs (golangci-lint)
 4. Security scanning (gosec, trivy) integrated
 5. Artifact signing (cosign/sigstore)
@@ -2680,7 +2680,7 @@ jobs:
 7. Automated deployment stages (if applicable)
 
 **Severity Ratings:**
-- CRITICAL: No CI pipeline (HARD GATE violation per Ring standards)
+- CRITICAL: No CI pipeline (HARD GATE violation per MarsAI standards)
 - CRITICAL: Tests not running on PR (HARD GATE violation)
 - HIGH: Missing linting in CI
 - MEDIUM: Missing security scanning
@@ -2711,7 +2711,7 @@ Audit asynchronous processing reliability for production readiness.
 
 **Detected Stack:** {DETECTED_STACK}
 
-**Ring Standards (Source of Truth):**
+**MarsAI Standards (Source of Truth):**
 ---BEGIN STANDARDS---
 {INJECTED: "RabbitMQ Worker Pattern" section from messaging.md}
 ---END STANDARDS---
@@ -2848,9 +2848,9 @@ func (c *Consumer) Handle(msg *Message) error {
 }
 ```
 
-**Check Against Ring Standards For:**
+**Check Against MarsAI Standards For:**
 1. (HARD GATE) Dead Letter Queues (DLQ) configured for failed messages per messaging.md
-2. (HARD GATE) Explicit Ack/Nack handling (no auto-ack) per Ring RabbitMQ worker pattern
+2. (HARD GATE) Explicit Ack/Nack handling (no auto-ack) per MarsAI RabbitMQ worker pattern
 3. Retry policies with exponential backoff
 4. Consumer groups for parallel processing
 5. Graceful shutdown of consumers (wait for processing to finish)
@@ -2863,7 +2863,7 @@ func (c *Consumer) Handle(msg *Message) error {
 12. Poison message handling — messages that repeatedly fail deserialization or schema validation MUST be isolated separately from DLQ, preventing bad messages from blocking queue consumers
 
 **Severity Ratings:**
-- CRITICAL: Messages auto-acked before processing (HARD GATE violation per Ring standards)
+- CRITICAL: Messages auto-acked before processing (HARD GATE violation per MarsAI standards)
 - HIGH: No DLQ for poison messages (infinite loops) — HARD GATE violation
 - HIGH: No retry backoff strategy
 - HIGH: Outbound webhooks with no retry mechanism (fire-and-forget HTTP call — delivery failures are silently lost)
@@ -2898,7 +2898,7 @@ Audit core dependency usage and framework compliance for production readiness.
 
 **Detected Stack:** {DETECTED_STACK}
 
-**Ring Standards (Source of Truth):**
+**MarsAI Standards (Source of Truth):**
 ---BEGIN STANDARDS---
 {INJECTED: Sections 2 and 3 from core.md — "Core Dependency: lib-commons" and "Frameworks & Libraries"}
 ---END STANDARDS---
@@ -2942,8 +2942,8 @@ func StartSpan(ctx context.Context, name string) (context.Context, trace.Span) {
 // go.mod without github.com/LerianStudio/lib-commons
 ```
 
-**Check Against Ring Standards For:**
-1. (HARD GATE) lib-commons v2 present in go.mod — this is mandatory per Ring standards
+**Check Against MarsAI Standards For:**
+1. (HARD GATE) lib-commons v2 present in go.mod — this is mandatory per MarsAI standards
 2. (HARD GATE) No custom utility packages that duplicate lib-commons functionality (check utils/, helpers/, common/)
 3. Go version 1.24+ in go.mod
 4. Fiber v2 framework present
@@ -2953,10 +2953,10 @@ func StartSpan(ctx context.Context, name string) (context.Context, trace.Span) {
 8. No alternative libraries used for functionality already covered by lib-commons
 
 **Severity Ratings:**
-- CRITICAL: lib-commons not in go.mod (HARD GATE violation per Ring standards)
+- CRITICAL: lib-commons not in go.mod (HARD GATE violation per MarsAI standards)
 - CRITICAL: Custom utilities duplicating lib-commons functionality (HARD GATE violation)
-- HIGH: Framework versions below Ring minimum requirements
-- MEDIUM: Using alternative libraries for functionality covered by Ring stack
+- HIGH: Framework versions below MarsAI minimum requirements
+- MEDIUM: Using alternative libraries for functionality covered by MarsAI stack
 - LOW: Minor version discrepancies
 
 **Output Format:**
@@ -2985,7 +2985,7 @@ Audit naming conventions across the codebase for production readiness.
 
 **Detected Stack:** {DETECTED_STACK}
 
-**Ring Standards (Source of Truth):**
+**MarsAI Standards (Source of Truth):**
 ---BEGIN STANDARDS---
 {INJECTED: Naming conventions from core.md section 5 (if exists) and JSON naming subsection from api-patterns.md section 1}
 ---END STANDARDS---
@@ -3031,7 +3031,7 @@ type Account struct {
 // GET /v1/accounts?accountType=savings&created_after=2024-01-01
 ```
 
-**Check Against Ring Standards For:**
+**Check Against MarsAI Standards For:**
 1. snake_case for database column names in migrations and GORM tags
 2. camelCase for JSON response body fields (json:"fieldName")
 3. snake_case for query parameters
@@ -3078,7 +3078,7 @@ Audit domain modeling patterns for production readiness.
 
 **Detected Stack:** {DETECTED_STACK}
 
-**Ring Standards (Source of Truth):**
+**MarsAI Standards (Source of Truth):**
 ---BEGIN STANDARDS---
 {INJECTED: "ToEntity/FromEntity" section 9 from domain.md and "Always-Valid Domain Model" section 21 from domain-modeling.md}
 ---END STANDARDS---
@@ -3156,7 +3156,7 @@ func (h *Handler) Create(c *fiber.Ctx) error {
 }
 ```
 
-**Check Against Ring Standards For:**
+**Check Against MarsAI Standards For:**
 1. (HARD GATE) Domain models use private fields with exported getters per domain-modeling.md always-valid pattern
 2. (HARD GATE) Constructors (NewXxx) enforce invariants — no invalid domain objects can be created
 3. (HARD GATE) ToEntity/FromEntity mapping patterns in adapters per domain.md section 9
@@ -3166,7 +3166,7 @@ func (h *Handler) Create(c *fiber.Ctx) error {
 7. Consistent domain modeling across all bounded contexts
 
 **Severity Ratings:**
-- CRITICAL: Domain models with exported mutable fields and no constructor (HARD GATE violation per Ring standards)
+- CRITICAL: Domain models with exported mutable fields and no constructor (HARD GATE violation per MarsAI standards)
 - CRITICAL: DTOs used directly as domain models (no ToEntity/FromEntity)
 - HIGH: Missing ToEntity/FromEntity in adapters (HARD GATE violation)
 - MEDIUM: Inconsistent domain modeling across modules
@@ -3199,7 +3199,7 @@ Audit linting configuration and code quality patterns for production readiness.
 
 **Detected Stack:** {DETECTED_STACK}
 
-**Ring Standards (Source of Truth):**
+**MarsAI Standards (Source of Truth):**
 ---BEGIN STANDARDS---
 {INJECTED: "Linting" section 16 from quality.md}
 ---END STANDARDS---
@@ -3211,7 +3211,7 @@ Audit linting configuration and code quality patterns for production readiness.
 
 **Reference Implementation (GOOD):**
 ```go
-// Import ordering: 3 groups (stdlib, external, internal)
+// Import ordemarsai: 3 groups (stdlib, external, internal)
 import (
     "context"
     "fmt"
@@ -3260,7 +3260,7 @@ if pageSize > 100 {             // What is 100?
 }
 ```
 
-**Check Against Ring Standards For:**
+**Check Against MarsAI Standards For:**
 1. (HARD GATE) golangci-lint configuration exists per quality.md linting section
 2. Import ordering follows 3-group convention (stdlib, external, internal)
 3. Magic numbers replaced with named constants in business logic
@@ -3269,7 +3269,7 @@ if pageSize > 100 {             // What is 100?
 6. Consistent code formatting (gofmt/goimports applied)
 
 **Severity Ratings:**
-- HIGH: No golangci-lint configuration (HARD GATE violation per Ring standards)
+- HIGH: No golangci-lint configuration (HARD GATE violation per MarsAI standards)
 - MEDIUM: Magic numbers in business logic
 - MEDIUM: Import ordering not following 3-group convention
 - MEDIUM: Blanket //nolint without justification
@@ -3307,7 +3307,7 @@ Audit Makefile and development tooling for production readiness.
 
 **Detected Stack:** {DETECTED_STACK}
 
-**Ring Standards (Source of Truth):**
+**MarsAI Standards (Source of Truth):**
 ---BEGIN STANDARDS---
 {INJECTED: "Makefile Standards" section 7 from devops.md}
 ---END STANDARDS---
@@ -3377,7 +3377,7 @@ check: ## Run all checks (lint + test + cover)
 	$(MAKE) cover
 ```
 
-**Check Against Ring Standards For:**
+**Check Against MarsAI Standards For:**
 1. (HARD GATE) Makefile exists in project root per devops.md
 2. Required targets present: build, lint, test, cover, up, down, logs, setup, migrate, seed, generate, swagger, docker-build, docker-push, clean, help, check
 3. All targets have help descriptions (## comments)
@@ -3386,7 +3386,7 @@ check: ## Run all checks (lint + test + cover)
 6. `check` target runs full validation pipeline
 
 **Severity Ratings:**
-- HIGH: No Makefile in project (HARD GATE violation per Ring standards)
+- HIGH: No Makefile in project (HARD GATE violation per MarsAI standards)
 - MEDIUM: Missing required Makefile targets (list which ones are missing)
 - MEDIUM: Targets without help descriptions
 - LOW: Missing .PHONY declarations
@@ -3437,7 +3437,7 @@ If multi-tenant IS detected, audit multi-tenant architecture patterns for produc
 
 **Detected Stack:** {DETECTED_STACK}
 
-**Ring Standards (Source of Truth):**
+**MarsAI Standards (Source of Truth):**
 ---BEGIN STANDARDS---
 {INJECTED: Section 23 from multi-tenant.md}
 ---END STANDARDS---
@@ -3495,7 +3495,7 @@ func GetTenantID(c *fiber.Ctx) string {
 db := tmcore.GetPGContext(ctx)  // WRONG: use GetPGContext(ctx, module) for multi-module services
 ```
 
-**Check Against Ring Standards For:**
+**Check Against MarsAI Standards For:**
 1. (HARD GATE) Tenant ID extracted from JWT claims (not user-controlled headers/params) per multi-tenant.md
 2. (HARD GATE) All database queries include entity scoping (organization_id + ledger_id)
 3. (HARD GATE) TenantMiddleware with WithPG/WithMB injects tenant into request context with module-specific connections
@@ -3512,7 +3512,7 @@ db := tmcore.GetPGContext(ctx)  // WRONG: use GetPGContext(ctx, module) for mult
 14. StopConsumer called before CloseConnection on tenant removal (ordering matters)
 
 **Severity Ratings:**
-- CRITICAL: Queries without entity scoping — intra-tenant IDOR (HARD GATE violation per Ring standards)
+- CRITICAL: Queries without entity scoping — intra-tenant IDOR (HARD GATE violation per MarsAI standards)
 - CRITICAL: Tenant ID from user-controlled input (HARD GATE violation)
 - CRITICAL: Missing TenantMiddleware with WithPG/WithMB (HARD GATE violation)
 - CRITICAL: Using deprecated functions (WithPostgresManager, WithMongoManager, WithModule, GetMongoFromContext, GetKeyFromContext, GetPGConnectionFromContext, GetPGConnectionContext, GetMongoContext, ResolvePostgres, ResolveMongo, ResolveModuleDB, SetTenantIDInContext, GetPostgresForTenant, GetMongoForTenant, ContextWithPGConnection, ContextWithMongo, ContextWithModulePGConnection, GetModulePostgresForTenant, MultiPoolMiddleware, DualPoolMiddleware, SettingsWatcher, NewSettingsWatcher) — NON-COMPLIANT, MUST migrate to current API
@@ -3551,7 +3551,7 @@ Audit license/copyright headers on source files for production readiness. If no 
 
 **Detected Stack:** {DETECTED_STACK}
 
-**Ring Standards (Source of Truth):**
+**MarsAI Standards (Source of Truth):**
 ---BEGIN STANDARDS---
 {INJECTED: License header section from core.md section 7 (if exists), otherwise use organizational defaults}
 ---END STANDARDS---
@@ -3595,7 +3595,7 @@ import (
 package domain
 ```
 
-**Check Against Ring Standards For:**
+**Check Against MarsAI Standards For:**
 1. LICENSE file exists in project root
 2. All .go files have copyright/license header comment in first 5 lines
 3. Consistent header format across all files
@@ -3639,9 +3639,9 @@ Audit nil/null pointer safety and dereference risks across the codebase for prod
 
 **Detected Stack:** {DETECTED_STACK}
 
-**Ring Standards (Source of Truth):**
+**MarsAI Standards (Source of Truth):**
 ---BEGIN STANDARDS---
-{INJECTED: Nil safety patterns — no dedicated standards file; patterns derived from ring:nil-safety-reviewer agent}
+{INJECTED: Nil safety patterns — no dedicated standards file; patterns derived from marsai:nil-safety-reviewer agent}
 ---END STANDARDS---
 
 **Search Patterns:**
@@ -3824,9 +3824,9 @@ Audit resilience patterns (circuit breakers, retries, timeouts, bulkheads) acros
 
 **Detected Stack:** {DETECTED_STACK}
 
-**Ring Standards (Source of Truth):**
+**MarsAI Standards (Source of Truth):**
 ---BEGIN STANDARDS---
-{INJECTED: Resilience patterns — no dedicated standards file; patterns derived from industry best practices and ring:production-readiness standards}
+{INJECTED: Resilience patterns — no dedicated standards file; patterns derived from industry best practices and marsai:production-readiness standards}
 ---END STANDARDS---
 
 **Search Patterns:**
@@ -4064,7 +4064,7 @@ Audit the codebase for hardcoded secrets, credentials, API keys, tokens, and sen
 
 **Detected Stack:** {DETECTED_STACK}
 
-**Ring Standards (Source of Truth):**
+**MarsAI Standards (Source of Truth):**
 ---BEGIN STANDARDS---
 {INJECTED: Secret scanning patterns — no dedicated standards file; patterns derived from industry secret detection rules (GitHub secret scanning, truffleHog, gitleaks)}
 ---END STANDARDS---
@@ -4250,9 +4250,9 @@ Audit API versioning strategy, backward compatibility practices, and deprecation
 
 **Detected Stack:** {DETECTED_STACK}
 
-**Ring Standards (Source of Truth):**
+**MarsAI Standards (Source of Truth):**
 ---BEGIN STANDARDS---
-{INJECTED: API versioning patterns — no dedicated standards file; patterns derived from REST API design best practices and ring:production-readiness standards}
+{INJECTED: API versioning patterns — no dedicated standards file; patterns derived from REST API design best practices and marsai:production-readiness standards}
 ---END STANDARDS---
 
 **Search Patterns:**
@@ -4469,7 +4469,7 @@ Audit graceful degradation and fallback behavior when downstream dependencies fa
 
 **Detected Stack:** {DETECTED_STACK}
 
-**Ring Standards (Source of Truth):**
+**MarsAI Standards (Source of Truth):**
 ---BEGIN STANDARDS---
 {INJECTED: Graceful degradation patterns — no dedicated standards file; patterns derived from operational readiness best practices}
 ---END STANDARDS---
@@ -4668,7 +4668,7 @@ Audit caching patterns, invalidation strategies, and cache safety for production
 
 **Detected Stack:** {DETECTED_STACK}
 
-**Ring Standards (Source of Truth):**
+**MarsAI Standards (Source of Truth):**
 ---BEGIN STANDARDS---
 {INJECTED: Caching patterns — no dedicated standards file; patterns derived from quality and maintainability best practices}
 ---END STANDARDS---
@@ -4901,7 +4901,7 @@ Audit data encryption at rest, key management, and sensitive data protection for
 
 **Detected Stack:** {DETECTED_STACK}
 
-**Ring Standards (Source of Truth):**
+**MarsAI Standards (Source of Truth):**
 ---BEGIN STANDARDS---
 {INJECTED: Data encryption patterns — no dedicated standards file; patterns derived from security best practices and OWASP guidelines}
 ---END STANDARDS---
@@ -5124,7 +5124,7 @@ Audit resource leak risks including unclosed handles, connection leaks, and clea
 
 **Detected Stack:** {DETECTED_STACK}
 
-**Ring Standards (Source of Truth):**
+**MarsAI Standards (Source of Truth):**
 ---BEGIN STANDARDS---
 {INJECTED: Resource leak patterns — no dedicated standards file; patterns derived from Go/TypeScript runtime behavior and production failure analysis}
 ---END STANDARDS---
@@ -5402,7 +5402,7 @@ Audit rate limiting implementation across the codebase for production readiness.
 
 **Detected Stack:** {DETECTED_STACK}
 
-**Ring Standards (Source of Truth):**
+**MarsAI Standards (Source of Truth):**
 ---BEGIN STANDARDS---
 {INJECTED: security.md § Rate Limiting (MANDATORY)}
 ---END STANDARDS---
@@ -5538,7 +5538,7 @@ Audit CORS (Cross-Origin Resource Sharing) configuration across the codebase for
 
 **Detected Stack:** {DETECTED_STACK}
 
-**Ring Standards (Source of Truth):**
+**MarsAI Standards (Source of Truth):**
 ---BEGIN STANDARDS---
 {INJECTED: security.md § CORS Configuration (MANDATORY)}
 ---END STANDARDS---
@@ -5662,7 +5662,7 @@ cors.Config{
 - CORS middleware: {Present / Absent}
 - Allowed origins source: {Env var / Hardcoded / Wildcard / Not configured}
 - Production validation: {Present with sentinel errors / Present without sentinel errors / Absent}
-- Middleware ordering: {Correct / Incorrect — position: {actual position}}
+- Middleware ordemarsai: {Correct / Incorrect — position: {actual position}}
 - Helmet integration: {Present / Absent}
 - HSTS: {Enabled / Disabled / N/A (no TLS)}
 
@@ -5783,7 +5783,7 @@ Status icons: PASS (>=7), WARN (4-6), FAIL (<4), N/A (conditional not active)
 
 ## HARD GATE Violations
 
-> HARD GATE violations are non-negotiable Ring standards failures that MUST be resolved before any deployment consideration. These represent structural non-compliance, not just quality gaps.
+> HARD GATE violations are non-negotiable MarsAI standards failures that MUST be resolved before any deployment consideration. These represent structural non-compliance, not just quality gaps.
 
 {If no violations: "No HARD GATE violations detected."}
 
@@ -5829,7 +5829,7 @@ Status icons: PASS (>=7), WARN (4-6), FAIL (<4), N/A (conditional not active)
 **Recommended Fix:**
 ```{language}
 // {file}:{line} — suggested change
-{code showing the corrected approach aligned with Ring standards}
+{code showing the corrected approach aligned with MarsAI standards}
 ```
 
 ---
@@ -6381,7 +6381,7 @@ Status icons: PASS (>=7), WARN (4-6), FAIL (<4), N/A (conditional not active)
 | **Lines of Code** | {X} |
 | **Skill Version** | 3.0 |
 | **Report Type** | Thorough |
-| **Standards Source** | Ring Development Standards (GitHub) |
+| **Standards Source** | MarsAI Development Standards (GitHub) |
 | **Standards Files Loaded** | {list} |
 | **Stack Detected** | {Go / TypeScript / Frontend / Mixed} |
 | **Dimensions** | {43 + conditional count} |
@@ -6395,11 +6395,11 @@ Status icons: PASS (>=7), WARN (4-6), FAIL (<4), N/A (conditional not active)
 
 | Score | Criteria |
 |-------|----------|
-| 10 | Exemplary - fully aligned with Ring standards, could serve as reference |
-| 8-9 | Strong - minor deviations from Ring standards |
-| 6-7 | Adequate - meets basic requirements but missing some Ring patterns |
-| 4-5 | Concerning - multiple gaps vs Ring standards |
-| 2-3 | Poor - significant non-compliance with Ring standards |
+| 10 | Exemplary - fully aligned with MarsAI standards, could serve as reference |
+| 8-9 | Strong - minor deviations from MarsAI standards |
+| 6-7 | Adequate - meets basic requirements but missing some MarsAI patterns |
+| 4-5 | Concerning - multiple gaps vs MarsAI standards |
+| 2-3 | Poor - significant non-compliance with MarsAI standards |
 | 0-1 | Critical - fundamentally misaligned or missing |
 
 ### Deductions Per Dimension
@@ -6459,7 +6459,7 @@ Use Glob and Grep to detect:
 
 ### Step 3: Load Standards (Step 0.5)
 
-Use WebFetch to load Ring standards based on detected stack. Store content for injection into explorer prompts.
+Use WebFetch to load MarsAI standards based on detected stack. Store content for injection into explorer prompts.
 
 **If WebFetch fails for any module:** Note the failure and proceed with generic patterns for affected dimensions.
 
@@ -6473,7 +6473,7 @@ Write the report header with Audit Configuration to `docs/audits/production-read
 
 Each Task call should include:
 - The full explorer prompt from the dimension
-- Injected Ring standards content between ---BEGIN STANDARDS--- / ---END STANDARDS--- markers
+- Injected MarsAI standards content between ---BEGIN STANDARDS--- / ---END STANDARDS--- markers
 - Detected stack information
 - Instruction to search the codebase thoroughly
 
@@ -6518,7 +6518,7 @@ Write: docs/audits/production-readiness-{YYYY-MM-DDTHH:MM:SS}.md
 
 **MANDATORY: Generate a visual HTML dashboard from the audit results.**
 
-Invokes `Skill("ring:visual-explainer")` to produce a self-contained HTML page showing the production readiness score and findings visually. The markdown report is exhaustive (thousands of lines) — the HTML dashboard provides an executive overview that opens in the browser.
+Invokes `Skill("marsai:visual-explainer")` to produce a self-contained HTML page showing the production readiness score and findings visually. The markdown report is exhaustive (thousands of lines) — the HTML dashboard provides an executive overview that opens in the browser.
 
 **Read templates first:** Read `default/skills/visual-explainer/templates/code-diff.html` for severity badges and KPI card patterns, AND read `default/skills/visual-explainer/templates/data-table.html` for table/heatmap patterns. Combine patterns for an audit dashboard layout. Also read `default/skills/visual-explainer/references/responsive-nav.md` for section navigation (7 sections require sidebar TOC).
 
@@ -6552,7 +6552,7 @@ Invokes `Skill("ring:visual-explainer")` to produce a self-contained HTML page s
 - Collapsible details per phase
 
 **7. Standards Compliance Summary**
-- Table showing which Ring standards were checked and their compliance status
+- Table showing which MarsAI standards were checked and their compliance status
 - Collapsible per-standard details
 
 **Output:** Save to `docs/audits/production-readiness-{YYYY-MM-DDTHH:MM:SS}-dashboard.html`
@@ -6613,7 +6613,7 @@ Output structured JSON instead of markdown.
 User: /production-readiness-audit --no-standards
 ```
 
-Run without Ring standards injection (generic mode, equivalent to v2.0 behavior).
+Run without MarsAI standards injection (generic mode, equivalent to v2.0 behavior).
 
 ---
 
@@ -6623,7 +6623,7 @@ This skill can be automated:
 
 1. Run audit on every release branch
 2. Block merges if CRITICAL issues exist
-3. Block merges if HARD GATE violations exist (Ring standards)
+3. Block merges if HARD GATE violations exist (MarsAI standards)
 4. Track debt trends over time
 5. Generate dashboards from JSON output
 6. Compare scores across audit runs to measure standards adoption
@@ -6634,7 +6634,7 @@ This skill can be automated:
 
 The reference implementations in this skill are derived from two sources:
 
-### Ring Development Standards (Primary - Source of Truth)
+### MarsAI Development Standards (Primary - Source of Truth)
 Standards loaded at runtime via WebFetch from `dev-team/docs/standards/`:
 - **golang/*.md** — Go-specific standards (core, bootstrap, security, domain, API patterns, quality, architecture, messaging, domain-modeling, idempotency, multi-tenant)
 - **devops.md** — Container, Makefile, and infrastructure standards
@@ -6647,7 +6647,7 @@ Original reference implementations derived from the Matcher codebase, which serv
 - lib-auth integration (JWT validation, tenant extraction)
 - Fiber HTTP framework conventions
 
-When auditing projects, findings are compared against Ring standards as the authoritative reference. Matcher patterns remain as supplementary examples.
+When auditing projects, findings are compared against MarsAI standards as the authoritative reference. Matcher patterns remain as supplementary examples.
 
 ## Blocker Criteria
 
@@ -6656,14 +6656,14 @@ STOP and report if:
 | Decision Type | Blocker Condition | Required Action |
 |---|---|---|
 | Stack Detection | Cannot detect project stack (no go.mod, package.json, etc.) | STOP and ask user to specify stack |
-| Standards Loading | WebFetch fails for critical Ring standards | STOP and report - audit requires standards as source of truth |
+| Standards Loading | WebFetch fails for critical MarsAI standards | STOP and report - audit requires standards as source of truth |
 | Batch Failure | Entire batch of agents fails to complete | STOP and report - investigate infrastructure issue |
 | Report File | Cannot write to docs/audits/ directory | STOP and report - ensure directory exists and is writable |
 
 ### Cannot Be Overridden
 
 The following requirements CANNOT be waived:
-- MUST load Ring standards before dispatching explorers - audit without standards is not Ring-compliant
+- MUST load MarsAI standards before dispatching explorers - audit without standards is not MarsAI-compliant
 - MUST run ALL applicable dimensions (43 base + 1 conditional) - partial audits are incomplete
 - MUST include HARD GATE violations prominently in report - they CANNOT be buried in findings
 - CANNOT mark audit complete without generating both markdown report AND HTML dashboard
@@ -6672,7 +6672,7 @@ The following requirements CANNOT be waived:
 
 | Severity | Condition | Required Action |
 |---|---|---|
-| CRITICAL | HARD GATE violation per Ring standards | MUST be fixed before production deployment - blocks release |
+| CRITICAL | HARD GATE violation per MarsAI standards | MUST be fixed before production deployment - blocks release |
 | HIGH | Security vulnerability or missing auth protection | MUST fix before completing audit remediation |
 | MEDIUM | Quality issue or missing best practice | Should fix - improves maintainability |
 | LOW | Style inconsistency or documentation gap | Fix in next iteration |
@@ -6682,7 +6682,7 @@ The following requirements CANNOT be waived:
 | User Says | Your Response |
 |---|---|
 | "Just audit security, skip the rest" | "CANNOT run partial audit unless --dimensions flag is specified. Full audit (44 dimensions) is required for production readiness assessment." |
-| "Skip the standards loading, just run generic checks" | "CANNOT audit without Ring standards unless --no-standards flag is specified. Standards are the source of truth for compliance." |
+| "Skip the standards loading, just run generic checks" | "CANNOT audit without MarsAI standards unless --no-standards flag is specified. Standards are the source of truth for compliance." |
 | "We need to deploy tomorrow, mark it production ready" | "CANNOT mark production ready if CRITICAL issues or HARD GATE violations exist. Report shows actual state - deployment decision is yours." |
 
 ## Anti-Rationalization Table
@@ -6690,6 +6690,6 @@ The following requirements CANNOT be waived:
 | Rationalization | Why It's WRONG | Required Action |
 |---|---|---|
 | "Most dimensions passed, skip the remaining ones" | Partial audit hides unknown risks. Each dimension covers unique production concerns. | **MUST complete all 44 dimensions** |
-| "Standards fetch is slow, use cached version" | Cached standards may be outdated. Ring standards evolve - fresh fetch ensures accuracy. | **MUST WebFetch current standards** |
-| "HARD GATE violations are minor for this project" | HARD GATE means NON-NEGOTIABLE per Ring standards. Project size doesn't change compliance. | **MUST report HARD GATE violations prominently** |
+| "Standards fetch is slow, use cached version" | Cached standards may be outdated. MarsAI standards evolve - fresh fetch ensures accuracy. | **MUST WebFetch current standards** |
+| "HARD GATE violations are minor for this project" | HARD GATE means NON-NEGOTIABLE per MarsAI standards. Project size doesn't change compliance. | **MUST report HARD GATE violations prominently** |
 | "HTML dashboard is optional, markdown is enough" | Dashboard provides executive visibility. Both outputs are required for complete audit. | **MUST generate both markdown and HTML dashboard** |

@@ -73,7 +73,7 @@ These are the only files that require multi-tenant changes. The exact paths foll
 | File | Condition | What Changes |
 |------|-----------|-------------|
 | `internal/adapters/product/client.go` (or equivalent target service API client) | Service with targetServices declared | M2M authenticator with per-tenant credential caching via `secretsmanager.GetM2MCredentials` |
-| `internal/bootstrap/service.go` | Service with targetServices | Conditional M2M wiring: `if cfg.MultiTenantEnabled` → AWS Secrets Manager client + M2M provider |
+| `internal/bootstrap/service.go` | Service with targetServices | Conditional M2M wimarsai: `if cfg.MultiTenantEnabled` → AWS Secrets Manager client + M2M provider |
 
 **Conditional — RabbitMQ only (Gate 6):**
 
@@ -1442,7 +1442,7 @@ Services implementing multi-tenant MUST expose these metrics:
 
 | Rationalization | Why It's WRONG | Required Action |
 |-----------------|----------------|-----------------|
-| "Service already has multi-tenant code" | Existence ≠ compliance. Code that doesn't match the Ring canonical model (lib-commons v4 tenant-manager sub-packages) is non-compliant and MUST be replaced entirely. | **STOP. Run compliance audit against this document. Replace every non-compliant component.** |
+| "Service already has multi-tenant code" | Existence ≠ compliance. Code that doesn't match the MarsAI canonical model (lib-commons v4 tenant-manager sub-packages) is non-compliant and MUST be replaced entirely. | **STOP. Run compliance audit against this document. Replace every non-compliant component.** |
 | "Our custom multi-tenant approach works" | Working ≠ compliant. Custom implementations create drift, block lib-commons upgrades, prevent standardized tooling, and cannot be validated by automated compliance checks. | **STOP. Replace with canonical lib-commons v4 implementation.** |
 | "Just need to adapt/patch the existing code" | Non-standard implementations cannot be patched into compliance. The patterns are structurally different (context-based resolution vs static connections, lib-commons middleware vs custom middleware). | **STOP. Replace, do not patch.** |
 | "We only have one customer" | Requirements change. Multi-tenant is easy to add now, hard later. | **Design for multi-tenant, deploy as single** |
@@ -2514,7 +2514,7 @@ func TestCredentialCacheExpiry(t *testing.T) {
         getSecretValueFunc: func(_ context.Context, _ *awssm.GetSecretValueInput, _ ...func(*awssm.Options)) (*awssm.GetSecretValueOutput, error) {
             callCount++
             secret := `{"clientId":"id","clientSecret":"secret"}`
-            return &awssm.GetSecretValueOutput{SecretString: &secret}, nil
+            return &awssm.GetSecretValueOutput{SecretStmarsai: &secret}, nil
         },
     }
 

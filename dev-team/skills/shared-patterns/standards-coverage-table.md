@@ -1,6 +1,6 @@
 # Standards Coverage Table Pattern
 
-This file defines the MANDATORY output format for agents comparing codebases against Ring standards. It ensures every section in the standards is explicitly checked and reported.
+This file defines the MANDATORY output format for agents comparing codebases against MarsAI standards. It ensures every section in the standards is explicitly checked and reported.
 
 ---
 
@@ -249,7 +249,7 @@ Standards files may contain these meta-sections that are not counted in section 
 
 These sections describe HOW to use the standards, not WHAT the standards are.
 
-### ring:backend-engineer-golang → golang/
+### marsai:backend-engineer-golang → golang/
 
 **Modular Structure:** Standards are split into focused modules. Load index.md first, then required modules.
 
@@ -327,7 +327,7 @@ These sections describe HOW to use the standards, not WHAT the standards are.
 
 ---
 
-### ring:backend-engineer-typescript → typescript.md
+### marsai:backend-engineer-typescript → typescript.md
 
 | #   | Section to Check              | Anchor                                 | Key Subsections                               |
 | --- | ----------------------------- | -------------------------------------- | --------------------------------------------- |
@@ -349,7 +349,7 @@ These sections describe HOW to use the standards, not WHAT the standards are.
 
 ---
 
-### ring:frontend-bff-engineer-typescript → typescript.md
+### marsai:frontend-bff-engineer-typescript → typescript.md
 
 **Includes all backend-engineer-typescript sections PLUS 6 BFF-specific sections (21 total).**
 
@@ -385,7 +385,7 @@ These sections describe HOW to use the standards, not WHAT the standards are.
 
 ---
 
-### ring:frontend-engineer → frontend.md
+### marsai:frontend-engineer → frontend.md
 
 | #   | Section to Check                | Anchor                             | Key Subsections                                                         |
 | --- | ------------------------------- | ---------------------------------- | ----------------------------------------------------------------------- |
@@ -402,7 +402,7 @@ These sections describe HOW to use the standards, not WHAT the standards are.
 | 11  | Performance                     | `#performance`                     | Code splitting, image optimization                                      |
 | 12  | Directory Structure             | `#directory-structure`             | Next.js App Router layout                                               |
 | 13  | Forbidden Patterns              | `#forbidden-patterns`              | Anti-patterns to avoid                                                  |
-| 14  | Standards Compliance Categories | `#standards-compliance-categories` | Categories for ring:dev-refactor                                        |
+| 14  | Standards Compliance Categories | `#standards-compliance-categories` | Categories for marsai:dev-refactor                                        |
 | 15  | Form Field Abstraction Layer    | `#form-field-abstraction-layer`    | **HARD GATE:** Field wrappers, dual-mode (sindarian-ui vs vanilla)      |
 | 16  | Provider Composition Pattern    | `#provider-composition-pattern`    | Nested providers order, feature providers                               |
 | 17  | Custom Hooks Patterns           | `#custom-hooks-patterns`           | **HARD GATE:** usePagination, useCursorPagination, useCreateUpdateSheet |
@@ -418,18 +418,18 @@ These sections describe HOW to use the standards, not WHAT the standards are.
 
 ---
 
-### ring:frontend-designer → frontend.md
+### marsai:frontend-designer → frontend.md
 
-**Same sections as ring:frontend-engineer (20 sections).** See above.
+**Same sections as marsai:frontend-engineer (20 sections).** See above.
 
 ---
 
-### ring:ui-engineer → frontend.md
+### marsai:ui-engineer → frontend.md
 
-**Same sections as ring:frontend-engineer (20 sections).** See above.
+**Same sections as marsai:frontend-engineer (20 sections).** See above.
 
 **Additional ui-engineer requirements:**
-The ring:ui-engineer MUST also validate against product-designer outputs:
+The marsai:ui-engineer MUST also validate against product-designer outputs:
 
 | #   | Additional Check         | Source              | Required                       |
 | --- | ------------------------ | ------------------- | ------------------------------ |
@@ -438,8 +438,8 @@ The ring:ui-engineer MUST also validate against product-designer outputs:
 | 3   | Wireframe Adherence      | `wireframes/*.yaml` | All specs implemented          |
 | 4   | UI States Coverage       | `ux-criteria.md`    | Loading, error, empty, success |
 
-**Output Format for ring:ui-engineer:**
-In addition to the standard Coverage Table, ring:ui-engineer MUST output:
+**Output Format for marsai:ui-engineer:**
+In addition to the standard Coverage Table, marsai:ui-engineer MUST output:
 
 ```markdown
 ## UX Criteria Compliance
@@ -451,14 +451,14 @@ In addition to the standard Coverage Table, ring:ui-engineer MUST output:
 
 ---
 
-### ring:devops-engineer → devops.md
+### marsai:devops-engineer → devops.md
 
 | #   | Section to Check                   | Subsections (all REQUIRED)                                                                 |
 | --- | ---------------------------------- | ------------------------------------------------------------------------------------------ |
 | 1   | Cloud Provider (MANDATORY)         | Provider table                                                                             |
 | 2   | Infrastructure as Code (MANDATORY) | Terraform structure, State management, Module pattern, Best practices                      |
 | 3   | Containers (MANDATORY)             | **Dockerfile patterns, Docker Compose (Local Dev), .env file**, Image guidelines           |
-| 4   | Helm (MANDATORY)                   | General chart structure, Chart.yaml, values.yaml, [Lerian Helm Standards](../../docs/standards/helm/index.md) (delegate to ring:helm-engineer) |
+| 4   | Helm (MANDATORY)                   | General chart structure, Chart.yaml, values.yaml, [Lerian Helm Standards](../../docs/standards/helm/index.md) (delegate to marsai:helm-engineer) |
 | 5   | Observability (MANDATORY)          | Logging (Structured JSON), Tracing (OpenTelemetry)                                         |
 | 6   | Security (MANDATORY)               | Secrets management, Network policies                                                       |
 | 7   | Makefile Standards (MANDATORY)     | Required commands (build, lint, test, cover, up, down, etc.), Component delegation pattern |
@@ -470,7 +470,7 @@ In addition to the standard Coverage Table, ring:ui-engineer MUST output:
 
 ---
 
-### ring:sre → sre.md
+### marsai:sre → sre.md
 
 | #   | Section to Check                      | Anchor                                                            |
 | --- | ------------------------------------- | ----------------------------------------------------------------- |
@@ -483,9 +483,9 @@ In addition to the standard Coverage Table, ring:ui-engineer MUST output:
 
 ---
 
-### ring:qa-analyst → testing-unit.md (Unit Mode - Gate 3)
+### marsai:qa-analyst → testing-unit.md (Unit Mode - Gate 3)
 
-**Mode Detection:** `test_mode: unit` passed when invoking `Task(subagent_type="ring:qa-analyst", test_mode="unit")`
+**Mode Detection:** `test_mode: unit` passed when invoking `Task(subagent_type="marsai:qa-analyst", test_mode="unit")`
 
 **For Go projects (Unit Mode):**
 | # | Section to Check | Anchor |
@@ -525,9 +525,9 @@ In addition to the standard Coverage Table, ring:ui-engineer MUST output:
 
 ---
 
-### ring:qa-analyst → testing-fuzz.md (Fuzz Mode - Gate 4)
+### marsai:qa-analyst → testing-fuzz.md (Fuzz Mode - Gate 4)
 
-**Mode Detection:** `test_mode: fuzz` passed when invoking `Task(subagent_type="ring:qa-analyst", test_mode="fuzz")`
+**Mode Detection:** `test_mode: fuzz` passed when invoking `Task(subagent_type="marsai:qa-analyst", test_mode="fuzz")`
 
 **For Go projects (Fuzz Mode):**
 | # | Section to Check | Anchor |
@@ -547,9 +547,9 @@ In addition to the standard Coverage Table, ring:ui-engineer MUST output:
 
 ---
 
-### ring:qa-analyst → testing-property.md (Property Mode - Gate 5)
+### marsai:qa-analyst → testing-property.md (Property Mode - Gate 5)
 
-**Mode Detection:** `test_mode: property` passed when invoking `Task(subagent_type="ring:qa-analyst", test_mode="property")`
+**Mode Detection:** `test_mode: property` passed when invoking `Task(subagent_type="marsai:qa-analyst", test_mode="property")`
 
 **For Go projects (Property Mode):**
 | # | Section to Check | Anchor |
@@ -569,9 +569,9 @@ In addition to the standard Coverage Table, ring:ui-engineer MUST output:
 
 ---
 
-### ring:qa-analyst → testing-integration.md (Integration Mode - Gate 6)
+### marsai:qa-analyst → testing-integration.md (Integration Mode - Gate 6)
 
-**Mode Detection:** `test_mode: integration` passed when invoking `Task(subagent_type="ring:qa-analyst", test_mode="integration")`
+**Mode Detection:** `test_mode: integration` passed when invoking `Task(subagent_type="marsai:qa-analyst", test_mode="integration")`
 
 **For Go projects (Integration Mode):**
 | # | Section to Check | Anchor |
@@ -599,9 +599,9 @@ In addition to the standard Coverage Table, ring:ui-engineer MUST output:
 
 ---
 
-### ring:qa-analyst → testing-chaos.md (Chaos Mode - Gate 7)
+### marsai:qa-analyst → testing-chaos.md (Chaos Mode - Gate 7)
 
-**Mode Detection:** `test_mode: chaos` passed when invoking `Task(subagent_type="ring:qa-analyst", test_mode="chaos")`
+**Mode Detection:** `test_mode: chaos` passed when invoking `Task(subagent_type="marsai:qa-analyst", test_mode="chaos")`
 
 **For Go projects (Chaos Mode):**
 | # | Section to Check | Anchor |
@@ -623,7 +623,7 @@ In addition to the standard Coverage Table, ring:ui-engineer MUST output:
 
 ---
 
-### ring:qa-analyst-frontend → frontend/testing-*.md
+### marsai:qa-analyst-frontend → frontend/testing-*.md
 
 **Mode Detection:** `test_mode` parameter determines which standards to load.
 

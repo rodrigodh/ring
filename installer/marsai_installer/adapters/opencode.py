@@ -1,15 +1,15 @@
 """
-OpenCode adapter - converts Ring format to OpenCode's format.
+OpenCode adapter - converts MarsAI format to OpenCode's format.
 
 OpenCode (OhMyOpenCode) is a Claude Code-compatible AI agent platform.
-It uses similar concepts to Ring/Claude Code with minor directory differences:
+It uses similar concepts to MarsAI/Claude Code with minor directory differences:
 - agents -> agent (singular directory name)
 - commands -> command (singular directory name)
 - skills -> skill (singular directory name)
 - hooks -> NOT SUPPORTED (OpenCode uses plugin-based hooks)
 
 IMPORTANT: OpenCode hooks are plugin-based (tool.execute.before, etc.) which are
-incompatible with Ring's file-based hooks. Ring hooks CANNOT be installed on OpenCode.
+incompatible with MarsAI's file-based hooks. MarsAI hooks CANNOT be installed on OpenCode.
 """
 
 import json
@@ -19,7 +19,7 @@ import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from ring_installer.adapters.base import PlatformAdapter
+from marsai_installer.adapters.base import PlatformAdapter
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +31,7 @@ class OpenCodeAdapter(PlatformAdapter):
     OpenCode uses a format very similar to Claude Code with these differences:
     - Install path: ~/.config/opencode/ (user) or .opencode/ (project)
     - Directory names: singular (agent/, command/, skill/) not plural
-    - Hooks: NOT SUPPORTED - OpenCode uses plugin-based hooks incompatible with Ring
+    - Hooks: NOT SUPPORTED - OpenCode uses plugin-based hooks incompatible with MarsAI
     - Config: opencode.json or opencode.jsonc instead of settings.json
 
     Key OpenCode features:
@@ -43,7 +43,7 @@ class OpenCodeAdapter(PlatformAdapter):
     Limitations:
     - Hooks are NOT supported (OpenCode uses plugin-based hooks)
     - Command argument-hint field is NOT supported
-    - Some Ring-specific frontmatter fields are stripped
+    - Some MarsAI-specific frontmatter fields are stripped
     """
 
     platform_id = "opencode"
@@ -130,9 +130,9 @@ class OpenCodeAdapter(PlatformAdapter):
 
     def transform_skill(self, skill_content: str, metadata: Optional[Dict[str, Any]] = None) -> str:
         """
-        Transform a Ring skill for OpenCode.
+        Transform a MarsAI skill for OpenCode.
 
-        OpenCode uses the same markdown + YAML frontmatter format as Ring/Claude Code.
+        OpenCode uses the same markdown + YAML frontmatter format as MarsAI/Claude Code.
         Transformation includes:
         - Tool name normalization (capitalized -> lowercase)
         - Frontmatter filtering (only allowed fields kept)
@@ -197,7 +197,7 @@ class OpenCodeAdapter(PlatformAdapter):
 
     def transform_agent(self, agent_content: str, metadata: Optional[Dict[str, Any]] = None) -> str:
         """
-        Transform a Ring agent for OpenCode.
+        Transform a MarsAI agent for OpenCode.
 
         OpenCode agents support:
         - mode: primary, subagent, all
@@ -232,7 +232,7 @@ class OpenCodeAdapter(PlatformAdapter):
         """
         Remove Claude-specific model requirement sections from agent body.
 
-        Ring agents include self-verification sections that check if the model
+        MarsAI agents include self-verification sections that check if the model
         is Claude Opus 4.5+. These sections cause agents to refuse execution
         on non-Claude models. Since OpenCode supports multiple providers,
         we strip these sections to allow model flexibility.
@@ -260,7 +260,7 @@ class OpenCodeAdapter(PlatformAdapter):
         self, command_content: str, metadata: Optional[Dict[str, Any]] = None
     ) -> str:
         """
-        Transform a Ring command for OpenCode.
+        Transform a MarsAI command for OpenCode.
 
         OpenCode commands support:
         - description: Brief description
@@ -298,11 +298,11 @@ class OpenCodeAdapter(PlatformAdapter):
         self, hook_content: str, metadata: Optional[Dict[str, Any]] = None
     ) -> Optional[str]:
         """
-        Transform a Ring hook for OpenCode.
+        Transform a MarsAI hook for OpenCode.
 
         IMPORTANT: OpenCode does NOT support file-based hooks. OpenCode uses a
         plugin-based hook system (tool.execute.before, tool.execute.after, etc.)
-        which is incompatible with Ring's file-based hooks.
+        which is incompatible with MarsAI's file-based hooks.
 
         This method returns None to indicate hooks should not be installed.
 
@@ -320,7 +320,7 @@ class OpenCodeAdapter(PlatformAdapter):
         logger.warning(
             "Hook '%s' cannot be installed: OpenCode uses plugin-based hooks "
             "(tool.execute.before, tool.execute.after, etc.) which are incompatible with "
-            "Ring's file-based hooks. This hook will be skipped.",
+            "MarsAI's file-based hooks. This hook will be skipped.",
             hook_name,
         )
         return None
@@ -356,10 +356,10 @@ class OpenCodeAdapter(PlatformAdapter):
         unlike Claude Code which uses plural (agents/, commands/, skills/).
 
         IMPORTANT: Hooks are NOT included because OpenCode uses plugin-based hooks
-        which are incompatible with Ring's file-based hooks.
+        which are incompatible with MarsAI's file-based hooks.
 
         Returns:
-            Mapping of Ring components to OpenCode directories (excludes hooks)
+            Mapping of MarsAI components to OpenCode directories (excludes hooks)
         """
         return {
             "agents": {
@@ -383,7 +383,7 @@ class OpenCodeAdapter(PlatformAdapter):
 
         OpenCode supports agents, commands, and skills but NOT hooks.
         OpenCode uses plugin-based hooks (tool.execute.before, etc.) which are
-        incompatible with Ring's file-based hooks.
+        incompatible with MarsAI's file-based hooks.
 
         Note: This explicit override exists for two reasons:
         1. Fast short-circuit for hooks checks without mapping lookup
@@ -405,9 +405,9 @@ class OpenCodeAdapter(PlatformAdapter):
         """
         Get OpenCode terminology.
 
-        OpenCode uses the same terminology as Claude Code/Ring for supported
+        OpenCode uses the same terminology as Claude Code/MarsAI for supported
         components. Note: hooks are intentionally excluded since OpenCode
-        does not support Ring's file-based hooks.
+        does not support MarsAI's file-based hooks.
 
         Returns:
             Mapping for supported components only (excludes hooks)
@@ -421,10 +421,10 @@ class OpenCodeAdapter(PlatformAdapter):
 
     def is_native_format(self) -> bool:
         """
-        Check if this platform uses Ring's native format.
+        Check if this platform uses MarsAI's native format.
 
         Returns:
-            True - OpenCode uses a very similar format to Ring (near-native)
+            True - OpenCode uses a very similar format to MarsAI (near-native)
         """
         return True  # Close enough to native that minimal transformation is needed
 
@@ -432,7 +432,7 @@ class OpenCodeAdapter(PlatformAdapter):
         """
         Check if this platform requires hooks to be merged into settings.
 
-        IMPORTANT: OpenCode does NOT support Ring's file-based hooks at all.
+        IMPORTANT: OpenCode does NOT support MarsAI's file-based hooks at all.
         OpenCode uses a plugin-based hook system (tool.execute.before, etc.)
         which cannot be configured through settings.
 
@@ -488,7 +488,7 @@ class OpenCodeAdapter(PlatformAdapter):
         """
         result = self._transform_frontmatter(frontmatter)
 
-        # Convert Ring 'type' field to OpenCode 'mode' field
+        # Convert MarsAI 'type' field to OpenCode 'mode' field
         if "type" in result:
             agent_type = result.pop("type")
             if agent_type == "subagent" and "mode" not in result:
@@ -518,7 +518,7 @@ class OpenCodeAdapter(PlatformAdapter):
 
     def _transform_permissions(self, permissions: Any) -> Optional[Dict[str, str]]:
         """
-        Transform Ring permissions to OpenCode permission format.
+        Transform MarsAI permissions to OpenCode permission format.
 
         OpenCode permissions format:
         {
@@ -527,7 +527,7 @@ class OpenCodeAdapter(PlatformAdapter):
         }
 
         Args:
-            permissions: Ring permission data (dict, list, or string)
+            permissions: MarsAI permission data (dict, list, or string)
 
         Returns:
             OpenCode-formatted permission dict, or None if invalid
@@ -554,7 +554,7 @@ class OpenCodeAdapter(PlatformAdapter):
                         result[key] = "ask"  # Default to ask for unknown values
             return result if result else None
 
-        # If it's a list of permission names (Ring format)
+        # If it's a list of permission names (MarsAI format)
         if isinstance(permissions, list):
             for perm in permissions:
                 perm_str = str(perm).lower()
@@ -706,7 +706,7 @@ class OpenCodeAdapter(PlatformAdapter):
         Resolve relative-path markdown references by inlining the referenced file content.
 
         Finds markdown links like [text](../shared-patterns/foo.md) where the target
-        is a shared-pattern or docs file, reads the source file from the Ring repo,
+        is a shared-pattern or docs file, reads the source file from the MarsAI repo,
         and replaces the link with the actual content. This makes each installed
         component self-contained — no broken references at runtime.
 
@@ -715,7 +715,7 @@ class OpenCodeAdapter(PlatformAdapter):
 
         Args:
             body: The markdown body content
-            source_path: Absolute path to the original source file in the Ring repo.
+            source_path: Absolute path to the original source file in the MarsAI repo.
                          Used to resolve relative references.
             depth: Current recursion depth (prevents infinite loops)
 
@@ -867,11 +867,11 @@ class OpenCodeAdapter(PlatformAdapter):
         Merge hooks configuration into OpenCode's config file.
 
         IMPORTANT: This method is a NO-OP for OpenCode because OpenCode does NOT
-        support Ring's file-based hooks. OpenCode uses a plugin-based hook system
+        support MarsAI's file-based hooks. OpenCode uses a plugin-based hook system
         (tool.execute.before, tool.execute.after, etc.) which cannot be configured
         through simple JSON merging.
 
-        Ring hooks require:
+        MarsAI hooks require:
         - Session start/stop scripts
         - Prompt submission handlers
         - File-based execution
@@ -896,7 +896,7 @@ class OpenCodeAdapter(PlatformAdapter):
             logger.warning(
                 "Cannot merge %d hook(s) to OpenCode config: "
                 "OpenCode uses plugin-based hooks (tool.execute.before, etc.) "
-                "which are incompatible with Ring's file-based hooks. "
+                "which are incompatible with MarsAI's file-based hooks. "
                 "Hooks will not be installed.",
                 hook_count,
             )

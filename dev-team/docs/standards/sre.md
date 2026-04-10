@@ -109,7 +109,7 @@ server:
 
 ingester:
   lifecycler:
-    ring:
+    marsai:
       kvstore:
         store: inmemory
       replication_factor: 1

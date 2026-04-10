@@ -1,17 +1,17 @@
 ---
-name: ring:create-handoff
+name: marsai:create-handoff
 description: Create a handoff document capturing current session state, with automatic context-clear and resume via Plan Mode
 argument-hint: "[session-name] [description]"
 ---
 
-# /ring:create-handoff Command
+# /marsai:create-handoff Command
 
 Creates a comprehensive handoff document that captures the current session's context, progress, decisions, and next steps. Uses Plan Mode for seamless context-clear and resume.
 
 ## Usage
 
 ```
-/ring:create-handoff [session-name] [description]
+/marsai:create-handoff [session-name] [description]
 ```
 
 ## Arguments
@@ -29,7 +29,7 @@ Creates a comprehensive handoff document that captures the current session's con
 4. Exits Plan Mode, presenting native "clear context and continue implementing" options
 5. User can seamlessly resume in a fresh context with the handoff loaded as their plan
 
-This command delegates to the `ring:session-handoff` skill which contains the complete handoff creation logic, execution protocol, handoff template, and anti-rationalization table.
+This command delegates to the `marsai:session-handoff` skill which contains the complete handoff creation logic, execution protocol, handoff template, and anti-rationalization table.
 
 ---
 
@@ -38,7 +38,7 @@ This command delegates to the `ring:session-handoff` skill which contains the co
 **This command MUST load the skill for complete workflow execution.**
 
 ```
-Use Skill tool: ring-default:session-handoff
+Use Skill tool: marsai-default:session-handoff
 ```
 
 The skill contains the complete workflow with:

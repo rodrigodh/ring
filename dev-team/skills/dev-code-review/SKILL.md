@@ -1,5 +1,5 @@
 ---
-name: ring:dev-code-review
+name: marsai:dev-code-review
 description: |
   Automated architectural code review against gold standard references. Compares diffs against
   the architecture template and reference examples, verifying structure, naming, architecture,
@@ -141,7 +141,7 @@ Paginated queries MUST follow this end-to-end pattern:
 - **Infra (Kysely repository — db access)**: MUST NOT use `this.model!` (non-null assertion). Store the Kysely instance in a private field `private readonly db: Kysely<DatabaseSchema>` in the constructor (already injected, save to own field with non-null type).
 - **App (DTO input)**: export `SchemaOpenApi` (with `z.coerce.number()` for page/limit query params), `QuerySchema` (for `@ApiQueryParamsSchema`), and `Request extends RequestDto`. Defaults: `page = 1`, `limit = 10`, max `limit = 100`.
 - **App (UseCase)**: return `PaginatedResult<ResponseType>`. Map domain objects to DTOs over `result.data`. Pass `result.pagination` directly.
-- **Infra (Controller)**: use `Querystring: PaginationParams` (from lib) in request type. `@ApiQueryParamsSchema(QuerySchema)` for OpenAPI. Defaults in controller: `page: req.query.page ?? 1, limit: req.query.limit ?? 10`.
+- **Infra (Controller)**: use `Querystmarsai: PaginationParams` (from lib) in request type. `@ApiQueryParamsSchema(QuerySchema)` for OpenAPI. Defaults in controller: `page: req.query.page ?? 1, limit: req.query.limit ?? 10`.
 
 **Reference**: `gold-standard/app/dto-input--PaginatedInput.ts`, `gold-standard/infra/controller--PaginatedRoute.ts`
 

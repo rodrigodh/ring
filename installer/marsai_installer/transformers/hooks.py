@@ -7,7 +7,7 @@ Generates and transforms hook configurations for different platforms.
 import json
 from typing import Any, Dict, List
 
-from ring_installer.transformers.base import (
+from marsai_installer.transformers.base import (
     BaseTransformer,
     TransformContext,
     TransformResult,
@@ -16,7 +16,7 @@ from ring_installer.transformers.base import (
 
 class HookTransformer(BaseTransformer):
     """
-    Transformer for Ring hook files.
+    Transformer for MarsAI hook files.
 
     Handles transformation of hook configurations:
     - Claude: passthrough (native hooks.json format)

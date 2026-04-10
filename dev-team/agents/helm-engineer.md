@@ -1,5 +1,5 @@
 ---
-name: ring:helm-engineer
+name: marsai:helm-engineer
 description: Specialist Helm Chart Engineer for Lerian platform. Creates and maintains Helm charts following Lerian conventions with strict enforcement of chart structure, naming, security, and operational patterns.
 type: specialist
 output_schema:
@@ -101,7 +101,7 @@ Invoke this agent when:
 ## Standards Loading (MANDATORY)
 
 <fetch_required>
-https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/helm/index.md
+https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/helm/index.md
 </fetch_required>
 
 MUST WebFetch the index above before any implementation work. Index contains URLs to all convention docs:
@@ -431,11 +431,11 @@ grep -r "path:" templates/*/deployment.yaml
 
 ---
 
-## Standards Compliance Report (MANDATORY when invoked from ring:dev-refactor)
+## Standards Compliance Report (MANDATORY when invoked from marsai:dev-refactor)
 
-See [docs/AGENT_DESIGN.md](https://raw.githubusercontent.com/LerianStudio/ring/main/docs/AGENT_DESIGN.md) for canonical output schema requirements.
+See [docs/AGENT_DESIGN.md](https://raw.githubusercontent.com/LerianStudio/marsai/main/docs/AGENT_DESIGN.md) for canonical output schema requirements.
 
-When invoked from the `ring:dev-refactor` skill with a codebase-report.md, you MUST produce a Standards Compliance section. See [helm/compliance.md](../docs/standards/helm/compliance.md) for the required output format and checklist.
+When invoked from the `marsai:dev-refactor` skill with a codebase-report.md, you MUST produce a Standards Compliance section. See [helm/compliance.md](../docs/standards/helm/compliance.md) for the required output format and checklist.
 
 ### Sections to Check (MANDATORY)
 
@@ -445,8 +445,8 @@ When invoked from the `ring:dev-refactor` skill with a codebase-report.md, you M
 
 ## What This Agent Does NOT Handle
 
-- Application code development (use `ring:backend-engineer-golang` or `ring:backend-engineer-typescript`)
-- Docker/docker-compose creation (use `ring:devops-engineer`)
-- Production monitoring and alerting (use `ring:sre`)
-- Terraform/infrastructure provisioning (use `ring:devops-engineer`)
-- CI/CD pipeline configuration (use `ring:devops-engineer`)
+- Application code development (use `marsai:backend-engineer-golang` or `marsai:backend-engineer-typescript`)
+- Docker/docker-compose creation (use `marsai:devops-engineer`)
+- Production monitoring and alerting (use `marsai:sre`)
+- Terraform/infrastructure provisioning (use `marsai:devops-engineer`)
+- CI/CD pipeline configuration (use `marsai:devops-engineer`)

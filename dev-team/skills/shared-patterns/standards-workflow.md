@@ -12,7 +12,7 @@ All dev-team agents MUST follow this workflow before any work:
 │  ├─ Exists? → Continue to Step 2                            │
 │  └─ Missing? → Create PROJECT_RULES.md (see Scenario 1)     │
 ├─────────────────────────────────────────────────────────────┤
-│  Step 2: WebFetch Ring Standards                            │
+│  Step 2: WebFetch MarsAI Standards                            │
 │  ├─ Success? → Continue to Step 3                           │
 │  └─ Failed? → HARD BLOCK, report blocker                    │
 ├─────────────────────────────────────────────────────────────┤
@@ -32,28 +32,28 @@ Read docs/PROJECT_RULES.md
 
 **MANDATORY:** Project-specific technical information that must always be considered. Cannot proceed without reading this file.
 
-### What PROJECT_RULES.md Contains (COMPLEMENTARY to Ring Standards)
+### What PROJECT_RULES.md Contains (COMPLEMENTARY to MarsAI Standards)
 
-**⛔ DEDUPLICATION RULE:** PROJECT_RULES.md documents only what Ring Standards DO NOT cover.
+**⛔ DEDUPLICATION RULE:** PROJECT_RULES.md documents only what MarsAI Standards DO NOT cover.
 
 | Category | Belongs In | Examples |
 |----------|------------|----------|
-| **Tech stack not in Ring** | PROJECT_RULES.md | Specific message broker, specific cache, DB if not PostgreSQL |
+| **Tech stack not in MarsAI** | PROJECT_RULES.md | Specific message broker, specific cache, DB if not PostgreSQL |
 | **Non-standard directories** | PROJECT_RULES.md | Pooling workers, MessageBroker consumers, custom workers |
 | **External integrations** | PROJECT_RULES.md | Third-party APIs, webhooks, external services |
-| **Project-specific env vars** | PROJECT_RULES.md | Environment config not covered by Ring |
+| **Project-specific env vars** | PROJECT_RULES.md | Environment config not covered by MarsAI |
 | **Domain terminology** | PROJECT_RULES.md | Technical names of entities/classes in this codebase |
-| Error handling patterns | Ring Standards | ❌ Do not duplicate |
-| Logging standards | Ring Standards | ❌ Do not duplicate |
-| Testing patterns | Ring Standards | ❌ Do not duplicate |
-| Architecture patterns | Ring Standards | ❌ Do not duplicate |
-| lib-commons, shared packages | Ring Standards | ❌ Do not duplicate |
-| API directory structure | Ring Standards | ❌ Do not duplicate |
+| Error handling patterns | MarsAI Standards | ❌ Do not duplicate |
+| Logging standards | MarsAI Standards | ❌ Do not duplicate |
+| Testing patterns | MarsAI Standards | ❌ Do not duplicate |
+| Architecture patterns | MarsAI Standards | ❌ Do not duplicate |
+| lib-commons, shared packages | MarsAI Standards | ❌ Do not duplicate |
+| API directory structure | MarsAI Standards | ❌ Do not duplicate |
 | Business rules | Product docs (PRD) | ❌ Does not belong in PROJECT_RULES |
 
 ---
 
-## Step 2: WebFetch Ring Standards (HARD GATE)
+## Step 2: WebFetch MarsAI Standards (HARD GATE)
 
 **⛔ CRITICAL: You CANNOT proceed without successfully loading standards.**
 
@@ -100,21 +100,21 @@ Read docs/PROJECT_RULES.md
 
 | Agent | Standards File | URL |
 |-------|---------------|-----|
-| `ring:backend-engineer-golang` | golang.md | `https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/golang.md` |
-| `ring:backend-engineer-typescript` | typescript.md | `https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/typescript.md` |
-| `frontend-bff-engineer-typescript` | typescript.md | `https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/typescript.md` |
-| `ring:frontend-engineer` | frontend.md | `https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/frontend.md` |
-| `ring:frontend-designer` | frontend.md | `https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/frontend.md` |
-| `ring:devops-engineer` | devops.md | `https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/devops.md` |
-| `ring:sre` | sre.md | `https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/sre.md` |
-| `ring:qa-analyst` | golang.md or typescript.md | Based on project language (check PROJECT_RULES.md first) |
+| `marsai:backend-engineer-golang` | golang.md | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang.md` |
+| `marsai:backend-engineer-typescript` | typescript.md | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/typescript.md` |
+| `frontend-bff-engineer-typescript` | typescript.md | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/typescript.md` |
+| `marsai:frontend-engineer` | frontend.md | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/frontend.md` |
+| `marsai:frontend-designer` | frontend.md | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/frontend.md` |
+| `marsai:devops-engineer` | devops.md | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/devops.md` |
+| `marsai:sre` | sre.md | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/sre.md` |
+| `marsai:qa-analyst` | golang.md or typescript.md | Based on project language (check PROJECT_RULES.md first) |
 | `prompt-quality-reviewer` | N/A | Domain-independent (no standards WebFetch required) |
 
 ---
 
 ## Step 3: Apply Both Sources (MANDATORY)
 
-- **Ring Standards** = Base technical patterns (error handling, testing, architecture)
+- **MarsAI Standards** = Base technical patterns (error handling, testing, architecture)
 - **PROJECT_RULES.md** = Project tech stack and specific patterns
 - **Both are complementary. Neither excludes the other. Both must be followed.**
 
@@ -122,9 +122,9 @@ Read docs/PROJECT_RULES.md
 
 | Scenario | Resolution |
 |----------|------------|
-| Ring says X, PROJECT_RULES.md silent | Follow Ring |
-| Ring says X, PROJECT_RULES.md says Y | Follow PROJECT_RULES.md (project can override) |
-| Ring says X, PROJECT_RULES.md says "follow Ring" | Follow Ring |
+| MarsAI says X, PROJECT_RULES.md silent | Follow MarsAI |
+| MarsAI says X, PROJECT_RULES.md says Y | Follow PROJECT_RULES.md (project can override) |
+| MarsAI says X, PROJECT_RULES.md says "follow MarsAI" | Follow MarsAI |
 | Neither covers topic | Ask user (STOP and report blocker) |
 
 ---
@@ -133,18 +133,18 @@ Read docs/PROJECT_RULES.md
 
 **If `docs/PROJECT_RULES.md` does not exist → Offer to CREATE it with user input.**
 
-**Action:** Guide user through PROJECT_RULES.md creation with automatic deduplication against Ring Standards.
+**Action:** Guide user through PROJECT_RULES.md creation with automatic deduplication against MarsAI Standards.
 
 ### Creation Flow
 
 ```text
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│  Step 1: WebFetch Ring Standards FIRST                                      │
+│  Step 1: WebFetch MarsAI Standards FIRST                                      │
 │  ├─ Load standards for detected language (Go, TypeScript, etc.)             │
 │  └─ This establishes what is ALREADY covered                                │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  Step 2: Analyze Codebase for Project-Specific Information                  │
-│  ├─ Detect tech stack not in Ring (message brokers, caches, etc.)           │
+│  ├─ Detect tech stack not in MarsAI (message brokers, caches, etc.)           │
 │  ├─ Detect non-standard directories (workers, consumers, etc.)              │
 │  ├─ Detect external integrations (third-party APIs, webhooks)               │
 │  └─ Detect domain terminology (entity names, module names)                  │
@@ -155,9 +155,9 @@ Read docs/PROJECT_RULES.md
 │  └─ "Any planned tech not yet in codebase?"                                 │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  Step 4: Generate PROJECT_RULES.md (Deduplicated)                           │
-│  ├─ Header referencing Ring Standards                                       │
+│  ├─ Header referencing MarsAI Standards                                       │
 │  ├─ only project-specific sections                                          │
-│  └─ no content that duplicates Ring Standards                               │
+│  └─ no content that duplicates MarsAI Standards                               │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -166,19 +166,19 @@ Read docs/PROJECT_RULES.md
 ```markdown
 # Project Rules
 
-> ⛔ IMPORTANT: Ring Standards are not automatic. Agents MUST WebFetch them before implementation.
-> This file documents only project-specific information not covered by Ring Standards.
+> ⛔ IMPORTANT: MarsAI Standards are not automatic. Agents MUST WebFetch them before implementation.
+> This file documents only project-specific information not covered by MarsAI Standards.
 >
-> Ring Standards URLs:
-> - Go: https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/golang.md
-> - TypeScript: https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/typescript.md
-> - Frontend: https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/frontend.md
-> - DevOps: https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/devops.md
-> - SRE: https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/sre.md
+> MarsAI Standards URLs:
+> - Go: https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang.md
+> - TypeScript: https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/typescript.md
+> - Frontend: https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/frontend.md
+> - DevOps: https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/devops.md
+> - SRE: https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/sre.md
 
-## What Ring Standards Cover (DO not DUPLICATE HERE)
+## What MarsAI Standards Cover (DO not DUPLICATE HERE)
 
-The following are defined in Ring Standards and MUST not be duplicated in this file:
+The following are defined in MarsAI Standards and MUST not be duplicated in this file:
 - Error handling patterns (no panic, wrap errors)
 - Logging standards (structured JSON via lib-commons)
 - Testing patterns (table-driven tests, mocks)
@@ -189,13 +189,13 @@ The following are defined in Ring Standards and MUST not be duplicated in this f
 - Database connections (PostgreSQL, MongoDB, Redis via lib-commons)
 - Bootstrap pattern (config.go, service.go, server.go)
 
-**Agents MUST WebFetch Ring Standards and output Standards Coverage Table.**
+**Agents MUST WebFetch MarsAI Standards and output Standards Coverage Table.**
 
 ---
 
-## Tech Stack (Not in Ring Standards)
+## Tech Stack (Not in MarsAI Standards)
 
-[only technologies not covered by Ring Standards]
+[only technologies not covered by MarsAI Standards]
 
 | Technology | Purpose | Notes |
 |------------|---------|-------|
@@ -204,7 +204,7 @@ The following are defined in Ring Standards and MUST not be duplicated in this f
 
 ## Non-Standard Directory Structure
 
-[only directories that deviate from Ring's standard API structure]
+[only directories that deviate from MarsAI's standard API structure]
 
 | Directory | Purpose | Pattern |
 |-----------|---------|---------|
@@ -222,7 +222,7 @@ The following are defined in Ring Standards and MUST not be duplicated in this f
 
 ## Environment Configuration
 
-[Project-specific env vars not covered by Ring's standard config]
+[Project-specific env vars not covered by MarsAI's standard config]
 
 | Variable | Purpose | Example |
 |----------|---------|---------|
@@ -239,7 +239,7 @@ The following are defined in Ring Standards and MUST not be duplicated in this f
 ---
 
 *Generated: [ISO timestamp]*
-*Ring Standards Version: [version from WebFetch]*
+*MarsAI Standards Version: [version from WebFetch]*
 ```
 
 ### Deduplication Validation
@@ -248,13 +248,13 @@ The following are defined in Ring Standards and MUST not be duplicated in this f
 
 | If Content Mentions | Action |
 |---------------------|--------|
-| Error handling patterns | ❌ REMOVE - Ring Standards covers this |
-| Logging format/structure | ❌ REMOVE - Ring Standards covers this |
-| Testing patterns | ❌ REMOVE - Ring Standards covers this |
-| lib-commons | ❌ REMOVE - Ring Standards covers this |
-| Hexagonal/Clean Architecture | ❌ REMOVE - Ring Standards covers this |
-| OpenTelemetry/tracing | ❌ REMOVE - Ring Standards covers this |
-| Standard API directory structure | ❌ REMOVE - Ring Standards covers this |
+| Error handling patterns | ❌ REMOVE - MarsAI Standards covers this |
+| Logging format/structure | ❌ REMOVE - MarsAI Standards covers this |
+| Testing patterns | ❌ REMOVE - MarsAI Standards covers this |
+| lib-commons | ❌ REMOVE - MarsAI Standards covers this |
+| Hexagonal/Clean Architecture | ❌ REMOVE - MarsAI Standards covers this |
+| OpenTelemetry/tracing | ❌ REMOVE - MarsAI Standards covers this |
+| Standard API directory structure | ❌ REMOVE - MarsAI Standards covers this |
 | Business rules | ❌ REMOVE - Belongs in PRD/product docs |
 
 ### Response Format (When PROJECT_RULES.md Missing)
@@ -264,13 +264,13 @@ The following are defined in Ring Standards and MUST not be duplicated in this f
 
 I'll help you create `docs/PROJECT_RULES.md` with only project-specific information.
 
-**Ring Standards already cover:**
+**MarsAI Standards already cover:**
 - Error handling, logging, testing patterns
 - Architecture (Hexagonal), observability (OpenTelemetry)
 - lib-commons usage, API structure
 
 **I need to document (if applicable):**
-1. Tech stack not in Ring (specific message broker, cache, etc.)
+1. Tech stack not in MarsAI (specific message broker, cache, etc.)
 2. Non-standard directories (workers, consumers, etc.)
 3. External integrations (third-party APIs)
 4. Project-specific environment variables
@@ -289,17 +289,17 @@ I'll help you create `docs/PROJECT_RULES.md` with only project-specific informat
 
 | Rationalization | Why It's WRONG | Required Action |
 |-----------------|----------------|-----------------|
-| "Include error handling section anyway" | Ring Standards covers this. Duplication causes drift. | **REMOVE from PROJECT_RULES.md** |
-| "Add lib-commons usage notes" | Ring Standards is the source of truth. | **REMOVE from PROJECT_RULES.md** |
-| "Document testing patterns here" | Ring Standards defines testing patterns. | **REMOVE from PROJECT_RULES.md** |
+| "Include error handling section anyway" | MarsAI Standards covers this. Duplication causes drift. | **REMOVE from PROJECT_RULES.md** |
+| "Add lib-commons usage notes" | MarsAI Standards is the source of truth. | **REMOVE from PROJECT_RULES.md** |
+| "Document testing patterns here" | MarsAI Standards defines testing patterns. | **REMOVE from PROJECT_RULES.md** |
 | "Include business rules for context" | Business rules belong in PRD, not tech docs. | **REMOVE from PROJECT_RULES.md** |
-| "Better to have everything in one place" | Single source of truth prevents drift. Ring = patterns. | **Reference Ring, don't duplicate** |
+| "Better to have everything in one place" | Single source of truth prevents drift. MarsAI = patterns. | **Reference MarsAI, don't duplicate** |
 
 ---
 
 ## Scenario 2: PROJECT_RULES.md Missing and Existing Code is Non-Compliant
 
-**Scenario:** No PROJECT_RULES.md, existing code violates Ring Standards.
+**Scenario:** No PROJECT_RULES.md, existing code violates MarsAI Standards.
 
 **Action:** STOP. Report blocker. Do not match non-compliant patterns.
 
@@ -310,9 +310,9 @@ I'll help you create `docs/PROJECT_RULES.md` with only project-specific informat
 - **Decision Required:** Project standards missing, existing code non-compliant
 - **Current State:** Existing code uses [specific violations]
 - **Options:**
-  1. Create docs/PROJECT_RULES.md adopting Ring standards (RECOMMENDED)
+  1. Create docs/PROJECT_RULES.md adopting MarsAI standards (RECOMMENDED)
   2. Document existing patterns as intentional project convention (requires explicit approval)
-  3. Migrate existing code to Ring standards before implementing new features
+  3. Migrate existing code to MarsAI standards before implementing new features
 - **Recommendation:** Option 1 - Establish standards first, then implement
 - **Awaiting:** User decision on standards establishment
 ```
@@ -334,7 +334,7 @@ I'll help you create `docs/PROJECT_RULES.md` with only project-specific informat
 
 ## Scenario 3: Ask Only When Standards Don't Answer
 
-After loading both PROJECT_RULES.md and Ring Standards:
+After loading both PROJECT_RULES.md and MarsAI Standards:
 
 **Ask when standards don't cover:**
 - Database selection (PostgreSQL vs MongoDB)
@@ -344,12 +344,12 @@ After loading both PROJECT_RULES.md and Ring Standards:
 - UI framework selection (React vs Vue vs Svelte)
 
 **Don't ask (follow standards or best practices):**
-- Error handling patterns → Follow Ring Standards
-- Testing patterns → Follow Ring Standards
-- Logging format → Follow Ring Standards
+- Error handling patterns → Follow MarsAI Standards
+- Testing patterns → Follow MarsAI Standards
+- Logging format → Follow MarsAI Standards
 - Code structure → Check PROJECT_RULES.md or match compliant existing code
 
-**IMPORTANT:** "Match existing code" only applies when existing code IS COMPLIANT. If existing code violates Ring Standards, DO NOT match it - report blocker instead.
+**IMPORTANT:** "Match existing code" only applies when existing code IS COMPLIANT. If existing code violates MarsAI Standards, DO NOT match it - report blocker instead.
 
 ---
 
@@ -363,7 +363,7 @@ After loading both PROJECT_RULES.md and Ring Standards:
 | "Small task, doesn't need rules" | All tasks need rules. Size is irrelevant. | **Load PROJECT_RULES.md first** |
 | "I can infer from codebase" | Inference ≠ explicit standards. | **STOP. Report blocker.** |
 | "I know the standards already" | Knowledge ≠ loading. Load for THIS task. | **Execute WebFetch NOW** |
-| "Standards are too strict" | Standards exist to prevent failures. | **Follow Ring standards** |
+| "Standards are too strict" | Standards exist to prevent failures. | **Follow MarsAI standards** |
 | "WebFetch failed, use cached knowledge" | Stale knowledge causes drift. | **Report blocker, retry WebFetch** |
 
 ---
@@ -385,7 +385,7 @@ See [shared-patterns/standards-workflow.md](../skills/shared-patterns/standards-
 
 | Setting | Value |
 |---------|-------|
-| **WebFetch URL** | `https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/{file}.md` |
+| **WebFetch URL** | `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/{file}.md` |
 | **Standards File** | {file}.md |
 | **Prompt** | "Extract all [domain] standards, patterns, and requirements" |
 ```

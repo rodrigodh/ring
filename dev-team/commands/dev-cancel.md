@@ -1,5 +1,5 @@
 ---
-name: ring:dev-cancel
+name: marsai:dev-cancel
 description: Cancel the current development cycle
 argument-hint: "[--force]"
 ---
@@ -9,7 +9,7 @@ Cancel the current development cycle.
 ## Usage
 
 ```
-/ring:dev-cancel [--force]
+/marsai:dev-cancel [--force]
 ```
 
 | Option | Description |
@@ -21,7 +21,7 @@ Cancel the current development cycle.
 **This command MUST load the skill for complete workflow execution.**
 
 ```
-Use Skill tool: ring:cycle-management with mode=cancel
+Use Skill tool: marsai:cycle-management with mode=cancel
 ```
 
 Pass through any arguments (e.g., `--force`) to the skill.

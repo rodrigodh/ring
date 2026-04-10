@@ -1,5 +1,5 @@
 """
-Core installation logic for Ring multi-platform installer.
+Core installation logic for MarsAI multi-platform installer.
 
 This module provides the main installation, update, and uninstall functions
 along with supporting data structures.
@@ -18,21 +18,21 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
-from ring_installer.adapters import SUPPORTED_PLATFORMS, get_adapter
-from ring_installer.utils.fs import safe_remove as _safe_remove
-from ring_installer.utils.version import (
+from marsai_installer.adapters import SUPPORTED_PLATFORMS, get_adapter
+from marsai_installer.utils.fs import safe_remove as _safe_remove
+from marsai_installer.utils.version import (
     InstallManifest as _InstallManifest,
 )
-from ring_installer.utils.version import (
+from marsai_installer.utils.version import (
     check_for_updates as _check_for_updates,
 )
-from ring_installer.utils.version import (
+from marsai_installer.utils.version import (
     get_installed_version as _get_installed_version,
 )
-from ring_installer.utils.version import (
+from marsai_installer.utils.version import (
     get_manifest_path as _get_manifest_path,
 )
-from ring_installer.utils.version import (
+from marsai_installer.utils.version import (
     get_ring_version as _get_ring_version,
 )
 
@@ -54,7 +54,7 @@ def _build_codex_skill_name_map(
     components: Dict[str, Dict[str, List[Path]]]
 ) -> tuple[Dict[tuple[str, str, str], str], Dict[str, str]]:
     """
-    Build stable Codex skill names for Ring components.
+    Build stable Codex skill names for MarsAI components.
 
     Returns:
         name_map:
@@ -359,7 +359,7 @@ def _validate_marketplace_schema(
     Args:
         marketplace: Parsed marketplace JSON
         marketplace_path: Path to marketplace.json
-        ring_path: Root path of the Ring installation
+        ring_path: Root path of the MarsAI installation
 
     Raises:
         ValueError: If schema validation fails
@@ -487,7 +487,7 @@ def _verify_marketplace_integrity(ring_path: Path) -> None:
         )
         return
 
-    from ring_installer.utils.fs import get_file_hash
+    from marsai_installer.utils.fs import get_file_hash
 
     actual_hash = get_file_hash(marketplace_path, algorithm="sha256")
     if actual_hash != expected_hash:
@@ -502,10 +502,10 @@ def discover_ring_components(
     exclude_plugins: Optional[List[str]] = None,
 ) -> Dict[str, Dict[str, List[Path]]]:
     """
-    Discover Ring components (skills, agents, commands) from a Ring installation.
+    Discover MarsAI components (skills, agents, commands) from a MarsAI installation.
 
     Args:
-        ring_path: Path to Ring repository/installation
+        ring_path: Path to MarsAI repository/installation
         plugin_names: Optional list of plugin names to include
         exclude_plugins: Optional list of plugin names to exclude
 
@@ -615,10 +615,10 @@ def install(
     progress_callback: Optional[Callable[[str, int, int], None]] = None,
 ) -> InstallResult:
     """
-    Install Ring components to one or more target platforms.
+    Install MarsAI components to one or more target platforms.
 
     Args:
-        source_path: Path to the Ring repository/installation
+        source_path: Path to the MarsAI repository/installation
         targets: List of installation targets
         options: Installation options
         progress_callback: Optional callback for progress updates
@@ -627,7 +627,7 @@ def install(
     Returns:
         InstallResult with details about what was installed
     """
-    from ring_installer.utils.fs import (
+    from marsai_installer.utils.fs import (
         backup_existing,
         clean_build_dir,
         copy_with_transform,
@@ -680,7 +680,7 @@ def install(
 
         # --- Link mode setup ---
         # When link=True, write transformed files to .ring-build/<platform>/ inside the
-        # Ring repo, then create directory symlinks from the platform config dir.
+        # MarsAI repo, then create directory symlinks from the platform config dir.
         # This allows `git pull` + rebuild to instantly update all installed components.
         build_dir: Optional[Path] = None
         write_base = install_path  # default: write directly to platform config
@@ -976,7 +976,7 @@ def install(
                 )
 
         if adapter.platform_id == "codex":
-            codex_support_root = write_base / "ring"
+            codex_support_root = write_base / "marsai"
             for plugin_name, support_dirs in codex_support_dirs.items():
                 plugin_source_root = source_path / plugin_name
                 for support_dir in support_dirs:
@@ -1016,12 +1016,12 @@ def update(
     progress_callback: Optional[Callable[[str, int, int], None]] = None,
 ) -> InstallResult:
     """
-    Update Ring components on target platforms.
+    Update MarsAI components on target platforms.
 
     This is equivalent to install with force=True.
 
     Args:
-        source_path: Path to the Ring repository/installation
+        source_path: Path to the MarsAI repository/installation
         targets: List of installation targets
         options: Installation options
         progress_callback: Optional callback for progress updates
@@ -1040,7 +1040,7 @@ def uninstall(
     progress_callback: Optional[Callable[[str, int, int], None]] = None,
 ) -> InstallResult:
     """
-    Remove Ring components from target platforms.
+    Remove MarsAI components from target platforms.
 
     Args:
         targets: List of platforms to uninstall from
@@ -1077,7 +1077,7 @@ def uninstall(
             try:
                 # Create backup if requested
                 if options.backup:
-                    from ring_installer.utils.fs import backup_existing
+                    from marsai_installer.utils.fs import backup_existing
 
                     backup_existing(target_dir)
 
@@ -1095,7 +1095,7 @@ def uninstall(
 
 def list_installed(platform: str) -> Dict[str, List[str]]:
     """
-    List Ring components installed on a platform.
+    List MarsAI components installed on a platform.
 
     Args:
         platform: Platform identifier
@@ -1161,7 +1161,7 @@ def check_updates(source_path: Path, targets: List[InstallTarget]) -> Dict[str, 
     Check for available updates on target platforms.
 
     Args:
-        source_path: Path to Ring source
+        source_path: Path to MarsAI source
         targets: List of platforms to check
 
     Returns:
@@ -1196,13 +1196,13 @@ def update_with_diff(
     progress_callback: Optional[Callable[[str, int, int], None]] = None,
 ) -> InstallResult:
     """
-    Update Ring components, only updating changed files.
+    Update MarsAI components, only updating changed files.
 
     This is a smarter update that compares installed files with source
     and only updates files that have changed.
 
     Args:
-        source_path: Path to the Ring repository/installation
+        source_path: Path to the MarsAI repository/installation
         targets: List of installation targets
         options: Installation options
         progress_callback: Optional callback for progress updates
@@ -1210,13 +1210,13 @@ def update_with_diff(
     Returns:
         InstallResult with details about what was updated
     """
-    from ring_installer.utils.fs import (
+    from marsai_installer.utils.fs import (
         backup_existing,
         copy_with_transform,
         ensure_directory,
         get_file_hash,
     )
-    from ring_installer.utils.version import (
+    from marsai_installer.utils.version import (
         InstallManifest,
         get_manifest_path,
         get_ring_version,
@@ -1464,13 +1464,13 @@ def sync_platforms(
     progress_callback: Optional[Callable[[str, int, int], None]] = None,
 ) -> SyncResult:
     """
-    Sync Ring components across multiple platforms.
+    Sync MarsAI components across multiple platforms.
 
-    Ensures all target platforms have consistent Ring installations
+    Ensures all target platforms have consistent MarsAI installations
     by detecting drift and re-applying transformations.
 
     Args:
-        source_path: Path to Ring source
+        source_path: Path to MarsAI source
         targets: List of platforms to sync
         options: Sync options
         progress_callback: Optional progress callback
@@ -1525,9 +1525,9 @@ def uninstall_with_manifest(
     progress_callback: Optional[Callable[[str, int, int], None]] = None,
 ) -> InstallResult:
     """
-    Remove Ring components using the install manifest for precision.
+    Remove MarsAI components using the install manifest for precision.
 
-    Only removes files that were installed by Ring, preserving
+    Only removes files that were installed by MarsAI, preserving
     user modifications outside the manifest.
 
     Args:
@@ -1538,7 +1538,7 @@ def uninstall_with_manifest(
     Returns:
         InstallResult with details about what was removed
     """
-    from ring_installer.utils.fs import backup_existing, safe_remove
+    from marsai_installer.utils.fs import backup_existing, safe_remove
 
     options = options or InstallOptions()
     result = InstallResult(status=InstallStatus.SUCCESS, targets=[t.platform for t in targets])
@@ -1569,7 +1569,7 @@ def uninstall_with_manifest(
                     else:
                         try:
                             if options.backup:
-                                from ring_installer.utils.fs import backup_existing
+                                from marsai_installer.utils.fs import backup_existing
 
                                 backup_existing(target_dir)
                             shutil.rmtree(target_dir)
@@ -1602,7 +1602,7 @@ def uninstall_with_manifest(
 
             try:
                 if options.backup:
-                    from ring_installer.utils.fs import backup_existing
+                    from marsai_installer.utils.fs import backup_existing
 
                     backup_existing(full_path)
 

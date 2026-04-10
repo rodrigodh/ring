@@ -26,22 +26,22 @@ When creating or modifying any agent in `*/agents/*.md`:
 
 ### 3. Anti-Patterns (MUST NOT do these)
 
-1. **MUST NOT skip ring:using-ring** - It's mandatory, not optional
+1. **MUST NOT skip marsai:using-marsai** - It's mandatory, not optional
 2. **MUST NOT run reviewers sequentially** - dispatch in parallel
 3. **MUST NOT skip TDD's RED phase** - Test must fail before implementation
 4. **MUST NOT ignore skill when applicable** - "Simple task" is not an excuse
 5. **ZERO PANIC POLICY** - `panic()`, `log.Fatal()`, and `Must*` helpers are FORBIDDEN everywhere (including bootstrap/init). Return `(T, error)` instead. Only exception: `regexp.MustCompile()` with compile-time constants.
-6. **MUST NOT commit manually** - use `/ring:commit` command
+6. **MUST NOT commit manually** - use `/marsai:commit` command
 7. **MUST NOT assume compliance** - VERIFY with evidence
 
-### 4. Unified Ring Namespace (MANDATORY)
+### 4. Unified MarsAI Namespace (MANDATORY)
 
-All Ring components use the unified `ring:` prefix. Plugin differentiation is handled internally.
+All MarsAI components use the unified `marsai:` prefix. Plugin differentiation is handled internally.
 
-- ✅ `ring:code-reviewer`
-- ✅ `ring:backend-engineer-golang`
-- ❌ `<missing ring prefix>` (FORBIDDEN: omitting the `ring:` prefix)
-- ❌ `ring-default:ring:code-reviewer` (deprecated plugin-specific prefix)
+- ✅ `marsai:code-reviewer`
+- ✅ `marsai:backend-engineer-golang`
+- ❌ `<missing ring prefix>` (FORBIDDEN: omitting the `marsai:` prefix)
+- ❌ `marsai-default:marsai:code-reviewer` (deprecated plugin-specific prefix)
 
 ### 5. Standards-Agent Synchronization (MUST CHECK)
 
@@ -74,7 +74,7 @@ Before committing changes to dev-team/docs/standards/*.md:
     - Add/remove row: `| N | [Section Name](#anchor) | Description |`
     - Update numbering if needed
 [ ] 3. Did you update `dev-team/skills/shared-patterns/standards-coverage-table.md`?
-    - Find the agent's section index (e.g., "ring:backend-engineer-golang → golang.md")
+    - Find the agent's section index (e.g., "marsai:backend-engineer-golang → golang.md")
     - Add/remove the section row
 [ ] 4. Do the section counts match?
     - Count `## ` headers in standards file (excluding meta-sections)
@@ -98,11 +98,11 @@ If any checkbox is no → Fix before committing.
 
 | Standards File  | Agents That Use It                                                                             |
 | --------------- | ---------------------------------------------------------------------------------------------- |
-| `golang.md`     | `ring:backend-engineer-golang`, `ring:qa-analyst`                                              |
-| `typescript.md` | `ring:backend-engineer-typescript`, `ring:frontend-bff-engineer-typescript`, `ring:qa-analyst` |
-| `frontend.md`   | `ring:frontend-engineer`, `ring:frontend-designer`                                             |
-| `devops.md`     | `ring:devops-engineer`                                                                         |
-| `sre.md`        | `ring:sre`                                                                                     |
+| `golang.md`     | `marsai:backend-engineer-golang`, `marsai:qa-analyst`                                              |
+| `typescript.md` | `marsai:backend-engineer-typescript`, `marsai:frontend-bff-engineer-typescript`, `marsai:qa-analyst` |
+| `frontend.md`   | `marsai:frontend-engineer`, `marsai:frontend-designer`                                             |
+| `devops.md`     | `marsai:devops-engineer`                                                                         |
+| `sre.md`        | `marsai:sre`                                                                                     |
 
 **Section Index Location:** `dev-team/skills/shared-patterns/standards-coverage-table.md` → "Agent → Standards Section Index"
 
@@ -112,14 +112,14 @@ MUST match `dev-team/skills/shared-patterns/standards-coverage-table.md`. See th
 
 | Agent                                   | Standards File             |
 | --------------------------------------- | -------------------------- |
-| `ring:backend-engineer-golang`          | golang.md                  |
-| `ring:backend-engineer-typescript`      | typescript.md              |
-| `ring:frontend-bff-engineer-typescript` | typescript.md              |
-| `ring:frontend-engineer`                | frontend.md                |
-| `ring:frontend-designer`                | frontend.md                |
-| `ring:devops-engineer`                  | devops.md                  |
-| `ring:sre`                              | sre.md                     |
-| `ring:qa-analyst`                       | golang.md or typescript.md |
+| `marsai:backend-engineer-golang`          | golang.md                  |
+| `marsai:backend-engineer-typescript`      | typescript.md              |
+| `marsai:frontend-bff-engineer-typescript` | typescript.md              |
+| `marsai:frontend-engineer`                | frontend.md                |
+| `marsai:frontend-designer`                | frontend.md                |
+| `marsai:devops-engineer`                  | devops.md                  |
+| `marsai:sre`                              | sre.md                     |
+| `marsai:qa-analyst`                       | golang.md or typescript.md |
 
 **⛔ If section counts in skills don't match the coverage table → Update the skill.**
 
@@ -196,7 +196,7 @@ When content is reused across multiple skills within a plugin:
 | [Anti-Rationalization Tables](#anti-rationalization-tables-mandatory-for-all-agents)      | Prevent AI from assuming/skipping                  |
 | [Lexical Salience Guidelines](#lexical-salience-guidelines-mandatory)                     | Selective emphasis for effective prompts           |
 | [Agent Modification Verification](#agent-modification-verification-mandatory)             | Checklist for agent changes                        |
-| [Repository Overview](#repository-overview)                                               | What Ring is                                       |
+| [Repository Overview](#repository-overview)                                               | What MarsAI is                                       |
 | [Architecture](#architecture)                                                             | Plugin summary                                     |
 | [Key Workflows](#key-workflows)                                                           | Quick reference + [full docs](docs/WORKFLOWS.md)   |
 | [Agent Output Schemas](#agent-output-schema-archetypes)                                   | Schema summary + [full docs](docs/AGENT_DESIGN.md) |
@@ -224,7 +224,7 @@ AI models naturally attempt to be "helpful" by making autonomous decisions. This
 | "[Common excuse AI might generate]" | [Why this thinking is incorrect] | **[MANDATORY action in bold]** |
 ```
 
-**Example from ring:backend-engineer-golang.md:**
+**Example from marsai:backend-engineer-golang.md:**
 
 ```markdown
 | Rationalization                          | Why It's WRONG                                     | Required Action           |
@@ -416,12 +416,12 @@ If any checkbox is no → Agent is INCOMPLETE. Add missing sections.
 
 ## Repository Overview
 
-Ring is a comprehensive skills library and workflow system for AI agents that enforces proven software engineering practices through mandatory workflows, parallel code review, and systematic pre-development planning. Currently implemented as a Claude Code plugin with **2 active plugins**, the skills are agent-agnostic and reusable across different AI systems.
+MarsAI is a comprehensive skills library and workflow system for AI agents that enforces proven software engineering practices through mandatory workflows, parallel code review, and systematic pre-development planning. Currently implemented as a Claude Code plugin with **2 active plugins**, the skills are agent-agnostic and reusable across different AI systems.
 
 **Active Plugins:**
 
-- **ring-default**: 22 core skills, 14 slash commands, 10 specialized agents
-- **ring-dev-team**: 32 development skills, 9 slash commands, 12 developer agents (Backend Go, Backend TypeScript, DevOps, Frontend TypeScript, Frontend Designer, Frontend Engineer, Helm, QA Backend, QA Frontend, SRE, UI Engineer, Prompt Quality Reviewer)
+- **marsai-default**: 22 core skills, 14 slash commands, 10 specialized agents
+- **marsai-dev-team**: 32 development skills, 9 slash commands, 12 developer agents (Backend Go, Backend TypeScript, DevOps, Frontend TypeScript, Frontend Designer, Frontend Engineer, Helm, QA Backend, QA Frontend, SRE, UI Engineer, Prompt Quality Reviewer)
 
 **Note:** Plugin versions are managed in `.claude-plugin/marketplace.json`
 
@@ -437,7 +437,7 @@ The architecture uses markdown-based skill definitions with YAML frontmatter, au
 
 See [README.md](README.md#installation) for detailed installation instructions.
 
-**Quick install:** `curl -fsSL https://raw.githubusercontent.com/lerianstudio/ring/main/install-ring.sh | bash`
+**Quick install:** `curl -fsSL https://raw.githubusercontent.com/lerianstudio/marsai/main/install-marsai.sh | bash`
 
 ---
 
@@ -447,8 +447,8 @@ See [README.md](README.md#installation) for detailed installation instructions.
 
 | Plugin           | Path           | Contents                         |
 | ---------------- | -------------- | -------------------------------- |
-| ring-default     | `default/`     | 22 skills, 10 agents, 14 commands |
-| ring-dev-team    | `dev-team/`    | 32 skills, 12 agents, 9 commands |
+| marsai-default     | `default/`     | 22 skills, 10 agents, 14 commands |
+| marsai-dev-team    | `dev-team/`    | 32 skills, 12 agents, 9 commands |
 
 Each plugin contains: `skills/`, `agents/`, `commands/`, `hooks/`
 
@@ -465,18 +465,18 @@ git log --oneline -20              # Recent commits show hook development
 git worktree list                  # Check isolated development branches
 
 # Skill invocation (via Claude Code)
-Skill tool: "ring:test-driven-development"  # Enforce TDD workflow
-Skill tool: "ring:systematic-debugging"     # Debug with 4-phase analysis
-Skill tool: "ring:using-ring"               # Load mandatory workflows
+Skill tool: "marsai:test-driven-development"  # Enforce TDD workflow
+Skill tool: "marsai:systematic-debugging"     # Debug with 4-phase analysis
+Skill tool: "marsai:using-marsai"               # Load mandatory workflows
 
 # Slash commands
-/ring:codereview          # Dispatch 7 parallel reviewers
-/ring:brainstorm          # Socratic design refinement
-/ring:pre-dev-feature     # <2 day features (5 gates)
-/ring:pre-dev-full        # ≥2 day features (10 gates)
-/ring:dev-cycle           # 10-gate development cycle + post-cycle multi-tenant
-/ring:execute-plan        # Batch execution with checkpoints
-/ring:worktree            # Create isolated development branch
+/marsai:codereview          # Dispatch 7 parallel reviewers
+/marsai:brainstorm          # Socratic design refinement
+/marsai:pre-dev-feature     # <2 day features (5 gates)
+/marsai:pre-dev-full        # ≥2 day features (10 gates)
+/marsai:dev-cycle           # 10-gate development cycle + post-cycle multi-tenant
+/marsai:execute-plan        # Batch execution with checkpoints
+/marsai:worktree            # Create isolated development branch
 
 # Hook validation (from default plugin)
 bash default/hooks/session-start.sh      # Test skill loading
@@ -492,12 +492,12 @@ python default/hooks/generate-skills-ref.py # Generate skill overview
 | Add skill | `mkdir default/skills/name/` → create `SKILL.md` with frontmatter per [Frontmatter Schema](docs/FRONTMATTER_SCHEMA.md) |
 | Add agent | Create `*/agents/name.md` → verify required sections per [Agent Design](docs/AGENT_DESIGN.md) |
 | Modify hooks | Edit `*/hooks/hooks.json` → test with `bash */hooks/session-start.sh` |
-| Code review | `/ring:codereview` dispatches 7 parallel reviewers |
-| Pre-dev (small) | `/ring:pre-dev-feature` → 5-gate workflow |
-| Pre-dev (large) | `/ring:pre-dev-full` → 10-gate workflow |
-| Dev cycle - backend (10 gates) | `/ring:dev-cycle [tasks-file]` → implementation→delivery-verification→devops→SRE→unit-testing→fuzz-testing→property-testing→integration-testing→chaos-testing→review→validation (see [dev-team/skills/dev-cycle/SKILL.md](dev-team/skills/dev-cycle/SKILL.md)) |
-| Dev cycle - frontend (9 gates) | `/ring:dev-cycle-frontend [tasks-file]` → implementation→devops→accessibility→unit-testing→visual-testing→e2e-testing→performance→review→validation (see [dev-team/skills/dev-cycle-frontend/SKILL.md](dev-team/skills/dev-cycle-frontend/SKILL.md)) |
-| Refactor - frontend | `/ring:dev-refactor-frontend` → dispatches 5-7 frontend agents in ANALYSIS mode → generates findings → tasks → handoff to `/ring:dev-cycle-frontend` |
+| Code review | `/marsai:codereview` dispatches 7 parallel reviewers |
+| Pre-dev (small) | `/marsai:pre-dev-feature` → 5-gate workflow |
+| Pre-dev (large) | `/marsai:pre-dev-full` → 10-gate workflow |
+| Dev cycle - backend (10 gates) | `/marsai:dev-cycle [tasks-file]` → implementation→delivery-verification→devops→SRE→unit-testing→fuzz-testing→property-testing→integration-testing→chaos-testing→review→validation (see [dev-team/skills/dev-cycle/SKILL.md](dev-team/skills/dev-cycle/SKILL.md)) |
+| Dev cycle - frontend (9 gates) | `/marsai:dev-cycle-frontend [tasks-file]` → implementation→devops→accessibility→unit-testing→visual-testing→e2e-testing→performance→review→validation (see [dev-team/skills/dev-cycle-frontend/SKILL.md](dev-team/skills/dev-cycle-frontend/SKILL.md)) |
+| Refactor - frontend | `/marsai:dev-refactor-frontend` → dispatches 5-7 frontend agents in ANALYSIS mode → generates findings → tasks → handoff to `/marsai:dev-cycle-frontend` |
 
 See [docs/WORKFLOWS.md](docs/WORKFLOWS.md) for detailed instructions.
 
@@ -517,13 +517,13 @@ See [docs/WORKFLOWS.md](docs/WORKFLOWS.md) for detailed instructions.
 ### Naming Conventions
 
 - Skills: `kebab-case` matching directory name
-- Agents: `ring:{domain}.md` or `ring:{domain}-reviewer.md` format
-- Commands: `/{action}` format (e.g., `/ring:brainstorm`, `/ring:pre-dev-feature`)
+- Agents: `marsai:{domain}.md` or `marsai:{domain}-reviewer.md` format
+- Commands: `/{action}` format (e.g., `/marsai:brainstorm`, `/marsai:pre-dev-feature`)
 - Hooks: `{event}-{purpose}.sh` format
 
 #### Agent/Skill/Command Invocation
 
-See [Unified Ring Namespace](#4-unified-ring-namespace-mandatory) above for invocation format. MUST use `ring:{component}` (e.g., `ring:code-reviewer`, `ring:backend-engineer-golang`).
+See [Unified MarsAI Namespace](#4-unified-ring-namespace-mandatory) above for invocation format. MUST use `marsai:{component}` (e.g., `marsai:code-reviewer`, `marsai:backend-engineer-golang`).
 
 ---
 
@@ -532,10 +532,10 @@ See [Unified Ring Namespace](#4-unified-ring-namespace-mandatory) above for invo
 | Schema Type    | Used By                | Key Sections                                    |
 | -------------- | ---------------------- | ----------------------------------------------- |
 | Implementation | \* engineers           | Summary, Implementation, Files Changed, Testing |
-| Analysis       | ring:frontend-designer | Analysis, Findings, Recommendations             |
+| Analysis       | marsai:frontend-designer | Analysis, Findings, Recommendations             |
 | Reviewer       | \*-reviewer            | VERDICT, Issues Found, What Was Done Well       |
-| Exploration    | ring:codebase-explorer | Exploration Summary, Key Findings, Architecture |
-| Planning       | ring:write-plan        | Goal, Architecture, Tech Stack, Tasks           |
+| Exploration    | marsai:codebase-explorer | Exploration Summary, Key Findings, Architecture |
+| Planning       | marsai:write-plan        | Goal, Architecture, Tech Stack, Tasks           |
 
 See [docs/AGENT_DESIGN.md](docs/AGENT_DESIGN.md) for complete schema definitions and Standards Compliance requirements.
 
@@ -554,13 +554,13 @@ See [docs/AGENT_DESIGN.md](docs/AGENT_DESIGN.md) for complete schema definitions
 - Critical findings = immediate fix required
 - Re-run all 7 reviewers after fixes
 
-# Skill compliance (default/skills/using-ring/SKILL.md)
+# Skill compliance (default/skills/using-marsai/SKILL.md)
 - Check for applicable skills before any task
 - If skill exists for task → MUST use it
 - Announce non-obvious skill usage
 
 # Commit compliance (default/commands/commit.md)
-- MUST use /ring:commit for all commits
+- MUST use /marsai:commit for all commits
 - MUST NOT write git commit commands manually
 - Command enforces: conventional commits, trailers, no emoji signatures
 - MUST use --trailer parameter for AI identification (not in message body)
@@ -575,18 +575,18 @@ See [docs/AGENT_DESIGN.md](docs/AGENT_DESIGN.md) for complete schema definitions
 The system loads at SessionStart (from `default/` plugin):
 
 1. `default/hooks/session-start.sh` - Loads skill quick reference via `generate-skills-ref.py`
-2. `ring:using-ring` skill - Injected as mandatory workflow
+2. `marsai:using-marsai` skill - Injected as mandatory workflow
 3. `default/hooks/claude-md-reminder.sh` - Reminds about CLAUDE.md on prompt submit
 
 **Monorepo Context:**
 
 - Repository: Monorepo marketplace with multiple plugin collections
-- Active plugins: 2 (`ring-default`, `ring-dev-team`)
+- Active plugins: 2 (`marsai-default`, `marsai-dev-team`)
 - Plugin versions: See `.claude-plugin/marketplace.json`
 - Core plugin: `default/` (22 skills, 10 agents, 14 commands)
 - Developer agents: `dev-team/` (32 skills, 12 agents, 9 commands)
 - Current git branch: `main`
-- Remote: `github.com/LerianStudio/ring`
+- Remote: `github.com/LerianStudio/marsai`
 
 ---
 
@@ -612,7 +612,7 @@ Plugin Hooks (inject context at session start):
 └── dev-team/hooks/session-start.sh       # Developer agents
 
 Using-* Skills (plugin introductions):
-├── default/skills/using-ring/SKILL.md             # Core workflow + agent list
+├── default/skills/using-marsai/SKILL.md             # Core workflow + agent list
 └── dev-team/skills/using-dev-team/SKILL.md        # Developer agents guide
 ```
 
@@ -628,10 +628,10 @@ Using-* Skills (plugin introductions):
 
 **Naming Convention Enforcement:**
 
-- [ ] All agent invocations use `ring:agent-name` format
-- [ ] All skill invocations use `ring:skill-name` format
+- [ ] All agent invocations use `marsai:agent-name` format
+- [ ] All skill invocations use `marsai:skill-name` format
 - [ ] All command invocations use `/{command-name}` format
-- [ ] No bare agent/skill names in invocation contexts (must have ring: prefix)
+- [ ] No bare agent/skill names in invocation contexts (must have marsai: prefix)
 - [ ] No deprecated `ring-{plugin}:` format used
 
-**MUST use unified namespace:** `ring:{component}` (e.g., `ring:code-reviewer`)
+**MUST use unified namespace:** `marsai:{component}` (e.g., `marsai:code-reviewer`)

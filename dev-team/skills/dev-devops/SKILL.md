@@ -1,5 +1,5 @@
 ---
-name: ring:dev-devops
+name: marsai:dev-devops
 description: |
   Gate 1 of the development cycle. Creates/updates Docker configuration,
   docker-compose setup, and environment variables for local development
@@ -11,7 +11,7 @@ trigger: |
   - Need containerization or environment setup
 
 skip_when: |
-  - Not inside a development cycle (ring:dev-cycle)
+  - Not inside a development cycle (marsai:dev-cycle)
   - Task is documentation-only, configuration-only, or non-code
   - Project already has complete Docker and docker-compose setup unchanged by Gate 0
   - Pure library package with no deployable service
@@ -22,11 +22,11 @@ NOT_skip_when: |
   - "We'll containerize before production" → Containerize NOW or never.
 
 sequence:
-  after: [ring:dev-implementation]
-  before: [ring:dev-ring:sre]
+  after: [marsai:dev-implementation]
+  before: [marsai:dev-marsai:sre]
 
 related:
-  complementary: [ring:dev-implementation, ring:dev-unit-testing]
+  complementary: [marsai:dev-implementation, marsai:dev-unit-testing]
 
 input_schema:
   required:
@@ -151,7 +151,7 @@ This skill configures the development and deployment infrastructure:
 </verify_before_proceed>
 
 ```text
-REQUIRED INPUT (from ring:dev-cycle orchestrator):
+REQUIRED INPUT (from marsai:dev-cycle orchestrator):
 - unit_id: [task/subtask being containerized]
 - language: [go|typescript|python]
 - service_type: [api|worker|batch|cli]
@@ -210,13 +210,13 @@ devops_state = {
 
 ## Step 4: Dispatch DevOps Agent
 
-<dispatch_required agent="ring:devops-engineer">
+<dispatch_required agent="marsai:devops-engineer">
 Create/update Dockerfile, docker-compose.yml, and .env.example for containerization.
 </dispatch_required>
 
 ```yaml
 Task:
-  subagent_type: "ring:devops-engineer"
+  subagent_type: "marsai:devops-engineer"
   description: "Create/update DevOps artifacts for [unit_id]"
   prompt: |
     ⛔ MANDATORY: Create all DevOps Artifacts
@@ -236,7 +236,7 @@ Task:
     - .env.example: [EXISTS/MISSING]
 
     ## Standards Reference
-    WebFetch: https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/devops.md
+    WebFetch: https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/devops.md
 
     You MUST implement all sections from devops.md.
 
@@ -332,7 +332,7 @@ if any section has ❌ or any verification FAIL:
 
 ```yaml
 Task:
-  subagent_type: "ring:devops-engineer"
+  subagent_type: "marsai:devops-engineer"
   description: "Fix DevOps issues for [unit_id]"
   prompt: |
     ⛔ FIX REQUIRED - DevOps Standards Not Met
@@ -341,7 +341,7 @@ Task:
     [list ❌ sections and FAIL verifications]
 
     ## Standards Reference
-    WebFetch: https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/devops.md
+    WebFetch: https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/devops.md
 
     Fix all issues and re-run verification commands.
     Return updated Standards Coverage Table with all ✅.
@@ -437,7 +437,7 @@ See [shared-patterns/shared-pressure-resistance.md](../shared-patterns/shared-pr
 
 | User Says | Your Response |
 |-----------|---------------|
-| "Skip Docker, runs fine locally" | "Docker ensures consistency. Dispatching ring:devops-engineer now." |
+| "Skip Docker, runs fine locally" | "Docker ensures consistency. Dispatching marsai:devops-engineer now." |
 | "Demo tomorrow, no time" | "Docker takes 30 min. Better than environment crash during demo." |
 | "We'll containerize later" | "Later = never. Containerizing now." |
 

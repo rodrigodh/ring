@@ -1,5 +1,5 @@
 ---
-name: ring:dev-docker-security
+name: marsai:dev-docker-security
 description: |
   Creates or audits Dockerfiles and Docker image configurations to achieve
   Docker Hub Health Score grade A. Enforces all evaluable security policies
@@ -16,7 +16,7 @@ skip_when: |
   - Using pre-built images without custom Dockerfile
 
 related:
-  complementary: [ring:dev-devops, ring:dev-sre]
+  complementary: [marsai:dev-devops, marsai:dev-sre]
 
 input_schema:
   required:

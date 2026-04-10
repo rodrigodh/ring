@@ -1,5 +1,5 @@
 ---
-name: ring:dev-implementation
+name: marsai:dev-implementation
 description: |
   Gate 0 of the development cycle. Executes code implementation using the appropriate
   specialized agent based on task content and project language. Handles TDD workflow
@@ -10,15 +10,15 @@ trigger: |
   - Tasks loaded at initialization
   - Ready to write code
 skip_when: |
-  - Not inside a development cycle (ring:dev-cycle or ring:dev-refactor)
+  - Not inside a development cycle (marsai:dev-cycle or marsai:dev-refactor)
   - Task is documentation-only, configuration-only, or non-code
   - Implementation already completed for the current gate
 
 sequence:
-  before: [ring:dev-devops]
+  before: [marsai:dev-devops]
 
 related:
-  complementary: [ring:dev-cycle, ring:test-driven-development, ring:requesting-code-review]
+  complementary: [marsai:dev-cycle, marsai:test-driven-development, marsai:requesting-code-review]
 
 input_schema:
   required:
@@ -128,7 +128,7 @@ This skill executes the implementation phase of the development cycle:
 </verify_before_proceed>
 
 ```text
-REQUIRED INPUT (from ring:dev-cycle orchestrator):
+REQUIRED INPUT (from marsai:dev-cycle orchestrator):
 - unit_id: [task/subtask being implemented]
 - requirements: [acceptance criteria or task description]
 - language: [go|typescript|python]
@@ -164,8 +164,8 @@ If condition is true, STOP and return error to orchestrator.
    
    | Language | Service Type | Agent |
    |----------|--------------|-------|
-   | go | api, worker, batch, cli | ring:backend-engineer-golang |
-   | typescript | api, worker | ring:backend-engineer-typescript |
+   | go | api, worker, batch, cli | marsai:backend-engineer-golang |
+   | typescript | api, worker | marsai:backend-engineer-typescript |
    | typescript | frontend, bff | frontend-bff-engineer-typescript |
    
    Store: selected_agent = [agent name]
@@ -201,7 +201,7 @@ Write failing test for unit_id following TDD-RED methodology.
 
 ```yaml
 Task:
-  subagent_type: "[selected_agent]"  # e.g., "ring:backend-engineer-golang"
+  subagent_type: "[selected_agent]"  # e.g., "marsai:backend-engineer-golang"
   description: "TDD-RED: Write failing test for [unit_id]"
   prompt: |
     ⛔ TDD-RED PHASE: Write a FAILING Test
@@ -215,12 +215,12 @@ Task:
     ## Project Standards
     Read and follow: [project_rules_path]
 
-    ## Ring Standards Reference (Modular)
-    Go modules: `https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/golang/{module}.md`
-    For TS: `https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/typescript.md`
+    ## MarsAI Standards Reference (Modular)
+    Go modules: `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang/{module}.md`
+    For TS: `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/typescript.md`
     **Go minimum for tests:** WebFetch `quality.md` → Testing section for test conventions.
     Multi-Tenant: Implement DUAL-MODE from the start (Go only). Use resolvers for all resources — they work transparently in both single-tenant and multi-tenant mode. See TDD-GREEN prompt for full Dual-Mode Implementation section and the sub-package import table.
-    WebFetch `https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/golang/multi-tenant.md` for patterns.
+    WebFetch `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang/multi-tenant.md` for patterns.
 
     ## Frontend TDD Policy (React/Next.js only)
     If the component is purely visual/presentational (layout, styling, animations,
@@ -323,13 +323,13 @@ Task:
     ## Project Standards
     Read and follow: [project_rules_path]
 
-    ## Ring Standards Reference (Modular — Load by Task Type)
+    ## MarsAI Standards Reference (Modular — Load by Task Type)
     
     **⛔ MANDATORY: WebFetch the MODULAR standards files below, NOT the monolithic golang.md.**
     The standards are split into focused modules. Load the ones relevant to your task type.
     
     ### Go — Module Loading Guide
-    Base URL: `https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/golang/`
+    Base URL: `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang/`
     
     | Task Type | REQUIRED Modules to WebFetch |
     |-----------|----------------------------|
@@ -342,10 +342,10 @@ Task:
     | Any task | `core.md` is ALWAYS required (lib-commons, license headers, dependency management) |
     
     ### TypeScript
-    URL: `https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/typescript.md`
+    URL: `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/typescript.md`
     
     Multi-Tenant: Implement DUAL-MODE from the start. Use lib-commons v4 resolvers for ALL resources.
-    WebFetch: `https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/golang/multi-tenant.md`
+    WebFetch: `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang/multi-tenant.md`
     
     ## ⛔ Multi-Tenant Dual-Mode Implementation (Go backend only — skip for TypeScript/Frontend)
     
@@ -417,10 +417,10 @@ Task:
     - Files > 300 lines = loop back for split. Files > 500 lines = HARD BLOCK.
     - Reference: golang/domain.md → File Organization (MANDATORY), typescript.md → File Organization (MANDATORY)
 
-    ## ⛔ CRITICAL: all Ring Standards Apply (no DEFERRAL)
+    ## ⛔ CRITICAL: all MarsAI Standards Apply (no DEFERRAL)
     
     **You MUST check ALL sections from the modules you loaded.** Not just telemetry — ALL of them.
-    See Ring Standards for mandatory requirements including (but not limited to):
+    See MarsAI Standards for mandatory requirements including (but not limited to):
     - lib-commons usage (HARD GATE — no duplicate utils/helpers)
     - License headers on all source files
     - Structured JSON logging with trace_id correlation
@@ -436,11 +436,11 @@ Task:
     - Function design (single responsibility, max 20-30 lines)
     - Database naming (snake_case)
 
-    **⛔ HARD GATE:** If you output "DEFERRED" for any Ring Standard → Implementation is INCOMPLETE.
+    **⛔ HARD GATE:** If you output "DEFERRED" for any MarsAI Standard → Implementation is INCOMPLETE.
 
     ## Your Task
     1. Write MINIMAL code to make the test pass
-    2. Follow all Ring Standards (logging, tracing, error handling)
+    2. Follow all MarsAI Standards (logging, tracing, error handling)
     3. **Instrument all code with telemetry** (100% of handlers, services, repositories)
     4. Run the test and capture the PASS output
 
@@ -472,9 +472,9 @@ Task:
     
     | Language | Standards Modules | REQUIRED Sections to WebFetch |
     |----------|-------------------|-------------------------------|
-    | **Go** | See Module Loading Guide above | ALL sections from loaded modules (use `standards-coverage-table.md` → `ring:backend-engineer-golang` section index) |
-    | **TypeScript** | `typescript.md` | ALL 15 sections from `standards-coverage-table.md` → `ring:backend-engineer-typescript` |
-    | **All** | N/A (post-cycle ring:dev-multi-tenant) | Multi-tenant adaptation happens after dev-cycle completes |
+    | **Go** | See Module Loading Guide above | ALL sections from loaded modules (use `standards-coverage-table.md` → `marsai:backend-engineer-golang` section index) |
+    | **TypeScript** | `typescript.md` | ALL 15 sections from `standards-coverage-table.md` → `marsai:backend-engineer-typescript` |
+    | **All** | N/A (post-cycle marsai:dev-multi-tenant) | Multi-tenant adaptation happens after dev-cycle completes |
 
     **⛔ NON-NEGOTIABLE: Agent MUST implement EXACTLY the patterns from standards. no deviations. no shortcuts.**
 
@@ -731,14 +731,14 @@ Before delivering ANY generated code, run these checks:
 
 | Language | Service Type | Condition | Agent |
 |----------|--------------|-----------|-------|
-| Go | API, Worker, Batch, CLI | - | `ring:backend-engineer-golang` |
-| TypeScript | API, Worker | - | `ring:backend-engineer-typescript` |
-| TypeScript | Frontend, BFF | No product-designer outputs | `ring:frontend-bff-engineer-typescript` |
-| TypeScript | Frontend | ux-criteria.md exists | `ring:ui-engineer` |
-| React/CSS | Design, Styling | - | `ring:frontend-designer` |
+| Go | API, Worker, Batch, CLI | - | `marsai:backend-engineer-golang` |
+| TypeScript | API, Worker | - | `marsai:backend-engineer-typescript` |
+| TypeScript | Frontend, BFF | No product-designer outputs | `marsai:frontend-bff-engineer-typescript` |
+| TypeScript | Frontend | ux-criteria.md exists | `marsai:ui-engineer` |
+| React/CSS | Design, Styling | - | `marsai:frontend-designer` |
 
 **ui-engineer Selection:**
-When implementing frontend features with product-designer outputs (ux-criteria.md, user-flows.md, wireframes/), use `ring:ui-engineer` instead of `ring:frontend-bff-engineer-typescript`. The ui-engineer specializes in translating design specifications into production code while ensuring all UX criteria are satisfied.
+When implementing frontend features with product-designer outputs (ux-criteria.md, user-flows.md, wireframes/), use `marsai:ui-engineer` instead of `marsai:frontend-bff-engineer-typescript`. The ui-engineer specializes in translating design specifications into production code while ensuring all UX criteria are satisfied.
 
 ---
 

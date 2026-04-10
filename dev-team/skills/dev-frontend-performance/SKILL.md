@@ -1,5 +1,5 @@
 ---
-name: ring:dev-frontend-performance
+name: marsai:dev-frontend-performance
 description: |
   Gate 6 of frontend development cycle - ensures Core Web Vitals compliance,
   Lighthouse performance score > 90, and bundle size within budget.
@@ -10,7 +10,7 @@ trigger: |
   - Validates performance before code review
 
 skip_when: |
-  - Not inside a frontend development cycle (ring:dev-cycle-frontend)
+  - Not inside a frontend development cycle (marsai:dev-cycle-frontend)
   - Backend-only project with no UI components
   - Task is documentation-only, configuration-only, or non-code
   - Changes are limited to test files, CI/CD, or non-rendered code
@@ -21,11 +21,11 @@ NOT_skip_when: |
   - "It's a small change" - Small changes can cause big regressions.
 
 sequence:
-  after: [ring:dev-frontend-e2e]
-  before: [ring:requesting-code-review]
+  after: [marsai:dev-frontend-e2e]
+  before: [marsai:requesting-code-review]
 
 related:
-  complementary: [ring:dev-cycle-frontend, ring:dev-frontend-e2e, ring:qa-analyst-frontend]
+  complementary: [marsai:dev-cycle-frontend, marsai:dev-frontend-e2e, marsai:qa-analyst-frontend]
 
 input_schema:
   required:
@@ -122,7 +122,7 @@ Ensure all frontend pages meet **Core Web Vitals** thresholds, achieve **Lightho
 **MANDATORY:** Load testing-performance.md standards via WebFetch.
 
 <fetch_required>
-https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/frontend/testing-performance.md
+https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/frontend/testing-performance.md
 </fetch_required>
 
 ---
@@ -146,7 +146,7 @@ if any REQUIRED input is missing:
 
 ```text
 Task tool:
-  subagent_type: "ring:qa-analyst-frontend"
+  subagent_type: "marsai:qa-analyst-frontend"
   prompt: |
     **MODE:** PERFORMANCE TESTING (Gate 6)
 
@@ -181,7 +181,7 @@ if "Status: PASS" in output:
   → Return success with metrics
 
 if "Status: FAIL" in output:
-  → Dispatch fix to implementation agent (ring:frontend-engineer)
+  → Dispatch fix to implementation agent (marsai:frontend-engineer)
   → Re-run performance tests (max 3 iterations)
   → If still failing: ESCALATE to user
 ```

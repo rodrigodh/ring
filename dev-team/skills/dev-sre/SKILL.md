@@ -1,5 +1,5 @@
 ---
-name: ring:dev-sre
+name: marsai:dev-sre
 description: |
   Gate 2 of the development cycle. VALIDATES that observability was correctly implemented
   by developers. Does not implement observability code - only validates it.
@@ -11,7 +11,7 @@ trigger: |
   - Service needs observability validation (logging, tracing)
 
 skip_when: |
-  - Not inside a development cycle (ring:dev-cycle)
+  - Not inside a development cycle (marsai:dev-cycle)
   - Task is documentation-only, configuration-only, or non-code
   - Pure library package with no deployable service
   - Static frontend with no API calls or backend interactions
@@ -22,11 +22,11 @@ NOT_skip_when: |
   - "MVP doesn't need observability" → MVP without observability = blind MVP. No exceptions.
 
 sequence:
-  after: [ring:dev-devops]
-  before: [ring:dev-unit-testing]
+  after: [marsai:dev-devops]
+  before: [marsai:dev-unit-testing]
 
 related:
-  complementary: [ring:dev-cycle, ring:dev-devops, ring:dev-unit-testing]
+  complementary: [marsai:dev-cycle, marsai:dev-devops, marsai:dev-unit-testing]
 
 input_schema:
   required:
@@ -43,7 +43,7 @@ input_schema:
       description: "Type of service being validated"
     - name: implementation_agent
       type: string
-      description: "Agent that performed Gate 0 (e.g., ring:backend-engineer-golang)"
+      description: "Agent that performed Gate 0 (e.g., marsai:backend-engineer-golang)"
     - name: implementation_files
       type: array
       items: string
@@ -118,7 +118,7 @@ This skill VALIDATES that observability was correctly implemented by developers:
 
 | Who | Responsibility |
 |-----|----------------|
-| **Developers** (Gate 0) | IMPLEMENT observability following Ring Standards |
+| **Developers** (Gate 0) | IMPLEMENT observability following MarsAI Standards |
 | **SRE Agent** (Gate 2) | VALIDATE that observability is correctly implemented |
 | **Implementation Agent** | FIX issues found by SRE (if any) |
 
@@ -141,7 +141,7 @@ This skill VALIDATES that observability was correctly implemented by developers:
 </verify_before_proceed>
 
 ```text
-REQUIRED INPUT (from ring:dev-cycle orchestrator):
+REQUIRED INPUT (from marsai:dev-cycle orchestrator):
 - unit_id: [task/subtask being validated]
 - language: [go|typescript|python]
 - service_type: [api|worker|batch|cli|library]
@@ -172,13 +172,13 @@ validation_state = {
 
 ## Step 3: Dispatch SRE Agent for Validation
 
-<dispatch_required agent="ring:sre">
+<dispatch_required agent="marsai:sre">
 Validate observability implementation for unit_id.
 </dispatch_required>
 
 ```yaml
 Task:
-  subagent_type: "ring:sre"
+  subagent_type: "marsai:sre"
   description: "Validate observability for [unit_id]"
   prompt: |
     ⛔ VALIDATE Observability Implementation
@@ -192,7 +192,7 @@ Task:
     - **External Dependencies:** [external_dependencies or "None"]
 
     ## Standards Reference
-    WebFetch: https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/sre.md
+    WebFetch: https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/sre.md
 
     ## Your Role
     - VALIDATE that observability is implemented correctly
@@ -354,7 +354,7 @@ if validation_state.iteration >= validation_state.max_iterations:
 
 ```yaml
 Task:
-  subagent_type: "[implementation_agent from input]"  # e.g., "ring:backend-engineer-golang"
+  subagent_type: "[implementation_agent from input]"  # e.g., "marsai:backend-engineer-golang"
   description: "Fix observability issues for [unit_id]"
   prompt: |
     ⛔ FIX REQUIRED - Observability Issues Found
@@ -373,8 +373,8 @@ Task:
     **Current:** [validation_state.sre_result.instrumentation_coverage]%
 
     ## Standards Reference
-    For Go: https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/golang.md
-    For TS: https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/typescript.md
+    For Go: https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang.md
+    For TS: https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/typescript.md
 
     Focus on: Telemetry & Observability section
 
@@ -516,7 +516,7 @@ See [shared-patterns/shared-pressure-resistance.md](../shared-patterns/shared-pr
 | User Says | Your Response |
 |-----------|---------------|
 | "Skip SRE validation" | "Observability is MANDATORY. Dispatching SRE agent now." |
-| "90% coverage is too high" | "90% is the Ring Standard minimum. Cannot lower." |
+| "90% coverage is too high" | "90% is the MarsAI Standard minimum. Cannot lower." |
 | "Will add instrumentation later" | "Instrumentation is part of implementation. Fix now." |
 
 ---
