@@ -6,7 +6,7 @@
 
 **Proven engineering practices, enforced through skills.**
 
-Ring is a comprehensive skills library and workflow system for AI agents that transforms how AI assistants approach software development. Currently implemented as a **Claude Code plugin marketplace** with **6 active plugins** and **93 skills** (see `.claude-plugin/marketplace.json` for current versions), the skills themselves are agent-agnostic and can be used with any AI agent system. Ring provides battle-tested patterns, mandatory workflows, and systematic approaches across the entire software delivery value chain.
+Ring is a comprehensive skills library and workflow system for AI agents that transforms how AI assistants approach software development. Currently implemented as a **Claude Code plugin marketplace** with **2 active plugins** and **54 skills** (see `.claude-plugin/marketplace.json` for current versions), the skills themselves are agent-agnostic and can be used with any AI agent system. Ring provides battle-tested patterns, mandatory workflows, and systematic approaches for software development.
 
 ## ✨ Why Ring?
 
@@ -21,8 +21,8 @@ Without Ring, AI assistants often:
 Ring solves this by:
 
 - **Enforcing proven workflows** - Test-driven development, systematic debugging, proper planning
-- **Providing 93 specialized skills** (22 core + 32 dev-team + 16 product planning + 7 FinOps regulatory + 7 technical writing + 9 PMO)
-- **38 specialized agents** - 10 review/planning + 12 developer + 4 product research + 3 FinOps regulatory + 3 technical writing + 6 PMO
+- **Providing 54 specialized skills** (22 core + 32 dev-team)
+- **22 specialized agents** - 10 review/planning + 12 developer
 - **Automating skill discovery** - Skills load automatically at session start
 - **Preventing common failures** - Built-in anti-patterns and mandatory checklists
 
@@ -70,47 +70,7 @@ Ring solves this by:
 >
 > See `dev-team/docs/standards/*.md` for standards source. Cross-references: CLAUDE.md (Standards Compliance section), `dev-team/skills/dev-refactor/SKILL.md`
 
-**Product Research Agents (ring-pm-team plugin):**
-
-- `ring:repo-research-analyst` - Repository structure and codebase analysis
-- `ring:best-practices-researcher` - Industry best practices research
-- `ring:framework-docs-researcher` - Framework documentation research
-- `ring:product-designer` - Product design and UX research
-
-**Technical Writing Agents (ring-tw-team plugin):**
-
-- `ring:functional-writer` - Functional documentation (guides, tutorials, conceptual docs)
-- `ring:api-writer` - API reference documentation (endpoints, schemas, examples)
-- `ring:docs-reviewer` - Documentation quality review (voice, tone, structure, completeness)
-
-**FinOps Agents (ring-finops-team plugin):**
-
-- `ring:finops-analyzer` - Financial operations analysis
-- `ring:finops-automation` - FinOps template creation and automation
-- `ring:infrastructure-cost-estimator` - Infrastructure cost estimation and analysis
-
-**PMO Agents (ring-pmo-team plugin):**
-
-- `ring:portfolio-manager` - Portfolio-level planning and multi-project coordination
-- `ring:resource-planner` - Capacity planning and resource allocation optimization
-- `ring:risk-analyst` - Portfolio risk identification and mitigation planning
-- `ring:governance-specialist` - Gate reviews and process compliance
-- `ring:executive-reporter` - Executive dashboards and stakeholder communications
-- `ring:delivery-reporter` - Delivery status reporting and tracking
-
 _Plugin versions are managed in `.claude-plugin/marketplace.json`_
-
-### 📦 Archived Plugins
-
-The following plugins have been archived and are not actively maintained. They remain available in `.archive/` for reference:
-
-| Plugin         | Description                                             | Status                                                   |
-| -------------- | ------------------------------------------------------- | -------------------------------------------------------- |
-| `pmm-team`     | Product Marketing (GTM, positioning, competitive intel) | Archived - functionality may be restored based on demand |
-| `finance-team` | Financial planning and analysis                         | Archived - under evaluation                              |
-| `ops-team`     | Operations management                                   | Archived - under evaluation                              |
-
-_To restore an archived plugin, move its folder from `.archive/` to the root directory and register it in `marketplace.json`._
 
 ## 🖥️ Supported Platforms
 
@@ -242,7 +202,7 @@ When you start a new Claude Code session with Ring installed, you'll see:
 - ring:test-driven-development (RED-GREEN-REFACTOR cycle)
 - ring:systematic-debugging (4-phase root cause analysis)
 - ring:verification-before-completion (Evidence before claims)
-... and 89 more skills
+... and 50 more skills
 ```
 
 ## 🎯 Core Skills
@@ -281,7 +241,7 @@ Run command → Paste output → Then claim
 No "should work" → Only "does work" with proof
 ```
 
-## 📚 All 93 Skills (Across 6 Plugins)
+## 📚 All 54 Skills (Across 2 Plugins)
 
 ### Core Skills (ring-default plugin - 22 skills)
 
@@ -379,78 +339,9 @@ No "should work" → Only "does work" with proof
 
 > Frontend and backend dev-cycle workflows both use `ring:requesting-code-review` (core plugin) as the review gate.
 
-### Product Planning Skills (ring-pm-team plugin - 16 skills)
-
-**Pre-Development Workflow (includes ring:using-pm-team + 9 gates):**
-
-- `ring:using-pm-team` - Introduction to product planning workflow
-
-0. `ring:pre-dev-research` - Research phase (parallel agents)
-1. `ring:pre-dev-prd-creation` - Business requirements (WHAT/WHY)
-2. `ring:pre-dev-feature-map` - Feature relationships
-3. `ring:pre-dev-trd-creation` - Technical architecture (HOW)
-4. `ring:pre-dev-api-design` - Component contracts
-5. `ring:pre-dev-data-model` - Entity relationships
-6. `ring:pre-dev-dependency-map` - Technology selection
-7. `ring:pre-dev-task-breakdown` - Work increments
-8. `ring:pre-dev-subtask-creation` - Atomic units
-
-**Workflow Orchestrators:**
-
-- `ring:pre-dev-feature` - 5-gate orchestrator for small features (<2 days)
-- `ring:pre-dev-full` - 10-gate orchestrator for large features (>=2 days)
-
-**Additional Planning Skills:**
-
-- `ring:pre-dev-design-validation` - Gate 1.5/2.5: Design validation for UI features
-- `ring:pre-dev-delivery-planning` - Gate 4 (Small) / Gate 9 (Large): Delivery roadmap and timeline
-- `ring:delivery-status-tracking` - Delivery progress tracking against roadmap
-- `ring:lerian-map-management` - Lerian Map platform management (products, features, iterations, roadmaps via REST API)
-
-### Technical Writing Skills (ring-tw-team plugin - 7 skills)
-
-**Documentation Creation:**
-
-- `ring:using-tw-team` - Introduction to technical writing specialists
-- `ring:writing-functional-docs` - Patterns for guides, tutorials, conceptual docs
-- `ring:writing-api-docs` - API reference documentation patterns
-- `ring:documentation-structure` - Document hierarchy and organization
-- `ring:voice-and-tone` - Voice and tone guidelines (assertive, encouraging, human)
-- `ring:documentation-review` - Quality checklist and review process
-- `ring:api-field-descriptions` - Field description patterns by type
-
-### FinOps & Regulatory Skills (ring-finops-team plugin - 7 skills)
-
-**Regulatory Templates (6):**
-
-- `ring:using-finops-team` - Introduction to FinOps team workflow
-- `ring:regulatory-templates` - Brazilian regulatory orchestration (BACEN, RFB)
-- `ring:regulatory-templates-setup` - Template selection initialization
-- `ring:regulatory-templates-gate1` - Compliance analysis and field mapping
-- `ring:regulatory-templates-gate2` - Field mapping validation
-- `ring:regulatory-templates-gate3` - Template file generation
-
-**Cost Estimation (1):**
-
-- `ring:infrastructure-cost-estimation` - Infrastructure cost estimation and analysis
-
-### PMO Skills (ring-pmo-team plugin - 9 skills)
-
-**Portfolio Management:**
-
-- `ring:using-pmo-team` - Introduction to PMO specialist agents
-- `ring:portfolio-planning` - Multi-project coordination and portfolio optimization
-- `ring:resource-allocation` - Capacity planning and conflict resolution
-- `ring:risk-management` - Portfolio-level risk identification and mitigation
-- `ring:dependency-mapping` - Cross-project dependency analysis
-- `ring:project-health-check` - Individual project health assessment
-- `ring:pmo-retrospective` - Portfolio lessons learned and process improvements
-- `ring:executive-reporting` - Executive dashboards and board packages
-- `ring:delivery-reporting` - Delivery status reports and executive communications
-
 ## 🎮 Interactive Commands
 
-Ring provides 33 slash commands across 6 plugins for common workflows.
+Ring provides 23 slash commands across 2 plugins for common workflows.
 
 ### Core Workflows (ring-default)
 
@@ -469,12 +360,6 @@ Ring provides 33 slash commands across 6 plugins for common workflows.
 - `/ring:release-guide` - Generate Ops Update Guide from git diff between two refs
 - `/ring:create-handoff [name]` - Create handoff document for session continuity (uses Plan Mode for automatic context transition)
 
-### Product Planning (ring-pm-team)
-
-- `/ring:pre-dev-feature [feature-name]` - 5-gate pre-dev workflow for small features (<2 days)
-- `/ring:pre-dev-full [feature-name]` - 10-gate pre-dev workflow for large features (>=2 days)
-- `/ring:delivery-status [scope]` - Track delivery progress against roadmap
-
 ### Development Cycle (ring-dev-team)
 
 - `/ring:dev-cycle [task]` - Start 10-gate development workflow (implementation→delivery-verification→devops→SRE→unit-testing→fuzz-testing→property-testing→integration-testing→chaos-testing→review→validation)
@@ -486,19 +371,6 @@ Ring provides 33 slash commands across 6 plugins for common workflows.
 - `/ring:dev-report` - Generate development cycle report
 - `/ring:dev-cancel` - Cancel active development cycle
 - `/ring:migrate-v4 [path]` - Analyze Go service for lib-commons v4 migration and generate visual report
-
-### Technical Writing (ring-tw-team)
-
-- `/ring:write-guide [topic]` - Start writing a functional guide with voice/tone guidance
-- `/ring:write-api [endpoint]` - Start writing API reference documentation
-- `/ring:review-docs [file]` - Review existing documentation for quality
-
-### PMO (ring-pmo-team)
-
-- `/ring:portfolio-review [scope]` - Conduct comprehensive portfolio review across projects
-- `/ring:dependency-analysis [scope]` - Analyze cross-project dependencies
-- `/ring:executive-summary [scope]` - Generate executive summary for leadership
-- `/ring:delivery-report [scope]` - Generate delivery status report
 
 ## 💡 Usage Examples
 
@@ -577,7 +449,7 @@ Claude: Dispatching all 7 reviewers in parallel...
 ```
 ring/                                  # Monorepo root
 ├── .claude-plugin/
-│   └── marketplace.json              # Multi-plugin marketplace config (6 active plugins)
+│   └── marketplace.json              # Multi-plugin marketplace config (2 active plugins)
 ├── default/                          # Core Ring plugin (ring-default)
 │   ├── skills/                       # 22 core skills
 │   │   ├── skill-name/
@@ -600,44 +472,20 @@ ring/                                  # Monorepo root
 │   │   ├── write-plan.md                # Implementation planning (`ring:write-plan`)
 │   │   └── codebase-explorer.md         # Deep architecture analysis (`ring:codebase-explorer`)
 │   └── docs/                       # Documentation
-├── dev-team/                      # Developer Agents plugin (ring-dev-team) - 32 skills, 12 agents, 9 commands
-│   └── agents/                      # 12 specialized developer agents
-│       ├── backend-engineer-golang.md       # Go backend specialist (`ring:backend-engineer-golang`)
-│       ├── backend-engineer-typescript.md   # TypeScript/Node.js backend specialist (`ring:backend-engineer-typescript`)
-│       ├── devops-engineer.md               # DevOps infrastructure (`ring:devops-engineer`)
-│       ├── frontend-bff-engineer-typescript.md # BFF & React/Next.js specialist (`ring:frontend-bff-engineer-typescript`)
-│       ├── frontend-designer.md             # Visual design specialist (`ring:frontend-designer`)
-│       ├── frontend-engineer.md             # Frontend engineer (`ring:frontend-engineer`)
-│       ├── helm-engineer.md                 # Helm chart specialist (`ring:helm-engineer`)
-│       ├── prompt-quality-reviewer.md       # Agent quality reviewer (`ring:prompt-quality-reviewer`)
-│       ├── qa-analyst.md                    # Backend QA specialist (`ring:qa-analyst`)
-│       ├── qa-analyst-frontend.md           # Frontend QA specialist (`ring:qa-analyst-frontend`)
-│       ├── sre.md                           # Site reliability engineer (`ring:sre`)
-│       └── ui-engineer.md                   # UI component specialist (`ring:ui-engineer`)
-├── pm-team/                    # Product Planning plugin (ring-pm-team)
-│   └── skills/                      # 16 pre-dev workflow skills
-│       └── pre-dev-*/              # PRD, TRD, API, Data, Tasks
-├── finops-team/                     # FinOps Regulatory plugin (ring-finops-team)
-│   ├── skills/                      # 7 regulatory skills
-│   ├── agents/                      # 3 FinOps agents
-│   ├── docs/regulatory/             # Regulatory templates and dictionaries
-│   └── hooks/                       # SessionStart hook
-├── pmo-team/                         # PMO Specialists plugin (ring-pmo-team)
-│   ├── agents/                       # 6 PMO specialist agents
-│   │   ├── portfolio-manager.md
-│   │   ├── resource-planner.md
-│   │   ├── risk-analyst.md
-│   │   ├── governance-specialist.md
-│   │   ├── executive-reporter.md
-│   │   └── delivery-reporter.md
-│   ├── skills/                       # 9 PMO skills
-│   ├── commands/                     # 4 PMO commands
-│   └── hooks/                        # SessionStart hook
-└── tw-team/                         # Technical Writing plugin (ring-tw-team)
-    ├── skills/                      # 7 documentation skills
-    ├── agents/                      # 3 technical writing agents
-    ├── commands/                    # 3 slash commands
-    └── hooks/                       # SessionStart hook
+└── dev-team/                      # Developer Agents plugin (ring-dev-team) - 32 skills, 12 agents, 9 commands
+    └── agents/                      # 12 specialized developer agents
+        ├── backend-engineer-golang.md       # Go backend specialist (`ring:backend-engineer-golang`)
+        ├── backend-engineer-typescript.md   # TypeScript/Node.js backend specialist (`ring:backend-engineer-typescript`)
+        ├── devops-engineer.md               # DevOps infrastructure (`ring:devops-engineer`)
+        ├── frontend-bff-engineer-typescript.md # BFF & React/Next.js specialist (`ring:frontend-bff-engineer-typescript`)
+        ├── frontend-designer.md             # Visual design specialist (`ring:frontend-designer`)
+        ├── frontend-engineer.md             # Frontend engineer (`ring:frontend-engineer`)
+        ├── helm-engineer.md                 # Helm chart specialist (`ring:helm-engineer`)
+        ├── prompt-quality-reviewer.md       # Agent quality reviewer (`ring:prompt-quality-reviewer`)
+        ├── qa-analyst.md                    # Backend QA specialist (`ring:qa-analyst`)
+        ├── qa-analyst-frontend.md           # Frontend QA specialist (`ring:qa-analyst-frontend`)
+        ├── sre.md                           # Site reliability engineer (`ring:sre`)
+        └── ui-engineer.md                   # UI component specialist (`ring:ui-engineer`)
 ```
 
 ## 🤝 Contributing

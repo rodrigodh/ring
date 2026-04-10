@@ -66,9 +66,6 @@ if ! command -v curl >/dev/null 2>&1; then
     echo ""
     echo "Available plugins (manual installation required):"
     echo "  • ring-dev-team - Developer role agents"
-    echo "  • ring-finops-team - FinOps & regulatory compliance"
-    echo "  • ring-pm-team - Product planning workflows"
-    echo "  • ring-pmo-team - PMO portfolio management specialists"
     echo ""
     echo "To install: claude plugin install <plugin-name>"
 elif ! command -v jq >/dev/null 2>&1; then
@@ -80,9 +77,6 @@ elif ! command -v jq >/dev/null 2>&1; then
     echo ""
     echo "Available plugins (manual installation required):"
     echo "  • ring-dev-team - Developer role agents"
-    echo "  • ring-finops-team - FinOps & regulatory compliance"
-    echo "  • ring-pm-team - Product planning workflows"
-    echo "  • ring-pmo-team - PMO portfolio management specialists"
     echo ""
     echo "To install: claude plugin install <plugin-name>"
 else
@@ -179,9 +173,6 @@ else
         echo ""
         echo "Available plugins (manual installation required):"
         echo "  • ring-dev-team - Developer role agents"
-        echo "  • ring-finops-team - FinOps & regulatory compliance"
-        echo "  • ring-pm-team - Product planning workflows"
-        echo "  • ring-pmo-team - PMO portfolio management specialists"
         echo ""
         echo "To install manually: claude plugin install <plugin-name>"
     fi

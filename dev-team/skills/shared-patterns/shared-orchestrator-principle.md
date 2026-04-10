@@ -73,29 +73,6 @@ This principle is NON-NEGOTIABLE for all dev-team skills.
 ✅ Task(subagent_type="ring:write-plan", ...)
 ```
 
-### ring-pm-team Agents (Research)
-
-```
-✅ Task(subagent_type="ring:framework-docs-researcher", ...)
-✅ Task(subagent_type="ring:best-practices-researcher", ...)
-✅ Task(subagent_type="ring:repo-research-analyst", ...)
-```
-
-### ring-tw-team Agents (Technical Writing)
-
-```
-✅ Task(subagent_type="ring:functional-writer", ...)
-✅ Task(subagent_type="ring:api-writer", ...)
-✅ Task(subagent_type="ring:docs-reviewer", ...)
-```
-
-### ring-finops-team Agents (Regulatory Compliance)
-
-```
-✅ Task(subagent_type="ring:finops-analyzer", ...)
-✅ Task(subagent_type="ring:finops-automation", ...)
-```
-
 ## Gate/Step → Agent Mapping
 
 ### ring:dev-cycle Gates
@@ -156,17 +133,6 @@ This principle is NON-NEGOTIABLE for all dev-team skills.
 | Task Type | Agent to Dispatch |
 |-----------|-------------------|
 | Codebase architecture understanding | `ring:codebase-explorer` |
-| Framework/library documentation | `ring:framework-docs-researcher` |
-| Industry best practices | `ring:best-practices-researcher` |
-| Repository/codebase analysis | `ring:repo-research-analyst` |
-
-### Documentation
-
-| Doc Type | Agent to Dispatch |
-|----------|-------------------|
-| Functional documentation, user guides | `ring:functional-writer` |
-| API documentation, OpenAPI specs | `ring:api-writer` |
-| Documentation review | `ring:docs-reviewer` |
 
 ### Planning & Quality
 

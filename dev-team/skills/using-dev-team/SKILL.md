@@ -318,12 +318,8 @@ When backend dev cycle completes, it produces a handoff with endpoints, types, a
 ## Integration with Other Plugins
 
 - **ring:using-ring** (default) – ORCHESTRATOR principle for all agents
-- **ring:using-pm-team** – Pre-dev workflow agents
-- **ring:using-finops-team** – Financial/regulatory agents
 
 Dispatch based on your need:
 
 - General code review → default plugin agents
 - Specific domain expertise → ring-dev-team agents
-- Feature planning → ring-pm-team agents
-- Regulatory compliance → ring-finops-team agents

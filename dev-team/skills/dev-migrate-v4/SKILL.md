@@ -55,7 +55,7 @@ Before analysis, load the v4 standards from the bundled file in this repository:
 
 ```yaml
 Read:
-  path: "platforms/opencode/standards/golang.md"
+  path: "dev-team/docs/standards/golang.md"
   extract: "Core Dependency: lib-commons" section — full package table with aliases
 ```
 
@@ -70,7 +70,7 @@ MUST use the bundled `golang.md` as the source of truth for v4 patterns. This fi
 | No `go.mod` found in target path | **STOP** — "Not a Go project. Cannot migrate." |
 | `go.mod` does not contain `lib-commons` | **STOP** — "No lib-commons dependency found. Nothing to migrate." |
 | Already on v4 with full compliance | **STOP** — "Already on v4 and compliant. No migration needed." Report compliance status only. |
-| `golang.md` not found at `platforms/opencode/standards/golang.md` | **STOP** — "Standards file not found. Ensure Ring repository is accessible." |
+| `golang.md` not found at `dev-team/docs/standards/golang.md` | **STOP** — "Standards file not found. Ensure Ring repository is accessible." |
 | Target path is not readable | **STOP** — "Cannot access target path." |
 
 ---
