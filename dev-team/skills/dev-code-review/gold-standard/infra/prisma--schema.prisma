@@ -1,0 +1,299 @@
+generator kysely {
+  provider             = "prisma-kysely"
+  output               = "../kysely/types"
+  fileName             = "types.ts"
+  enumFileName         = "enums.ts"
+  dateTimeTypeOverride = Date
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id String @id
+
+  first_name      String
+  last_name       String
+  image_url       String?
+  banned          Boolean
+  metadata        Json?
+  is_system_admin Boolean @default(false)
+
+  created_at DateTime
+  updated_at DateTime
+
+  EmailAddress EmailAddress[]
+  OAuthClient  OAuthClient[]
+
+  @@map("users")
+}
+
+model ExternalAccount {
+  id             String   @id
+  provider       String
+  provider_id    String
+  recipient_id   String
+  recipient_type String
+  created_at     DateTime
+  updated_at     DateTime
+
+  @@unique([provider, provider_id])
+  @@index([provider_id])
+  @@index([recipient_id])
+  @@map("external_accounts")
+}
+
+model EmailAddress {
+  id          String    @id
+  user_id     String
+  email       String    @unique
+  verified    Boolean
+  verified_at DateTime?
+  is_primary  Boolean
+
+  user User @relation(fields: [user_id], references: [id])
+
+  @@unique([user_id, is_primary])
+  @@index([user_id])
+  @@map("email_addresses")
+}
+
+model EmailVerification {
+  id               String @id
+  email_address_id String
+  code             String
+
+  expires_at DateTime
+  created_at DateTime
+  updated_at DateTime
+
+  @@map("email_verifications")
+}
+
+model Membership {
+  id               String @id
+  user_id          String
+  role_id          String
+  organization_id  String
+  application_id   String
+  auth_provider_id String
+
+  created_at DateTime
+  updated_at DateTime
+  deleted_at DateTime?
+
+  @@unique([organization_id, user_id, application_id, deleted_at])
+  @@index([user_id])
+  @@index([deleted_at])
+  @@map("memberships")
+}
+
+model Organization {
+  id            String  @id
+  name          String
+  slug          String  @unique
+  enterprise_id String
+  default       Boolean
+
+  created_at DateTime
+  updated_at DateTime
+
+  @@index([enterprise_id])
+  @@map("organizations")
+}
+
+model Enterprise {
+  id     String  @id
+  name   String
+  slug   String  @unique
+  domain String?
+
+  type    String
+  user_id String? @unique
+
+  created_at DateTime
+  updated_at DateTime
+
+  @@index([slug])
+  @@map("enterprises")
+}
+
+model Application {
+  id   String @id
+  name String @unique
+
+  created_at  DateTime
+  updated_at  DateTime
+  OAuthClient OAuthClient[]
+
+  @@map("applications")
+}
+
+model Role {
+  id          String  @id
+  name        String
+  description String
+  is_system   Boolean
+
+  created_at DateTime
+  updated_at DateTime
+
+  RolePermission RolePermission[]
+
+  @@map("roles")
+}
+
+model Permission {
+  id          String @id
+  name        String
+  resource    String
+  action      String
+  description String
+  category    String
+
+  created_at DateTime
+  updated_at DateTime
+
+  RolePermission         RolePermission[]
+  OAuthClientPermissions OAuthClientPermissions[]
+
+  @@unique([resource, action])
+  @@map("permissions")
+}
+
+model RolePermission {
+  id String @id
+
+  Role    Role   @relation(fields: [role_id], references: [id])
+  role_id String
+
+  Permission    Permission @relation(fields: [permission_id], references: [id])
+  permission_id String
+
+  @@unique([role_id, permission_id])
+  @@map("role_permissions")
+}
+
+model Session {
+  id               String   @id
+  user_id          String
+  application_id   String
+  organization_id  String
+  enterprise_id    String   @default("unknown")
+  expires_at       DateTime
+  auth_provider    String
+  auth_provider_id String
+
+  created_at DateTime
+  updated_at DateTime
+
+  @@index([user_id])
+  @@index([auth_provider_id, created_at(sort: Desc)])
+  @@map("sessions")
+}
+
+model ServiceToken {
+  id              String    @id
+  organization_id String
+  application_id  String
+  name            String
+  enterprise_id   String    @default("unknown")
+  description     String
+  client_id       String    @unique
+  client_secret   String
+  role_id         String
+  deactivated_at  DateTime?
+  metadata        Json?
+
+  created_at DateTime
+  updated_at DateTime
+
+  @@index([organization_id])
+  @@index([client_id])
+  @@index([application_id])
+  @@map("service_tokens")
+}
+
+model PasswordReset {
+  id         String    @id
+  user_id    String
+  token      String
+  used_at    DateTime?
+  ip_address String
+  user_agent String
+  expires_at DateTime
+  created_at DateTime
+  updated_at DateTime
+
+  @@index([user_id])
+  @@index([token])
+  @@map("password_resets")
+}
+
+model CodeChallenge {
+  id                 String    @id
+  code_challenge     String
+  transform_method   String
+  authorization_code String
+  redeemed_at        DateTime?
+  expires_at         DateTime
+
+  provider_refresh_token String?
+  provider               String?
+
+  created_at DateTime
+  updated_at DateTime
+
+  @@map("code_challenges")
+}
+
+model Invite {
+  id              String    @id
+  email           String
+  organization_id String
+  application_id  String
+  user_id         String?
+  consumed_at     DateTime?
+
+  created_at DateTime
+
+  @@index([email])
+  @@index([organization_id])
+  @@index([user_id])
+  @@map("invites")
+}
+
+model OAuthClient {
+  id             String    @id
+  application_id String
+  owner_user_id  String
+  description    String
+  client_secret  String
+  deactivated_at DateTime?
+  last_used_at   DateTime?
+  created_at     DateTime
+  updated_at     DateTime
+
+  Application            Application              @relation(fields: [application_id], references: [id])
+  User                   User                     @relation(fields: [owner_user_id], references: [id])
+  OAuthClientPermissions OAuthClientPermissions[]
+
+  @@index([application_id])
+  @@index([owner_user_id])
+  @@map("oauth_clients")
+}
+
+model OAuthClientPermissions {
+  id              String @id
+  oauth_client_id String
+  permission_id   String
+
+  OAuthClient OAuthClient @relation(fields: [oauth_client_id], references: [id])
+  Permission  Permission  @relation(fields: [permission_id], references: [id])
+
+  @@index([oauth_client_id])
+  @@index([permission_id])
+  @@map("oauth_client_permissions")
+}

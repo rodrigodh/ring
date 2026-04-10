@@ -15,19 +15,19 @@ This file defines the specific standards for TypeScript (backend) development.
 |---|---------|-------------|
 | 1 | [Version](#version) | TypeScript and Node.js versions |
 | 2 | [Strict Configuration](#strict-configuration-mandatory) | tsconfig.json requirements |
-| 3 | [Frameworks & Libraries](#frameworks--libraries) | Required packages |
+| 3 | [Frameworks & Libraries](#frameworks--libraries) | Backend stack (Fastify, Kysely, InversifyJS, Zod via @v4-company/mars-api) |
 | 4 | [Type Safety](#type-safety) | Never use any, branded types |
 | 5 | [Zod Validation Patterns](#zod-validation-patterns) | Schema validation |
-| 6 | [Dependency Injection](#dependency-injection) | TSyringe/Inversify patterns |
-| 7 | [AsyncLocalStorage for Context](#asynclocalstorage-for-context) | Request context propagation |
+| 6 | [Dependency Injection](#dependency-injection) | InversifyJS patterns with TYPES symbols |
+| 7 | [Context Propagation](#context-propagation) | DI-based context (auth via @Auth, transactions via UoW) |
 | 8 | [Testing](#testing) | Type-safe mocks, fixtures |
 | 9 | [Error Handling](#error-handling) | Custom error classes |
 | 10 | [Function Design](#function-design-mandatory) | Single responsibility principle |
 | 11 | [File Organization](#file-organization-mandatory) | File-level single responsibility |
 | 12 | [Naming Conventions](#naming-conventions) | Files, interfaces, types |
-| 13 | [Directory Structure](#directory-structure) | Project layout (Lerian pattern) |
+| 13 | [Directory Structure](#directory-structure) | Clean Architecture + DDD (domain/app/infra) |
 | 14 | [RabbitMQ Worker Pattern](#rabbitmq-worker-pattern) | Async message processing |
-| 15 | [Always-Valid Domain Model](#always-valid-domain-model-mandatory) | Constructor validation, invariant protection |
+| 15 | [Always-Valid Domain Model](#always-valid-domain-model-mandatory) | AggregateRoot/Entity factories, Value Objects, domain events |
 | 16 | [BFF Architecture Pattern](#bff-architecture-pattern-mandatory) | Clean Architecture for Next.js API Routes |
 | 17 | [Three-Layer DTO Mapping](#three-layer-dto-mapping-mandatory) | HTTP ↔ Domain ↔ External DTOs |
 | 18 | [HttpService Lifecycle](#httpservice-lifecycle) | Request/response hooks for external APIs |
@@ -69,42 +69,63 @@ This file defines the specific standards for TypeScript (backend) development.
 
 ## Frameworks & Libraries
 
-### Backend Frameworks
+> **BFF note:** BFF architecture uses different framework patterns. See sections 16-21 for BFF-specific details.
 
-| Framework | Use Case |
-|-----------|----------|
-| Express | Traditional, widely adopted |
-| Fastify | High performance |
-| NestJS | Enterprise, Angular-style DI |
-| Hono | Ultrafast, edge-ready |
-| tRPC | End-to-end type safety |
+### Backend Stack
 
-### ORMs & Query Builders
+| Component | Library | Notes |
+|-----------|---------|-------|
+| Framework | Fastify via `@v4-company/mars-api/server` | FastifyServerBuilder, FastifyController base class |
+| Query Builder | Kysely | Type-safe SQL queries via BaseRepository |
+| Schema/Migrations | Prisma (prisma-kysely generator) | Schema management + type generation only — NOT used as ORM |
+| DI | InversifyJS | @injectable, @inject decorators, Container |
+| Validation | Zod + RequestDto from `@v4-company/mars-api/core` | All inputs as RequestDto subclass with Zod schemas |
+| Auth | `@v4-company/mars-api/identity` | AuthMiddlewareBuilder, @Auth decorator — NEVER custom middleware |
+| Events | RabbitMQ + EventBus from `@v4-company/mars-api/core` | Domain events, publish AFTER UoW commit |
+| Testing | Vitest | Type-safe mocks via `Mocked<T>` from vitest |
 
-| Library | Use Case |
-|---------|----------|
-| Prisma | Type-safe ORM, migrations |
-| Drizzle | Lightweight, SQL-like |
-| TypeORM | Decorator-based ORM |
-| Kysely | Type-safe query builder |
+### Key `@v4-company/mars-api` Abstractions
 
-### Validation
+The shared library provides the architectural foundation. MUST use these abstractions instead of building custom equivalents.
 
-| Library | Use Case |
-|---------|----------|
-| Zod | Schema validation + types |
-| Yup | Object schema validation |
-| joi | Classic validation |
-| class-validator | Decorator-based |
+**From `@v4-company/mars-api/core`:**
 
-### Testing
+| Abstraction | Purpose |
+|-------------|---------|
+| `AggregateRoot<Props>` | Base for domain aggregate roots |
+| `Entity<Props>` | Base for domain child entities |
+| `EntityIdVO`, `RequiredStringVO`, `RequiredBooleanVO`, `RequiredDateVO`, `StringVO`, `EmailVO` | Value Object types |
+| `UseCase<In, Out>` | Use case interface |
+| `Service<In, Out>` | Reusable service interface |
+| `EventHandler<T>` | Event handler interface |
+| `BaseRepository<T, DB>` | Repository base with Kysely |
+| `UowEntitiesRepository<T>` | Unit of Work repository interface |
+| `KyselyUnitOfWork` | Transaction manager (uow.start → commit) |
+| `PaginationParams`, `PaginatedResult<T>` | Pagination types — MUST NOT create custom pagination types |
+| `KyselyDatabasePagination` | Pagination helper for Kysely queries |
+| `RequestDto` | Base class for input DTOs with Zod validation |
+| `EventBus`, `RabbitMQEventBus` | Event publishing |
+| `NotFoundException`, `BadRequestException`, `HttpException` | Standard exceptions |
+| `createHandlerScope` | Event handler DI scoping |
 
-| Library | Use Case |
-|---------|----------|
-| Vitest | Fast, Vite-native |
-| Jest | Full-featured |
-| Supertest | HTTP testing |
-| testcontainers | Integration tests |
+**From `@v4-company/mars-api/server`:**
+
+| Abstraction | Purpose |
+|-------------|---------|
+| `FastifyController` | Controller base class (routing, validation, error handling) |
+| `FastifyServerBuilder` | Server factory with fluent API |
+| `Route` | Method decorator (get/post/put/delete/patch) |
+| `ApiTag`, `ApiBodySchema`, `ApiQueryParamsSchema`, `ApiResponseSchema` | OpenAPI decorators |
+
+**From `@v4-company/mars-api/identity`:**
+
+| Abstraction | Purpose |
+|-------------|---------|
+| `AuthMiddlewareBuilder` | Auth middleware factory |
+| `createAuthMiddleware(identityUrl)` | Creates middleware instance |
+| `Auth` | Route decorator for permission checking |
+| `AuthResponse` | Authenticated user/token info (sub, orgId, aud, kind) |
+| `AuthFastifyRequest<T>` | Type-safe request with auth context |
 
 ---
 
@@ -284,97 +305,162 @@ const userSchema = identifiableSchema
 
 ## Dependency Injection
 
-### Using TSyringe
+### InversifyJS with TYPES Symbols
+
+Use InversifyJS with centralized TYPES symbols for all DI bindings. MUST NOT use string-based injection tokens.
 
 ```typescript
-import { container, injectable, inject } from 'tsyringe';
+// app/dtos/types.ts — Centralized DI symbols
+export const TYPES = {
+  // Repositories
+  UserRepository: Symbol.for("UserRepository"),
+  ProjectRepository: Symbol.for("ProjectRepository"),
 
-// Define interface
-interface UserRepository {
-    findById(id: string): Promise<User | null>;
-    save(user: User): Promise<void>;
-}
+  // Services
+  CheckUserOrganizationService: Symbol.for("CheckUserOrganizationService"),
 
-// Implement
-@injectable()
-class PostgresUserRepository implements UserRepository {
-    constructor(
-        @inject('Database') private db: Database
-    ) {}
-
-    async findById(id: string): Promise<User | null> {
-        return this.db.user.findUnique({ where: { id } });
-    }
-
-    async save(user: User): Promise<void> {
-        await this.db.user.upsert({ where: { id: user.id }, ...user });
-    }
-}
-
-// Service using repository
-@injectable()
-class UserService {
-    constructor(
-        @inject('UserRepository') private repo: UserRepository
-    ) {}
-
-    async getUser(id: string): Promise<User> {
-        const user = await this.repo.findById(id);
-        if (!user) throw new NotFoundError('User not found');
-        return user;
-    }
-}
-
-// Register in container
-container.register('Database', { useClass: PrismaDatabase });
-container.register('UserRepository', { useClass: PostgresUserRepository });
-
-// Resolve
-const userService = container.resolve(UserService);
+  // Infrastructure
+  UnitOfWork: Symbol.for("UnitOfWork"),
+  IdentityUrl: Symbol.for("IdentityUrl"),
+  EventBus: Symbol.for("EventBus"),
+};
 ```
+
+```typescript
+// UseCase with DI — constructor injection via @inject
+import { injectable, inject } from "inversify";
+import { type UseCase } from "@v4-company/mars-api/core";
+import { TYPES } from "../dtos/types.ts";
+
+@injectable()
+export class FindUserByIdUseCase implements UseCase<FindUserByIdRequest, UserResponse> {
+  constructor(
+    @inject(TYPES.UserRepository)
+    private readonly userRepository: UserRepository,
+  ) {}
+
+  async execute(input: FindUserByIdRequest): Promise<UserResponse> {
+    const user = await this.userRepository.findById(input.props.id);
+    if (!user) throw new UserNotFoundException();
+    return new UserResponseMapper().toResponse({ user });
+  }
+}
+```
+
+### DI Container Configuration
+
+Organize bindings into separate config files, called from the main container:
+
+```typescript
+// infra/di/container.ts — Main container setup
+import { Container } from "inversify";
+
+export function createContainer(): Container {
+  const container = new Container();
+
+  // Validate required env vars at boot
+  if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL required");
+
+  // Call config functions
+  configureRepositories(container);
+  configureUseCases(container);
+  configureServices(container);
+  configureControllers(container);
+  configureEvents(container);
+
+  // Singletons for shared infrastructure
+  container.bind(TYPES.EventBus).to(RabbitMQEventBus).inSingletonScope();
+  container.bind(TYPES.UnitOfWork).to(KyselyUnitOfWork).inTransientScope();
+
+  return container;
+}
+```
+
+```typescript
+// infra/di/usecases.ts — Use case bindings (all transient)
+export function configureUseCases(container: Container): void {
+  container.bind(FindUserByIdUseCase).toSelf().inTransientScope();
+  container.bind(CreateUserUseCase).toSelf().inTransientScope();
+  // ...
+}
+```
+
+**Rules:**
+- Use cases and repositories: `inTransientScope()` (new instance per request)
+- EventBus, config values: `inSingletonScope()` (shared)
+- MUST validate env vars at container creation, not at runtime
 
 ---
 
-## AsyncLocalStorage for Context
+## Context Propagation
+
+> **BFF note:** BFF applications using Next.js may use AsyncLocalStorage. See sections 16-21 for BFF-specific patterns.
+
+Context is propagated through **dependency injection and method parameters**, not global storage.
+
+### Auth Context via @Auth Decorator
+
+The `@Auth()` decorator from `@v4-company/mars-api/identity` provides auth context on every request:
 
 ```typescript
-import { AsyncLocalStorage } from 'async_hooks';
+import { Auth, type AuthFastifyRequest } from "@v4-company/mars-api/identity";
+import { PERMISSIONS } from "../config/Permissions.ts";
 
-// Define context type
-interface RequestContext {
-    requestId: string;
-    userId?: string;
-    tenantId?: string;
-}
+@injectable()
+export class UserController extends FastifyController {
+  // @Auth() — any authenticated user
+  @Auth()
+  @Route("get", "/users/me")
+  async me(req: AuthFastifyRequest, reply: FastifyReply) {
+    // req.auth contains: { sub, orgId, aud, kind }
+    const user = await this.findUserUseCase.execute(
+      new FindUserByIdRequest({ id: req.auth.sub }),
+    );
+    return reply.send(user);
+  }
 
-// Create storage
-const asyncLocalStorage = new AsyncLocalStorage<RequestContext>();
-
-// Get current context
-export function getContext(): RequestContext {
-    const ctx = asyncLocalStorage.getStore();
-    if (!ctx) throw new Error('No context available');
-    return ctx;
-}
-
-// Middleware to set context
-export function contextMiddleware(req: Request, res: Response, next: NextFunction) {
-    const context: RequestContext = {
-        requestId: req.headers['x-request-id'] as string || crypto.randomUUID(),
-        userId: req.user?.id,
-        tenantId: req.headers['x-tenant-id'] as string,
-    };
-
-    asyncLocalStorage.run(context, () => next());
-}
-
-// Usage anywhere in call chain
-async function processOrder(orderId: string) {
-    const { tenantId, userId } = getContext();
-    logger.info('Processing order', { orderId, tenantId, userId });
-    // ...
+  // @Auth(RESOURCE, ACTION) — specific permission required
+  @Auth(PERMISSIONS.RESOURCES.USERS, PERMISSIONS.ACTIONS.CREATE)
+  @Route("post", "/users")
+  async create(req: AuthFastifyRequest<{ Body: CreateUserDTO }>, reply: FastifyReply) {
+    const result = await this.createUserUseCase.execute(request, req.auth);
+    return reply.send(result).status(201);
+  }
 }
 ```
+
+### Transaction Context via Unit of Work
+
+Transaction boundaries are managed by `KyselyUnitOfWork`, injected via DI:
+
+```typescript
+@injectable()
+export class CreateProjectUseCase implements UseCase<CreateProjectRequest, ProjectResponse> {
+  constructor(
+    @inject(TYPES.UnitOfWork) private readonly uow: UnityOfWork,
+    @inject(TYPES.ProjectRepository) private readonly projectRepository: ProjectRepository,
+  ) {}
+
+  async execute(input: CreateProjectRequest, auth: AuthResponse): Promise<ProjectResponse> {
+    const project = Project.create({ name: input.props.name, createdBy: auth.sub });
+
+    await this.uow.start([this.projectRepository]);
+    this.uow.registerNew(project);
+    await this.uow.commit();
+
+    // Publish events AFTER commit
+    await this.eventBus.publish(project.raisedEvents);
+
+    return new ProjectResponseMapper().toResponse({ project });
+  }
+}
+```
+
+**Rules:**
+- MUST NOT use AsyncLocalStorage for request/auth context in backend services
+- Auth context comes from `req.auth` (provided by @Auth decorator)
+- Transaction context comes from `KyselyUnitOfWork` (injected via DI)
+- Service parameters pass context explicitly — no hidden global state
 
 ---
 
@@ -752,38 +838,50 @@ export function exportToOFX(id: string): Promise<Buffer> { ... }
 
 ## Directory Structure
 
-The directory structure follows the **Lerian pattern** - a simplified hexagonal architecture without explicit DDD folders.
+The directory structure follows **Clean Architecture + DDD** with strict layer separation.
 
 ```
-/src
-  /bootstrap           # Application initialization
-    config.ts
-    server.ts
-    service.ts
-  /services            # Business logic
-    /command           # Write operations (use cases)
-    /query             # Read operations (use cases)
-  /adapters            # Infrastructure implementations
-    /http/in           # HTTP handlers + routes
-    /grpc/in           # gRPC handlers (if needed)
-    /postgres          # PostgreSQL repositories
-    /mongodb           # MongoDB repositories
-    /redis             # Redis repositories
-    /rabbitmq          # RabbitMQ producers/consumers
-  /lib                 # Utilities
-    db.ts
-    logger.ts
-  /types               # Shared types and models
-    index.ts
-/tests
-  /unit
-  /integration
+src/
+  domain/                  # Pure business logic (ZERO dependencies on app or infra)
+    aggregates/            # Aggregate roots (extend AggregateRoot<Props>)
+    entities/              # Domain child entities (extend Entity<Props>)
+    value-objects/         # Immutable Value Objects
+    repositories/          # Repository interfaces (extend UowEntitiesRepository)
+    providers/             # External service interface contracts
+    schemas/               # Zod domain validation schemas
+    test/mocks/            # Domain test mocks (RepositoryMock, EntityMock)
+  app/                     # Application layer (depends ONLY on domain)
+    usecases/              # Use cases — orchestration only (UseCase<In, Out>)
+    services/              # Reusable business services (Service<In, Out>)
+    dtos/
+      inputs/              # Input DTOs (Zod schema + RequestDto subclass)
+      outputs/             # Response DTOs (z.infer types)
+      types.ts             # TYPES symbols for DI
+    mappers/               # Response mappers (domain aggregate → API response)
+    events/                # Event handlers (EventHandler<T>)
+    exceptions/            # Application exceptions (NotFoundException, etc.)
+  infra/                   # Infrastructure (depends on app + domain)
+    controllers/           # FastifyController subclasses with decorators
+    database/
+      kysely/              # Kysely repository implementations (BaseRepository)
+      prisma/              # Prisma schema + migrations (type generation only)
+    mappers/               # Persistence mappers (domain ↔ database, bidirectional)
+    providers/             # Provider implementations (e.g., JoseTokenProvider)
+    di/                    # DI container config (container.ts + per-concern files)
+    server/                # Server bootstrap (FastifyServerBuilder)
+    events/                # Event bus setup (RabbitMQ subscriptions)
+    config/                # Configuration (Permissions.ts, etc.)
 ```
 
-**Key differences from traditional DDD:**
-- **No `/src/domain` folder** - Business entities live in `/src/types` or within service files
-- **Services are the core** - `/src/services` contains all business logic (command/query pattern)
-- **Adapters are flat** - Database repositories are organized by technology, not by domain
+**Layer dependency rules (MANDATORY):**
+- **domain/** → ZERO imports from app/ or infra/
+- **app/** → imports from domain/ only (except DI types from infra/di)
+- **infra/** → imports from app/ and domain/
+
+**Naming conventions:**
+- Files: `PascalCase` with concept suffix — `FindUserByIdUseCase.ts`, `UserResponseMapper.ts`, `KyselyUserRepository.ts`
+- Test files: co-located as `*.spec.ts` — `FindUserByIdUseCase.spec.ts`
+- Test mocks: in `domain/test/mocks/` — `UserMock.ts`, `UserRepositoryMock.ts`
 
 ---
 
@@ -1054,61 +1152,187 @@ class Service {
 
 ### The Pattern
 
-**Core Principle:** An entity can NEVER exist in an invalid state. Validation happens in the factory, not later.
+**Core Principle:** An entity can NEVER exist in an invalid state. Use library base classes with factory methods.
+
+### Aggregate Root Pattern
+
+Aggregates extend `AggregateRoot<Props>` from `@v4-company/mars-api/core`. They use a private constructor, a `build` method for Value Object construction, `from` for reconstruction, and `create` for new instances with domain events:
 
 ```typescript
-// ✅ CORRECT: Always-Valid Domain Model
-class Rule {
-    private constructor(
-        private readonly _id: string,
-        private readonly _name: string,
-        private readonly _expression: string,
-        private readonly _createdAt: Date,
-    ) {}
+import {
+  AggregateRoot,
+  RequiredBooleanVO,
+  RequiredDateVO,
+  RequiredStringVO,
+  StringVO,
+  type ToPrimitives,
+  type EntityIdVO,
+  DomainException,
+} from "@v4-company/mars-api/core";
+import { EmailVerifiedEvent, UserCreatedEvent } from "@v4-company/mars-events";
 
-    // Factory method MUST validate and return Result
-    static create(name: string, expression: string): Result<Rule, ValidationError> {
-        // Validation at construction time
-        if (!name || name.trim().length === 0) {
-            return err(new ValidationError('name is required'));
-        }
-        if (name.length > 255) {
-            return err(new ValidationError('name exceeds 255 characters'));
-        }
-        if (!isValidExpression(expression)) {
-            return err(new ValidationError('invalid expression syntax'));
-        }
+import { EmailAddress } from "../entities/EmailAddress.ts";
+import { type ExternalAccount } from "../entities/ExternalAccount.ts";
+import { type Membership } from "../entities/Membership.ts";
+import { MetadataVO } from "../value-objects/MetadataVO.ts";
 
-        return ok(new Rule(
-            crypto.randomUUID(),
-            name.trim(),
-            expression,
-            new Date(),
-        ));
+type UserProps = {
+  firstName: RequiredStringVO;
+  lastName: RequiredStringVO;
+  imageUrl: StringVO;
+  banned: RequiredBooleanVO;
+  emails: EmailAddress[];
+  externalAccount: ExternalAccount;
+  memberships: Membership[];
+  metadata?: MetadataVO;
+  isSystemAdmin: RequiredBooleanVO;
+  createdAt: RequiredDateVO;
+  updatedAt: RequiredDateVO;
+};
+
+export type PrimitiveUserProps = ToPrimitives<UserProps>;
+
+export type CreateUserInput = Omit<PrimitiveUserProps, "emails"> & {
+  email: string;
+};
+
+export class User extends AggregateRoot<UserProps> {
+  private constructor(props: UserProps, id?: EntityIdVO) {
+    super(props, id);
+  }
+
+  // Build method converts primitives to Value Objects
+  private static build(props: PrimitiveUserProps): UserProps {
+    return {
+      firstName: new RequiredStringVO(props.firstName),
+      lastName: new RequiredStringVO(props.lastName),
+      imageUrl: new StringVO(props.imageUrl),
+      banned: new RequiredBooleanVO(props.banned),
+      emails: props.emails,
+      externalAccount: props.externalAccount,
+      isSystemAdmin: new RequiredBooleanVO(props.isSystemAdmin),
+      memberships: props.memberships,
+      metadata: props.metadata ? new MetadataVO(props.metadata) : undefined,
+      createdAt: new RequiredDateVO(new Date()),
+      updatedAt: new RequiredDateVO(new Date()),
+    };
+  }
+
+  // Reconstruction from database (trusted data, no events)
+  static from(props: PrimitiveUserProps, id?: EntityIdVO): User {
+    return new User(User.build(props), id);
+  }
+
+  // Factory for NEW entities — raises domain events
+  static create(input: CreateUserInput): User {
+    const user = User.from({ ...input, emails: [] });
+
+    const primaryEmail = EmailAddress.create({
+      email: input.email,
+      userId: user.id.value,
+      isPrimary: true,
+      verified: false,
+      verifiedAt: null,
+    });
+    user.addEmail(primaryEmail);
+
+    user.raiseEvent(
+      new UserCreatedEvent({
+        userId: user.id.value,
+        email: primaryEmail.email.value,
+      }),
+    );
+
+    return user;
+  }
+
+  // Getters expose values
+  get firstName(): string { return this.props.firstName.value; }
+  get lastName(): string { return this.props.lastName.value; }
+  get banned(): boolean { return this.props.banned.value; }
+  get emails(): EmailAddress[] { return this.props.emails; }
+
+  // Domain behavior methods
+  public addEmail(email: EmailAddress): void {
+    if (email.isPrimary.value && this.primaryEmail) {
+      throw new DomainException("User already has a primary email");
+    }
+    this.props.emails.push(email);
+  }
+
+  public verifyEmail(email: string): void {
+    const emailAddress = this.props.emails.find((e) => e.email.value === email);
+    if (!emailAddress) {
+      throw new DomainException("Email not found at verification");
     }
 
-    // Getters expose immutable data
-    get id(): string { return this._id; }
-    get name(): string { return this._name; }
-    get expression(): string { return this._expression; }
+    emailAddress.props.verified = new RequiredBooleanVO(true);
+    emailAddress.props.verifiedAt = new RequiredDateVO(new Date());
+    this.props.updatedAt = new RequiredDateVO(new Date());
+
+    this.raiseEvent(new EmailVerifiedEvent({
+      userId: this.id.value,
+      emailAddressId: emailAddress.id.value,
+    }));
+  }
 }
 ```
 
-```typescript
-// ❌ FORBIDDEN: Anemic Model (validation elsewhere)
-interface Rule {
-    id: string;
-    name: string;      // Can be empty - invalid!
-    expression: string; // Can be invalid - no validation!
-}
+### Entity Pattern
 
-// ❌ FORBIDDEN: Factory without validation
-function createRule(name: string, expression: string): Rule {
+Child entities extend `Entity<Props>` with the same private constructor + `build` + `create`/`from` pattern:
+
+```typescript
+import {
+  DateVO,
+  EmailVO,
+  EntityIdVO,
+  RequiredBooleanVO,
+  type EntityProps,
+  Entity,
+  type ToPrimitives,
+} from "@v4-company/mars-api/core";
+
+export type EmailAddressProps = EntityProps<{
+  email: EmailVO;
+  verified: RequiredBooleanVO;
+  verifiedAt: DateVO;
+  isPrimary: RequiredBooleanVO;
+  userId: EntityIdVO;
+}>;
+
+export type EmailAddressPrimitives = ToPrimitives<EmailAddressProps>;
+
+export class EmailAddress extends Entity<EmailAddressProps> {
+  private constructor(props: EmailAddressProps, id?: EntityIdVO) {
+    super(props, id);
+  }
+
+  private static build(props: EmailAddressPrimitives): EmailAddressProps {
     return {
-        id: crypto.randomUUID(),
-        name,        // No validation!
-        expression,  // No validation!
+      email: new EmailVO(props.email),
+      verified: new RequiredBooleanVO(props.verified),
+      verifiedAt: new DateVO(props.verifiedAt),
+      isPrimary: new RequiredBooleanVO(props.isPrimary),
+      userId: new EntityIdVO(props.userId),
     };
+  }
+
+  static create(props: EmailAddressPrimitives): EmailAddress {
+    const entityProps = this.build(props);
+    return new EmailAddress(entityProps);
+  }
+
+  static from(props: EmailAddressPrimitives, id: EntityIdVO): EmailAddress {
+    const entityProps = this.build(props);
+    return new EmailAddress(entityProps, id);
+  }
+
+  get email(): EmailVO { return this.props.email; }
+  get verified(): RequiredBooleanVO { return this.props.verified; }
+  get verifiedAt(): DateVO { return this.props.verifiedAt; }
+  get isPrimary(): RequiredBooleanVO { return this.props.isPrimary; }
+  get userId(): EntityIdVO { return this.props.userId; }
 }
 ```
 
@@ -1116,104 +1340,83 @@ function createRule(name: string, expression: string): Rule {
 
 | Requirement | Description |
 |-------------|-------------|
-| **Factory returns Result** | `Entity.create(...): Result<Entity, Error>` - MUST return error if invalid |
-| **Private constructor** | Prevent direct instantiation with `new` |
-| **Readonly properties** | Use `readonly` or getters to prevent mutation |
-| **No Setters** | Mutation through domain methods that validate |
-| **Invariants enforced** | Business rules validated at construction |
+| **Private constructor** | Prevent direct instantiation — use `create()`/`from()` factories |
+| **`build` method** | Private static method that converts primitives to Value Objects |
+| **`create()` factory** | For new entities — calls `build`, may raise domain events |
+| **`from()` factory** | For reconstruction from database — calls `build`, no events |
+| **Library base classes** | Extend `AggregateRoot<Props>` or `Entity<Props>` from mars-api/core |
+| **`ToPrimitives<T>` type** | Export primitive type for use in mappers and inputs |
+| **Value Objects for all properties** | Use `EntityIdVO`, `RequiredStringVO`, `RequiredBooleanVO`, `DateVO`, `EmailVO`, etc. |
+| **Domain events** | Aggregates raise events via `this.raiseEvent()` — events from `@v4-company/mars-events` |
+| **Domain behavior methods** | State changes through methods that validate and enforce invariants |
 
-### Mutation Pattern
-
-When entities need to change state, use domain methods that validate:
-
-```typescript
-// ✅ CORRECT: Mutation with validation
-class Rule {
-    // ...
-
-    updateExpression(newExpression: string): Result<void, ValidationError> {
-        if (!isValidExpression(newExpression)) {
-            return err(new ValidationError('invalid expression syntax'));
-        }
-        // TypeScript: use Object.assign or create new instance for immutability
-        Object.assign(this, { _expression: newExpression });
-        return ok(undefined);
-    }
-}
-
-// ❌ FORBIDDEN: Direct property assignment
-rule.expression = 'invalid!!!';  // Compilation error (readonly)
-```
-
-### Reconstruction from Database
-
-When loading from database, use a separate reconstruction method:
+### UseCase Pattern (orchestration)
 
 ```typescript
-// For repository use ONLY - reconstructs from trusted storage
-static reconstruct(
-    id: string,
-    name: string,
-    expression: string,
-    createdAt: Date,
-): Rule {
-    // Skip validation - data is from trusted storage
-    return new Rule(id, name, expression, createdAt);
+@injectable()
+export class CreateProjectUseCase implements UseCase<CreateProjectRequest, ProjectResponse> {
+  constructor(
+    @inject(TYPES.UnitOfWork) private readonly uow: UnityOfWork,
+    @inject(TYPES.ProjectRepository) private readonly projectRepository: ProjectRepository,
+    @inject(TYPES.EventBus) private readonly eventBus: EventBus,
+  ) {}
+
+  async execute(input: CreateProjectRequest, auth: AuthResponse): Promise<ProjectResponse> {
+    // 1. Business logic
+    const project = Project.create({ name: input.props.name, createdBy: auth.sub });
+
+    // 2. UoW: start → register → commit
+    await this.uow.start([this.projectRepository]);
+    this.uow.registerNew(project);
+    await this.uow.commit();
+
+    // 3. Events AFTER commit (never before)
+    await this.eventBus.publish(project.raisedEvents);
+
+    // 4. Return mapped DTO
+    return new ProjectResponseMapper().toResponse({ project });
+  }
 }
 ```
 
-**Note:** `reconstruct` methods skip validation because data is from trusted storage (already validated at creation).
-
-### Integration with HTTP Layer
-
-HTTP handlers still use Zod for input validation, but MUST create domain entities via factories:
+### Input DTO Pattern (Zod + RequestDto)
 
 ```typescript
-// Zod schema - validation at boundary
-const createRuleSchema = z.object({
-    name: z.string().min(1).max(255),
-    expression: z.string().min(1),
+import { z } from "zod";
+import { RequestDto } from "@v4-company/mars-api/core";
+
+export const CreateProjectSchema = z.object({
+  name: z.string().min(1).max(255),
+  description: z.string().optional(),
+  template: z.enum(["TYPESCRIPT", "GOLANG"]),
 });
 
-// Handler creates domain entity
-async function createRule(req: Request): Promise<Response> {
-    // Boundary validation
-    const parsed = createRuleSchema.safeParse(req.body);
-    if (!parsed.success) {
-        return errorResponse(parsed.error);
-    }
+export type CreateProjectDTO = z.infer<typeof CreateProjectSchema>;
 
-    // Domain entity creation - additional business validation
-    const ruleResult = Rule.create(parsed.data.name, parsed.data.expression);
-    if (ruleResult.isErr()) {
-        return errorResponse(ruleResult.error);
-    }
-
-    // ...
+export class CreateProjectRequest extends RequestDto<typeof CreateProjectSchema> {
+  constructor(data: CreateProjectDTO) {
+    super(CreateProjectSchema, data);
+  }
 }
 ```
 
-### Result Type Pattern
-
-Use a Result type for operations that can fail:
+### Response Mapper Pattern
 
 ```typescript
-type Result<T, E> = { ok: true; value: T } | { ok: false; error: E };
+import { type ResponseMapper } from "@v4-company/mars-api/core";
 
-function ok<T>(value: T): Result<T, never> {
-    return { ok: true, value };
-}
+type ProjectParam = { project: Project };
 
-function err<E>(error: E): Result<never, E> {
-    return { ok: false, error };
-}
-
-// Usage
-const result = Rule.create(name, expression);
-if (result.ok) {
-    const rule = result.value;
-} else {
-    const error = result.error;
+export class ProjectResponseMapper implements ResponseMapper<ProjectParam, ProjectResponse> {
+  toResponse({ project }: ProjectParam): ProjectResponse {
+    return {
+      id: project.id.value,
+      name: project.props.name.value,
+      description: project.props.description?.value ?? null,
+      createdBy: project.props.createdBy.value,
+      createdAt: project.props.createdAt.value,
+    };
+  }
 }
 ```
 
