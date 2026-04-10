@@ -1,5 +1,5 @@
 """
-Tests for Ring installer core functionality.
+Tests for MarsAI installer core functionality.
 
 Tests the main installation, update, and uninstall functions along with
 supporting data structures and component discovery.
@@ -11,7 +11,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from ring_installer.core import _build_codex_skill_name_map, _discover_codex_support_dirs
+from marsai_installer.core import _build_codex_skill_name_map, _discover_codex_support_dirs
 
 # ==============================================================================
 # InstallStatus Tests
@@ -22,7 +22,7 @@ class TestInstallStatus:
 
     def test_status_values_exist(self):
         """InstallStatus should have expected status values."""
-        from ring_installer.core import InstallStatus
+        from marsai_installer.core import InstallStatus
 
         assert hasattr(InstallStatus, "SUCCESS")
         assert hasattr(InstallStatus, "PARTIAL")
@@ -31,7 +31,7 @@ class TestInstallStatus:
 
     def test_status_values(self):
         """InstallStatus values should be correct strings."""
-        from ring_installer.core import InstallStatus
+        from marsai_installer.core import InstallStatus
 
         assert InstallStatus.SUCCESS.value == "success"
         assert InstallStatus.PARTIAL.value == "partial"
@@ -48,7 +48,7 @@ class TestInstallTarget:
 
     def test_create_with_valid_platform(self):
         """InstallTarget should accept valid platform identifiers."""
-        from ring_installer.core import InstallTarget
+        from marsai_installer.core import InstallTarget
 
         target = InstallTarget(platform="claude")
 
@@ -58,7 +58,7 @@ class TestInstallTarget:
 
     def test_create_with_all_parameters(self):
         """InstallTarget should accept all optional parameters."""
-        from ring_installer.core import InstallTarget
+        from marsai_installer.core import InstallTarget
 
         target = InstallTarget(
             platform="factory",
@@ -72,7 +72,7 @@ class TestInstallTarget:
 
     def test_rejects_invalid_platform(self):
         """InstallTarget should reject unsupported platforms."""
-        from ring_installer.core import InstallTarget
+        from marsai_installer.core import InstallTarget
 
         with pytest.raises(ValueError) as exc_info:
             InstallTarget(platform="invalid_platform")
@@ -82,7 +82,7 @@ class TestInstallTarget:
 
     def test_expands_user_path(self):
         """InstallTarget should expand ~ in path."""
-        from ring_installer.core import InstallTarget
+        from marsai_installer.core import InstallTarget
 
         target = InstallTarget(platform="claude", path=Path("~/.custom"))
 
@@ -92,7 +92,7 @@ class TestInstallTarget:
     @pytest.mark.parametrize("platform", ["claude", "codex", "factory", "opencode", "pi"])
     def test_accepts_all_supported_platforms(self, platform):
         """InstallTarget should accept all supported platform identifiers."""
-        from ring_installer.core import InstallTarget
+        from marsai_installer.core import InstallTarget
 
         target = InstallTarget(platform=platform)
 
@@ -114,8 +114,8 @@ class TestCodexSkillNameMap:
 
         name_map, alias_map = _build_codex_skill_name_map(components)
 
-        assert name_map[("default", "skills", "sample-skill")] == "ring-default-sample-skill"
-        assert alias_map["sample-skill"] == "ring-default-sample-skill"
+        assert name_map[("default", "skills", "sample-skill")] == "marsai-default-sample-skill"
+        assert alias_map["sample-skill"] == "marsai-default-sample-skill"
 
 
 class TestCodexSupportDiscovery:
@@ -148,7 +148,7 @@ class TestInstallOptions:
 
     def test_default_values(self):
         """InstallOptions should have sensible defaults."""
-        from ring_installer.core import InstallOptions
+        from marsai_installer.core import InstallOptions
 
         options = InstallOptions()
 
@@ -161,7 +161,7 @@ class TestInstallOptions:
 
     def test_custom_values(self):
         """InstallOptions should accept custom values."""
-        from ring_installer.core import InstallOptions
+        from marsai_installer.core import InstallOptions
 
         options = InstallOptions(
             dry_run=True,
@@ -189,7 +189,7 @@ class TestComponentResult:
 
     def test_create_with_required_fields(self):
         """ComponentResult should require source_path, target_path, status."""
-        from ring_installer.core import ComponentResult, InstallStatus
+        from marsai_installer.core import ComponentResult, InstallStatus
 
         result = ComponentResult(
             source_path=Path("/source/file.md"),
@@ -205,7 +205,7 @@ class TestComponentResult:
 
     def test_create_with_all_fields(self):
         """ComponentResult should accept all optional fields."""
-        from ring_installer.core import ComponentResult, InstallStatus
+        from marsai_installer.core import ComponentResult, InstallStatus
 
         result = ComponentResult(
             source_path=Path("/source/file.md"),
@@ -228,7 +228,7 @@ class TestInstallResult:
 
     def test_default_values(self):
         """InstallResult should have sensible defaults."""
-        from ring_installer.core import InstallResult, InstallStatus
+        from marsai_installer.core import InstallResult, InstallStatus
 
         result = InstallResult(status=InstallStatus.SUCCESS)
 
@@ -244,7 +244,7 @@ class TestInstallResult:
 
     def test_add_success(self):
         """add_success() should record successful installation."""
-        from ring_installer.core import InstallResult, InstallStatus
+        from marsai_installer.core import InstallResult, InstallStatus
 
         result = InstallResult(status=InstallStatus.SUCCESS)
         source = Path("/source/file.md")
@@ -262,7 +262,7 @@ class TestInstallResult:
 
     def test_add_failure(self):
         """add_failure() should record failed installation."""
-        from ring_installer.core import InstallResult, InstallStatus
+        from marsai_installer.core import InstallResult, InstallStatus
 
         result = InstallResult(status=InstallStatus.SUCCESS)
         source = Path("/source/file.md")
@@ -278,7 +278,7 @@ class TestInstallResult:
 
     def test_add_skip(self):
         """add_skip() should record skipped component."""
-        from ring_installer.core import InstallResult, InstallStatus
+        from marsai_installer.core import InstallResult, InstallStatus
 
         result = InstallResult(status=InstallStatus.SUCCESS)
         source = Path("/source/file.md")
@@ -294,7 +294,7 @@ class TestInstallResult:
 
     def test_finalize_success(self):
         """finalize() should set SUCCESS when no failures."""
-        from ring_installer.core import InstallResult, InstallStatus
+        from marsai_installer.core import InstallResult, InstallStatus
 
         result = InstallResult(status=InstallStatus.SUCCESS)
         result.add_success(Path("/s"), Path("/t"))
@@ -306,7 +306,7 @@ class TestInstallResult:
 
     def test_finalize_partial(self):
         """finalize() should set PARTIAL when some failures."""
-        from ring_installer.core import InstallResult, InstallStatus
+        from marsai_installer.core import InstallResult, InstallStatus
 
         result = InstallResult(status=InstallStatus.SUCCESS)
         result.add_success(Path("/s"), Path("/t"))
@@ -318,7 +318,7 @@ class TestInstallResult:
 
     def test_finalize_failed(self):
         """finalize() should set FAILED when all failures."""
-        from ring_installer.core import InstallResult, InstallStatus
+        from marsai_installer.core import InstallResult, InstallStatus
 
         result = InstallResult(status=InstallStatus.SUCCESS)
         result.add_failure(Path("/s"), Path("/t"), "Error 1")
@@ -330,7 +330,7 @@ class TestInstallResult:
 
     def test_finalize_skipped(self):
         """finalize() should set SKIPPED when all skipped and no failures."""
-        from ring_installer.core import InstallResult, InstallStatus
+        from marsai_installer.core import InstallResult, InstallStatus
 
         result = InstallResult(status=InstallStatus.SUCCESS)
         result.add_skip(Path("/s"), Path("/t"), "Exists")
@@ -350,7 +350,7 @@ class TestLoadManifest:
 
     def test_loads_valid_manifest(self, tmp_path):
         """load_manifest() should load valid JSON manifest."""
-        from ring_installer.core import load_manifest
+        from marsai_installer.core import load_manifest
 
         manifest_data = {
             "platforms": {
@@ -371,7 +371,7 @@ class TestLoadManifest:
 
     def test_raises_on_missing_file(self, tmp_path):
         """load_manifest() should raise FileNotFoundError for missing file."""
-        from ring_installer.core import load_manifest
+        from marsai_installer.core import load_manifest
 
         missing_path = tmp_path / "nonexistent.json"
 
@@ -382,7 +382,7 @@ class TestLoadManifest:
 
     def test_raises_on_invalid_json(self, tmp_path):
         """load_manifest() should raise JSONDecodeError for invalid JSON."""
-        from ring_installer.core import load_manifest
+        from marsai_installer.core import load_manifest
 
         invalid_path = tmp_path / "invalid.json"
         invalid_path.write_text("{ invalid json }")
@@ -394,14 +394,14 @@ class TestLoadManifest:
         """load_manifest() should use bundled manifest when path is None."""
         import importlib.resources
 
-        from ring_installer.core import load_manifest
+        from marsai_installer.core import load_manifest
 
         # Check if bundled manifest exists before testing
         try:
             # Try to find the bundled manifest
             if hasattr(importlib.resources, 'files'):
                 # Python 3.9+
-                pkg_files = importlib.resources.files('ring_installer')
+                pkg_files = importlib.resources.files('marsai_installer')
                 manifest_file = pkg_files / 'data' / 'platforms.json'
                 manifest_exists = manifest_file.is_file() if hasattr(manifest_file, 'is_file') else False
             else:
@@ -425,7 +425,7 @@ class TestDiscoverRingComponents:
 
     def test_discovers_marketplace_structure(self, tmp_ring_root):
         """discover_ring_components() should find components in marketplace structure."""
-        from ring_installer.core import discover_ring_components
+        from marsai_installer.core import discover_ring_components
 
         components = discover_ring_components(tmp_ring_root)
 
@@ -436,7 +436,7 @@ class TestDiscoverRingComponents:
 
     def test_discovers_legacy_structure(self, tmp_path):
         """discover_ring_components() should find components in legacy structure."""
-        from ring_installer.core import discover_ring_components
+        from marsai_installer.core import discover_ring_components
 
         # Create legacy (non-marketplace) structure
         (tmp_path / "agents").mkdir()
@@ -453,7 +453,7 @@ class TestDiscoverRingComponents:
 
     def test_filters_by_plugin_names(self, tmp_ring_root):
         """discover_ring_components() should filter by plugin names."""
-        from ring_installer.core import discover_ring_components
+        from marsai_installer.core import discover_ring_components
 
         components = discover_ring_components(tmp_ring_root, plugin_names=["default"])
 
@@ -462,7 +462,7 @@ class TestDiscoverRingComponents:
 
     def test_excludes_plugins(self, tmp_ring_root):
         """discover_ring_components() should exclude specified plugins."""
-        from ring_installer.core import discover_ring_components
+        from marsai_installer.core import discover_ring_components
 
         components = discover_ring_components(tmp_ring_root, exclude_plugins=["default"])
 
@@ -470,7 +470,7 @@ class TestDiscoverRingComponents:
 
     def test_returns_empty_for_missing_components(self, tmp_path):
         """discover_ring_components() should return empty lists for missing dirs."""
-        from ring_installer.core import discover_ring_components
+        from marsai_installer.core import discover_ring_components
 
         # Empty directory
         components = discover_ring_components(tmp_path)
@@ -483,7 +483,7 @@ class TestDiscoverRingComponents:
 
     def test_discovers_hooks(self, tmp_ring_root):
         """discover_ring_components() should discover hook files."""
-        from ring_installer.core import discover_ring_components
+        from marsai_installer.core import discover_ring_components
 
         components = discover_ring_components(tmp_ring_root)
 
@@ -500,7 +500,7 @@ class TestInstall:
 
     def test_install_single_platform(self, tmp_ring_root, tmp_install_dir):
         """install() should install components to a single platform."""
-        from ring_installer.core import InstallOptions, InstallStatus, InstallTarget, install
+        from marsai_installer.core import InstallOptions, InstallStatus, InstallTarget, install
 
         target = InstallTarget(platform="claude", path=tmp_install_dir)
         options = InstallOptions(force=True)
@@ -512,7 +512,7 @@ class TestInstall:
 
     def test_install_multiple_platforms(self, tmp_ring_root, tmp_path):
         """install() should install to multiple platforms."""
-        from ring_installer.core import InstallOptions, InstallTarget, install
+        from marsai_installer.core import InstallOptions, InstallTarget, install
 
         claude_dir = tmp_path / "claude"
         factory_dir = tmp_path / "factory"
@@ -532,7 +532,7 @@ class TestInstall:
 
     def test_install_factory_skill_structure(self, tmp_ring_root, tmp_path):
         """Factory installs skills as skills/<name>/SKILL.md (no plugin subdir)."""
-        from ring_installer.core import InstallOptions, InstallTarget, install
+        from marsai_installer.core import InstallOptions, InstallTarget, install
 
         factory_dir = tmp_path / "factory"
         factory_dir.mkdir()
@@ -552,7 +552,7 @@ class TestInstall:
 
     def test_install_factory_hooks_installed(self, tmp_ring_root, tmp_path):
         """Factory installs hooks.json under hooks/ root (no plugin subdir)."""
-        from ring_installer.core import InstallOptions, InstallTarget, install
+        from marsai_installer.core import InstallOptions, InstallTarget, install
 
         factory_dir = tmp_path / "factory"
         factory_dir.mkdir()
@@ -585,7 +585,7 @@ class TestInstall:
 
     def test_install_dry_run(self, tmp_ring_root, tmp_install_dir):
         """install() should not create files in dry run mode."""
-        from ring_installer.core import InstallOptions, InstallTarget, install
+        from marsai_installer.core import InstallOptions, InstallTarget, install
 
         target = InstallTarget(platform="claude", path=tmp_install_dir)
         options = InstallOptions(dry_run=True, verbose=True)
@@ -597,7 +597,7 @@ class TestInstall:
 
     def test_install_skips_existing_without_force(self, tmp_ring_root, tmp_install_dir):
         """install() should skip existing files when force=False."""
-        from ring_installer.core import InstallOptions, InstallTarget, install
+        from marsai_installer.core import InstallOptions, InstallTarget, install
 
         # First install
         target = InstallTarget(platform="claude", path=tmp_install_dir)
@@ -612,7 +612,7 @@ class TestInstall:
 
     def test_install_creates_backups(self, tmp_ring_root, tmp_install_dir):
         """install() should create backups when overwriting."""
-        from ring_installer.core import InstallOptions, InstallTarget, install
+        from marsai_installer.core import InstallOptions, InstallTarget, install
 
         target = InstallTarget(platform="claude", path=tmp_install_dir)
         options = InstallOptions(force=True, backup=True)
@@ -630,7 +630,7 @@ class TestInstall:
 
     def test_install_calls_progress_callback(self, tmp_ring_root, tmp_install_dir):
         """install() should call progress callback during installation."""
-        from ring_installer.core import InstallOptions, InstallTarget, install
+        from marsai_installer.core import InstallOptions, InstallTarget, install
 
         progress_calls = []
 
@@ -649,7 +649,7 @@ class TestInstall:
 
     def test_install_filters_components(self, tmp_ring_root, tmp_install_dir):
         """install() should respect component filter."""
-        from ring_installer.core import InstallOptions, InstallTarget, install
+        from marsai_installer.core import InstallOptions, InstallTarget, install
 
         target = InstallTarget(
             platform="claude",
@@ -667,7 +667,7 @@ class TestInstall:
 
     def test_install_handles_read_error(self, tmp_ring_root, tmp_install_dir):
         """install() should handle file read errors gracefully."""
-        from ring_installer.core import InstallOptions, InstallTarget, install
+        from marsai_installer.core import InstallOptions, InstallTarget, install
 
         target = InstallTarget(platform="claude", path=tmp_install_dir)
         options = InstallOptions(force=True)
@@ -689,7 +689,7 @@ class TestUpdate:
 
     def test_update_is_install_with_force(self, tmp_ring_root, tmp_install_dir):
         """update() should be equivalent to install with force=True."""
-        from ring_installer.core import InstallOptions, InstallTarget, update
+        from marsai_installer.core import InstallOptions, InstallTarget, update
 
         target = InstallTarget(platform="claude", path=tmp_install_dir)
         options = InstallOptions()
@@ -701,7 +701,7 @@ class TestUpdate:
 
     def test_update_overwrites_existing(self, tmp_ring_root, tmp_install_dir):
         """update() should overwrite existing files."""
-        from ring_installer.core import InstallOptions, InstallTarget, install, update
+        from marsai_installer.core import InstallOptions, InstallTarget, install, update
 
         target = InstallTarget(platform="claude", path=tmp_install_dir)
 
@@ -730,7 +730,7 @@ class TestUninstall:
 
     def test_uninstall_removes_component_directories(self, tmp_ring_root, tmp_install_dir):
         """uninstall() should remove component directories."""
-        from ring_installer.core import InstallOptions, InstallTarget, install, uninstall
+        from marsai_installer.core import InstallOptions, InstallTarget, install, uninstall
 
         target = InstallTarget(platform="claude", path=tmp_install_dir)
 
@@ -745,7 +745,7 @@ class TestUninstall:
 
     def test_uninstall_dry_run(self, tmp_ring_root, tmp_install_dir):
         """uninstall() should not remove files in dry run mode."""
-        from ring_installer.core import InstallOptions, InstallTarget, install, uninstall
+        from marsai_installer.core import InstallOptions, InstallTarget, install, uninstall
 
         target = InstallTarget(platform="claude", path=tmp_install_dir)
 
@@ -765,7 +765,7 @@ class TestUninstall:
 
     def test_uninstall_creates_backups(self, tmp_ring_root, tmp_install_dir):
         """uninstall() should create backups when requested."""
-        from ring_installer.core import InstallOptions, InstallTarget, install, uninstall
+        from marsai_installer.core import InstallOptions, InstallTarget, install, uninstall
 
         target = InstallTarget(platform="claude", path=tmp_install_dir)
 
@@ -780,7 +780,7 @@ class TestUninstall:
 
     def test_uninstall_handles_missing_directories(self, tmp_install_dir):
         """uninstall() should handle missing directories gracefully."""
-        from ring_installer.core import InstallOptions, InstallTarget, uninstall
+        from marsai_installer.core import InstallOptions, InstallTarget, uninstall
 
         target = InstallTarget(platform="claude", path=tmp_install_dir)
 
@@ -800,7 +800,7 @@ class TestListInstalled:
 
     def test_list_installed_finds_components(self, tmp_ring_root, tmp_install_dir):
         """list_installed() should find installed components."""
-        from ring_installer.core import InstallOptions, InstallTarget, install, list_installed
+        from marsai_installer.core import InstallOptions, InstallTarget, install, list_installed
 
         target = InstallTarget(platform="claude", path=tmp_install_dir)
 
@@ -808,7 +808,7 @@ class TestListInstalled:
         install(tmp_ring_root, [target], InstallOptions(force=True))
 
         # Mock get_adapter to return our custom path
-        with patch("ring_installer.core.get_adapter") as mock_get_adapter:
+        with patch("marsai_installer.core.get_adapter") as mock_get_adapter:
             mock_adapter = MagicMock()
             mock_adapter.get_install_path.return_value = tmp_install_dir
             mock_adapter.get_component_mapping.return_value = {
@@ -827,9 +827,9 @@ class TestListInstalled:
 
     def test_list_installed_empty_when_nothing_installed(self, tmp_install_dir):
         """list_installed() should return empty lists when nothing installed."""
-        from ring_installer.core import list_installed
+        from marsai_installer.core import list_installed
 
-        with patch("ring_installer.core.get_adapter") as mock_get_adapter:
+        with patch("marsai_installer.core.get_adapter") as mock_get_adapter:
             mock_adapter = MagicMock()
             mock_adapter.get_install_path.return_value = tmp_install_dir
             mock_adapter.get_component_mapping.return_value = {
@@ -851,7 +851,7 @@ class TestUpdateCheckResult:
 
     def test_default_values(self):
         """UpdateCheckResult should have sensible defaults."""
-        from ring_installer.core import UpdateCheckResult
+        from marsai_installer.core import UpdateCheckResult
 
         result = UpdateCheckResult(
             platform="claude",
@@ -870,7 +870,7 @@ class TestUpdateCheckResult:
 
     def test_has_changes_property(self):
         """has_changes should return True when there are changes."""
-        from ring_installer.core import UpdateCheckResult
+        from marsai_installer.core import UpdateCheckResult
 
         # No changes
         result = UpdateCheckResult(
@@ -921,13 +921,13 @@ class TestCheckUpdates:
 
     def test_check_updates_returns_results_per_platform(self, tmp_ring_root, tmp_install_dir):
         """check_updates() should return results for each target platform."""
-        from ring_installer.core import InstallTarget, check_updates
+        from marsai_installer.core import InstallTarget, check_updates
 
         targets = [
             InstallTarget(platform="claude", path=tmp_install_dir)
         ]
 
-        with patch("ring_installer.core.check_for_updates") as mock_check:
+        with patch("marsai_installer.core.check_for_updates") as mock_check:
             mock_check.return_value = MagicMock(
                 installed_version="1.0.0",
                 available_version="1.1.0",
@@ -944,13 +944,13 @@ class TestCheckUpdates:
 
     def test_check_updates_detects_no_updates(self, tmp_ring_root, tmp_install_dir):
         """check_updates() should detect when no updates available."""
-        from ring_installer.core import InstallTarget, check_updates
+        from marsai_installer.core import InstallTarget, check_updates
 
         targets = [
             InstallTarget(platform="claude", path=tmp_install_dir)
         ]
 
-        with patch("ring_installer.core.check_for_updates") as mock_check:
+        with patch("marsai_installer.core.check_for_updates") as mock_check:
             mock_check.return_value = MagicMock(
                 installed_version="1.0.0",
                 available_version="1.0.0",
@@ -974,7 +974,7 @@ class TestUpdateWithDiff:
 
     def test_update_with_diff_skips_unchanged(self, tmp_ring_root, tmp_install_dir):
         """update_with_diff() should skip unchanged files."""
-        from ring_installer.core import InstallOptions, InstallTarget, install, update_with_diff
+        from marsai_installer.core import InstallOptions, InstallTarget, install, update_with_diff
 
         target = InstallTarget(platform="claude", path=tmp_install_dir)
 
@@ -989,7 +989,7 @@ class TestUpdateWithDiff:
 
     def test_update_with_diff_updates_changed(self, tmp_ring_root, tmp_install_dir):
         """update_with_diff() should update changed files."""
-        from ring_installer.core import InstallOptions, InstallTarget, install, update_with_diff
+        from marsai_installer.core import InstallOptions, InstallTarget, install, update_with_diff
 
         target = InstallTarget(platform="claude", path=tmp_install_dir)
 
@@ -1011,7 +1011,7 @@ class TestUpdateWithDiff:
 
     def test_update_with_diff_dry_run(self, tmp_ring_root, tmp_install_dir):
         """update_with_diff() should support dry run mode."""
-        from ring_installer.core import InstallOptions, InstallTarget, install, update_with_diff
+        from marsai_installer.core import InstallOptions, InstallTarget, install, update_with_diff
 
         target = InstallTarget(platform="claude", path=tmp_install_dir)
         options = InstallOptions(dry_run=True, verbose=True)
@@ -1045,7 +1045,7 @@ class TestSyncResult:
 
     def test_default_values(self):
         """SyncResult should have sensible defaults."""
-        from ring_installer.core import SyncResult
+        from marsai_installer.core import SyncResult
 
         result = SyncResult()
 
@@ -1065,7 +1065,7 @@ class TestSyncPlatforms:
 
     def test_sync_platforms_detects_drift(self, tmp_ring_root, tmp_path):
         """sync_platforms() should detect version drift."""
-        from ring_installer.core import InstallTarget, sync_platforms
+        from marsai_installer.core import InstallTarget, sync_platforms
 
         claude_dir = tmp_path / "claude"
         claude_dir.mkdir()
@@ -1074,8 +1074,8 @@ class TestSyncPlatforms:
             InstallTarget(platform="claude", path=claude_dir)
         ]
 
-        with patch("ring_installer.core.get_installed_version") as mock_version, \
-             patch("ring_installer.core.get_ring_version") as mock_ring:
+        with patch("marsai_installer.core.get_installed_version") as mock_version, \
+             patch("marsai_installer.core.get_ring_version") as mock_marsai:
             mock_version.return_value = "1.0.0"
             mock_ring.return_value = "1.1.0"
 
@@ -1086,7 +1086,7 @@ class TestSyncPlatforms:
 
     def test_sync_platforms_syncs_all_targets(self, tmp_ring_root, tmp_path):
         """sync_platforms() should sync all target platforms."""
-        from ring_installer.core import InstallOptions, InstallTarget, sync_platforms
+        from marsai_installer.core import InstallOptions, InstallTarget, sync_platforms
 
         claude_dir = tmp_path / "claude"
         factory_dir = tmp_path / "factory"
@@ -1114,7 +1114,7 @@ class TestUninstallWithManifest:
 
     def test_uninstall_with_manifest_uses_manifest(self, tmp_install_dir):
         """uninstall_with_manifest() should use manifest for precision removal."""
-        from ring_installer.core import InstallOptions, InstallTarget, uninstall_with_manifest
+        from marsai_installer.core import InstallOptions, InstallTarget, uninstall_with_manifest
 
         target = InstallTarget(platform="claude", path=tmp_install_dir)
 
@@ -1125,9 +1125,9 @@ class TestUninstallWithManifest:
             }
         }
 
-        with patch("ring_installer.core.InstallManifest") as mock_manifest_cls, \
-             patch("ring_installer.core.get_manifest_path") as mock_path, \
-             patch("ring_installer.core.safe_remove"):
+        with patch("marsai_installer.core.InstallManifest") as mock_manifest_cls, \
+             patch("marsai_installer.core.get_manifest_path") as mock_path, \
+             patch("marsai_installer.core.safe_remove"):
 
             mock_manifest = MagicMock()
             mock_manifest.files = manifest_data["files"]
@@ -1141,12 +1141,12 @@ class TestUninstallWithManifest:
 
     def test_uninstall_with_manifest_falls_back(self, tmp_install_dir):
         """uninstall_with_manifest() should fall back when no manifest."""
-        from ring_installer.core import InstallOptions, InstallTarget, uninstall_with_manifest
+        from marsai_installer.core import InstallOptions, InstallTarget, uninstall_with_manifest
 
         target = InstallTarget(platform="claude", path=tmp_install_dir)
 
-        with patch("ring_installer.core.InstallManifest") as mock_manifest_cls, \
-             patch("ring_installer.core.get_manifest_path"):
+        with patch("marsai_installer.core.InstallManifest") as mock_manifest_cls, \
+             patch("marsai_installer.core.get_manifest_path"):
 
             mock_manifest_cls.load.return_value = None
 
@@ -1157,7 +1157,7 @@ class TestUninstallWithManifest:
 
     def test_uninstall_with_manifest_dry_run(self, tmp_install_dir):
         """uninstall_with_manifest() should support dry run mode."""
-        from ring_installer.core import InstallOptions, InstallTarget, uninstall_with_manifest
+        from marsai_installer.core import InstallOptions, InstallTarget, uninstall_with_manifest
 
         target = InstallTarget(platform="claude", path=tmp_install_dir)
 
@@ -1167,8 +1167,8 @@ class TestUninstallWithManifest:
         test_file = agents_dir / "test.md"
         test_file.write_text("content")
 
-        with patch("ring_installer.core.InstallManifest") as mock_manifest_cls, \
-             patch("ring_installer.core.get_manifest_path"):
+        with patch("marsai_installer.core.InstallManifest") as mock_manifest_cls, \
+             patch("marsai_installer.core.get_manifest_path"):
 
             mock_manifest = MagicMock()
             mock_manifest.files = {"agents/test.md": "hash123"}
@@ -1189,7 +1189,7 @@ class TestIntegration:
 
     def test_full_install_update_uninstall_cycle(self, tmp_ring_root, tmp_install_dir):
         """Test complete install -> update -> uninstall cycle."""
-        from ring_installer.core import (
+        from marsai_installer.core import (
             InstallOptions,
             InstallStatus,
             InstallTarget,
@@ -1214,7 +1214,7 @@ class TestIntegration:
 
     def test_multi_platform_install(self, tmp_ring_root, tmp_path):
         """Test installing to multiple platforms simultaneously."""
-        from ring_installer.core import InstallOptions, InstallTarget, install
+        from marsai_installer.core import InstallOptions, InstallTarget, install
 
         platforms = ["claude", "factory", "opencode", "pi"]
         targets = []
@@ -1232,7 +1232,7 @@ class TestIntegration:
 
     def test_selective_component_install(self, tmp_ring_root, tmp_install_dir):
         """Test installing only specific component types."""
-        from ring_installer.core import InstallOptions, InstallTarget, install
+        from marsai_installer.core import InstallOptions, InstallTarget, install
 
         # Install only agents
         target = InstallTarget(
@@ -1250,7 +1250,7 @@ class TestIntegration:
 
     def test_plugin_filtering(self, tmp_ring_root, tmp_install_dir):
         """Test filtering by plugin names."""
-        from ring_installer.core import InstallOptions, InstallTarget, install
+        from marsai_installer.core import InstallOptions, InstallTarget, install
 
         target = InstallTarget(platform="claude", path=tmp_install_dir)
         options = InstallOptions(
@@ -1273,7 +1273,7 @@ class TestEdgeCases:
 
     def test_empty_source_directory(self, tmp_path, tmp_install_dir):
         """Should handle empty source directory gracefully."""
-        from ring_installer.core import InstallOptions, InstallTarget, install
+        from marsai_installer.core import InstallOptions, InstallTarget, install
 
         target = InstallTarget(platform="claude", path=tmp_install_dir)
 
@@ -1284,7 +1284,7 @@ class TestEdgeCases:
 
     def test_install_with_none_options(self, tmp_ring_root, tmp_install_dir):
         """Should handle None options."""
-        from ring_installer.core import InstallTarget, install
+        from marsai_installer.core import InstallTarget, install
 
         target = InstallTarget(platform="claude", path=tmp_install_dir)
 
@@ -1294,7 +1294,7 @@ class TestEdgeCases:
 
     def test_empty_targets_list(self, tmp_ring_root):
         """Should handle empty targets list."""
-        from ring_installer.core import InstallOptions, install
+        from marsai_installer.core import InstallOptions, install
 
         result = install(tmp_ring_root, [], InstallOptions())
 
@@ -1303,7 +1303,7 @@ class TestEdgeCases:
 
     def test_unicode_content_handling(self, tmp_path, tmp_install_dir):
         """Should handle unicode content in files."""
-        from ring_installer.core import InstallOptions, InstallTarget, install
+        from marsai_installer.core import InstallOptions, InstallTarget, install
 
         # Create source with unicode content
         agents_dir = tmp_path / "agents"
@@ -1318,7 +1318,7 @@ class TestEdgeCases:
 
     def test_deeply_nested_skills(self, tmp_path, tmp_install_dir):
         """Should handle deeply nested skill directories."""
-        from ring_installer.core import discover_ring_components
+        from marsai_installer.core import discover_ring_components
 
         # Create nested skill
         skill_dir = tmp_path / "skills" / "deep-skill"
@@ -1331,7 +1331,7 @@ class TestEdgeCases:
 
     def test_special_characters_in_filenames(self, tmp_path, tmp_install_dir):
         """Should handle special characters in filenames."""
-        from ring_installer.core import InstallOptions, InstallTarget, install
+        from marsai_installer.core import InstallOptions, InstallTarget, install
 
         # Create source with special filename
         agents_dir = tmp_path / "agents"
@@ -1354,7 +1354,7 @@ class TestProgressCallback:
 
     def test_progress_callback_receives_all_components(self, tmp_ring_root, tmp_install_dir):
         """Progress callback should be called for each component."""
-        from ring_installer.core import InstallOptions, InstallTarget, install
+        from marsai_installer.core import InstallOptions, InstallTarget, install
 
         calls = []
 
@@ -1369,7 +1369,7 @@ class TestProgressCallback:
 
     def test_progress_callback_total_is_consistent(self, tmp_ring_root, tmp_install_dir):
         """Progress callback total should be consistent across calls."""
-        from ring_installer.core import InstallOptions, InstallTarget, install
+        from marsai_installer.core import InstallOptions, InstallTarget, install
 
         totals = set()
 
@@ -1385,7 +1385,7 @@ class TestProgressCallback:
 
     def test_progress_callback_current_increments(self, tmp_ring_root, tmp_install_dir):
         """Progress callback current should increment."""
-        from ring_installer.core import InstallOptions, InstallTarget, install
+        from marsai_installer.core import InstallOptions, InstallTarget, install
 
         currents = []
 

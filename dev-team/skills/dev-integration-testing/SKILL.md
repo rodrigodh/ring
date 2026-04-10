@@ -1,5 +1,5 @@
 ---
-name: ring:dev-integration-testing
+name: marsai:dev-integration-testing
 description: |
   Gate 6 of development cycle - ensures integration tests pass for all
   external dependency interactions using real containers via testcontainers.
@@ -10,7 +10,7 @@ trigger: |
   - Verifies real service integration with testcontainers
 
 skip_when: |
-  - Not inside a development cycle (ring:dev-cycle)
+  - Not inside a development cycle (marsai:dev-cycle)
   - Task is documentation-only, configuration-only, or non-code
   - Service has no external dependencies (no database, cache, queue, or external API)
   - Pure library package with no integration points
@@ -21,11 +21,11 @@ NOT_skip_when: |
   - "CI doesn't support Docker" - Fix CI. Docker is baseline infrastructure.
 
 sequence:
-  after: [ring:dev-property-testing]
-  before: [ring:dev-chaos-testing]
+  after: [marsai:dev-property-testing]
+  before: [marsai:dev-chaos-testing]
 
 related:
-  complementary: [ring:dev-cycle, ring:dev-testing, ring:qa-analyst]
+  complementary: [marsai:dev-cycle, marsai:dev-testing, marsai:qa-analyst]
 
 input_schema:
   required:
@@ -174,7 +174,7 @@ PM team task files often omit external_dependencies. If the codebase uses postgr
 ## Step 1: Validate Input
 
 ```text
-REQUIRED INPUT (from ring:dev-cycle orchestrator):
+REQUIRED INPUT (from marsai:dev-cycle orchestrator):
 <verify_before_proceed>
 - unit_id exists
 - language is valid (go|typescript)
@@ -249,13 +249,13 @@ integration_state = {
 
 ## Step 4: Dispatch QA Analyst Agent (Integration Mode)
 
-<dispatch_required agent="ring:qa-analyst">
+<dispatch_required agent="marsai:qa-analyst">
 Write integration tests for all scenarios using testcontainers.
 </dispatch_required>
 
 ```yaml
 Task:
-  subagent_type: "ring:qa-analyst"
+  subagent_type: "marsai:qa-analyst"
   description: "Integration testing for [unit_id]"
   prompt: |
     **test_mode: integration**
@@ -271,7 +271,7 @@ Task:
     [list external_dependencies with container requirements]
 
     ## Standards Reference
-    WebFetch: https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/golang/testing-integration.md
+    WebFetch: https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang/testing-integration.md
 
     Focus on: All sections, especially INT-5 (Build Tags), INT-6 (Testcontainers), INT-7 (No t.Parallel())
 

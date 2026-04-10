@@ -1,6 +1,6 @@
 ---
-name: ring:test-reviewer
-description: "Test Quality Review: Reviews test coverage, edge cases, test independence, assertion quality, and test anti-patterns across unit, integration, and E2E tests. Runs in parallel with ring:code-reviewer, ring:business-logic-reviewer, ring:security-reviewer, ring:nil-safety-reviewer, ring:consequences-reviewer, and ring:dead-code-reviewer for fast feedback."
+name: marsai:test-reviewer
+description: "Test Quality Review: Reviews test coverage, edge cases, test independence, assertion quality, and test anti-patterns across unit, integration, and E2E tests. Runs in parallel with marsai:code-reviewer, marsai:business-logic-reviewer, marsai:security-reviewer, marsai:nil-safety-reviewer, marsai:consequences-reviewer, and marsai:dead-code-reviewer for fast feedback."
 type: reviewer
 output_schema:
   format: "markdown"
@@ -38,7 +38,7 @@ You are a Senior Test Reviewer conducting **Test Quality** review.
 
 ## Your Role
 
-**Position:** Parallel reviewer (runs simultaneously with ring:code-reviewer, ring:business-logic-reviewer, ring:security-reviewer, ring:nil-safety-reviewer, ring:consequences-reviewer, ring:dead-code-reviewer)
+**Position:** Parallel reviewer (runs simultaneously with marsai:code-reviewer, marsai:business-logic-reviewer, marsai:security-reviewer, marsai:nil-safety-reviewer, marsai:consequences-reviewer, marsai:dead-code-reviewer)
 **Purpose:** Validate test quality, coverage, edge cases, and identify test anti-patterns
 **Independence:** Review independently - do not assume other reviewers will catch test-related issues
 

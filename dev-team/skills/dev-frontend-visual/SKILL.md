@@ -1,5 +1,5 @@
 ---
-name: ring:dev-frontend-visual
+name: marsai:dev-frontend-visual
 description: |
   Gate 4 of frontend development cycle - ensures all components have snapshot
   tests covering all states, viewports, and edge cases.
@@ -10,7 +10,7 @@ trigger: |
   - Catches visual regressions before review
 
 skip_when: |
-  - Not inside a frontend development cycle (ring:dev-cycle-frontend)
+  - Not inside a frontend development cycle (marsai:dev-cycle-frontend)
   - Backend-only project with no UI components
   - Task is documentation-only, configuration-only, or non-code
   - No new UI components were added or visual changes made in this cycle
@@ -21,11 +21,11 @@ NOT_skip_when: |
   - "Only default state matters" - Users see error, loading, and empty states too.
 
 sequence:
-  after: [ring:dev-unit-testing]
-  before: [ring:dev-frontend-e2e]
+  after: [marsai:dev-unit-testing]
+  before: [marsai:dev-frontend-e2e]
 
 related:
-  complementary: [ring:dev-cycle-frontend, ring:dev-unit-testing, ring:qa-analyst-frontend]
+  complementary: [marsai:dev-cycle-frontend, marsai:dev-unit-testing, marsai:qa-analyst-frontend]
 
 input_schema:
   required:
@@ -117,7 +117,7 @@ Ensure all frontend components have **snapshot tests** covering all states, resp
 **MANDATORY:** Load testing-visual.md standards via WebFetch.
 
 <fetch_required>
-https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/frontend/testing-visual.md
+https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/frontend/testing-visual.md
 </fetch_required>
 
 ---
@@ -141,7 +141,7 @@ if any REQUIRED input is missing:
 
 ```text
 Task tool:
-  subagent_type: "ring:qa-analyst-frontend"
+  subagent_type: "marsai:qa-analyst-frontend"
   prompt: |
     **MODE:** VISUAL TESTING (Gate 4)
 

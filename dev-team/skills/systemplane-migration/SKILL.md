@@ -1,5 +1,5 @@
 ---
-name: ring:systemplane-migration
+name: marsai:systemplane-migration
 description: >
   Gate-based systemplane migration orchestrator. Migrates Lerian Go services from
   .env/YAML-based configuration to the systemplane — a database-backed, hot-reloadable
@@ -28,7 +28,7 @@ prerequisites: |
   - PostgreSQL or MongoDB backend available
 
 sequence:
-  after: ["ring:dev-cycle"]
+  after: ["marsai:dev-cycle"]
 
 input_schema:
   type: object
@@ -75,15 +75,15 @@ output_schema:
 | Who | Responsibility |
 |-----|----------------|
 | **This Skill** | Detect stack, determine gates, pass context to agent, verify outputs, enforce order |
-| **ring:backend-engineer-golang** | Implement systemplane code following the patterns in this document |
-| **ring:codebase-explorer** | Analyze the codebase for configuration patterns (Gate 1) |
-| **ring:visual-explainer** | Generate implementation preview HTML (Gate 1.5) |
+| **marsai:backend-engineer-golang** | Implement systemplane code following the patterns in this document |
+| **marsai:codebase-explorer** | Analyze the codebase for configuration patterns (Gate 1) |
+| **marsai:visual-explainer** | Generate implementation preview HTML (Gate 1.5) |
 | **7 reviewers** | Review at Gate 8 |
 
 **CANNOT change scope:** the skill defines WHAT to implement. The agent implements HOW.
 
 **FORBIDDEN: Orchestrator MUST NOT use Edit, Write, or Bash tools to modify source code files.**
-All code changes MUST go through `Task(subagent_type="ring:backend-engineer-golang")`.
+All code changes MUST go through `Task(subagent_type="marsai:backend-engineer-golang")`.
 The orchestrator only verifies outputs (grep, go build, go test) — MUST NOT write implementation code.
 
 </cannot_skip>
@@ -247,14 +247,14 @@ MUST report all severities. CRITICAL: STOP immediately. HIGH: Fix before gate pa
 | Gate | Name | Condition | Agent |
 |------|------|-----------|-------|
 | 0 | Stack Detection + Prerequisite Audit | Always | Orchestrator |
-| 1 | Codebase Analysis (Config Focus) | Always | ring:codebase-explorer |
-| 1.5 | Implementation Preview | Always | Orchestrator (ring:visual-explainer) |
-| 2 | Key Definitions + Registry | Always | ring:backend-engineer-golang |
-| 3 | Bundle + BundleFactory | Always | ring:backend-engineer-golang |
-| 4 | Reconcilers | Conditional (skip if no workers AND no RMQ AND no HTTP policy changes) | ring:backend-engineer-golang |
-| 5 | Identity + Authorization | Always | ring:backend-engineer-golang |
-| 6 | Config Manager Bridge | Always | ring:backend-engineer-golang |
-| 7 | Wiring + HTTP Mount + Swagger + ChangeFeed | Always ⛔ NEVER SKIPPABLE | ring:backend-engineer-golang |
+| 1 | Codebase Analysis (Config Focus) | Always | marsai:codebase-explorer |
+| 1.5 | Implementation Preview | Always | Orchestrator (marsai:visual-explainer) |
+| 2 | Key Definitions + Registry | Always | marsai:backend-engineer-golang |
+| 3 | Bundle + BundleFactory | Always | marsai:backend-engineer-golang |
+| 4 | Reconcilers | Conditional (skip if no workers AND no RMQ AND no HTTP policy changes) | marsai:backend-engineer-golang |
+| 5 | Identity + Authorization | Always | marsai:backend-engineer-golang |
+| 6 | Config Manager Bridge | Always | marsai:backend-engineer-golang |
+| 7 | Wiring + HTTP Mount + Swagger + ChangeFeed | Always ⛔ NEVER SKIPPABLE | marsai:backend-engineer-golang |
 | 8 | Code Review | Always | 7 parallel reviewers |
 | 9 | User Validation | Always | User |
 | 10 | Activation Guide | Always | Orchestrator |
@@ -446,7 +446,7 @@ N3. Custom change notification channels:
 
 ```json
 {
-  "skill": "ring:systemplane-migration",
+  "skill": "marsai:systemplane-migration",
   "gate": "0",
   "detection": {
     "lib_commons_version": "v4.3.2",
@@ -473,7 +473,7 @@ MUST confirm: user explicitly approves detection results before proceeding.
 
 **Always executes. This gate builds the configuration inventory for all subsequent gates.**
 
-**Dispatch `ring:codebase-explorer` with systemplane-focused context:**
+**Dispatch `marsai:codebase-explorer` with systemplane-focused context:**
 
 > TASK: Analyze this codebase exclusively under the systemplane migration perspective.
 > DETECTED STACK: {databases and infrastructure from Gate 0}
@@ -520,11 +520,11 @@ HARD GATE: MUST complete the analysis report and config inventory before proceed
 
 **Always executes. This gate generates a visual HTML report showing exactly what will change before any code is written.**
 
-**Uses the `ring:visual-explainer` skill to produce a self-contained HTML page.**
+**Uses the `marsai:visual-explainer` skill to produce a self-contained HTML page.**
 
 The report is built from Gate 0 (stack detection) and Gate 1 (codebase analysis). It shows the developer a complete preview of every change that will be made across all subsequent gates.
 
-**Orchestrator generates the report using `ring:visual-explainer` with this content:**
+**Orchestrator generates the report using `marsai:visual-explainer` with this content:**
 
 The HTML page MUST include these sections:
 
@@ -645,7 +645,7 @@ HARD GATE: Developer MUST explicitly approve the implementation preview before a
 
 **Always executes.** This gate creates the key definition files that form the backbone of systemplane.
 
-**Dispatch `ring:backend-engineer-golang` with context from Gate 1 config inventory:**
+**Dispatch `marsai:backend-engineer-golang` with context from Gate 1 config inventory:**
 
 > TASK: Create systemplane key definition files based on the approved config inventory.
 >
@@ -776,7 +776,7 @@ Products MUST NOT leave the Settings API empty. If no per-tenant settings are id
 
 **Always executes.** This gate creates the runtime resource container and its incremental builder.
 
-**Dispatch `ring:backend-engineer-golang` with context from Gates 1-2:**
+**Dispatch `marsai:backend-engineer-golang` with context from Gates 1-2:**
 
 > TASK: Create the Bundle, BundleFactory, and per-component infrastructure builders.
 >
@@ -871,7 +871,7 @@ Products MUST NOT leave the Settings API empty. If no per-tenant settings are id
 - `PublisherReconciler` — if RabbitMQ detected
 - `WorkerReconciler` — if background workers detected
 
-**Dispatch `ring:backend-engineer-golang` with context from Gates 1-3:**
+**Dispatch `marsai:backend-engineer-golang` with context from Gates 1-3:**
 
 > TASK: Create reconcilers for side effects on config changes.
 >
@@ -922,7 +922,7 @@ Products MUST NOT leave the Settings API empty. If no per-tenant settings are id
 
 **Always executes.** Systemplane HTTP endpoints require identity resolution and permission checking.
 
-**Dispatch `ring:backend-engineer-golang` with context from Gate 1 analysis:**
+**Dispatch `marsai:backend-engineer-golang` with context from Gate 1 analysis:**
 
 > TASK: Implement IdentityResolver and Authorizer for systemplane HTTP endpoints.
 >
@@ -1004,7 +1004,7 @@ The authorizer MUST perform real permission checking. Two approved patterns:
 
 **Always executes.** This gate ensures backward compatibility — existing code reading the Config struct continues to work.
 
-**Dispatch `ring:backend-engineer-golang` with context from Gates 1-2:**
+**Dispatch `marsai:backend-engineer-golang` with context from Gates 1-2:**
 
 > TASK: Create the Config Manager bridge that hydrates the existing Config struct from systemplane Snapshot.
 >
@@ -1076,7 +1076,7 @@ This is where the systemplane comes alive. Without Gate 7, keys are metadata, bu
 
 </cannot_skip>
 
-**Dispatch `ring:backend-engineer-golang` with context from ALL previous gates:**
+**Dispatch `marsai:backend-engineer-golang` with context from ALL previous gates:**
 
 > TASK: Wire the complete systemplane lifecycle — init, HTTP mount, swagger merge, change feed, bundle state, and shutdown.
 >
@@ -1342,7 +1342,7 @@ go build ./...
 
 ## Gate 8: Code Review
 
-**Dispatch 7 parallel reviewers (same pattern as ring:requesting-code-review).**
+**Dispatch 7 parallel reviewers (same pattern as marsai:requesting-code-review).**
 
 MUST include this context in ALL 7 reviewer dispatches:
 
@@ -1357,13 +1357,13 @@ MUST include this context in ALL 7 reviewer dispatches:
 
 | Reviewer | Systemplane-Specific Focus |
 |----------|---------------------------|
-| ring:code-reviewer | Architecture, lib-commons v4 systemplane usage, three-tier separation, package boundaries, import paths |
-| ring:business-logic-reviewer | Key classification correctness, ApplyBehavior assignments, component granularity, default values match current behavior |
-| ring:security-reviewer | Secret key redaction (RedactFull/RedactMask), authorization model, no credential leaks in config API responses, AES-256-GCM encryption |
-| ring:test-reviewer | Key registration tests, bundle factory tests, reconciler tests, contract tests, config hydration tests |
-| ring:nil-safety-reviewer | Nil risks in snapshot reads, bundle adoption, reconciler error paths, active bundle state before first reload |
-| ring:consequences-reviewer | Impact on existing config reads, backward compat via StateSync, degradation when store unavailable, shutdown resource cleanup |
-| ring:dead-code-reviewer | Orphaned env-reading code, dead config helpers replaced by systemplane, unused YAML/viper imports, stale .env files |
+| marsai:code-reviewer | Architecture, lib-commons v4 systemplane usage, three-tier separation, package boundaries, import paths |
+| marsai:business-logic-reviewer | Key classification correctness, ApplyBehavior assignments, component granularity, default values match current behavior |
+| marsai:security-reviewer | Secret key redaction (RedactFull/RedactMask), authorization model, no credential leaks in config API responses, AES-256-GCM encryption |
+| marsai:test-reviewer | Key registration tests, bundle factory tests, reconciler tests, contract tests, config hydration tests |
+| marsai:nil-safety-reviewer | Nil risks in snapshot reads, bundle adoption, reconciler error paths, active bundle state before first reload |
+| marsai:consequences-reviewer | Impact on existing config reads, backward compat via StateSync, degradation when store unavailable, shutdown resource cleanup |
+| marsai:dead-code-reviewer | Orphaned env-reading code, dead config helpers replaced by systemplane, unused YAML/viper imports, stale .env files |
 
 **⛔ MANDATORY:** All 7 reviewers must PASS. 6/7 = FAIL. Critical findings → fix and re-review.
 
@@ -1492,7 +1492,7 @@ Save to `docs/ring-systemplane-migration/current-cycle.json` for resume support:
 
 ```json
 {
-  "skill": "ring:systemplane-migration",
+  "skill": "marsai:systemplane-migration",
   "version": "2.0.0",
   "service": "{service_name}",
   "started_at": "ISO8601",

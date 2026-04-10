@@ -1,13 +1,13 @@
 """
 Skill content transformer.
 
-Transforms Ring SKILL.md files to platform-specific formats.
+Transforms MarsAI SKILL.md files to platform-specific formats.
 """
 
 import re
 from typing import Any, Dict, List, Optional
 
-from ring_installer.transformers.base import (
+from marsai_installer.transformers.base import (
     BaseTransformer,
     TransformContext,
     TransformResult,
@@ -16,7 +16,7 @@ from ring_installer.transformers.base import (
 
 class SkillTransformer(BaseTransformer):
     """
-    Transformer for Ring skill files.
+    Transformer for MarsAI skill files.
 
     Handles transformation of YAML frontmatter and content body
     for different platform conventions.
@@ -74,7 +74,7 @@ class SkillTransformer(BaseTransformer):
         context: TransformContext
     ) -> TransformResult:
         """Transform skill for Claude Code (passthrough)."""
-        # Claude uses Ring format natively
+        # Claude uses MarsAI format natively
         if frontmatter:
             content = self.create_frontmatter(frontmatter) + "\n" + body
         else:

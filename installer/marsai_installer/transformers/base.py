@@ -68,7 +68,7 @@ class BaseTransformer(ABC):
     """
     Abstract base class for content transformers.
 
-    Transformers handle conversion of Ring component formats
+    Transformers handle conversion of MarsAI component formats
     to platform-specific formats.
     """
 
@@ -306,7 +306,7 @@ class TerminologyTransformer(BaseTransformer):
         Initialize with terminology mapping.
 
         Args:
-            terminology_map: Mapping from Ring terms to platform terms
+            terminology_map: Mapping from MarsAI terms to platform terms
         """
         super().__init__()
         self.terminology_map = terminology_map

@@ -1,7 +1,7 @@
 """
-Claude Code adapter - native Ring format (passthrough).
+Claude Code adapter - native MarsAI format (passthrough).
 
-Claude Code is the primary target platform for Ring, so this adapter
+Claude Code is the primary target platform for MarsAI, so this adapter
 performs minimal transformation (essentially a passthrough).
 """
 
@@ -9,14 +9,14 @@ import os
 from pathlib import Path
 from typing import Any, Dict, Optional
 
-from ring_installer.adapters.base import PlatformAdapter
+from marsai_installer.adapters.base import PlatformAdapter
 
 
 class ClaudeAdapter(PlatformAdapter):
     """
     Platform adapter for Claude Code.
 
-    Claude Code uses Ring's native format, so transformations are minimal.
+    Claude Code uses MarsAI's native format, so transformations are minimal.
     This adapter primarily handles path resolution and file organization.
     """
 
@@ -34,9 +34,9 @@ class ClaudeAdapter(PlatformAdapter):
 
     def transform_skill(self, skill_content: str, metadata: Optional[Dict[str, Any]] = None) -> str:
         """
-        Transform a Ring skill for Claude Code.
+        Transform a MarsAI skill for Claude Code.
 
-        Since Claude Code uses Ring's native format, this is a passthrough.
+        Since Claude Code uses MarsAI's native format, this is a passthrough.
 
         Args:
             skill_content: The original skill content
@@ -49,9 +49,9 @@ class ClaudeAdapter(PlatformAdapter):
 
     def transform_agent(self, agent_content: str, metadata: Optional[Dict[str, Any]] = None) -> str:
         """
-        Transform a Ring agent for Claude Code.
+        Transform a MarsAI agent for Claude Code.
 
-        Since Claude Code uses Ring's native format, this is a passthrough.
+        Since Claude Code uses MarsAI's native format, this is a passthrough.
 
         Args:
             agent_content: The original agent content
@@ -64,9 +64,9 @@ class ClaudeAdapter(PlatformAdapter):
 
     def transform_command(self, command_content: str, metadata: Optional[Dict[str, Any]] = None) -> str:
         """
-        Transform a Ring command for Claude Code.
+        Transform a MarsAI command for Claude Code.
 
-        Since Claude Code uses Ring's native format, this is a passthrough.
+        Since Claude Code uses MarsAI's native format, this is a passthrough.
 
         Args:
             command_content: The original command content
@@ -79,9 +79,9 @@ class ClaudeAdapter(PlatformAdapter):
 
     def transform_hook(self, hook_content: str, metadata: Optional[Dict[str, Any]] = None) -> Optional[str]:
         """
-        Transform a Ring hook for Claude Code.
+        Transform a MarsAI hook for Claude Code.
 
-        Since Claude Code uses Ring's native format, this is a passthrough.
+        Since Claude Code uses MarsAI's native format, this is a passthrough.
 
         Args:
             hook_content: The original hook content
@@ -123,7 +123,7 @@ class ClaudeAdapter(PlatformAdapter):
         Get the component mapping for Claude Code.
 
         Returns:
-            Mapping of Ring components to Claude Code directories
+            Mapping of MarsAI components to Claude Code directories
         """
         return {
             "agents": {
@@ -146,10 +146,10 @@ class ClaudeAdapter(PlatformAdapter):
 
     def get_terminology(self) -> Dict[str, str]:
         """
-        Get Claude Code terminology (same as Ring).
+        Get Claude Code terminology (same as MarsAI).
 
         Returns:
-            Identity mapping since Claude Code uses Ring terminology
+            Identity mapping since Claude Code uses MarsAI terminology
         """
         return {
             "agent": "agent",
@@ -160,7 +160,7 @@ class ClaudeAdapter(PlatformAdapter):
 
     def is_native_format(self) -> bool:
         """
-        Check if this platform uses Ring's native format.
+        Check if this platform uses MarsAI's native format.
 
         Returns:
             True - Claude Code is the native platform

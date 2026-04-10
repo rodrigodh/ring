@@ -1,13 +1,13 @@
 """
 Agent content transformer.
 
-Transforms Ring agent markdown files to platform-specific formats.
+Transforms MarsAI agent markdown files to platform-specific formats.
 """
 
 import re
 from typing import Any, Dict, Optional
 
-from ring_installer.transformers.base import (
+from marsai_installer.transformers.base import (
     BaseTransformer,
     TransformContext,
     TransformResult,
@@ -16,7 +16,7 @@ from ring_installer.transformers.base import (
 
 class AgentTransformer(BaseTransformer):
     """
-    Transformer for Ring agent files.
+    Transformer for MarsAI agent files.
 
     Handles transformation of agent definitions including:
     - Claude: passthrough (native format)
@@ -163,8 +163,8 @@ class AgentTransformer(BaseTransformer):
             (r'\bsubagent\b', 'subdroid'),
             (r'\bSubagent\b', 'Subdroid'),
             (r'\bsubagent_type\b', 'subdroid_type'),
-            (r'"ring:([^"]*)-agent"', r'"ring:\1-droid"'),
-            (r"'ring:([^']*)-agent'", r"'ring:\1-droid'"),
+            (r'"marsai:([^"]*)-agent"', r'"marsai:\1-droid"'),
+            (r"'marsai:([^']*)-agent'", r"'marsai:\1-droid'"),
         ]
 
         result = text

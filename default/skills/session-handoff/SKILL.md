@@ -1,5 +1,5 @@
 ---
-name: ring:session-handoff
+name: marsai:session-handoff
 description: Create handoff documents capturing session state for seamless context-clear and resume
 
 trigger: |
@@ -159,7 +159,7 @@ When creating the handoff document (the plan file), use this structure:
 ### Basic Usage
 
 ```
-User: /ring:create-handoff
+User: /marsai:create-handoff
 Assistant: I will create a handoff document for the current session.
 [Step 1: Gathers context from conversation history]
 [Step 2: Calls EnterPlanMode]
@@ -171,7 +171,7 @@ Assistant: I will create a handoff document for the current session.
 ### With Session Name and Description
 
 ```
-User: /ring:create-handoff auth-refactor "OAuth provider integration"
+User: /marsai:create-handoff auth-refactor "OAuth provider integration"
 Assistant: I will create a handoff document for the auth-refactor session.
 [Gathers all context, enters plan mode, writes plan, exits plan mode]
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Validate YAML frontmatter in Ring skill, command, and agent files against
+Validate YAML frontmatter in MarsAI skill, command, and agent files against
 the canonical schema defined in docs/FRONTMATTER_SCHEMA.md.
 
 Scans all 6 plugins (default/, dev-team/, pm-team/, pmo-team/, finops-team/,
@@ -367,7 +367,7 @@ def relative_path(path: Path, repo_root: Path) -> str:
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Validate YAML frontmatter in Ring skill, command, and agent files.",
+        description="Validate YAML frontmatter in MarsAI skill, command, and agent files.",
     )
     parser.add_argument(
         "--strict",

@@ -1,5 +1,5 @@
 ---
-name: ring:brainstorm
+name: marsai:brainstorm
 description: Interactive design refinement using Socratic method
 argument-hint: "[topic]"
 ---
@@ -9,7 +9,7 @@ Transform rough ideas into fully-formed designs through structured questioning a
 ## Usage
 
 ```
-/ring:brainstorm [topic]
+/marsai:brainstorm [topic]
 ```
 
 ## Arguments
@@ -22,19 +22,19 @@ Transform rough ideas into fully-formed designs through structured questioning a
 
 ### Starting a Feature Design
 ```
-/ring:brainstorm OAuth2 integration
+/marsai:brainstorm OAuth2 integration
 ```
 Initiates a design session for adding OAuth2 authentication to your application.
 
 ### Architectural Decision
 ```
-/ring:brainstorm microservices migration strategy
+/marsai:brainstorm microservices migration strategy
 ```
 Explores approaches for migrating from monolith to microservices architecture.
 
 ### New Product Concept
 ```
-/ring:brainstorm real-time collaboration feature
+/marsai:brainstorm real-time collaboration feature
 ```
 Refines requirements and design for a collaborative editing feature.
 
@@ -73,16 +73,16 @@ The brainstorming session follows these phases:
 - Prepares clean workspace for implementation
 
 ### 7. Planning Handoff (Phase 6, if implementing)
-- Creates detailed implementation plan using `ring:writing-plans` skill
+- Creates detailed implementation plan using `marsai:writing-plans` skill
 - Breaks design into bite-sized executable tasks
 
 ## Related Commands/Skills
 
 | Command/Skill | Relationship |
 |---------------|--------------|
-| `/ring:write-plan` | Use after brainstorming when design is complete |
-| `/ring:execute-plan` | Use after planning to implement the design |
-| `ring:writing-plans` | Underlying skill for creating implementation plans |
+| `/marsai:write-plan` | Use after brainstorming when design is complete |
+| `/marsai:execute-plan` | Use after planning to implement the design |
+| `marsai:writing-plans` | Underlying skill for creating implementation plans |
 
 ## Troubleshooting
 
@@ -96,9 +96,9 @@ Each phase has a maximum of 3 questions. If you're being asked more, it indicate
 The process is phase-locked. You cannot skip ahead until the current phase is complete. If you need to go faster, provide explicit approval at each checkpoint.
 
 ### When NOT to use this command
-- Design is already complete and validated - use `/ring:write-plan`
-- Have a detailed plan ready to execute - use `/ring:execute-plan`
-- Just need task breakdown from existing design - use `/ring:write-plan`
+- Design is already complete and validated - use `/marsai:write-plan`
+- Have a detailed plan ready to execute - use `/marsai:execute-plan`
+- Just need task breakdown from existing design - use `/marsai:write-plan`
 
 ---
 
@@ -107,7 +107,7 @@ The process is phase-locked. You cannot skip ahead until the current phase is co
 **This command MUST load the skill for complete workflow execution.**
 
 ```
-Use Skill tool: ring:brainstorming
+Use Skill tool: marsai:brainstorming
 ```
 
 The skill contains the complete workflow with:

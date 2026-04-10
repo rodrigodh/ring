@@ -1,12 +1,12 @@
 """
-Pi adapter - transforms Ring components for pi-coding-agent.
+Pi adapter - transforms MarsAI components for pi-coding-agent.
 
 Pi (https://github.com/badlogic/pi-mono) has a different resource model:
 
-  Ring skills   → Pi skills   (~/.pi/agent/skills/<name>/SKILL.md)
-  Ring commands  → Pi prompts  (~/.pi/agent/prompts/<name>.md)
-  Ring agents    → Pi agents   (~/.pi/agent/agents/<name>.md)  ← persona files for $ activation
-  Ring hooks     → unsupported (Pi uses extension events)
+  MarsAI skills   → Pi skills   (~/.pi/agent/skills/<name>/SKILL.md)
+  MarsAI commands  → Pi prompts  (~/.pi/agent/prompts/<name>.md)
+  MarsAI agents    → Pi agents   (~/.pi/agent/agents/<name>.md)  ← persona files for $ activation
+  MarsAI hooks     → unsupported (Pi uses extension events)
 
 Pi skill frontmatter:
   ---
@@ -44,23 +44,23 @@ import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from ring_installer.adapters.base import PlatformAdapter
+from marsai_installer.adapters.base import PlatformAdapter
 
 
 def _sanitize_pi_name(name: str) -> str:
     """
-    Sanitize a Ring component name into a valid Pi skill/prompt name.
+    Sanitize a MarsAI component name into a valid Pi skill/prompt name.
 
     Pi skill names: lowercase a-z, 0-9, hyphens only. No leading/trailing
     or consecutive hyphens. Max 64 chars.
 
     Examples:
-        "ring:code-reviewer"       -> "code-reviewer"
-        "ring:backend-engineer-golang" -> "backend-engineer-golang"
-        "Ring:Dev--Cycle"          -> "dev-cycle"
+        "marsai:code-reviewer"       -> "code-reviewer"
+        "marsai:backend-engineer-golang" -> "backend-engineer-golang"
+        "MarsAI:Dev--Cycle"          -> "dev-cycle"
     """
-    # Strip ring: prefix
-    cleaned = re.sub(r"^ring:", "", name, flags=re.IGNORECASE)
+    # Strip marsai: prefix
+    cleaned = re.sub(r"^marsai:", "", name, flags=re.IGNORECASE)
     # Lowercase
     cleaned = cleaned.lower()
     # Replace non-alphanumeric (except hyphens) with hyphens
@@ -78,7 +78,7 @@ def _sanitize_pi_name(name: str) -> str:
 
 def _build_agent_skill_body(frontmatter: Dict[str, Any], body: str) -> str:
     """
-    Convert a Ring agent body into a Pi skill body.
+    Convert a MarsAI agent body into a Pi skill body.
 
     Prepends structured context from agent frontmatter (type, output_schema)
     as prose instructions, so the LLM knows how to behave as this agent.
@@ -145,7 +145,7 @@ class PiAdapter(PlatformAdapter):
     """
     Platform adapter for pi-coding-agent.
 
-    Transforms Ring components into Pi's resource model:
+    Transforms MarsAI components into Pi's resource model:
     - Skills → Pi skills (SKILL.md in named directories)
     - Commands → Pi prompt templates (flat .md files)
     - Agents → Pi agent personas (flat .md files for $ activation)
@@ -157,9 +157,9 @@ class PiAdapter(PlatformAdapter):
 
     def transform_skill(self, skill_content: str, metadata: Optional[Dict[str, Any]] = None) -> str:
         """
-        Transform a Ring skill into a Pi skill.
+        Transform a MarsAI skill into a Pi skill.
 
-        Keeps name and description, strips Ring-specific frontmatter fields.
+        Keeps name and description, strips MarsAI-specific frontmatter fields.
         Body content is preserved as-is.
         """
         frontmatter, body = self.extract_frontmatter(skill_content)
@@ -174,7 +174,7 @@ class PiAdapter(PlatformAdapter):
                 self._string_field(frontmatter, "trigger")
                 or self._string_field(frontmatter, "when_to_use")
                 or self._first_meaningful_line(body)
-                or "Ring skill"
+                or "MarsAI skill"
             )
 
         pi_frontmatter = {"name": pi_name, "description": description}
@@ -185,21 +185,21 @@ class PiAdapter(PlatformAdapter):
 
     def transform_agent(self, agent_content: str, metadata: Optional[Dict[str, Any]] = None) -> str:
         """
-        Transform a Ring agent into a Pi agent persona file.
+        Transform a MarsAI agent into a Pi agent persona file.
 
         Pi agents are flat .md files in ~/.pi/agent/agents/ with simplified
         frontmatter (name, description, optional model/thinking). The body is
         the persona prompt injected into the system prompt when activated via $.
 
-        Ring-specific frontmatter (output_schema, input_schema, type) is stripped.
+        MarsAI-specific frontmatter (output_schema, input_schema, type) is stripped.
         The body is preserved as-is (it's the persona prompt content).
         """
         frontmatter, body = self.extract_frontmatter(agent_content)
 
-        # Build human-readable name from ring:name
+        # Build human-readable name from marsai:name
         raw_name = self._string_field(frontmatter, "name")
         display_name = (
-            raw_name.replace("ring:", "").replace("-", " ").title()
+            raw_name.replace("marsai:", "").replace("-", " ").title()
             if raw_name
             else ""
         )
@@ -207,7 +207,7 @@ class PiAdapter(PlatformAdapter):
         description = self._string_field(frontmatter, "description")
         if not description:
             agent_type = frontmatter.get("type", "agent")
-            description = f"Ring {agent_type} agent"
+            description = f"MarsAI {agent_type} agent"
 
         # Build simplified Pi agent frontmatter
         pi_frontmatter: Dict[str, str] = {}
@@ -216,14 +216,14 @@ class PiAdapter(PlatformAdapter):
         if description:
             pi_frontmatter["description"] = description
 
-        # Rewrite ring: references in body
+        # Rewrite marsai: references in body
         body = self._rewrite_ring_references(body, metadata)
 
         return self.create_frontmatter(pi_frontmatter) + "\n" + body.strip() + "\n"
 
     def transform_command(self, command_content: str, metadata: Optional[Dict[str, Any]] = None) -> str:
         """
-        Transform a Ring command into a Pi prompt template.
+        Transform a MarsAI command into a Pi prompt template.
 
         Pi prompt templates use a simpler frontmatter (just `description`).
         The command body becomes the template content.
@@ -235,7 +235,7 @@ class PiAdapter(PlatformAdapter):
         argument_hint = self._string_field(frontmatter, "argument-hint")
 
         if not description:
-            description = self._first_meaningful_line(body) or "Ring command"
+            description = self._first_meaningful_line(body) or "MarsAI command"
 
         # Include argument hint in description for discoverability
         if argument_hint:
@@ -295,11 +295,11 @@ class PiAdapter(PlatformAdapter):
 
     def get_component_mapping(self) -> Dict[str, Dict[str, str]]:
         """
-        Map Ring component types to Pi directories.
+        Map MarsAI component types to Pi directories.
 
-        Ring skills  → ~/.pi/agent/skills/<name>/SKILL.md
-        Ring commands → ~/.pi/agent/prompts/<name>.md
-        Ring agents  → ~/.pi/agent/agents/<name>.md  (persona files for $ activation)
+        MarsAI skills  → ~/.pi/agent/skills/<name>/SKILL.md
+        MarsAI commands → ~/.pi/agent/prompts/<name>.md
+        MarsAI agents  → ~/.pi/agent/agents/<name>.md  (persona files for $ activation)
 
         Note: Pi's skill discovery expects SKILL.md inside a named directory.
         Agents are flat .md files (like prompts), not SKILL.md directories.
@@ -324,7 +324,7 @@ class PiAdapter(PlatformAdapter):
         }
 
     def is_native_format(self) -> bool:
-        """Pi requires transformation from Ring's native format."""
+        """Pi requires transformation from MarsAI's native format."""
         return False
 
     def supports_component(self, component_type: str) -> bool:
@@ -360,7 +360,7 @@ class PiAdapter(PlatformAdapter):
 
         if component_type == "agents":
             # Agent persona files use short names for easy $ activation
-            # e.g., $backend-engineer-golang not $ring-dev-team-backend-engineer-golang
+            # e.g., $backend-engineer-golang not $marsai-dev-team-backend-engineer-golang
             sanitized = _sanitize_pi_name(stem)
             return f"{sanitized}.md"
 
@@ -405,14 +405,14 @@ class PiAdapter(PlatformAdapter):
 
     def _rewrite_ring_references(self, body: str, metadata: Optional[Dict[str, Any]] = None) -> str:
         """
-        Rewrite ring: prefixed references in the body.
+        Rewrite marsai: prefixed references in the body.
 
-        Converts references like `ring:code-reviewer` to just `code-reviewer`
+        Converts references like `marsai:code-reviewer` to just `code-reviewer`
         for Pi's namespace. Also rewrites skill/command/agent path references
         to Pi's directory structure.
         """
-        # Strip ring: prefix from inline references
-        result = re.sub(r"\bring:([a-zA-Z0-9_-]+)\b", r"\1", body)
+        # Strip marsai: prefix from inline references
+        result = re.sub(r"\bmarsai:([a-zA-Z0-9_-]+)\b", r"\1", body)
 
         # Rewrite relative paths to ring components if we know the source context
         # e.g., ../skills/shared-patterns/foo.md stays as-is (relative paths work in Pi too)

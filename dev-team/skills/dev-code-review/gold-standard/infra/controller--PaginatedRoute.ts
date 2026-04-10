@@ -33,7 +33,7 @@ import {
 // async listByOrganizationId(
 //   req: AuthFastifyRequest<{
 //     Params: { organizationId: string };
-//     Querystring: PaginationParams;
+//     Querystmarsai: PaginationParams;
 //   }>,
 //   reply: FastifyReply,
 // ) {

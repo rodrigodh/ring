@@ -1,6 +1,6 @@
 # Standards Boundary Enforcement
 
-Canonical source for preventing agents from hallucinating requirements beyond what exists in Ring standards files.
+Canonical source for preventing agents from hallucinating requirements beyond what exists in MarsAI standards files.
 
 ---
 
@@ -12,7 +12,7 @@ Canonical source for preventing agents from hallucinating requirements beyond wh
 |------|-------------|
 | **only check items explicitly listed in standards** | If not in WebFetch result → not a requirement |
 | **never invent "should have" items** | Standards define WHAT exists, not what you think should exist |
-| **never add industry best practices not in standards** | Ring standards ARE the best practices for this org |
+| **never add industry best practices not in standards** | MarsAI standards ARE the best practices for this org |
 | **never assume common patterns are required** | If not listed → not required |
 
 **If you flag something not in standards → Your output is INVALID. Remove the hallucinated finding.**
@@ -98,7 +98,7 @@ Each agent MUST:
 
 **These are items agents commonly invent that are not typically in standards. Always verify in WebFetch result before flagging.**
 
-#### ring:devops-engineer → devops.md
+#### marsai:devops-engineer → devops.md
 
 | Common Hallucination | Action |
 |---------------------|--------|
@@ -108,7 +108,7 @@ Each agent MUST:
 | `make install` | Verify in devops.md "Makefile Standards" section |
 | `make clean` | Verify in devops.md "Makefile Standards" section |
 
-#### ring:backend-engineer-golang → golang.md
+#### marsai:backend-engineer-golang → golang.md
 
 | Common Hallucination | Action |
 |---------------------|--------|
@@ -117,7 +117,7 @@ Each agent MUST:
 | Gin instead of Fiber | Check actual HTTP framework in golang.md |
 | GORM instead of pgx | Check actual ORM/driver in golang.md |
 
-#### ring:backend-engineer-typescript → typescript.md
+#### marsai:backend-engineer-typescript → typescript.md
 
 | Common Hallucination | Action |
 |---------------------|--------|
@@ -126,7 +126,7 @@ Each agent MUST:
 | Jest | Verify testing framework in typescript.md |
 | InversifyJS | Verify DI framework in typescript.md |
 
-#### ring:sre → sre.md
+#### marsai:sre → sre.md
 
 | Common Hallucination | Action |
 |---------------------|--------|
@@ -135,7 +135,7 @@ Each agent MUST:
 | Custom dashboards | Verify in sre.md if explicitly required |
 | Alert rules | Verify in sre.md if explicitly required |
 
-#### ring:frontend-designer → frontend.md
+#### marsai:frontend-designer → frontend.md
 
 | Common Hallucination | Action |
 |---------------------|--------|
@@ -150,7 +150,7 @@ Each agent MUST:
 
 | Rationalization | Why It's WRONG | Required Action |
 |-----------------|----------------|-----------------|
-| "Industry standard to have make proto" | Industry ≠ Ring standards. Ring defines requirements. | **Do not flag** |
+| "Industry standard to have make proto" | Industry ≠ MarsAI standards. MarsAI defines requirements. | **Do not flag** |
 | "Most Go projects need gRPC" | Most ≠ this project. Standards define this project. | **Do not flag** |
 | "It's a best practice to have X" | Best practices are IN the standards. If not there, not required. | **Do not flag** |
 | "This would improve the codebase" | Improvement suggestions ≠ compliance findings. | **Do not flag as non-compliant** |

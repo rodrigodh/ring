@@ -1,5 +1,5 @@
 """
-Filesystem utilities for Ring installer.
+Filesystem utilities for MarsAI installer.
 
 Provides safe file operations with backup, transformation, and error handling.
 """
@@ -454,12 +454,12 @@ def get_build_dir(source_path: Path, platform: str) -> Path:
     """
     Get the build output directory for a platform's symlink install.
 
-    Build directories live inside the Ring repo at .ring-build/<platform>/
+    Build directories live inside the MarsAI repo at .ring-build/<platform>/
     and contain transformed files that are then symlinked from the platform's
     config directory.
 
     Args:
-        source_path: Path to the Ring repository root
+        source_path: Path to the MarsAI repository root
         platform: Platform identifier (e.g., "opencode", "claude")
 
     Returns:

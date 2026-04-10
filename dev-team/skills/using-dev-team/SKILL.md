@@ -1,34 +1,34 @@
 ---
-name: ring:using-dev-team
+name: marsai:using-dev-team
 description: |
   9 specialist developer agents for backend (Go/TypeScript), DevOps, frontend,
   design, UI implementation, QA (backend + frontend), and SRE. Dispatch when you need deep technology expertise.
 
 trigger: |
   - Need deep expertise for specific technology (Go, TypeScript)
-  - Building infrastructure/CI-CD → ring:devops-engineer
-  - Frontend with design focus → ring:frontend-designer
-  - Frontend from product-designer specs → ring:ui-engineer
-  - Backend test strategy → ring:qa-analyst
-  - Frontend test strategy → ring:qa-analyst-frontend
-  - Reliability/monitoring → ring:sre
+  - Building infrastructure/CI-CD → marsai:devops-engineer
+  - Frontend with design focus → marsai:frontend-designer
+  - Frontend from product-designer specs → marsai:ui-engineer
+  - Backend test strategy → marsai:qa-analyst
+  - Frontend test strategy → marsai:qa-analyst-frontend
+  - Reliability/monitoring → marsai:sre
 
 skip_when: |
   - General code review → use default plugin reviewers
   - Planning/design → use brainstorming
-  - Debugging → use ring:systematic-debugging
+  - Debugging → use marsai:systematic-debugging
 
 related:
-  similar: [ring:using-ring]
+  similar: [marsai:using-marsai]
 ---
 
-# Using Ring Developer Specialists
+# Using MarsAI Developer Specialists
 
-The ring-dev-team plugin provides 9 specialized developer agents. Use them via `Task tool with subagent_type:`.
+The marsai-dev-team plugin provides 9 specialized developer agents. Use them via `Task tool with subagent_type:`.
 
-See [CLAUDE.md](https://raw.githubusercontent.com/LerianStudio/ring/main/CLAUDE.md) and [ring:using-ring](https://raw.githubusercontent.com/LerianStudio/ring/main/default/skills/using-ring/SKILL.md) for canonical workflow requirements and ORCHESTRATOR principle. This skill introduces dev-team-specific agents.
+See [CLAUDE.md](https://raw.githubusercontent.com/LerianStudio/marsai/main/CLAUDE.md) and [marsai:using-marsai](https://raw.githubusercontent.com/LerianStudio/marsai/main/default/skills/using-marsai/SKILL.md) for canonical workflow requirements and ORCHESTRATOR principle. This skill introduces dev-team-specific agents.
 
-**Remember:** Follow the **ORCHESTRATOR principle** from `ring:using-ring`. Dispatch agents to handle complexity; don't operate tools directly.
+**Remember:** Follow the **ORCHESTRATOR principle** from `marsai:using-marsai`. Dispatch agents to handle complexity; don't operate tools directly.
 
 ---
 
@@ -122,7 +122,7 @@ See [shared-patterns/shared-pressure-resistance.md](../shared-patterns/shared-pr
 **Critical Reminder:**
 
 - **Urgency ≠ Permission to bypass** - Emergencies require MORE care, not less
-- **Authority ≠ Permission to bypass** - Ring standards override human preferences
+- **Authority ≠ Permission to bypass** - MarsAI standards override human preferences
 - **Sunk Cost ≠ Permission to bypass** - Wrong approach stays wrong at 80% completion
 
 ---
@@ -135,7 +135,7 @@ See [shared-patterns/shared-pressure-resistance.md](../shared-patterns/shared-pr
 
 ```
 Task tool:
-  subagent_type: "ring:backend-engineer-golang"
+  subagent_type: "marsai:backend-engineer-golang"
   prompt: "URGENT PRODUCTION INCIDENT: [brief context]. [Your specific request]"
 ```
 
@@ -157,32 +157,32 @@ Use Task tool to dispatch appropriate specialist based on technology need.
 
 | Agent                                       | Specializations                                                                                      | Use When                                                                              |
 | ------------------------------------------- | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| **`ring:backend-engineer-golang`**          | Go microservices, PostgreSQL/MongoDB, Kafka/RabbitMQ, OAuth2/JWT, gRPC, concurrency                  | Go services, DB optimization, auth/authz, concurrency issues                          |
-| **`ring:backend-engineer-typescript`**      | TypeScript/Node.js, Express/Fastify/NestJS, Prisma/TypeORM, async patterns, Jest/Vitest              | TS backends, JS→TS migration, NestJS design, full-stack TS                            |
-| **`ring:devops-engineer`**                  | Docker/Compose, Terraform/Helm, cloud infra, secrets management                                      | Containerization, local dev setup, IaC provisioning, Helm charts                      |
-| **`ring:frontend-bff-engineer-typescript`** | Next.js API Routes BFF, Clean/Hexagonal Architecture, DDD patterns, Inversify DI, repository pattern | BFF layer, Clean Architecture, DDD domains, API orchestration                         |
-| **`ring:frontend-designer`**                | Bold typography, color systems, animations, unexpected layouts, textures/gradients                   | Landing pages, portfolios, distinctive dashboards, design systems                     |
-| **`ring:ui-engineer`**                      | Wireframe-to-code, Design System compliance, UX criteria satisfaction, UI states implementation      | Implementing from product-designer specs (ux-criteria.md, user-flows.md, wireframes/) |
-| **`ring:qa-analyst`**                       | Test strategy, coverage analysis, API testing, fuzz/property/integration/chaos testing (Go)          | Backend test planning, coverage gaps, quality gates (Go-focused)                      |
-| **`ring:qa-analyst-frontend`**              | Vitest, Testing Library, axe-core, Playwright, Lighthouse, Core Web Vitals, snapshot testing         | Frontend test planning, accessibility, visual, E2E, performance testing               |
-| **`ring:sre`**                              | Structured logging, tracing, health checks, observability                                            | Logging validation, tracing setup, health endpoint verification                       |
+| **`marsai:backend-engineer-golang`**          | Go microservices, PostgreSQL/MongoDB, Kafka/RabbitMQ, OAuth2/JWT, gRPC, concurrency                  | Go services, DB optimization, auth/authz, concurrency issues                          |
+| **`marsai:backend-engineer-typescript`**      | TypeScript/Node.js, Express/Fastify/NestJS, Prisma/TypeORM, async patterns, Jest/Vitest              | TS backends, JS→TS migration, NestJS design, full-stack TS                            |
+| **`marsai:devops-engineer`**                  | Docker/Compose, Terraform/Helm, cloud infra, secrets management                                      | Containerization, local dev setup, IaC provisioning, Helm charts                      |
+| **`marsai:frontend-bff-engineer-typescript`** | Next.js API Routes BFF, Clean/Hexagonal Architecture, DDD patterns, Inversify DI, repository pattern | BFF layer, Clean Architecture, DDD domains, API orchestration                         |
+| **`marsai:frontend-designer`**                | Bold typography, color systems, animations, unexpected layouts, textures/gradients                   | Landing pages, portfolios, distinctive dashboards, design systems                     |
+| **`marsai:ui-engineer`**                      | Wireframe-to-code, Design System compliance, UX criteria satisfaction, UI states implementation      | Implementing from product-designer specs (ux-criteria.md, user-flows.md, wireframes/) |
+| **`marsai:qa-analyst`**                       | Test strategy, coverage analysis, API testing, fuzz/property/integration/chaos testing (Go)          | Backend test planning, coverage gaps, quality gates (Go-focused)                      |
+| **`marsai:qa-analyst-frontend`**              | Vitest, Testing Library, axe-core, Playwright, Lighthouse, Core Web Vitals, snapshot testing         | Frontend test planning, accessibility, visual, E2E, performance testing               |
+| **`marsai:sre`**                              | Structured logging, tracing, health checks, observability                                            | Logging validation, tracing setup, health endpoint verification                       |
 
 **Dispatch template:**
 
 ```
 Task tool:
-  subagent_type: "ring:{agent-name}"
+  subagent_type: "marsai:{agent-name}"
   prompt: "{Your specific request with context}"
 ```
 
 **Frontend Agent Selection:**
 
-- `ring:frontend-designer` = visual aesthetics, design specifications (no code)
-- `ring:frontend-bff-engineer-typescript` = business logic/architecture, BFF layer
-- `ring:ui-engineer` = implementing UI from product-designer specs (ux-criteria.md, user-flows.md, wireframes/)
+- `marsai:frontend-designer` = visual aesthetics, design specifications (no code)
+- `marsai:frontend-bff-engineer-typescript` = business logic/architecture, BFF layer
+- `marsai:ui-engineer` = implementing UI from product-designer specs (ux-criteria.md, user-flows.md, wireframes/)
 
-**When to use ring:ui-engineer:**
-Use `ring:ui-engineer` when product-designer outputs exist in `docs/pre-dev/{feature}/`. The ring:ui-engineer specializes in translating design specifications into production code while ensuring all UX criteria are satisfied.
+**When to use marsai:ui-engineer:**
+Use `marsai:ui-engineer` when product-designer outputs exist in `docs/pre-dev/{feature}/`. The marsai:ui-engineer specializes in translating design specifications into production code while ensuring all UX criteria are satisfied.
 
 ---
 
@@ -212,14 +212,14 @@ If you need multiple specialists (e.g., backend engineer + DevOps engineer), dis
 
 ```
 ✅ CORRECT:
-Task #1: ring:backend-engineer-golang
-Task #2: ring:devops-engineer
+Task #1: marsai:backend-engineer-golang
+Task #2: marsai:devops-engineer
 (Both run in parallel)
 
 ❌ WRONG:
-Task #1: ring:backend-engineer-golang
+Task #1: marsai:backend-engineer-golang
 (Wait for response)
-Task #2: ring:devops-engineer
+Task #2: marsai:devops-engineer
 (Sequential = 2x slower)
 ```
 
@@ -231,11 +231,11 @@ Remember:
 
 - **You're the orchestrator** – Dispatch specialists, don't implement directly
 - **Don't read specialist docs yourself** – Dispatch to specialist, they know their domain
-- **Combine with ring:using-ring principle** – Skills + Specialists = complete workflow
+- **Combine with marsai:using-marsai principle** – Skills + Specialists = complete workflow
 
 ### Good Example (ORCHESTRATOR):
 
-> "I need a Go service. Let me dispatch `ring:backend-engineer-golang` to design it."
+> "I need a Go service. Let me dispatch `marsai:backend-engineer-golang` to design it."
 
 ### Bad Example (OPERATOR):
 
@@ -247,11 +247,11 @@ Remember:
 
 **Agents:** See "9 Developer Specialists" table above.
 
-**Skills:** `ring:using-dev-team` (this), `ring:dev-cycle` (10-gate backend workflow), `ring:dev-cycle-frontend` (9-gate frontend workflow), `ring:dev-refactor` (backend/general codebase analysis), `ring:dev-refactor-frontend` (frontend codebase analysis)
+**Skills:** `marsai:using-dev-team` (this), `marsai:dev-cycle` (10-gate backend workflow), `marsai:dev-cycle-frontend` (9-gate frontend workflow), `marsai:dev-refactor` (backend/general codebase analysis), `marsai:dev-refactor-frontend` (frontend codebase analysis)
 
-**Commands:** `/ring:dev-cycle` (backend tasks), `/ring:dev-cycle-frontend` (frontend tasks), `/ring:dev-refactor` (analyze backend/general codebase), `/ring:dev-refactor-frontend` (analyze frontend codebase), `/ring:dev-status`, `/ring:dev-cancel`, `/ring:dev-report`
+**Commands:** `/marsai:dev-cycle` (backend tasks), `/marsai:dev-cycle-frontend` (frontend tasks), `/marsai:dev-refactor` (analyze backend/general codebase), `/marsai:dev-refactor-frontend` (analyze frontend codebase), `/marsai:dev-status`, `/marsai:dev-cancel`, `/marsai:dev-report`
 
-**Note:** Missing agents? Check `.claude-plugin/marketplace.json` for ring-dev-team plugin.
+**Note:** Missing agents? Check `.claude-plugin/marketplace.json` for marsai-dev-team plugin.
 
 ---
 
@@ -261,48 +261,48 @@ All workflows converge to the 10-gate development cycle:
 
 | Workflow         | Entry Point                           | Output                                        | Then                         |
 | ---------------- | ------------------------------------- | --------------------------------------------- | ---------------------------- |
-| **New Feature**  | `/ring:pre-dev-feature "description"` | `docs/pre-dev/{feature}/tasks.md`             | → `/ring:dev-cycle tasks.md` |
-| **Direct Tasks** | `/ring:dev-cycle tasks.md`            | —                                             | Execute 6 gates directly     |
-| **Refactoring**  | `/ring:dev-refactor`                  | `docs/ring:dev-refactor/{timestamp}/tasks.md` | → `/ring:dev-cycle tasks.md` |
-| **Frontend Refactoring** | `/ring:dev-refactor-frontend` | `docs/ring:dev-refactor-frontend/{timestamp}/tasks.md` | → `/ring:dev-cycle-frontend tasks.md` |
+| **New Feature**  | `/marsai:pre-dev-feature "description"` | `docs/pre-dev/{feature}/tasks.md`             | → `/marsai:dev-cycle tasks.md` |
+| **Direct Tasks** | `/marsai:dev-cycle tasks.md`            | —                                             | Execute 6 gates directly     |
+| **Refactoring**  | `/marsai:dev-refactor`                  | `docs/marsai:dev-refactor/{timestamp}/tasks.md` | → `/marsai:dev-cycle tasks.md` |
+| **Frontend Refactoring** | `/marsai:dev-refactor-frontend` | `docs/marsai:dev-refactor-frontend/{timestamp}/tasks.md` | → `/marsai:dev-cycle-frontend tasks.md` |
 
 **10-Gate Backend Development Cycle (+ post-cycle multi-tenant):**
 
 | Gate                       | Focus                            | Agent(s)                                                                               |
 | -------------------------- | -------------------------------- | -------------------------------------------------------------------------------------- |
-| **0: Implementation**      | TDD: RED→GREEN→REFACTOR (single-tenant) | `ring:backend-engineer-*`, `ring:frontend-bff-engineer-typescript`, `ring:ui-engineer` |
-| **1: DevOps**              | Dockerfile, docker-compose, .env | `ring:devops-engineer`                                                                 |
-| **2: SRE**                 | Health checks, logging, tracing  | `ring:sre`                                                                             |
-| **3: Unit Testing**        | Unit tests, coverage ≥85%        | `ring:qa-analyst`                                                                      |
-| **4: Fuzz Testing**        | Fuzz tests for edge cases        | `ring:qa-analyst`                                                                      |
-| **5: Property Testing**    | Property-based tests for invariants | `ring:qa-analyst`                                                                   |
-| **6: Integration Testing** | Integration tests (write per unit, execute at end) | `ring:qa-analyst`                                                   |
-| **7: Chaos Testing**       | Chaos tests (write per unit, execute at end) | `ring:qa-analyst`                                                         |
-| **8: Review**              | 7 reviewers IN PARALLEL          | `ring:code-reviewer`, `ring:business-logic-reviewer`, `ring:security-reviewer`, `ring:test-reviewer`, `ring:nil-safety-reviewer`, `ring:consequences-reviewer`, `ring:dead-code-reviewer` |
+| **0: Implementation**      | TDD: RED→GREEN→REFACTOR (single-tenant) | `marsai:backend-engineer-*`, `marsai:frontend-bff-engineer-typescript`, `marsai:ui-engineer` |
+| **1: DevOps**              | Dockerfile, docker-compose, .env | `marsai:devops-engineer`                                                                 |
+| **2: SRE**                 | Health checks, logging, tracing  | `marsai:sre`                                                                             |
+| **3: Unit Testing**        | Unit tests, coverage ≥85%        | `marsai:qa-analyst`                                                                      |
+| **4: Fuzz Testing**        | Fuzz tests for edge cases        | `marsai:qa-analyst`                                                                      |
+| **5: Property Testing**    | Property-based tests for invariants | `marsai:qa-analyst`                                                                   |
+| **6: Integration Testing** | Integration tests (write per unit, execute at end) | `marsai:qa-analyst`                                                   |
+| **7: Chaos Testing**       | Chaos tests (write per unit, execute at end) | `marsai:qa-analyst`                                                         |
+| **8: Review**              | 7 reviewers IN PARALLEL          | `marsai:code-reviewer`, `marsai:business-logic-reviewer`, `marsai:security-reviewer`, `marsai:test-reviewer`, `marsai:nil-safety-reviewer`, `marsai:consequences-reviewer`, `marsai:dead-code-reviewer` |
 | **9: Validation**          | User approval: APPROVED/REJECTED | User decision                                                                          |
-| **Post-cycle: Multi-Tenant** | Adapt all code for multi-tenant | `ring:backend-engineer-golang` (via `ring:dev-multi-tenant`)                          |
+| **Post-cycle: Multi-Tenant** | Adapt all code for multi-tenant | `marsai:backend-engineer-golang` (via `marsai:dev-multi-tenant`)                          |
 
 **Gate 0 Agent Selection for Frontend:**
 
-- If `docs/pre-dev/{feature}/ux-criteria.md` exists → use `ring:ui-engineer`
-- Otherwise → use `ring:frontend-bff-engineer-typescript`
+- If `docs/pre-dev/{feature}/ux-criteria.md` exists → use `marsai:ui-engineer`
+- Otherwise → use `marsai:frontend-bff-engineer-typescript`
 
 **Key Principle:** Backend follows the 10-gate process. Frontend follows the 9-gate process.
 
 ### Frontend Development Cycle (9 Gates)
 
-**Use `/ring:dev-cycle-frontend` for frontend-specific development:**
+**Use `/marsai:dev-cycle-frontend` for frontend-specific development:**
 
 | Gate                      | Focus                                | Agent(s)                        |
 | ------------------------- | ------------------------------------ | ------------------------------- |
-| **0: Implementation**     | TDD: RED→GREEN→REFACTOR              | `ring:frontend-engineer`, `ring:ui-engineer`, `ring:frontend-bff-engineer-typescript` |
-| **1: DevOps**             | Dockerfile, docker-compose, .env     | `ring:devops-engineer`          |
-| **2: Accessibility**      | WCAG 2.1 AA, axe-core, keyboard nav | `ring:qa-analyst-frontend`      |
-| **3: Unit Testing**       | Vitest + Testing Library, ≥85%       | `ring:qa-analyst-frontend`      |
-| **4: Visual Testing**     | Snapshots, states, responsive        | `ring:qa-analyst-frontend`      |
-| **5: E2E Testing**        | Playwright, cross-browser, user flows| `ring:qa-analyst-frontend`      |
-| **6: Performance**        | Core Web Vitals, Lighthouse > 90     | `ring:qa-analyst-frontend`      |
-| **7: Review**             | 7 reviewers IN PARALLEL              | `ring:code-reviewer`, `ring:business-logic-reviewer`, `ring:security-reviewer`, `ring:test-reviewer`, `ring:nil-safety-reviewer`, `ring:consequences-reviewer`, `ring:dead-code-reviewer` |
+| **0: Implementation**     | TDD: RED→GREEN→REFACTOR              | `marsai:frontend-engineer`, `marsai:ui-engineer`, `marsai:frontend-bff-engineer-typescript` |
+| **1: DevOps**             | Dockerfile, docker-compose, .env     | `marsai:devops-engineer`          |
+| **2: Accessibility**      | WCAG 2.1 AA, axe-core, keyboard nav | `marsai:qa-analyst-frontend`      |
+| **3: Unit Testing**       | Vitest + Testing Library, ≥85%       | `marsai:qa-analyst-frontend`      |
+| **4: Visual Testing**     | Snapshots, states, responsive        | `marsai:qa-analyst-frontend`      |
+| **5: E2E Testing**        | Playwright, cross-browser, user flows| `marsai:qa-analyst-frontend`      |
+| **6: Performance**        | Core Web Vitals, Lighthouse > 90     | `marsai:qa-analyst-frontend`      |
+| **7: Review**             | 7 reviewers IN PARALLEL              | `marsai:code-reviewer`, `marsai:business-logic-reviewer`, `marsai:security-reviewer`, `marsai:test-reviewer`, `marsai:nil-safety-reviewer`, `marsai:consequences-reviewer`, `marsai:dead-code-reviewer` |
 | **8: Validation**         | User approval: APPROVED/REJECTED     | User decision                   |
 
 **Backend → Frontend Handoff:**
@@ -310,16 +310,16 @@ When backend dev cycle completes, it produces a handoff with endpoints, types, a
 
 | Step | Command | Output |
 |------|---------|--------|
-| 1. Backend | `/ring:dev-cycle tasks.md` | Backend code + handoff (endpoints, contracts) |
-| 2. Frontend | `/ring:dev-cycle-frontend tasks-frontend.md` | Frontend code consuming backend endpoints |
+| 1. Backend | `/marsai:dev-cycle tasks.md` | Backend code + handoff (endpoints, contracts) |
+| 2. Frontend | `/marsai:dev-cycle-frontend tasks-frontend.md` | Frontend code consuming backend endpoints |
 
 ---
 
 ## Integration with Other Plugins
 
-- **ring:using-ring** (default) – ORCHESTRATOR principle for all agents
+- **marsai:using-marsai** (default) – ORCHESTRATOR principle for all agents
 
 Dispatch based on your need:
 
 - General code review → default plugin agents
-- Specific domain expertise → ring-dev-team agents
+- Specific domain expertise → marsai-dev-team agents

@@ -109,7 +109,7 @@ X-TTL header (per-request) > IDEMPOTENCY_DEFAULT_TTL_SEC (env) > libRedis.TTL (h
 
 **HARD GATE:** Before implementing idempotency, ask the user about the key scope.
 
-**ring:AskUserQuestion:** "What should be the idempotency key scope for this service? Please specify the identifiers to use (e.g., `organizationID:ledgerID`, `organizationID`, `tenantID`, or empty for global)."
+**marsai:AskUserQuestion:** "What should be the idempotency key scope for this service? Please specify the identifiers to use (e.g., `organizationID:ledgerID`, `organizationID`, `tenantID`, or empty for global)."
 
 The user defines the scope based on their domain model. Examples:
 
@@ -249,7 +249,7 @@ import (
     "github.com/redis/go-redis/v9"
 )
 
-// Caller builds scope based on user's answer to ring:AskUserQuestion.
+// Caller builds scope based on user's answer to marsai:AskUserQuestion.
 // The scope is domain-specific - use whatever identifiers the user specified.
 //
 // Example scope builds:

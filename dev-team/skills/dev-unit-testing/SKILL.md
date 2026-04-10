@@ -1,5 +1,5 @@
 ---
-name: ring:dev-unit-testing
+name: marsai:dev-unit-testing
 description: |
   Gate 3 of development cycle - ensures unit test coverage meets threshold (85%+)
   for all acceptance criteria using TDD methodology.
@@ -10,7 +10,7 @@ trigger: |
   - Need to verify implementation meets requirements
 
 skip_when: |
-  - Not inside a development cycle (ring:dev-cycle)
+  - Not inside a development cycle (marsai:dev-cycle)
   - Task is documentation-only, configuration-only, or non-code
   - No code implementation was produced (nothing to test)
   - Changes are limited to CI/CD, infrastructure, or deployment configuration
@@ -21,11 +21,11 @@ NOT_skip_when: |
   - "Coverage is close to 85%" → Close enough is not passing. Meet exact threshold.
 
 sequence:
-  after: [ring:dev-implementation, ring:dev-devops, ring:dev-ring:sre]
-  before: [ring:requesting-code-review]
+  after: [marsai:dev-implementation, marsai:dev-devops, marsai:dev-marsai:sre]
+  before: [marsai:requesting-code-review]
 
 related:
-  complementary: [ring:test-driven-development, ring:qa-analyst]
+  complementary: [marsai:test-driven-development, marsai:qa-analyst]
 
 input_schema:
   required:
@@ -115,7 +115,7 @@ Ensure every acceptance criterion has at least one **unit test** proving it work
 - Any acceptance criterion without test = FAIL
 </block_condition>
 
-**Coverage threshold:** 85% minimum (Ring standard). PROJECT_RULES.md can raise, not lower.
+**Coverage threshold:** 85% minimum (MarsAI standard). PROJECT_RULES.md can raise, not lower.
 
 ## CRITICAL: Role Clarification
 
@@ -131,7 +131,7 @@ Ensure every acceptance criterion has at least one **unit test** proving it work
 ## Step 1: Validate Input
 
 ```text
-REQUIRED INPUT (from ring:dev-cycle orchestrator):
+REQUIRED INPUT (from marsai:dev-cycle orchestrator):
 <verify_before_proceed>
 - unit_id exists
 - acceptance_criteria is not empty
@@ -155,7 +155,7 @@ if any REQUIRED input is missing:
   → Return to orchestrator with error
 
 if coverage_threshold < 85:
-  → STOP and report: "Coverage threshold cannot be below Ring minimum (85%)"
+  → STOP and report: "Coverage threshold cannot be below MarsAI minimum (85%)"
   → Use 85% as threshold
 ```
 
@@ -182,13 +182,13 @@ testing_state = {
 
 ## Step 3: Dispatch QA Analyst Agent
 
-<dispatch_required agent="ring:qa-analyst">
+<dispatch_required agent="marsai:qa-analyst">
 Write unit tests for all acceptance criteria with 85%+ coverage.
 </dispatch_required>
 
 ```yaml
 Task:
-  subagent_type: "ring:qa-analyst"
+  subagent_type: "marsai:qa-analyst"
   description: "Write unit tests for [unit_id]"
   prompt: |
     ⛔ WRITE UNIT TESTS for All Acceptance Criteria
@@ -205,8 +205,8 @@ Task:
     [list implementation_files]
 
     ## Standards Reference
-    For Go: https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/golang.md
-    For TS: https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/typescript.md
+    For Go: https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang.md
+    For TS: https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/typescript.md
 
     Focus on: Testing Patterns section
 
@@ -325,7 +325,7 @@ Task:
 
 After unit tests pass, detect goroutine usage and verify goleak coverage.
 
-See [ring:dev-goroutine-leak-testing](../dev-goroutine-leak-testing/SKILL.md) for full detection patterns and dispatch templates.
+See [marsai:dev-goroutine-leak-testing](../dev-goroutine-leak-testing/SKILL.md) for full detection patterns and dispatch templates.
 See [architecture.md](../../docs/standards/golang/architecture.md#goroutine-leak-detection-mandatory) for goleak standards.
 
 ### Detection Logic
@@ -341,12 +341,12 @@ if no goroutine patterns found:
 
 # Goroutines detected
 → testing_state.goroutine_check = "REQUIRED"
-→ Dispatch ring:qa-analyst with test_mode="goroutine-leak"
+→ Dispatch marsai:qa-analyst with test_mode="goroutine-leak"
 ```
 
 ### Dispatch
 
-<dispatch_required agent="ring:qa-analyst" test_mode="goroutine-leak">
+<dispatch_required agent="marsai:qa-analyst" test_mode="goroutine-leak">
 MUST dispatch with test_mode="goroutine-leak" to detect leaks and verify goleak coverage.
 </dispatch_required>
 
@@ -355,8 +355,8 @@ MUST dispatch with test_mode="goroutine-leak" to detect leaks and verify goleak 
 | Verdict | Action |
 |---------|--------|
 | PASS | Proceed to Step 4 |
-| NEEDS_ACTION | Dispatch `ring:backend-engineer-golang` to add goleak tests, re-run |
-| FAIL | Dispatch `ring:backend-engineer-golang` to fix leaks, re-run |
+| NEEDS_ACTION | Dispatch `marsai:backend-engineer-golang` to add goleak tests, re-run |
+| FAIL | Dispatch `marsai:backend-engineer-golang` to fix leaks, re-run |
 
 ---
 
@@ -390,7 +390,7 @@ if verdict == "FAIL" or coverage_actual < coverage_threshold:
 
 ```yaml
 Task:
-  subagent_type: "[implementation_agent from Gate 0]"  # e.g., "ring:backend-engineer-golang"
+  subagent_type: "[implementation_agent from Gate 0]"  # e.g., "marsai:backend-engineer-golang"
   description: "Add tests to meet coverage threshold for [unit_id]"
   prompt: |
     ⛔ COVERAGE BELOW THRESHOLD - Add More Tests

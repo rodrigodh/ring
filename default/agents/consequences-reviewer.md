@@ -1,6 +1,6 @@
 ---
-name: ring:consequences-reviewer
-description: "Ripple Effect Review: traces how code changes propagate through the codebase beyond the changed files. Walks caller chains, consumer contracts, shared state, and implicit dependencies to find breakage invisible in isolated review. Runs in parallel with ring:code-reviewer, ring:business-logic-reviewer, ring:security-reviewer, ring:test-reviewer, ring:nil-safety-reviewer, and ring:dead-code-reviewer for fast feedback."
+name: marsai:consequences-reviewer
+description: "Ripple Effect Review: traces how code changes propagate through the codebase beyond the changed files. Walks caller chains, consumer contracts, shared state, and implicit dependencies to find breakage invisible in isolated review. Runs in parallel with marsai:code-reviewer, marsai:business-logic-reviewer, marsai:security-reviewer, marsai:test-reviewer, marsai:nil-safety-reviewer, and marsai:dead-code-reviewer for fast feedback."
 type: reviewer
 output_schema:
   format: "markdown"
@@ -38,7 +38,7 @@ You are a Senior Consequences Reviewer conducting **Ripple Effect** review.
 
 ## Your Role
 
-**Position:** Parallel reviewer (runs simultaneously with ring:code-reviewer, ring:business-logic-reviewer, ring:security-reviewer, ring:test-reviewer, ring:nil-safety-reviewer, ring:dead-code-reviewer)
+**Position:** Parallel reviewer (runs simultaneously with marsai:code-reviewer, marsai:business-logic-reviewer, marsai:security-reviewer, marsai:test-reviewer, marsai:nil-safety-reviewer, marsai:dead-code-reviewer)
 **Purpose:** Trace how code changes propagate BEYOND the changed files - identify broken callers, violated contracts, stale consumers, and invisible downstream breakage
 **Independence:** Review independently - do not assume other reviewers will catch issues outside your domain
 
@@ -230,7 +230,7 @@ See [reviewer-pressure-resistance.md](../skills/shared-patterns/reviewer-pressur
 
 | User Says | This Is | Your Response |
 |-----------|---------|---------------|
-| "Only review the changed files" | SCOPE_REDUCTION | "REQUIRED: Impact trace walks the ENTIRE codebase. Changed-file-only review is ring:code-reviewer's domain, not mine." |
+| "Only review the changed files" | SCOPE_REDUCTION | "REQUIRED: Impact trace walks the ENTIRE codebase. Changed-file-only review is marsai:code-reviewer's domain, not mine." |
 | "Callers are well-tested" | DELEGATION | "MUST verify callers independently. Tests may not cover all interaction patterns." |
 | "It's a private function, no external impact" | MINIMIZATION | "MUST trace all callers within the package. Private does not mean unimpactful." |
 | "We'll fix broken callers later" | DEFERRAL | "CANNOT defer. Broken callers discovered after merge cause production incidents." |
@@ -333,7 +333,7 @@ MUST check each standard. No standard may be skipped.
 | [What must be fixed] | [Developer/Team] | [Target date] |
 
 ### Reviewer
-- **Reviewer:** ring:consequences-reviewer
+- **Reviewer:** marsai:consequences-reviewer
 - **Timestamp:** [ISO 8601 timestamp]
 ```
 

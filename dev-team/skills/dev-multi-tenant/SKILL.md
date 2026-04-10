@@ -1,13 +1,13 @@
 ---
-name: ring:dev-multi-tenant
+name: marsai:dev-multi-tenant
 description: |
-  Multi-tenant development cycle orchestrator following Ring Standards. Auto-detects service stack
+  Multi-tenant development cycle orchestrator following MarsAI Standards. Auto-detects service stack
   (PostgreSQL, MongoDB, Redis, RabbitMQ, S3) and targetServices, then executes gate-based implementation
   using tenantId from JWT for database-per-tenant isolation via lib-commons v4 tenant-manager (postgres.Manager,
   mongo.Manager). Uses event-driven tenant discovery (Redis Pub/Sub via EventListener, TenantCache, TenantLoader).
   TenantMiddleware with WithPG/WithMB handles single-module and multi-module services. For targetServices:
   M2M credentials from AWS Secrets Manager via secretsmanager package. Requires lib-commons v4 + lib-auth v2.
-  Each gate dispatches ring:backend-engineer-golang. Loads multi-tenant.md via WebFetch.
+  Each gate dispatches marsai:backend-engineer-golang. Loads multi-tenant.md via WebFetch.
 
 trigger: |
   - User requests multi-tenant implementation for a Go service
@@ -27,18 +27,18 @@ NOT_skip_when: |
   - "organization_id already exists" → organization_id is NOT multi-tenant. tenantId via JWT is required.
   - "Just need to connect the wiring" → Multi-tenant requires lib-commons v4 tenant-manager sub-packages.
   - "lib-commons v4 upgrade is too risky" → REQUIRES lib-commons v4 tenant-manager sub-packages. No v3 = no multi-tenant.
-  - "Service already has multi-tenant" → Existence ≠ compliance. MUST replace non-standard implementations with Ring canonical model.
+  - "Service already has multi-tenant" → Existence ≠ compliance. MUST replace non-standard implementations with MarsAI canonical model.
   - "Multi-tenant is already done" → Every gate verifies compliance. MUST fix non-compliant code — it is wrong, not done.
 
 sequence:
-  after: [ring:dev-devops]
+  after: [marsai:dev-devops]
 
 related:
-  complementary: [ring:dev-cycle, ring:dev-implementation, ring:dev-devops, ring:dev-unit-testing, ring:requesting-code-review, ring:dev-validation]
+  complementary: [marsai:dev-cycle, marsai:dev-implementation, marsai:dev-devops, marsai:dev-unit-testing, marsai:requesting-code-review, marsai:dev-validation]
 
 input_schema:
   description: |
-    When invoked from ring:dev-cycle (post-cycle step), receives structured handoff context.
+    When invoked from marsai:dev-cycle (post-cycle step), receives structured handoff context.
     When invoked standalone (direct user request), these fields are auto-detected in Gate 0.
   fields:
     - name: execution_mode
@@ -110,13 +110,13 @@ output_schema:
 | Who | Responsibility |
 |-----|----------------|
 | **This Skill** | Detect stack, determine gates, pass context to agent, verify outputs, enforce order |
-| **ring:backend-engineer-golang** | Load multi-tenant.md via WebFetch, implement following the standards |
+| **marsai:backend-engineer-golang** | Load multi-tenant.md via WebFetch, implement following the standards |
 | **7 reviewers** | Review at Gate 9 |
 
 **CANNOT change scope:** the skill defines WHAT to implement. The agent implements HOW.
 
 **FORBIDDEN: Orchestrator MUST NOT use Edit, Write, or Bash tools to modify source code files.**
-All code changes MUST go through `Task(subagent_type="ring:backend-engineer-golang")`.
+All code changes MUST go through `Task(subagent_type="marsai:backend-engineer-golang")`.
 The orchestrator only verifies outputs (grep, go build, go test) — MUST NOT write implementation code.
 
 **MANDATORY: TDD for all implementation gates (Gates 2-6).** MUST follow RED → GREEN → REFACTOR: write a failing test first, then implement to make it pass, then refactor for clarity/performance. MUST include in every dispatch: "Follow TDD: write failing test (RED), implement to make it pass (GREEN), then refactor for clarity/performance (REFACTOR)."
@@ -131,7 +131,7 @@ Multi-tenant isolation is 100% based on `tenantId` from JWT → tenant-manager m
 
 **Standards reference:** All code examples and implementation patterns are in [multi-tenant.md](../../docs/standards/golang/multi-tenant.md). MUST load via WebFetch before implementing any gate.
 
-**WebFetch URL:** `https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/golang/multi-tenant.md`
+**WebFetch URL:** `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang/multi-tenant.md`
 
 ### MANDATORY: Canonical Environment Variables
 
@@ -205,9 +205,9 @@ Agents must not hardcode pool sizes — the Tenant Manager controls per-tenant p
 
 ### MANDATORY: Agent Instruction (include in EVERY gate dispatch)
 
-MUST include these instructions in every dispatch to `ring:backend-engineer-golang`:
+MUST include these instructions in every dispatch to `marsai:backend-engineer-golang`:
 
-> **STANDARDS: WebFetch `https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/golang/multi-tenant.md` and follow the sections referenced below. All code examples, patterns, and implementation details are in that document. Use them as-is.**
+> **STANDARDS: WebFetch `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang/multi-tenant.md` and follow the sections referenced below. All code examples, patterns, and implementation details are in that document. Use them as-is.**
 >
 > **SUB-PACKAGES: Use the import table from the skill — see "Sub-Package Import Reference" above. Do NOT invent import paths.**
 >
@@ -232,7 +232,7 @@ MUST report all severities. CRITICAL: STOP immediately (security breach). HIGH: 
 
 | User Says | This Is | Response |
 |-----------|---------|----------|
-| "It already has multi-tenant, skip this gate" | COMPLIANCE_BYPASS | "Existence ≠ compliance. MUST run compliance audit. If it doesn't match the Ring canonical model exactly, it is non-compliant and MUST be replaced." |
+| "It already has multi-tenant, skip this gate" | COMPLIANCE_BYPASS | "Existence ≠ compliance. MUST run compliance audit. If it doesn't match the MarsAI canonical model exactly, it is non-compliant and MUST be replaced." |
 | "Multi-tenant is done, just review it" | COMPLIANCE_BYPASS | "CANNOT skip gates. Every gate verifies compliance OR implements. Non-standard implementations are not 'done' — they are wrong." |
 | "Our custom approach works the same way" | COMPLIANCE_BYPASS | "Working ≠ compliant. Only lib-commons v4 tenant-manager sub-packages are valid. Custom implementations create drift and block upgrades." |
 | "Skip the lib-commons upgrade" | QUALITY_BYPASS | "CANNOT proceed without lib-commons v4. Tenant-manager sub-packages do not exist in v2." |
@@ -240,7 +240,7 @@ MUST report all severities. CRITICAL: STOP immediately (security breach). HIGH: 
 | "organization_id is our tenant identifier" | AUTHORITY_OVERRIDE | "STOP. organization_id is NOT multi-tenant. tenantId from JWT is the only mechanism." |
 | "Skip code review, we tested it" | QUALITY_BYPASS | "MANDATORY: 7 reviewers. One security mistake = cross-tenant data leak." |
 | "We don't need RabbitMQ multi-tenant" | SCOPE_REDUCTION | "MUST execute Gate 6 if RabbitMQ was detected. CANNOT skip detected stack." |
-| "I'll make a quick edit directly" | CODE_BYPASS | "FORBIDDEN: All code changes go through ring:backend-engineer-golang. Dispatch the agent." |
+| "I'll make a quick edit directly" | CODE_BYPASS | "FORBIDDEN: All code changes go through marsai:backend-engineer-golang. Dispatch the agent." |
 | "It's just one line, no need for an agent" | CODE_BYPASS | "FORBIDDEN: Even single-line changes MUST be dispatched. Agent ensures standards compliance." |
 | "Agent is slow, I'll edit faster" | CODE_BYPASS | "FORBIDDEN: Speed is not a justification. Agent applies TDD and standards checks." |
 | "This service doesn't need Secret Manager" | SCOPE_REDUCTION | "If it has targetServices declared and MULTI_TENANT_ENABLED=true, M2M via Secret Manager is MANDATORY." |
@@ -254,16 +254,16 @@ MUST report all severities. CRITICAL: STOP immediately (security breach). HIGH: 
 | Gate | Name | Condition | Agent |
 |------|------|-----------|-------|
 | 0 | Stack Detection + Compliance Audit | Always | Orchestrator |
-| 1 | Codebase Analysis (multi-tenant focus) | Always | ring:codebase-explorer |
-| 1.5 | Implementation Preview (visual report) | Always | Orchestrator (ring:visual-explainer) |
-| 2 | lib-commons v4 + lib-auth v2 Upgrade | Skip only if `go.mod` contains `lib-commons/v4` AND `lib-auth/v2` (verified via grep) | ring:backend-engineer-golang |
-| 3 | Multi-Tenant Configuration | Always — verify compliance or implement/fix | ring:backend-engineer-golang |
-| 4 | Tenant Middleware (TenantMiddleware with WithPG/WithMB) | Always — verify compliance or implement/fix | ring:backend-engineer-golang |
-| 5 | Repository Adaptation | Always per detected DB/storage — verify compliance or implement/fix | ring:backend-engineer-golang |
-| 5.5 | M2M Secret Manager (if service has targetServices) | Skip if has_m2m = false | ring:backend-engineer-golang |
-| 6 | RabbitMQ Multi-Tenant | Skip if no RabbitMQ | ring:backend-engineer-golang |
-| 7 | Metrics & Backward Compat | Always | ring:backend-engineer-golang |
-| 8 | Tests | Always | ring:backend-engineer-golang |
+| 1 | Codebase Analysis (multi-tenant focus) | Always | marsai:codebase-explorer |
+| 1.5 | Implementation Preview (visual report) | Always | Orchestrator (marsai:visual-explainer) |
+| 2 | lib-commons v4 + lib-auth v2 Upgrade | Skip only if `go.mod` contains `lib-commons/v4` AND `lib-auth/v2` (verified via grep) | marsai:backend-engineer-golang |
+| 3 | Multi-Tenant Configuration | Always — verify compliance or implement/fix | marsai:backend-engineer-golang |
+| 4 | Tenant Middleware (TenantMiddleware with WithPG/WithMB) | Always — verify compliance or implement/fix | marsai:backend-engineer-golang |
+| 5 | Repository Adaptation | Always per detected DB/storage — verify compliance or implement/fix | marsai:backend-engineer-golang |
+| 5.5 | M2M Secret Manager (if service has targetServices) | Skip if has_m2m = false | marsai:backend-engineer-golang |
+| 6 | RabbitMQ Multi-Tenant | Skip if no RabbitMQ | marsai:backend-engineer-golang |
+| 7 | Metrics & Backward Compat | Always | marsai:backend-engineer-golang |
+| 8 | Tests | Always | marsai:backend-engineer-golang |
 | 9 | Code Review | Always | 7 parallel reviewers |
 | 10 | User Validation | Always | User |
 | 11 | Activation Guide | Always | Orchestrator |
@@ -272,7 +272,7 @@ MUST execute gates sequentially. CANNOT skip or reorder.
 
 ### Input Validation (when invoked from dev-cycle)
 
-If this skill receives structured input from ring:dev-cycle (post-cycle handoff):
+If this skill receives structured input from marsai:dev-cycle (post-cycle handoff):
 
 ```text
 VALIDATE input:
@@ -303,7 +303,7 @@ If invoked standalone (no input_schema fields):
 
 **"The service already has multi-tenant code" is NOT a reason to skip any gate.**
 
-MUST replace existing multi-tenant code that does not follow the Ring canonical model — it is **non-compliant**. The only valid reason to skip a gate is when the existing implementation has been **verified** to match the exact patterns defined in [multi-tenant.md](../../docs/standards/golang/multi-tenant.md).
+MUST replace existing multi-tenant code that does not follow the MarsAI canonical model — it is **non-compliant**. The only valid reason to skip a gate is when the existing implementation has been **verified** to match the exact patterns defined in [multi-tenant.md](../../docs/standards/golang/multi-tenant.md).
 
 **Compliance verification requires EVIDENCE, not assumption.** See [multi-tenant.md § HARD GATE: Canonical Model Compliance](../../docs/standards/golang/multi-tenant.md#hard-gate-canonical-model-compliance) for the canonical list of compliant patterns. The Gate 0 Phase 2 compliance audit (A1-A8 grep checks) verifies each component against those patterns.
 
@@ -344,7 +344,7 @@ DETECT (run in parallel):
 
 ### Phase 2: Compliance Audit (MANDATORY if any multi-tenant code detected)
 
-If Phase 1 detects any existing multi-tenant code (step 7 returns results), MUST run a compliance audit. MUST replace existing code that does not match the Ring canonical model — it is not "partially done", it is **wrong**.
+If Phase 1 detects any existing multi-tenant code (step 7 returns results), MUST run a compliance audit. MUST replace existing code that does not match the MarsAI canonical model — it is not "partially done", it is **wrong**.
 
 ```text
 AUDIT (run in parallel — only if step 7 found existing multi-tenant code):
@@ -479,7 +479,7 @@ MUST confirm: user explicitly approves detection results before proceeding.
 
 **Always executes. This gate builds the implementation roadmap for all subsequent gates.**
 
-**Dispatch `ring:codebase-explorer` with multi-tenant-focused context:**
+**Dispatch `marsai:codebase-explorer` with multi-tenant-focused context:**
 
 > TASK: Analyze this codebase exclusively under the multi-tenant perspective.
 > DETECTED STACK: {databases and messaging from Gate 0}
@@ -519,11 +519,11 @@ MUST ensure backward compatibility context: the analysis MUST identify how the s
 
 **Always executes. This gate generates a visual HTML report showing exactly what will change before any code is written.**
 
-**Uses the `ring:visual-explainer` skill to produce a self-contained HTML page.**
+**Uses the `marsai:visual-explainer` skill to produce a self-contained HTML page.**
 
 The report is built from Gate 0 (stack detection) and Gate 1 (codebase analysis). It shows the developer a complete preview of every change that will be made across all subsequent gates, with backward compatibility analysis.
 
-**Orchestrator generates the report using `ring:visual-explainer` with this content:**
+**Orchestrator generates the report using `marsai:visual-explainer` with this content:**
 
 The HTML page MUST include these sections:
 
@@ -706,7 +706,7 @@ HARD GATE: Developer MUST explicitly approve the implementation preview before a
 
 **SKIP only if:** `go.mod` contains `lib-commons/v4` AND `lib-auth/v2` (verified via grep, not assumed). If the service uses lib-commons v2 or v3, or lib-auth v1, this gate is MANDATORY.
 
-**Dispatch `ring:backend-engineer-golang` with context:**
+**Dispatch `marsai:backend-engineer-golang` with context:**
 
 > TASK: Upgrade lib-commons to v4, then update lib-auth to v2 (lib-auth v2 depends on lib-commons v4).
 > For both libraries, fetch the latest tag (v4 is currently in beta — use latest beta until stable is released).
@@ -731,7 +731,7 @@ HARD GATE: MUST pass build and tests before proceeding.
 
 **Always executes.** If config already has `MULTI_TENANT_ENABLED`, this gate VERIFIES that all 13 canonical env vars are present with correct names, types, and defaults where applicable. Non-compliant config (wrong names like `TENANT_MANAGER_ADDRESS`, missing vars, wrong defaults) MUST be fixed. Compliance audit from Gate 0 determines whether this is implement or fix.
 
-**Dispatch `ring:backend-engineer-golang` with context from Gate 1 analysis:**
+**Dispatch `marsai:backend-engineer-golang` with context from Gate 1 analysis:**
 
 > TASK: Verify and ensure all 13 canonical multi-tenant environment variables exist in the Config struct with correct names and defaults. If any are missing, misnamed, or have wrong defaults — fix them.
 > CONTEXT FROM GATE 1: {Config struct location and current fields from analysis report}
@@ -769,7 +769,7 @@ HARD GATE: MUST pass build and tests before proceeding.
 
 **This is the CORE gate. Without compliant TenantMiddleware, there is no tenant isolation.**
 
-**Dispatch `ring:backend-engineer-golang` with context from Gate 1 analysis:**
+**Dispatch `marsai:backend-engineer-golang` with context from Gate 1 analysis:**
 
 > TASK: Implement tenant middleware using lib-commons/v4 tenant-manager sub-packages.
 > DETECTED DATABASES: {postgresql: Y/N, mongodb: Y/N} (from Gate 0)
@@ -806,7 +806,7 @@ HARD GATE: CANNOT proceed without TenantMiddleware.
 
 **Always executes per detected DB/storage.** If repositories already use context-based connections, this gate VERIFIES they use the canonical lib-commons v4 functions (`tmcore.GetPGContext`, `tmcore.GetMBContext`, `valkey.GetKeyContext`, `s3.GetS3KeyStorageContext`). Custom pool lookups, manual DB switching, or any non-lib-commons resolution is NON-COMPLIANT and MUST be replaced. Compliance audit from Gate 0 determines whether this is implement or fix.
 
-**Dispatch `ring:backend-engineer-golang` with context from Gate 1 analysis:**
+**Dispatch `marsai:backend-engineer-golang` with context from Gate 1 analysis:**
 
 > TASK: Adapt all repository implementations to get database connections from tenant context instead of static connections. Also adapt S3/object storage operations to prefix keys with tenant ID.
 > DETECTED STACK: {postgresql: Y/N, mongodb: Y/N, redis: Y/N, s3: Y/N} (from Gate 0)
@@ -830,7 +830,7 @@ HARD GATE: CANNOT proceed without TenantMiddleware.
 
 **This gate is MANDATORY for any service with targetServices declared** that needs to authenticate with target service APIs (e.g., ledger, midaz, plugin-fees) in multi-tenant mode. Each tenant has its own M2M credentials stored in AWS Secrets Manager.
 
-**Dispatch `ring:backend-engineer-golang` with context from Gate 0/1 analysis:**
+**Dispatch `marsai:backend-engineer-golang` with context from Gate 0/1 analysis:**
 
 > TASK: Implement M2M credential retrieval from AWS Secrets Manager with per-tenant caching.
 > HAS_M2M: true (confirmed in Gate 0)
@@ -919,7 +919,7 @@ MANDATORY: RabbitMQ multi-tenant requires **TWO complementary layers** — both 
 - REQUIRED: `tmrabbitmq.Manager` with per-tenant vhosts as the only acceptable isolation mechanism
 - FORBIDDEN: A service that only propagates `X-Tenant-ID` headers on a shared connection — this is not multi-tenant compliant
 
-**Dispatch `ring:backend-engineer-golang` with context from Gate 1 analysis:**
+**Dispatch `marsai:backend-engineer-golang` with context from Gate 1 analysis:**
 
 > TASK: Implement RabbitMQ multi-tenant with TWO mandatory layers:
 >
@@ -979,7 +979,7 @@ Both layers MUST be implemented together. MUST NOT connect directly to RabbitMQ 
 
 ## Gate 7: Metrics & Backward Compatibility
 
-**Dispatch `ring:backend-engineer-golang` with context:**
+**Dispatch `marsai:backend-engineer-golang` with context:**
 
 > TASK: Add multi-tenant metrics and validate backward compatibility.
 >
@@ -1019,7 +1019,7 @@ HARD GATE: Backward compatibility MUST pass.
 
 ## Gate 8: Tests
 
-**Dispatch `ring:backend-engineer-golang` with context:**
+**Dispatch `marsai:backend-engineer-golang` with context:**
 
 > TASK: Write multi-tenant tests.
 > DETECTED STACK: {postgresql: Y/N, mongodb: Y/N, redis: Y/N, s3: Y/N, rabbitmq: Y/N} (from Gate 0)
@@ -1034,7 +1034,7 @@ HARD GATE: Backward compatibility MUST pass.
 
 ## Gate 9: Code Review
 
-**Dispatch 7 parallel reviewers (same pattern as ring:requesting-code-review).**
+**Dispatch 7 parallel reviewers (same pattern as marsai:requesting-code-review).**
 
 MUST include this context in ALL 7 reviewer dispatches:
 
@@ -1045,13 +1045,13 @@ MUST include this context in ALL 7 reviewer dispatches:
 
 | Reviewer | Focus |
 |----------|-------|
-| ring:code-reviewer | Architecture, lib-commons v4 usage, TenantMiddleware with WithPG/WithMB placement, sub-package usage |
-| ring:business-logic-reviewer | Tenant context propagation via tenantId (NOT organization_id) |
-| ring:security-reviewer | Cross-tenant DB isolation, JWT tenantId validation, no data leaks between tenant databases |
-| ring:test-reviewer | Coverage, isolation tests between two tenants, backward compat tests |
-| ring:nil-safety-reviewer | Nil risks in tenant context extraction from JWT and context getters |
-| ring:consequences-reviewer | Impact on single-tenant paths, backward compat when MULTI_TENANT_ENABLED=false |
-| ring:dead-code-reviewer | Orphaned code from tenant changes, dead tenant-specific helpers |
+| marsai:code-reviewer | Architecture, lib-commons v4 usage, TenantMiddleware with WithPG/WithMB placement, sub-package usage |
+| marsai:business-logic-reviewer | Tenant context propagation via tenantId (NOT organization_id) |
+| marsai:security-reviewer | Cross-tenant DB isolation, JWT tenantId validation, no data leaks between tenant databases |
+| marsai:test-reviewer | Coverage, isolation tests between two tenants, backward compat tests |
+| marsai:nil-safety-reviewer | Nil risks in tenant context extraction from JWT and context getters |
+| marsai:consequences-reviewer | Impact on single-tenant paths, backward compat when MULTI_TENANT_ENABLED=false |
+| marsai:dead-code-reviewer | Orphaned code from tenant changes, dead tenant-specific helpers |
 
 MUST pass all 7 reviewers. Critical findings → fix and re-review.
 
@@ -1121,7 +1121,7 @@ See [multi-tenant.md](../../docs/standards/golang/multi-tenant.md) for the canon
 
 | Rationalization | Why It's WRONG | Required Action |
 |-----------------|----------------|-----------------|
-| "Service already has multi-tenant code" | Existence ≠ compliance. Code that doesn't follow the Ring canonical model is WRONG and must be replaced. | **STOP. Run compliance audit (Gate 0 Phase 2). Fix every NON-COMPLIANT component.** |
+| "Service already has multi-tenant code" | Existence ≠ compliance. Code that doesn't follow the MarsAI canonical model is WRONG and must be replaced. | **STOP. Run compliance audit (Gate 0 Phase 2). Fix every NON-COMPLIANT component.** |
 | "Multi-tenant is already implemented, just needs tweaks" | Partial or non-standard implementation is not "almost done" — it is non-compliant. Every component must match the canonical model exactly. | **STOP. Execute every gate. Verify or fix each one.** |
 | "Skipping this gate because something similar exists" | "Similar" is not "compliant". Only exact matches to lib-commons v4 tenant-manager sub-packages are valid. | **STOP. Verify with grep evidence. If it doesn't match the canonical pattern → gate MUST execute.** |
 | "The current approach works fine, no need to change" | Working ≠ compliant. A custom solution that works today creates drift, blocks upgrades, and prevents standardized tooling. | **STOP. Replace with canonical implementation.** |

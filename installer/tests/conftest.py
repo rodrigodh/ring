@@ -1,5 +1,5 @@
 """
-Pytest fixtures for Ring installer tests.
+Pytest fixtures for MarsAI installer tests.
 
 Provides shared fixtures for testing adapters, transformers, utilities, and core functions.
 """
@@ -13,7 +13,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-# Ensure ring_installer is importable when running pytest from repo root.
+# Ensure marsai_installer is importable when running pytest from repo root.
 INSTALLER_ROOT = Path(__file__).resolve().parents[1]
 if str(INSTALLER_ROOT) not in sys.path:
     sys.path.insert(0, str(INSTALLER_ROOT))
@@ -60,15 +60,15 @@ def fixtures_path() -> Path:
 @pytest.fixture
 def tmp_ring_root(tmp_path: Path, fixtures_path: Path) -> Path:
     """
-    Create a temporary Ring source directory with test fixtures.
+    Create a temporary MarsAI source directory with test fixtures.
 
     This fixture copies the test fixtures to a temporary directory,
-    simulating a Ring installation for testing.
+    simulating a MarsAI installation for testing.
 
     Returns:
-        Path to temporary Ring root with test components.
+        Path to temporary MarsAI root with test components.
     """
-    ring_root = tmp_path / "ring"
+    ring_root = tmp_path / "marsai"
     ring_root.mkdir()
 
     # Create marketplace.json
@@ -79,8 +79,8 @@ def tmp_ring_root(tmp_path: Path, fixtures_path: Path) -> Path:
         "version": "1.2.3",
         "plugins": [
             {
-                "name": "ring-default",
-                "description": "Core Ring plugin",
+                "name": "marsai-default",
+                "description": "Core MarsAI plugin",
                 "version": "1.0.0",
                 "source": "./default",
             },
@@ -401,7 +401,7 @@ def transform_context():
     Returns:
         Function that creates TransformContext instances.
     """
-    from ring_installer.transformers.base import TransformContext
+    from marsai_installer.transformers.base import TransformContext
 
     def _create_context(
         platform: str = "claude",
@@ -434,14 +434,14 @@ def mock_platform_detection():
     Yields:
         Dictionary of mocked detection functions.
     """
-    with patch("ring_installer.utils.platform_detect._detect_claude") as mock_claude, patch(
-        "ring_installer.utils.platform_detect._detect_codex"
+    with patch("marsai_installer.utils.platform_detect._detect_claude") as mock_claude, patch(
+        "marsai_installer.utils.platform_detect._detect_codex"
     ) as mock_codex, patch(
-        "ring_installer.utils.platform_detect._detect_factory"
+        "marsai_installer.utils.platform_detect._detect_factory"
     ) as mock_factory, patch(
-        "ring_installer.utils.platform_detect._detect_opencode"
+        "marsai_installer.utils.platform_detect._detect_opencode"
     ) as mock_opencode:
-        from ring_installer.utils.platform_detect import PlatformInfo
+        from marsai_installer.utils.platform_detect import PlatformInfo
 
         # Default: no platforms installed
         mock_claude.return_value = PlatformInfo(

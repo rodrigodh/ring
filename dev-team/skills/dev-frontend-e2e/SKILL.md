@@ -1,5 +1,5 @@
 ---
-name: ring:dev-frontend-e2e
+name: marsai:dev-frontend-e2e
 description: |
   Gate 5 of frontend development cycle - ensures all user flows from
   product-designer have passing E2E tests with Playwright across browsers.
@@ -10,7 +10,7 @@ trigger: |
   - Validates user flows end-to-end
 
 skip_when: |
-  - Not inside a frontend development cycle (ring:dev-cycle-frontend)
+  - Not inside a frontend development cycle (marsai:dev-cycle-frontend)
   - Backend-only project with no UI components
   - Task is documentation-only, configuration-only, or non-code
   - No user-facing flows were added or changed in this cycle
@@ -21,11 +21,11 @@ NOT_skip_when: |
   - "Happy path is enough" - Error handling MUST be tested.
 
 sequence:
-  after: [ring:dev-frontend-visual]
-  before: [ring:dev-frontend-performance]
+  after: [marsai:dev-frontend-visual]
+  before: [marsai:dev-frontend-performance]
 
 related:
-  complementary: [ring:dev-cycle-frontend, ring:dev-frontend-visual, ring:qa-analyst-frontend]
+  complementary: [marsai:dev-cycle-frontend, marsai:dev-frontend-visual, marsai:qa-analyst-frontend]
 
 input_schema:
   required:
@@ -95,7 +95,7 @@ verification:
 
 ## Overview
 
-Ensure all user flows from `ring:product-designer` have passing **Playwright E2E tests** across Chromium, Firefox, and WebKit with responsive viewport coverage.
+Ensure all user flows from `marsai:product-designer` have passing **Playwright E2E tests** across Chromium, Firefox, and WebKit with responsive viewport coverage.
 
 **Core principle:** If the product-designer defined a user flow, it must have an E2E test. If the user can encounter an error, it must be tested.
 
@@ -122,7 +122,7 @@ Ensure all user flows from `ring:product-designer` have passing **Playwright E2E
 **MANDATORY:** Load testing-e2e.md standards via WebFetch.
 
 <fetch_required>
-https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/frontend/testing-e2e.md
+https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/frontend/testing-e2e.md
 </fetch_required>
 
 ---
@@ -155,7 +155,7 @@ if backend_handoff provided:
 
 ```text
 Task tool:
-  subagent_type: "ring:qa-analyst-frontend"
+  subagent_type: "marsai:qa-analyst-frontend"
   prompt: |
     **MODE:** E2E TESTING (Gate 5)
 

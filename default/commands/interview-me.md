@@ -1,5 +1,5 @@
 ---
-name: ring:interview-me
+name: marsai:interview-me
 description: Proactive requirements gathering through structured user interview
 argument-hint: "[topic]"
 ---
@@ -9,7 +9,7 @@ Surface ambiguities and gather requirements BEFORE implementation begins. This c
 ## Usage
 
 ```
-/ring:interview-me [topic]
+/marsai:interview-me [topic]
 ```
 
 ## Arguments
@@ -22,19 +22,19 @@ Surface ambiguities and gather requirements BEFORE implementation begins. This c
 
 ### Before Starting a Feature
 ```
-/ring:interview-me user notifications
+/marsai:interview-me user notifications
 ```
 Claude interviews you about notification types, delivery channels, preferences, etc.
 
 ### When Claude Seems Confused
 ```
-/ring:interview-me
+/marsai:interview-me
 ```
 Claude analyzes the current conversation and surfaces its uncertainties.
 
 ### Before Architecture Decisions
 ```
-/ring:interview-me database migration strategy
+/marsai:interview-me database migration strategy
 ```
 Claude gathers constraints, timelines, compatibility requirements, etc.
 
@@ -77,7 +77,7 @@ You must explicitly confirm this before Claude proceeds.
 
 ## When to Use This Command
 
-| Scenario | Use /ring:interview-me? |
+| Scenario | Use /marsai:interview-me? |
 |----------|-------------------|
 | Starting a new feature with vague requirements | ✅ Yes |
 | Claude made wrong assumptions previously | ✅ Yes |
@@ -91,9 +91,9 @@ You must explicitly confirm this before Claude proceeds.
 
 | Command/Skill | Relationship |
 |---------------|--------------|
-| `ring:doubt-triggered-questions` pattern | For single questions during work |
-| `/ring:brainstorm` | Use AFTER interview to explore solutions |
-| `/ring:write-plan` | Use AFTER interview to create implementation plan |
+| `marsai:doubt-triggered-questions` pattern | For single questions during work |
+| `/marsai:brainstorm` | Use AFTER interview to explore solutions |
+| `/marsai:write-plan` | Use AFTER interview to create implementation plan |
 
 ## Troubleshooting
 
@@ -116,7 +116,7 @@ Say "use your judgment" or "pick whatever fits best." Claude will make a choice 
 **This command MUST load the skill for complete workflow execution.**
 
 ```
-Use Skill tool: ring:interviewing-user
+Use Skill tool: marsai:interviewing-user
 ```
 
 The skill contains the complete workflow with:

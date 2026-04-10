@@ -1,5 +1,5 @@
 ---
-name: ring:dev-cycle-frontend
+name: marsai:dev-cycle-frontend
 description: |
   Frontend development cycle orchestrator with 9 gates. Loads tasks from PM team output
   or backend handoff and executes through implementation → devops → accessibility →
@@ -20,14 +20,14 @@ skip_when: |
   - "Backend already tested this" → Frontend has different quality concerns.
 
 sequence:
-  before: [ring:dev-feedback-loop]
+  before: [marsai:dev-feedback-loop]
 
 related:
-  complementary: [ring:dev-frontend-accessibility, ring:dev-unit-testing, ring:dev-frontend-visual, ring:dev-frontend-e2e, ring:dev-frontend-performance, ring:requesting-code-review, ring:dev-validation, ring:dev-feedback-loop]
+  complementary: [marsai:dev-frontend-accessibility, marsai:dev-unit-testing, marsai:dev-frontend-visual, marsai:dev-frontend-e2e, marsai:dev-frontend-performance, marsai:requesting-code-review, marsai:dev-validation, marsai:dev-feedback-loop]
 
 verification:
   automated:
-    - command: "test -f docs/ring:dev-cycle-frontend/current-cycle.json"
+    - command: "test -f docs/marsai:dev-cycle-frontend/current-cycle.json"
       description: "State file exists"
       success_pattern: "exit 0"
   manual:
@@ -39,11 +39,11 @@ verification:
 
 ## Standards Loading (MANDATORY)
 
-**Before any gate execution, you MUST load Ring standards:**
+**Before any gate execution, you MUST load MarsAI standards:**
 
 <fetch_required>
-https://raw.githubusercontent.com/LerianStudio/ring/main/CLAUDE.md
-https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/frontend.md
+https://raw.githubusercontent.com/LerianStudio/marsai/main/CLAUDE.md
+https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/frontend.md
 </fetch_required>
 
 Fetch URLs above and extract: Agent Modification Verification requirements, Anti-Rationalization Tables requirements, Critical Rules, and Frontend Standards.
@@ -54,7 +54,7 @@ Fetch URLs above and extract: Agent Modification Verification requirements, Anti
 - frontend.md not accessible
 </block_condition>
 
-If any condition is true, STOP and report blocker. Cannot proceed without Ring standards.
+If any condition is true, STOP and report blocker. Cannot proceed without MarsAI standards.
 
 ## Overview
 
@@ -63,9 +63,9 @@ The frontend development cycle orchestrator loads tasks/subtasks from PM team ou
 - **Gates 0-8 (per unit):** Write code + run tests/checks per task/subtask
 - **All 9 gates are sequential and mandatory**
 
-Unlike the backend `ring:dev-cycle` (which defers integration/chaos test execution), the frontend cycle executes all gates fully per unit. Frontend testing tools (Playwright, Storybook, Lighthouse) do not require heavy container infrastructure.
+Unlike the backend `marsai:dev-cycle` (which defers integration/chaos test execution), the frontend cycle executes all gates fully per unit. Frontend testing tools (Playwright, Storybook, Lighthouse) do not require heavy container infrastructure.
 
-**MUST announce at start:** "I'm using the ring:dev-cycle-frontend skill to orchestrate frontend task execution through 9 gates (Gate 0-8). All gates execute per unit."
+**MUST announce at start:** "I'm using the marsai:dev-cycle-frontend skill to orchestrate frontend task execution through 9 gates (Gate 0-8). All gates execute per unit."
 
 ## CRITICAL: Specialized Agents Perform All Tasks
 
@@ -84,14 +84,14 @@ See [shared-patterns/shared-orchestrator-principle.md](../shared-patterns/shared
 | Action | Tool | Purpose |
 |--------|------|---------|
 | Read task files | `Read` | Load task definitions from `docs/pre-dev/*/tasks-frontend.md` or `docs/pre-dev/*/tasks.md` |
-| Read state files | `Read` | Load/verify `docs/ring:dev-cycle-frontend/current-cycle.json` |
+| Read state files | `Read` | Load/verify `docs/marsai:dev-cycle-frontend/current-cycle.json` |
 | Read PROJECT_RULES.md | `Read` | Load project-specific rules |
-| Read backend handoff | `Read` | Load `docs/ring:dev-cycle/handoff-frontend.json` if available |
+| Read backend handoff | `Read` | Load `docs/marsai:dev-cycle/handoff-frontend.json` if available |
 | Write state files | `Write` | Persist cycle state to JSON |
 | Track progress | `TodoWrite` | Maintain task list |
 | Dispatch agents | `Task` | Send work to specialist agents |
 | Ask user questions | `AskUserQuestion` | Get execution mode, approvals |
-| WebFetch standards | `WebFetch` | Load Ring standards |
+| WebFetch standards | `WebFetch` | Load MarsAI standards |
 
 ### What Orchestrator CANNOT Do (FORBIDDEN)
 
@@ -100,7 +100,7 @@ See [shared-patterns/shared-orchestrator-principle.md](../shared-patterns/shared
 - Write source code (`Write`/`Create` on `*.ts`, `*.tsx`, `*.jsx`) - Agent writes code, not orchestrator
 - Edit source code (`Edit` on `*.ts`, `*.tsx`, `*.jsx`, `*.css`) - Agent edits code, not orchestrator
 - Run tests (`Execute` with `npm test`, `npx playwright`, `npx vitest`) - Agent runs tests in TDD cycle
-- Analyze code (Direct pattern analysis) - `ring:codebase-explorer` analyzes
+- Analyze code (Direct pattern analysis) - `marsai:codebase-explorer` analyzes
 - Make architectural decisions (Choosing patterns/libraries) - User decides, agent implements
 </forbidden>
 
@@ -129,7 +129,7 @@ This is not negotiable:
 |  3. Load backend handoff if available                             |
 |  4. Ask execution mode (AskUserQuestion)                          |
 |  5. Determine state path + Check/Load state                       |
-|  6. WebFetch Ring Standards (CLAUDE.md + frontend.md)             |
+|  6. WebFetch MarsAI Standards (CLAUDE.md + frontend.md)             |
 |  7. LOAD SUB-SKILL for current gate (Skill tool)                  |
 |  8. Execute sub-skill instructions (dispatch agent via Task)      |
 |  9. Wait for agent completion                                     |
@@ -180,10 +180,10 @@ Store result in state file under `ui_library_mode`.
 
 ## Backend Handoff Loading (Optional)
 
-If the frontend cycle follows a backend `ring:dev-cycle`, load the handoff file:
+If the frontend cycle follows a backend `marsai:dev-cycle`, load the handoff file:
 
 ```text
-Check: Does docs/ring:dev-cycle/handoff-frontend.json exist?
+Check: Does docs/marsai:dev-cycle/handoff-frontend.json exist?
 
   YES -> Load and parse:
     - endpoints: API endpoints implemented by backend
@@ -204,15 +204,15 @@ Check: Does docs/ring:dev-cycle/handoff-frontend.json exist?
 **Before dispatching any agent, you MUST load the corresponding sub-skill first.**
 
 <cannot_skip>
-- Gate 0: `Skill("ring:dev-implementation")` → then `Task(subagent_type="ring:frontend-engineer" or "ring:ui-engineer" or "ring:frontend-bff-engineer-typescript")`
-- Gate 1: `Skill("ring:dev-devops")` → then `Task(subagent_type="ring:devops-engineer")`
-- Gate 2: `Skill("ring:dev-frontend-accessibility")` → then `Task(subagent_type="ring:qa-analyst-frontend", test_mode="accessibility")`
-- Gate 3: `Skill("ring:dev-unit-testing")` → then `Task(subagent_type="ring:qa-analyst-frontend", test_mode="unit")`
-- Gate 4: `Skill("ring:dev-frontend-visual")` → then `Task(subagent_type="ring:qa-analyst-frontend", test_mode="visual")`
-- Gate 5: `Skill("ring:dev-frontend-e2e")` → then `Task(subagent_type="ring:qa-analyst-frontend", test_mode="e2e")`
-- Gate 6: `Skill("ring:dev-frontend-performance")` → then `Task(subagent_type="ring:qa-analyst-frontend", test_mode="performance")`
-- Gate 7: `Skill("ring:requesting-code-review")` → then 5x `Task(...)` in parallel
-- Gate 8: `Skill("ring:dev-validation")` → N/A (verification only)
+- Gate 0: `Skill("marsai:dev-implementation")` → then `Task(subagent_type="marsai:frontend-engineer" or "marsai:ui-engineer" or "marsai:frontend-bff-engineer-typescript")`
+- Gate 1: `Skill("marsai:dev-devops")` → then `Task(subagent_type="marsai:devops-engineer")`
+- Gate 2: `Skill("marsai:dev-frontend-accessibility")` → then `Task(subagent_type="marsai:qa-analyst-frontend", test_mode="accessibility")`
+- Gate 3: `Skill("marsai:dev-unit-testing")` → then `Task(subagent_type="marsai:qa-analyst-frontend", test_mode="unit")`
+- Gate 4: `Skill("marsai:dev-frontend-visual")` → then `Task(subagent_type="marsai:qa-analyst-frontend", test_mode="visual")`
+- Gate 5: `Skill("marsai:dev-frontend-e2e")` → then `Task(subagent_type="marsai:qa-analyst-frontend", test_mode="e2e")`
+- Gate 6: `Skill("marsai:dev-frontend-performance")` → then `Task(subagent_type="marsai:qa-analyst-frontend", test_mode="performance")`
+- Gate 7: `Skill("marsai:requesting-code-review")` → then 5x `Task(...)` in parallel
+- Gate 8: `Skill("marsai:dev-validation")` → N/A (verification only)
 </cannot_skip>
 
 Between "WebFetch standards" and "Task(agent)" there MUST be "Skill(sub-skill)".
@@ -234,7 +234,7 @@ Between "WebFetch standards" and "Task(agent)" there MUST be "Skill(sub-skill)".
 
 ```yaml
 Task tool:
-  subagent_type: "ring:frontend-engineer"
+  subagent_type: "marsai:frontend-engineer"
   prompt: |
     **CUSTOM CONTEXT (from user):**
     {state.custom_prompt}
@@ -280,7 +280,7 @@ Task tool:
 | "It's just one small component" | File count doesn't determine agent need. Standards do. | **DISPATCH specialist agent** |
 | "I already loaded the standards" | Loading standards ≠ permission to implement. Standards are for AGENTS. | **DISPATCH specialist agent** |
 | "Agent dispatch adds overhead" | Overhead ensures compliance. Skip = skip verification. | **DISPATCH specialist agent** |
-| "I can write React/TypeScript" | Knowing framework ≠ having Ring standards loaded. Agent has them. | **DISPATCH specialist agent** |
+| "I can write React/TypeScript" | Knowing framework ≠ having MarsAI standards loaded. Agent has them. | **DISPATCH specialist agent** |
 | "Just a quick CSS fix" | "Quick" is irrelevant. All source changes require specialist. | **DISPATCH specialist agent** |
 | "I'll read the component first to understand" | Reading source = temptation to edit. Agent reads for you. | **DISPATCH specialist agent** |
 | "Let me check if tests pass first" | Agent runs tests in TDD cycle. You don't run tests. | **DISPATCH specialist agent** |
@@ -389,15 +389,15 @@ No negotiation. No exceptions. No "special cases".
 
 | Gate | Skill | Purpose | Agent | Standards Module |
 |------|-------|---------|-------|------------------|
-| 0 | ring:dev-implementation | Write code following TDD | ring:frontend-engineer / ring:ui-engineer / ring:frontend-bff-engineer-typescript | frontend.md |
-| 1 | ring:dev-devops | Docker/compose/Nginx setup | ring:devops-engineer | devops.md |
-| 2 | ring:dev-frontend-accessibility | WCAG 2.1 AA compliance | ring:qa-analyst-frontend (test_mode: accessibility) | testing-accessibility.md |
-| 3 | ring:dev-unit-testing | Unit tests 85%+ coverage | ring:qa-analyst-frontend (test_mode: unit) | frontend.md |
-| 4 | ring:dev-frontend-visual | Snapshot/visual regression tests | ring:qa-analyst-frontend (test_mode: visual) | testing-visual.md |
-| 5 | ring:dev-frontend-e2e | E2E tests with Playwright | ring:qa-analyst-frontend (test_mode: e2e) | testing-e2e.md |
-| 6 | ring:dev-frontend-performance | Core Web Vitals + Lighthouse | ring:qa-analyst-frontend (test_mode: performance) | testing-performance.md |
-| 7 | ring:requesting-code-review | Parallel code review (5 reviewers) | ring:code-reviewer, ring:business-logic-reviewer, ring:security-reviewer, ring:test-reviewer, ring:frontend-engineer (review mode) | N/A |
-| 8 | ring:dev-validation | Final acceptance validation | N/A (verification) | N/A |
+| 0 | marsai:dev-implementation | Write code following TDD | marsai:frontend-engineer / marsai:ui-engineer / marsai:frontend-bff-engineer-typescript | frontend.md |
+| 1 | marsai:dev-devops | Docker/compose/Nginx setup | marsai:devops-engineer | devops.md |
+| 2 | marsai:dev-frontend-accessibility | WCAG 2.1 AA compliance | marsai:qa-analyst-frontend (test_mode: accessibility) | testing-accessibility.md |
+| 3 | marsai:dev-unit-testing | Unit tests 85%+ coverage | marsai:qa-analyst-frontend (test_mode: unit) | frontend.md |
+| 4 | marsai:dev-frontend-visual | Snapshot/visual regression tests | marsai:qa-analyst-frontend (test_mode: visual) | testing-visual.md |
+| 5 | marsai:dev-frontend-e2e | E2E tests with Playwright | marsai:qa-analyst-frontend (test_mode: e2e) | testing-e2e.md |
+| 6 | marsai:dev-frontend-performance | Core Web Vitals + Lighthouse | marsai:qa-analyst-frontend (test_mode: performance) | testing-performance.md |
+| 7 | marsai:requesting-code-review | Parallel code review (5 reviewers) | marsai:code-reviewer, marsai:business-logic-reviewer, marsai:security-reviewer, marsai:test-reviewer, marsai:frontend-engineer (review mode) | N/A |
+| 8 | marsai:dev-validation | Final acceptance validation | N/A (verification) | N/A |
 
 **All gates are MANDATORY. No exceptions. No skip reasons.**
 
@@ -405,10 +405,10 @@ No negotiation. No exceptions. No "special cases".
 
 | Condition | Agent to Dispatch |
 |-----------|-------------------|
-| React/Next.js component implementation | `ring:frontend-engineer` |
-| Design system / Sindarian UI component | `ring:ui-engineer` |
-| BFF / API aggregation layer | `ring:frontend-bff-engineer-typescript` |
-| Mixed (component + BFF) | Dispatch `ring:frontend-engineer` first, then `ring:frontend-bff-engineer-typescript` |
+| React/Next.js component implementation | `marsai:frontend-engineer` |
+| Design system / Sindarian UI component | `marsai:ui-engineer` |
+| BFF / API aggregation layer | `marsai:frontend-bff-engineer-typescript` |
+| Mixed (component + BFF) | Dispatch `marsai:frontend-engineer` first, then `marsai:frontend-bff-engineer-typescript` |
 
 **UI library mode (detected in Step 0) MUST be passed to the agent as context.**
 
@@ -449,23 +449,23 @@ For the frontend cycle, the 5 parallel reviewers are:
 
 | # | Reviewer | Focus Area |
 |---|----------|------------|
-| 1 | `ring:code-reviewer` | Code quality, patterns, maintainability, React best practices |
-| 2 | `ring:business-logic-reviewer` | Business logic correctness, domain rules, acceptance criteria |
-| 3 | `ring:security-reviewer` | XSS, CSRF, auth handling, sensitive data exposure, CSP |
-| 4 | `ring:test-reviewer` | Test quality, coverage gaps, test patterns, assertion quality |
-| 5 | `ring:frontend-engineer` (review mode) | Accessibility compliance, frontend standards, component architecture |
+| 1 | `marsai:code-reviewer` | Code quality, patterns, maintainability, React best practices |
+| 2 | `marsai:business-logic-reviewer` | Business logic correctness, domain rules, acceptance criteria |
+| 3 | `marsai:security-reviewer` | XSS, CSRF, auth handling, sensitive data exposure, CSP |
+| 4 | `marsai:test-reviewer` | Test quality, coverage gaps, test patterns, assertion quality |
+| 5 | `marsai:frontend-engineer` (review mode) | Accessibility compliance, frontend standards, component architecture |
 
-**NOTE:** The 5th reviewer slot uses `ring:frontend-engineer` in review mode instead of `ring:nil-safety-reviewer` (which is Go-specific). The frontend engineer reviews accessibility compliance and frontend standards adherence.
+**NOTE:** The 5th reviewer slot uses `marsai:frontend-engineer` in review mode instead of `marsai:nil-safety-reviewer` (which is Go-specific). The frontend engineer reviews accessibility compliance and frontend standards adherence.
 
 **All 5 reviewers MUST be dispatched in a single message with 5 parallel Task calls.**
 
 ```yaml
 # Gate 7: Dispatch all 5 reviewers in parallel (SINGLE message)
-Task 1: { subagent_type: "ring:code-reviewer", ... }
-Task 2: { subagent_type: "ring:business-logic-reviewer", ... }
-Task 3: { subagent_type: "ring:security-reviewer", ... }
-Task 4: { subagent_type: "ring:test-reviewer", ... }
-Task 5: { subagent_type: "ring:frontend-engineer", prompt: "REVIEW MODE: Review accessibility compliance and frontend standards adherence...", ... }
+Task 1: { subagent_type: "marsai:code-reviewer", ... }
+Task 2: { subagent_type: "marsai:business-logic-reviewer", ... }
+Task 3: { subagent_type: "marsai:security-reviewer", ... }
+Task 4: { subagent_type: "marsai:test-reviewer", ... }
+Task 5: { subagent_type: "marsai:frontend-engineer", prompt: "REVIEW MODE: Review accessibility compliance and frontend standards adherence...", ... }
 ```
 
 ---
@@ -578,11 +578,11 @@ Task 5: { subagent_type: "ring:frontend-engineer", prompt: "REVIEW MODE: Review 
 
 | Task Source | State Path |
 |-------------|------------|
-| Any source | `docs/ring:dev-cycle-frontend/current-cycle.json` |
+| Any source | `docs/marsai:dev-cycle-frontend/current-cycle.json` |
 
 ### State File Structure
 
-State is persisted to `docs/ring:dev-cycle-frontend/current-cycle.json`:
+State is persisted to `docs/marsai:dev-cycle-frontend/current-cycle.json`:
 
 ```json
 {
@@ -591,12 +591,12 @@ State is persisted to `docs/ring:dev-cycle-frontend/current-cycle.json`:
   "started_at": "ISO timestamp",
   "updated_at": "ISO timestamp",
   "source_file": "path/to/tasks-frontend.md",
-  "state_path": "docs/ring:dev-cycle-frontend/current-cycle.json",
+  "state_path": "docs/marsai:dev-cycle-frontend/current-cycle.json",
   "cycle_type": "frontend",
   "ui_library_mode": "sindarian-ui | fallback-only",
   "backend_handoff": {
     "loaded": true,
-    "source": "docs/ring:dev-cycle/handoff-frontend.json",
+    "source": "docs/marsai:dev-cycle/handoff-frontend.json",
     "endpoints": [],
     "types": [],
     "contracts": []
@@ -681,7 +681,7 @@ State is persisted to `docs/ring:dev-cycle-frontend/current-cycle.json`:
       },
       "agent_outputs": {
         "implementation": {
-          "agent": "ring:frontend-engineer",
+          "agent": "marsai:frontend-engineer",
           "output": "## Summary\n...",
           "timestamp": "ISO timestamp",
           "duration_ms": 0,
@@ -695,7 +695,7 @@ State is persisted to `docs/ring:dev-cycle-frontend/current-cycle.json`:
           }
         },
         "devops": {
-          "agent": "ring:devops-engineer",
+          "agent": "marsai:devops-engineer",
           "output": "## Summary\n...",
           "timestamp": "ISO timestamp",
           "duration_ms": 0,
@@ -705,7 +705,7 @@ State is persisted to `docs/ring:dev-cycle-frontend/current-cycle.json`:
           "standards_compliance": {}
         },
         "accessibility": {
-          "agent": "ring:qa-analyst-frontend",
+          "agent": "marsai:qa-analyst-frontend",
           "test_mode": "accessibility",
           "output": "## Summary\n...",
           "verdict": "PASS",
@@ -716,7 +716,7 @@ State is persisted to `docs/ring:dev-cycle-frontend/current-cycle.json`:
           "timestamp": "ISO timestamp"
         },
         "unit_testing": {
-          "agent": "ring:qa-analyst-frontend",
+          "agent": "marsai:qa-analyst-frontend",
           "test_mode": "unit",
           "output": "## Summary\n...",
           "verdict": "PASS",
@@ -726,7 +726,7 @@ State is persisted to `docs/ring:dev-cycle-frontend/current-cycle.json`:
           "timestamp": "ISO timestamp"
         },
         "visual_testing": {
-          "agent": "ring:qa-analyst-frontend",
+          "agent": "marsai:qa-analyst-frontend",
           "test_mode": "visual",
           "output": "## Summary\n...",
           "verdict": "PASS",
@@ -736,7 +736,7 @@ State is persisted to `docs/ring:dev-cycle-frontend/current-cycle.json`:
           "timestamp": "ISO timestamp"
         },
         "e2e_testing": {
-          "agent": "ring:qa-analyst-frontend",
+          "agent": "marsai:qa-analyst-frontend",
           "test_mode": "e2e",
           "output": "## Summary\n...",
           "verdict": "PASS",
@@ -747,7 +747,7 @@ State is persisted to `docs/ring:dev-cycle-frontend/current-cycle.json`:
           "timestamp": "ISO timestamp"
         },
         "performance_testing": {
-          "agent": "ring:qa-analyst-frontend",
+          "agent": "marsai:qa-analyst-frontend",
           "test_mode": "performance",
           "output": "## Summary\n...",
           "verdict": "PASS",
@@ -763,31 +763,31 @@ State is persisted to `docs/ring:dev-cycle-frontend/current-cycle.json`:
           "timestamp": "ISO timestamp",
           "duration_ms": 0,
           "code_reviewer": {
-            "agent": "ring:code-reviewer",
+            "agent": "marsai:code-reviewer",
             "output": "...",
             "verdict": "PASS",
             "issues": []
           },
           "business_logic_reviewer": {
-            "agent": "ring:business-logic-reviewer",
+            "agent": "marsai:business-logic-reviewer",
             "output": "...",
             "verdict": "PASS",
             "issues": []
           },
           "security_reviewer": {
-            "agent": "ring:security-reviewer",
+            "agent": "marsai:security-reviewer",
             "output": "...",
             "verdict": "PASS",
             "issues": []
           },
           "test_reviewer": {
-            "agent": "ring:test-reviewer",
+            "agent": "marsai:test-reviewer",
             "output": "...",
             "verdict": "PASS",
             "issues": []
           },
           "frontend_engineer_reviewer": {
-            "agent": "ring:frontend-engineer",
+            "agent": "marsai:frontend-engineer",
             "mode": "review",
             "output": "...",
             "verdict": "PASS",
@@ -846,12 +846,12 @@ state.updated_at = "[ISO timestamp]"
 
 # Step 2: Write to file (MANDATORY - use Write tool)
 Write tool:
-  file_path: "docs/ring:dev-cycle-frontend/current-cycle.json"
+  file_path: "docs/marsai:dev-cycle-frontend/current-cycle.json"
   content: [full JSON state]
 
 # Step 3: Verify persistence (MANDATORY - use Read tool)
 Read tool:
-  file_path: "docs/ring:dev-cycle-frontend/current-cycle.json"
+  file_path: "docs/marsai:dev-cycle-frontend/current-cycle.json"
 # Confirm current_gate and gate_progress match expected values
 ```
 
@@ -901,18 +901,18 @@ Read tool:
 **Unit Checkpoint (after subtask completes Gate 8):**
 
 **VISUAL CHANGE REPORT (MANDATORY - before checkpoint question):**
-- MANDATORY: Invoke `Skill("ring:visual-explainer")` to generate a code-diff HTML report for this execution unit
+- MANDATORY: Invoke `Skill("marsai:visual-explainer")` to generate a code-diff HTML report for this execution unit
 - Read `default/skills/visual-explainer/templates/code-diff.html` to absorb the patterns before generating
 - Content sourced from state JSON `agent_outputs` for the current unit:
   * **TDD Output:** `tdd_red` (failing test) + `tdd_green` (implementation)
   * **Files Changed:** Per-file before/after diff panels using `git diff` data from the implementation (do not read source files directly — use diff output provided by the implementation agent)
   * **Frontend-Specific Metrics:** WCAG violations resolved (Gate 2), visual snapshot pass rate (Gate 4), LCP/CLS/INP values (Gate 6), Lighthouse score (Gate 6)
   * **Review Verdicts:** Summary of all 5 reviewer verdicts from Gate 7
-- Save to: `docs/ring:dev-cycle-frontend/reports/unit-{unit_id}-report.html`
+- Save to: `docs/marsai:dev-cycle-frontend/reports/unit-{unit_id}-report.html`
 - Open in browser:
   ```text
-  macOS: open docs/ring:dev-cycle-frontend/reports/unit-{unit_id}-report.html
-  Linux: xdg-open docs/ring:dev-cycle-frontend/reports/unit-{unit_id}-report.html
+  macOS: open docs/marsai:dev-cycle-frontend/reports/unit-{unit_id}-report.html
+  Linux: xdg-open docs/marsai:dev-cycle-frontend/reports/unit-{unit_id}-report.html
   ```
 - Tell the user the file path
 - See [shared-patterns/anti-rationalization-visual-report.md](../shared-patterns/anti-rationalization-visual-report.md) for anti-rationalization table
@@ -927,17 +927,17 @@ Subtask {id} complete. All 9 gates passed.
 **Task Checkpoint (after all subtasks of a task complete):**
 
 **VISUAL CHANGE REPORT (MANDATORY - before task checkpoint question):**
-- MANDATORY: Invoke `Skill("ring:visual-explainer")` to generate an aggregate code-diff HTML report for all subtasks
+- MANDATORY: Invoke `Skill("marsai:visual-explainer")` to generate an aggregate code-diff HTML report for all subtasks
 - Read `default/skills/visual-explainer/templates/code-diff.html` to absorb the patterns before generating
 - Content aggregated from all subtask executions:
   * **Task Overview:** Task ID, title, all subtask IDs and their gate statuses
   * **Combined File Changes:** All files modified across all subtasks with before/after diff panels
   * **Aggregate Metrics:** Total tests added, total review iterations, total lines changed, accessibility score, performance score
-- Save to: `docs/ring:dev-cycle-frontend/reports/task-{task_id}-report.html`
+- Save to: `docs/marsai:dev-cycle-frontend/reports/task-{task_id}-report.html`
 - Open in browser:
   ```text
-  macOS: open docs/ring:dev-cycle-frontend/reports/task-{task_id}-report.html
-  Linux: xdg-open docs/ring:dev-cycle-frontend/reports/task-{task_id}-report.html
+  macOS: open docs/marsai:dev-cycle-frontend/reports/task-{task_id}-report.html
+  Linux: xdg-open docs/marsai:dev-cycle-frontend/reports/task-{task_id}-report.html
   ```
 - Tell the user the file path
 - See [shared-patterns/anti-rationalization-visual-report.md](../shared-patterns/anti-rationalization-visual-report.md) for anti-rationalization table
@@ -955,7 +955,7 @@ Task {id} complete. All subtasks passed all gates.
 
 **NON-NEGOTIABLE. Cycle CANNOT proceed without project standards.**
 
-Same flow as backend `ring:dev-cycle`:
+Same flow as backend `marsai:dev-cycle`:
 
 ```text
 Check: Does docs/PROJECT_RULES.md exist?
@@ -963,10 +963,10 @@ Check: Does docs/PROJECT_RULES.md exist?
   YES -> Proceed to Step 1 (Initialize or Resume)
 
   NO -> ASK: "Is this a LEGACY project?"
-    YES (legacy) -> Dispatch ring:codebase-explorer + ask 3 questions + generate PROJECT_RULES.md
+    YES (legacy) -> Dispatch marsai:codebase-explorer + ask 3 questions + generate PROJECT_RULES.md
     NO (new) -> Check for PM documents (PRD/TRD/Feature Map)
       HAS PM docs -> Generate PROJECT_RULES.md from PM docs
-      NO PM docs -> HARD BLOCK: "Run /ring:pre-dev-full or /ring:pre-dev-feature first"
+      NO PM docs -> HARD BLOCK: "Run /marsai:pre-dev-full or /marsai:pre-dev-feature first"
 ```
 
 ---
@@ -975,11 +975,11 @@ Check: Does docs/PROJECT_RULES.md exist?
 
 ### Prompt-Only Mode (no task file)
 
-**Input:** Direct prompt without a task file path (e.g., `/ring:dev-cycle-frontend Implement dashboard with transaction list`)
+**Input:** Direct prompt without a task file path (e.g., `/marsai:dev-cycle-frontend Implement dashboard with transaction list`)
 
 1. **Detect prompt-only mode:** No task file argument provided
 2. **Analyze prompt:** Extract intent, scope, and frontend requirements
-3. **Explore codebase:** Dispatch `ring:codebase-explorer` to understand project structure
+3. **Explore codebase:** Dispatch `marsai:codebase-explorer` to understand project structure
 4. **Generate tasks:** Create task structure internally based on prompt + codebase analysis
 5. **Present generated tasks:** Show user the auto-generated task breakdown
 6. **Confirm with user:** "I generated X tasks from your prompt. Proceed?"
@@ -990,13 +990,13 @@ Check: Does docs/PROJECT_RULES.md exist?
 **Input:** `path/to/tasks-frontend.md` or `path/to/pre-dev/{feature}/` with optional second argument for custom instructions
 
 **Examples:**
-- `/ring:dev-cycle-frontend tasks.md`
-- `/ring:dev-cycle-frontend tasks.md "Use shadcn/ui components"`
+- `/marsai:dev-cycle-frontend tasks.md`
+- `/marsai:dev-cycle-frontend tasks.md "Use shadcn/ui components"`
 
 1. **Detect input:** File -> Load directly | Directory -> Load tasks-frontend.md + discover subtasks/
 2. **Build order:** Read tasks, check for subtasks (ST-XXX-01, 02...)
 3. **Detect UI library mode** (Step 0 above)
-4. **Load backend handoff** if `docs/ring:dev-cycle/handoff-frontend.json` exists
+4. **Load backend handoff** if `docs/marsai:dev-cycle/handoff-frontend.json` exists
 5. **Capture and validate custom instructions:** If second argument provided
 6. **Initialize state:** Generate cycle_id, create state file, set indices to 0
 7. **Display plan:** "Loaded X tasks with Y subtasks. UI mode: {mode}. Backend handoff: {loaded/not found}."
@@ -1010,7 +1010,7 @@ Check: Does docs/PROJECT_RULES.md exist?
 
 ### Resume Cycle (--resume flag)
 
-1. **Find existing state file:** Check `docs/ring:dev-cycle-frontend/current-cycle.json`
+1. **Find existing state file:** Check `docs/marsai:dev-cycle-frontend/current-cycle.json`
    - If not found -> Error: "No frontend cycle to resume"
 2. Load state file, validate
 3. Display: cycle started, tasks completed/total, current task/subtask/gate, paused reason
@@ -1029,21 +1029,21 @@ Check: Does docs/PROJECT_RULES.md exist?
 
 ### Step 2: Gate 0 - Implementation
 
-**REQUIRED SUB-SKILL:** `Skill("ring:dev-implementation")`
+**REQUIRED SUB-SKILL:** `Skill("marsai:dev-implementation")`
 
 Dispatch appropriate frontend agent based on task type. Agent follows TDD (RED then GREEN) with frontend.md standards.
 
 ### Step 3: Gate 1 - DevOps
 
-**REQUIRED SUB-SKILL:** `Skill("ring:dev-devops")`
+**REQUIRED SUB-SKILL:** `Skill("marsai:dev-devops")`
 
-Dispatch `ring:devops-engineer` for Dockerfile, docker-compose, Nginx configuration, and .env.example.
+Dispatch `marsai:devops-engineer` for Dockerfile, docker-compose, Nginx configuration, and .env.example.
 
 ### Step 4: Gate 2 - Accessibility
 
-**REQUIRED SUB-SKILL:** `Skill("ring:dev-frontend-accessibility")`
+**REQUIRED SUB-SKILL:** `Skill("marsai:dev-frontend-accessibility")`
 
-Dispatch `ring:qa-analyst-frontend` with `test_mode="accessibility"`. MUST verify:
+Dispatch `marsai:qa-analyst-frontend` with `test_mode="accessibility"`. MUST verify:
 - 0 WCAG 2.1 AA violations (axe-core scan)
 - Keyboard navigation works for all interactive elements
 - Screen reader announcements are correct
@@ -1052,9 +1052,9 @@ Dispatch `ring:qa-analyst-frontend` with `test_mode="accessibility"`. MUST verif
 
 ### Step 5: Gate 3 - Unit Testing
 
-**REQUIRED SUB-SKILL:** `Skill("ring:dev-unit-testing")`
+**REQUIRED SUB-SKILL:** `Skill("marsai:dev-unit-testing")`
 
-Dispatch `ring:qa-analyst-frontend` with `test_mode="unit"`. MUST verify:
+Dispatch `marsai:qa-analyst-frontend` with `test_mode="unit"`. MUST verify:
 - Coverage >= 85%
 - All acceptance criteria have corresponding tests
 - Component rendering, state management, and event handlers tested
@@ -1062,9 +1062,9 @@ Dispatch `ring:qa-analyst-frontend` with `test_mode="unit"`. MUST verify:
 
 ### Step 6: Gate 4 - Visual Testing
 
-**REQUIRED SUB-SKILL:** `Skill("ring:dev-frontend-visual")`
+**REQUIRED SUB-SKILL:** `Skill("marsai:dev-frontend-visual")`
 
-Dispatch `ring:qa-analyst-frontend` with `test_mode="visual"`. MUST verify:
+Dispatch `marsai:qa-analyst-frontend` with `test_mode="visual"`. MUST verify:
 - All component states have snapshots (default, hover, active, disabled, error, loading)
 - Responsive breakpoints covered (mobile, tablet, desktop)
 - Design system compliance verified
@@ -1072,9 +1072,9 @@ Dispatch `ring:qa-analyst-frontend` with `test_mode="visual"`. MUST verify:
 
 ### Step 7: Gate 5 - E2E Testing
 
-**REQUIRED SUB-SKILL:** `Skill("ring:dev-frontend-e2e")`
+**REQUIRED SUB-SKILL:** `Skill("marsai:dev-frontend-e2e")`
 
-Dispatch `ring:qa-analyst-frontend` with `test_mode="e2e"`. MUST verify:
+Dispatch `marsai:qa-analyst-frontend` with `test_mode="e2e"`. MUST verify:
 - All user flows tested end-to-end
 - Cross-browser: Chromium, Firefox, WebKit
 - 3x consecutive stable pass (no flakiness)
@@ -1082,9 +1082,9 @@ Dispatch `ring:qa-analyst-frontend` with `test_mode="e2e"`. MUST verify:
 
 ### Step 8: Gate 6 - Performance Testing
 
-**REQUIRED SUB-SKILL:** `Skill("ring:dev-frontend-performance")`
+**REQUIRED SUB-SKILL:** `Skill("marsai:dev-frontend-performance")`
 
-Dispatch `ring:qa-analyst-frontend` with `test_mode="performance"`. MUST verify:
+Dispatch `marsai:qa-analyst-frontend` with `test_mode="performance"`. MUST verify:
 - LCP (Largest Contentful Paint) < 2.5s
 - CLS (Cumulative Layout Shift) < 0.1
 - INP (Interaction to Next Paint) < 200ms
@@ -1093,13 +1093,13 @@ Dispatch `ring:qa-analyst-frontend` with `test_mode="performance"`. MUST verify:
 
 ### Step 9: Gate 7 - Code Review
 
-**REQUIRED SUB-SKILL:** `Skill("ring:requesting-code-review")`
+**REQUIRED SUB-SKILL:** `Skill("marsai:requesting-code-review")`
 
 Dispatch all 5 reviewers in parallel (see Gate 7: Code Review Adaptation above).
 
 ### Step 10: Gate 8 - Validation
 
-**REQUIRED SUB-SKILL:** `Skill("ring:dev-validation")`
+**REQUIRED SUB-SKILL:** `Skill("marsai:dev-validation")`
 
 Present implementation summary to user. Require explicit "APPROVED" response. "Looks good" or silence ≠ approved.
 
@@ -1209,7 +1209,7 @@ Day 4: Production incident: inaccessible UI + layout regression + 5s load time
 
 ## Input Validation
 
-Task files are generated by `/ring:pre-dev-*` or backend handoff. The ring:dev-cycle-frontend performs basic format checks:
+Task files are generated by `/marsai:pre-dev-*` or backend handoff. The marsai:dev-cycle-frontend performs basic format checks:
 
 ### Format Checks
 

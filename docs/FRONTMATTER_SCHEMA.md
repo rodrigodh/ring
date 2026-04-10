@@ -1,6 +1,6 @@
 # Frontmatter Schema Reference
 
-Canonical source of truth for YAML frontmatter fields in Ring skills, commands, and agents. The validator script (`default/hooks/validate-frontmatter.py`) checks against this schema.
+Canonical source of truth for YAML frontmatter fields in MarsAI skills, commands, and agents. The validator script (`default/hooks/validate-frontmatter.py`) checks against this schema.
 
 All frontmatter uses standard YAML between `---` delimiters at the top of each `.md` file. The session-start hook (`default/hooks/generate-skills-ref.py`) parses skill frontmatter at load time to build the skills quick reference.
 
@@ -14,7 +14,7 @@ Skills live in `{plugin}/skills/{name}/SKILL.md`.
 
 | Field | Type | Parsed by Hooks | Description |
 |-------|------|-----------------|-------------|
-| `name` | string | YES | Skill identifier. MUST use `ring:` prefix (e.g., `ring:brainstorming`) |
+| `name` | string | YES | Skill identifier. MUST use `marsai:` prefix (e.g., `marsai:brainstorming`) |
 | `description` | string | YES | What the skill does -- method or technique. Supports block scalar (`\|`) |
 
 ### Recommended Fields
@@ -34,8 +34,8 @@ Parsed by hooks and used for skill discovery/routing. Skills should define these
 | Field | Type | Parsed by Hooks | Description |
 |-------|------|-----------------|-------------|
 | `when_to_use` | string | YES | **DEPRECATED** -- use `trigger` instead. Kept for backward compatibility; hook falls back to this if `trigger` is absent |
-| `sequence.after` | list | YES | Skills that should come before this one (e.g., `[ring:dev-implementation]`) |
-| `sequence.before` | list | YES | Skills that typically follow this one (e.g., `[ring:writing-plans]`) |
+| `sequence.after` | list | YES | Skills that should come before this one (e.g., `[marsai:dev-implementation]`) |
+| `sequence.before` | list | YES | Skills that typically follow this one (e.g., `[marsai:writing-plans]`) |
 | `related.similar` | list | YES | Skills that seem similar but differ (helps differentiation) |
 | `related.complementary` | list | YES | Skills that pair well with this one |
 
@@ -84,7 +84,7 @@ Commands live in `{plugin}/commands/{name}.md`.
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `name` | string | Command identifier. MUST use `ring:` prefix (e.g., `ring:commit`) |
+| `name` | string | Command identifier. MUST use `marsai:` prefix (e.g., `marsai:commit`) |
 | `description` | string | What the command does -- single line |
 
 ### Recommended Fields
@@ -111,7 +111,7 @@ Agents live in `{plugin}/agents/{name}.md`.
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `name` | string | Agent identifier. MUST use `ring:` prefix (e.g., `ring:code-reviewer`) |
+| `name` | string | Agent identifier. MUST use `marsai:` prefix (e.g., `marsai:code-reviewer`) |
 | `description` | string | What the agent does -- role and scope |
 | `type` | enum | Agent classification. Values in use: `specialist`, `reviewer`, `orchestrator`, `planning`, `exploration`, `analyst`, `calculator` |
 | `output_schema` | object | Defines required output sections (see sub-fields below) |

@@ -1,5 +1,5 @@
 ---
-name: ring:requesting-code-review
+name: marsai:requesting-code-review
 description: |
   Gate 4 of development cycle - dispatches 7 specialized reviewers (code, business-logic,
   security, test, nil-safety, consequences, dead-code) in parallel for comprehensive code review feedback.
@@ -21,11 +21,11 @@ NOT_skip_when: |
   - "Already reviewed similar code" → Each change needs fresh review.
 
 sequence:
-  after: [ring:dev-testing]
-  before: [ring:dev-validation]
+  after: [marsai:dev-testing]
+  before: [marsai:dev-validation]
 
 related:
-  complementary: [ring:dev-cycle, ring:dev-implementation, ring:dev-testing]
+  complementary: [marsai:dev-cycle, marsai:dev-implementation, marsai:dev-testing]
 
 input_schema:
   required: []  # All inputs optional for standalone usage
@@ -51,11 +51,11 @@ input_schema:
       description: "List of files changed (auto-detected via git diff if not provided)"
     - name: gate0_handoff
       type: object
-      description: "Full handoff from Gate 0 (only when called from ring:dev-cycle)"
+      description: "Full handoff from Gate 0 (only when called from marsai:dev-cycle)"
     - name: skip_reviewers
       type: array
       items: string
-      enum: [ring:code-reviewer, ring:business-logic-reviewer, ring:security-reviewer, ring:test-reviewer, ring:nil-safety-reviewer, ring:consequences-reviewer, ring:dead-code-reviewer]
+      enum: [marsai:code-reviewer, marsai:business-logic-reviewer, marsai:security-reviewer, marsai:test-reviewer, marsai:nil-safety-reviewer, marsai:consequences-reviewer, marsai:dead-code-reviewer]
       description: "Reviewers to skip (use sparingly)"
     - name: skip_preanalysis
       type: boolean
@@ -130,13 +130,13 @@ output_schema:
 
 Dispatch all seven reviewer subagents in **parallel** for fast, comprehensive feedback:
 
-1. **ring:code-reviewer** - Architecture, design patterns, code quality
-2. **ring:business-logic-reviewer** - Domain correctness, business rules, edge cases
-3. **ring:security-reviewer** - Vulnerabilities, authentication, OWASP risks
-4. **ring:test-reviewer** - Test quality, coverage, edge cases, anti-patterns
-5. **ring:nil-safety-reviewer** - Nil/null pointer safety for Go and TypeScript
-6. **ring:consequences-reviewer** - Ripple effects, caller chain impact, downstream consequences
-7. **ring:dead-code-reviewer** - Orphaned code detection, reachability analysis, dead dependency chains
+1. **marsai:code-reviewer** - Architecture, design patterns, code quality
+2. **marsai:business-logic-reviewer** - Domain correctness, business rules, edge cases
+3. **marsai:security-reviewer** - Vulnerabilities, authentication, OWASP risks
+4. **marsai:test-reviewer** - Test quality, coverage, edge cases, anti-patterns
+5. **marsai:nil-safety-reviewer** - Nil/null pointer safety for Go and TypeScript
+6. **marsai:consequences-reviewer** - Ripple effects, caller chain impact, downstream consequences
+7. **marsai:dead-code-reviewer** - Orphaned code detection, reachability analysis, dead dependency chains
 
 **Core principle:** All 7 reviewers run simultaneously in a single message with 7 Task tool calls.
 
@@ -287,13 +287,13 @@ If pipeline succeeded, read the 7 context files:
 
 | Reviewer | Context File |
 |----------|--------------|
-| `ring:code-reviewer` | `docs/codereview/context-code-reviewer.md` |
-| `ring:security-reviewer` | `docs/codereview/context-security-reviewer.md` |
-| `ring:business-logic-reviewer` | `docs/codereview/context-business-logic-reviewer.md` |
-| `ring:test-reviewer` | `docs/codereview/context-test-reviewer.md` |
-| `ring:nil-safety-reviewer` | `docs/codereview/context-nil-safety-reviewer.md` |
-| `ring:consequences-reviewer` | `docs/codereview/context-consequences-reviewer.md` |
-| `ring:dead-code-reviewer` | `docs/codereview/context-dead-code-reviewer.md` |
+| `marsai:code-reviewer` | `docs/codereview/context-code-reviewer.md` |
+| `marsai:security-reviewer` | `docs/codereview/context-security-reviewer.md` |
+| `marsai:business-logic-reviewer` | `docs/codereview/context-business-logic-reviewer.md` |
+| `marsai:test-reviewer` | `docs/codereview/context-test-reviewer.md` |
+| `marsai:nil-safety-reviewer` | `docs/codereview/context-nil-safety-reviewer.md` |
+| `marsai:consequences-reviewer` | `docs/codereview/context-consequences-reviewer.md` |
+| `marsai:dead-code-reviewer` | `docs/codereview/context-dead-code-reviewer.md` |
 
 Store each file's content in `preanalysis_state.context[reviewer_name]`.
 
@@ -304,13 +304,13 @@ preanalysis_state = {
   enabled: true,
   success: false,
   context: {
-    "ring:code-reviewer": null,
-    "ring:security-reviewer": null,
-    "ring:business-logic-reviewer": null,
-    "ring:test-reviewer": null,
-    "ring:nil-safety-reviewer": null,
-    "ring:consequences-reviewer": null,
-    "ring:dead-code-reviewer": null
+    "marsai:code-reviewer": null,
+    "marsai:security-reviewer": null,
+    "marsai:business-logic-reviewer": null,
+    "marsai:test-reviewer": null,
+    "marsai:nil-safety-reviewer": null,
+    "marsai:consequences-reviewer": null,
+    "marsai:dead-code-reviewer": null
   }
 }
 ```
@@ -386,7 +386,7 @@ CHANGE_SUMMARY=$(git diff $BASE_SHA $HEAD_SHA -U0 --diff-filter=d | \
 
 ```yaml
 Task:
-  subagent_type: "ring:review-slicer"
+  subagent_type: "marsai:review-slicer"
   description: "Evaluate PR cohesion and decide review slicing"
   prompt: |
     ## Review Slicing Request
@@ -430,7 +430,7 @@ Task:
 ### Step 2.7.3: Parse Slicer Response and Update State
 
 ```text
-Parse JSON response from ring:review-slicer.
+Parse JSON response from marsai:review-slicer.
 
 IF slicer_response.shouldSlice == false:
   → review_state.slicing.enabled = false
@@ -583,7 +583,7 @@ AFTER ALL SLICES COMPLETE:
 
 5. MERGE VERDICTS:
    Per reviewer, final verdict = worst verdict across all slices.
-   (If ring:security-reviewer PASSes on slice A but FAILs on slice B,
+   (If marsai:security-reviewer PASSes on slice A but FAILs on slice B,
     the merged verdict is FAIL.)
 
 6. POPULATE review_state:
@@ -601,7 +601,7 @@ The following dispatch is used when `review_state.slicing.enabled == false` (unc
 ```yaml
 # Task 1: Code Reviewer
 Task:
-  subagent_type: "ring:code-reviewer"
+  subagent_type: "marsai:code-reviewer"
   description: "Code review for [unit_id]"
   prompt: |
     ## Code Review Request
@@ -627,8 +627,8 @@ Task:
 
     ---
 
-    [IF preanalysis_state.context["ring:code-reviewer"] exists AND is not empty:]
-    [INSERT the content of preanalysis_state.context["ring:code-reviewer"]]
+    [IF preanalysis_state.context["marsai:code-reviewer"] exists AND is not empty:]
+    [INSERT the content of preanalysis_state.context["marsai:code-reviewer"]]
     [ELSE:]
     _No pre-analysis context available. Perform standard review based on git diff._
 
@@ -642,12 +642,12 @@ Task:
     - Performance concerns
     - **File size compliance** — Any file > 300 lines (excluding auto-generated: *.pb.go, *.d.ts, */generated/*, */mocks/*) MUST be flagged as MEDIUM+ issue. Files > 500 lines = CRITICAL. See shared-patterns/file-size-enforcement.md.
 
-    ## ⛔ Ring Standards Verification (MANDATORY)
+    ## ⛔ MarsAI Standards Verification (MANDATORY)
     
     **WebFetch the relevant standards modules and verify the changed code against them.**
     
     For Go projects, WebFetch these modules based on changed files:
-    Base URL: `https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/golang/`
+    Base URL: `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang/`
     
     **Always load:**
     - `core.md` (lib-commons, license headers, deps, MongoDB patterns)
@@ -686,7 +686,7 @@ Task:
 
 # Task 2: Business Logic Reviewer
 Task:
-  subagent_type: "ring:business-logic-reviewer"
+  subagent_type: "marsai:business-logic-reviewer"
   description: "Business logic review for [unit_id]"
   prompt: |
     ## Business Logic Review Request
@@ -709,8 +709,8 @@ Task:
 
     ---
 
-    [IF preanalysis_state.context["ring:business-logic-reviewer"] exists AND is not empty:]
-    [INSERT the content of preanalysis_state.context["ring:business-logic-reviewer"]]
+    [IF preanalysis_state.context["marsai:business-logic-reviewer"] exists AND is not empty:]
+    [INSERT the content of preanalysis_state.context["marsai:business-logic-reviewer"]]
     [ELSE:]
     _No pre-analysis context available. Perform standard review based on git diff._
 
@@ -738,7 +738,7 @@ Task:
 
 # Task 3: Security Reviewer
 Task:
-  subagent_type: "ring:security-reviewer"
+  subagent_type: "marsai:security-reviewer"
   description: "Security review for [unit_id]"
   prompt: |
     ## Security Review Request
@@ -761,8 +761,8 @@ Task:
 
     ---
 
-    [IF preanalysis_state.context["ring:security-reviewer"] exists AND is not empty:]
-    [INSERT the content of preanalysis_state.context["ring:security-reviewer"]]
+    [IF preanalysis_state.context["marsai:security-reviewer"] exists AND is not empty:]
+    [INSERT the content of preanalysis_state.context["marsai:security-reviewer"]]
     [ELSE:]
     _No pre-analysis context available. Perform standard review based on git diff._
 
@@ -775,12 +775,12 @@ Task:
     - Sensitive data handling
     - OWASP Top 10 risks
 
-    ## ⛔ Ring Security Standards Verification (MANDATORY)
+    ## ⛔ MarsAI Security Standards Verification (MANDATORY)
     
     **WebFetch the security standards and verify changed code against them:**
-    - `https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/golang/security.md`
+    - `https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang/security.md`
     
-    **Check ALL applicable sections from standards-coverage-table.md → ring:backend-engineer-golang:**
+    **Check ALL applicable sections from standards-coverage-table.md → marsai:backend-engineer-golang:**
     - #15 Access Manager Integration (if auth code changed)
     - #16 License Manager Integration (if licensed project)
     - #17 Secret Redaction Patterns (MANDATORY — credential leak prevention)
@@ -800,7 +800,7 @@ Task:
     |----------|-------------|-----------|----------------|----------------|
     | [CRITICAL/HIGH/MEDIUM/LOW] | [issue] | [location] | [A01-A10] | [fix] |
 
-    ### Ring Security Standards Compliance
+    ### MarsAI Security Standards Compliance
     | Standard Section | Status | Evidence |
     |-----------------|--------|----------|
     | Secret Redaction | ✅/❌/N/A | [file:line] |
@@ -819,7 +819,7 @@ Task:
 
 # Task 4: Test Reviewer
 Task:
-  subagent_type: "ring:test-reviewer"
+  subagent_type: "marsai:test-reviewer"
   description: "Test quality review for [unit_id]"
   prompt: |
     ## Test Quality Review Request
@@ -842,8 +842,8 @@ Task:
 
     ---
 
-    [IF preanalysis_state.context["ring:test-reviewer"] exists AND is not empty:]
-    [INSERT the content of preanalysis_state.context["ring:test-reviewer"]]
+    [IF preanalysis_state.context["marsai:test-reviewer"] exists AND is not empty:]
+    [INSERT the content of preanalysis_state.context["marsai:test-reviewer"]]
     [ELSE:]
     _No pre-analysis context available. Perform standard review based on git diff._
 
@@ -874,7 +874,7 @@ Task:
 
 # Task 5: Nil-Safety Reviewer
 Task:
-  subagent_type: "ring:nil-safety-reviewer"
+  subagent_type: "marsai:nil-safety-reviewer"
   description: "Nil/null safety review for [unit_id]"
   prompt: |
     ## Nil-Safety Review Request
@@ -898,8 +898,8 @@ Task:
 
     ---
 
-    [IF preanalysis_state.context["ring:nil-safety-reviewer"] exists AND is not empty:]
-    [INSERT the content of preanalysis_state.context["ring:nil-safety-reviewer"]]
+    [IF preanalysis_state.context["marsai:nil-safety-reviewer"] exists AND is not empty:]
+    [INSERT the content of preanalysis_state.context["marsai:nil-safety-reviewer"]]
     [ELSE:]
     _No pre-analysis context available. Perform standard review based on git diff._
 
@@ -926,7 +926,7 @@ Task:
 
 # Task 6: Consequences Reviewer
 Task:
-  subagent_type: "ring:consequences-reviewer"
+  subagent_type: "marsai:consequences-reviewer"
   description: "Consequences review for [unit_id]"
   prompt: |
     ## Consequences Review Request
@@ -949,8 +949,8 @@ Task:
 
     ---
 
-    [IF preanalysis_state.context["ring:consequences-reviewer"] exists AND is not empty:]
-    [INSERT the content of preanalysis_state.context["ring:consequences-reviewer"]]
+    [IF preanalysis_state.context["marsai:consequences-reviewer"] exists AND is not empty:]
+    [INSERT the content of preanalysis_state.context["marsai:consequences-reviewer"]]
     [ELSE:]
     _No pre-analysis context available. Perform standard review based on git diff._
 
@@ -977,7 +977,7 @@ Task:
 
 # Task 7: Dead Code Reviewer
 Task:
-  subagent_type: "ring:dead-code-reviewer"
+  subagent_type: "marsai:dead-code-reviewer"
   description: "Dead code review for [unit_id]"
   prompt: |
     ## Dead Code Review Request
@@ -1000,8 +1000,8 @@ Task:
 
     ---
 
-    [IF preanalysis_state.context["ring:dead-code-reviewer"] exists AND is not empty:]
-    [INSERT the content of preanalysis_state.context["ring:dead-code-reviewer"]]
+    [IF preanalysis_state.context["marsai:dead-code-reviewer"] exists AND is not empty:]
+    [INSERT the content of preanalysis_state.context["marsai:dead-code-reviewer"]]
     [ELSE:]
     _No pre-analysis context available. Perform standard review based on git diff._
 
@@ -1009,9 +1009,9 @@ Task:
 
     ## Your Focus
     - Code that became orphaned/dead as a consequence of the changes
-    - Ring 1: Dead code within the changed files
-    - Ring 2: First-derivative dependents now orphaned (helpers, validators, converters)
-    - Ring 3: Transitive cascade orphans (entire packages, utility chains)
+    - MarsAI 1: Dead code within the changed files
+    - MarsAI 2: First-derivative dependents now orphaned (helpers, validators, converters)
+    - MarsAI 3: Transitive cascade orphans (entire packages, utility chains)
     - Test infrastructure that only served removed code
     - Orphaned validation/security logic (CRITICAL in financial systems)
 
@@ -1131,7 +1131,7 @@ Task:
 
 **See [shared-patterns/orchestrator-direct-editing-anti-rationalization.md](../shared-patterns/orchestrator-direct-editing-anti-rationalization.md) for complete anti-rationalization table.**
 
-*Applies to: Step 6 (Fix dispatch after Ring reviewers) & Step 7.5.3 (Fix dispatch after CodeRabbit)*
+*Applies to: Step 6 (Fix dispatch after MarsAI reviewers) & Step 7.5.3 (Fix dispatch after CodeRabbit)*
 
 ## Step 7: Re-Run All Reviewers After Fixes
 
@@ -1155,7 +1155,7 @@ Do NOT cherry-pick reviewers.
 │ CODERABBIT PER-UNIT VALIDATION FLOW                             │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                 │
-│ DURING REVIEW (after each subtask/task Ring reviewers pass):   │
+│ DURING REVIEW (after each subtask/task MarsAI reviewers pass):   │
 │   1. Run CodeRabbit for that unit's files                      │
 │   2. Append findings to .coderabbit-findings.md                │
 │   3. Continue to next unit                                     │
@@ -1269,7 +1269,7 @@ coderabbit auth login --token "cr_xxxxxxxxxxxxx"
 │                                                                 │
 │ CodeRabbit provides additional AI-powered code review that      │
 │ catches race conditions, memory leaks, security vulnerabilities,│
-│ and edge cases that may complement Ring reviewers.              │
+│ and edge cases that may complement MarsAI reviewers.              │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
 ```
@@ -1300,7 +1300,7 @@ FLOW:
 | Rationalization | Why It's WRONG | Required Action |
 |-----------------|----------------|-----------------|
 | "CodeRabbit is optional, I'll skip it" | If installed, it's MANDATORY. Optional only means installation is optional. | **Run CodeRabbit if installed** |
-| "Ring reviewers passed, that's enough" | Different tools catch different issues. CodeRabbit complements Ring. | **Run CodeRabbit if installed** |
+| "MarsAI reviewers passed, that's enough" | Different tools catch different issues. CodeRabbit complements MarsAI. | **Run CodeRabbit if installed** |
 | "User didn't ask for CodeRabbit" | User installed it. Installation = consent to mandatory execution. | **Run CodeRabbit if installed** |
 | "Takes too long, skip this time" | Time is irrelevant. Installed = mandatory. | **Run CodeRabbit if installed** |
 | "I'll just proceed without asking about install" | MUST ask every user if they want to install. No silent skips. | **Ask user about installation** |
@@ -1815,7 +1815,7 @@ IF coderabbit_results.overall_status == "ISSUES_FOUND":
             [list from unit.issues.high]
             
             ## Requirements
-            1. Fix each issue following Ring Standards
+            1. Fix each issue following MarsAI Standards
             2. Only modify files in scope: [unit.files]
             3. Run tests to verify fixes don't break functionality
             4. Commit fixes with message referencing unit: "fix([unit.id]): [description]"
@@ -1852,10 +1852,10 @@ IF coderabbit_results.overall_status == "ISSUES_FOUND":
             → Identify the correct agent for re-dispatch:
               - Check gate0_handoff.implementation_agent (if available)
               - OR infer from file type:
-                - *.go files → ring:backend-engineer-golang
-                - *.ts files (backend) → ring:backend-engineer-typescript
-                - *.ts/*.tsx files (frontend) → ring:frontend-engineer
-                - *.yaml/*.yml (infra) → ring:devops-engineer
+                - *.go files → marsai:backend-engineer-golang
+                - *.ts files (backend) → marsai:backend-engineer-typescript
+                - *.ts/*.tsx files (frontend) → marsai:frontend-engineer
+                - *.yaml/*.yml (infra) → marsai:devops-engineer
             
             → Re-dispatch ONLY unresolved issues to the correct agent:
             
@@ -1968,61 +1968,61 @@ LEGACY FLOW (when validation_scope.mode == "task"):
           [list from CodeRabbit output]
           
           ## Requirements
-          1. Fix each issue following Ring Standards
+          1. Fix each issue following MarsAI Standards
           2. Run tests to verify fixes don't break functionality
           3. Commit fixes with descriptive message
     
     → After agent completes, re-run CodeRabbit: `coderabbit --prompt-only`
     → If CodeRabbit issues remain, repeat fix cycle (max 2 iterations for CodeRabbit)
     
-    → ⛔ AFTER CodeRabbit passes, MUST re-run Ring reviewers:
+    → ⛔ AFTER CodeRabbit passes, MUST re-run MarsAI reviewers:
     
     ┌─────────────────────────────────────────────────────────────────┐
     │ 🔄 RE-RUNNING RING REVIEWERS AFTER CODERABBIT FIXES             │
     ├─────────────────────────────────────────────────────────────────┤
     │                                                                 │
     │ CodeRabbit fixes may have introduced new issues detectable by   │
-    │ Ring reviewers. Re-validation is MANDATORY before Gate 5.       │
+    │ MarsAI reviewers. Re-validation is MANDATORY before Gate 5.       │
     │                                                                 │
     └─────────────────────────────────────────────────────────────────┘
     
-    Step 7.5.3a: Re-Run All 7 Ring Reviewers
+    Step 7.5.3a: Re-Run All 7 MarsAI Reviewers
     ─────────────────────────────────────────
     1. Get new HEAD_SHA after CodeRabbit fixes
     2. Dispatch all 7 reviewers in parallel (per Step 3):
-       - ring:code-reviewer
-       - ring:business-logic-reviewer
-       - ring:security-reviewer
-       - ring:test-reviewer
-       - ring:nil-safety-reviewer
-       - ring:consequences-reviewer
-       - ring:dead-code-reviewer
+       - marsai:code-reviewer
+       - marsai:business-logic-reviewer
+       - marsai:security-reviewer
+       - marsai:test-reviewer
+       - marsai:nil-safety-reviewer
+       - marsai:consequences-reviewer
+       - marsai:dead-code-reviewer
     3. Wait for all 7 to complete
 
-    Step 7.5.3b: Handle Ring Reviewer Results
+    Step 7.5.3b: Handle MarsAI Reviewer Results
     ─────────────────────────────────────────
-    IF all 7 Ring reviewers PASS:
+    IF all 7 MarsAI reviewers PASS:
       → Proceed to Step 8 (Success Output)
     
-    IF any Ring reviewer finds CRITICAL/HIGH/MEDIUM issues:
+    IF any MarsAI reviewer finds CRITICAL/HIGH/MEDIUM issues:
       → Increment ring_revalidation_iterations counter
       → IF ring_revalidation_iterations >= 2:
           → ESCALATE: "Max iterations reached after CodeRabbit fixes"
           → Go to Step 9 (Escalate)
-      → DISPATCH implementation agent to fix Ring reviewer issues
+      → DISPATCH implementation agent to fix MarsAI reviewer issues
       → After fixes committed:
           → Re-run CodeRabbit: `coderabbit --prompt-only`
           → IF CodeRabbit passes:
-              → Re-run all 7 Ring reviewers (loop back to Step 7.5.3a)
+              → Re-run all 7 MarsAI reviewers (loop back to Step 7.5.3a)
           → IF CodeRabbit finds issues:
-              → Fix CodeRabbit issues first, then re-run Ring reviewers
+              → Fix CodeRabbit issues first, then re-run MarsAI reviewers
     
     State tracking for CodeRabbit fix cycle:
     ```
     coderabbit_fix_state = {
       coderabbit_iterations: 0,      // max 2 for CodeRabbit-only fixes
-      ring_revalidation_iterations: 0,  // max 2 for Ring reviewer re-runs
-      total_max_iterations: 4        // absolute cap: 2 CR + 2 Ring
+      ring_revalidation_iterations: 0,  // max 2 for MarsAI reviewer re-runs
+      total_max_iterations: 4        // absolute cap: 2 CR + 2 MarsAI
     }
     ```
 
@@ -2041,21 +2041,21 @@ IF CodeRabbit found only MEDIUM/LOW issues:
       Format: // TODO(coderabbit): [issue description]
   
   → After TODO comments added (code changed):
-      → Re-run all 7 Ring reviewers (per Step 7.5.3a above)
-      → IF Ring reviewers PASS: Proceed to Step 8
-      → IF Ring reviewers find issues: Fix and re-run (max 2 iterations)
+      → Re-run all 7 MarsAI reviewers (per Step 7.5.3a above)
+      → IF MarsAI reviewers PASS: Proceed to Step 8
+      → IF MarsAI reviewers find issues: Fix and re-run (max 2 iterations)
 
 IF CodeRabbit found no issues:
   → Display: "✅ CodeRabbit review passed - no additional issues found"
   → No code changes made by CodeRabbit flow
-  → Proceed directly to Step 8 (no Ring re-run needed)
+  → Proceed directly to Step 8 (no MarsAI re-run needed)
 ```
 
 ### Anti-Rationalization for Direct Editing
 
 **See [shared-patterns/orchestrator-direct-editing-anti-rationalization.md](../shared-patterns/orchestrator-direct-editing-anti-rationalization.md) - same table applies here.**
 
-*Applies to: Step 6 (Fix dispatch after Ring reviewers) & Step 7.5.3 (Fix dispatch after CodeRabbit)*
+*Applies to: Step 6 (Fix dispatch after MarsAI reviewers) & Step 7.5.3 (Fix dispatch after CodeRabbit)*
 
 #### Step 7.5.4: CodeRabbit Results Summary
 
@@ -2122,7 +2122,7 @@ IF CodeRabbit found no issues:
 | Invalid Scenario | Why FORBIDDEN | Required Action |
 |------------------|---------------|-----------------|
 | CLI installed but "skipped for speed" | Installed = MANDATORY | **Run CodeRabbit** |
-| CLI installed but "Ring reviewers passed" | Complementary tools, both required | **Run CodeRabbit** |
+| CLI installed but "MarsAI reviewers passed" | Complementary tools, both required | **Run CodeRabbit** |
 | CLI not installed, no prompt shown | MUST ask user about installation | **Show installation prompt** |
 | Silent skip without user interaction | All skips require explicit user choice | **Ask user** |
 
@@ -2291,7 +2291,7 @@ ELSE (no findings file exists):
 
 **MANDATORY: Generate a visual HTML report before presenting the review summary.**
 
-Invokes `Skill("ring:visual-explainer")` to produce a self-contained HTML page showing review results visually. This complements the markdown output with an interactive browser view.
+Invokes `Skill("marsai:visual-explainer")` to produce a self-contained HTML page showing review results visually. This complements the markdown output with an interactive browser view.
 
 **Read the code-diff template first:** Read `default/skills/visual-explainer/templates/code-diff.html` to absorb the patterns before generating.
 
@@ -2354,13 +2354,13 @@ Generate skill output:
 ## Reviewer Verdicts
 | Reviewer | Verdict | Issues |
 |----------|---------|--------|
-| ring:code-reviewer | ✅ PASS | [count] |
-| ring:business-logic-reviewer | ✅ PASS | [count] |
-| ring:security-reviewer | ✅ PASS | [count] |
-| ring:test-reviewer | ✅ PASS | [count] |
-| ring:nil-safety-reviewer | ✅ PASS | [count] |
-| ring:consequences-reviewer | ✅ PASS | [count] |
-| ring:dead-code-reviewer | ✅ PASS | [count] |
+| marsai:code-reviewer | ✅ PASS | [count] |
+| marsai:business-logic-reviewer | ✅ PASS | [count] |
+| marsai:security-reviewer | ✅ PASS | [count] |
+| marsai:test-reviewer | ✅ PASS | [count] |
+| marsai:nil-safety-reviewer | ✅ PASS | [count] |
+| marsai:consequences-reviewer | ✅ PASS | [count] |
+| marsai:dead-code-reviewer | ✅ PASS | [count] |
 
 ## Review Slicing
 [IF review_state.slicing.enabled:]
@@ -2413,9 +2413,9 @@ Generate skill output:
 ## Reviewer Verdicts
 | Reviewer | Verdict |
 |----------|---------|
-| ring:code-reviewer | [PASS/FAIL] |
-| ring:business-logic-reviewer | [PASS/FAIL] |
-| ring:security-reviewer | [PASS/FAIL] |
+| marsai:code-reviewer | [PASS/FAIL] |
+| marsai:business-logic-reviewer | [PASS/FAIL] |
+| marsai:security-reviewer | [PASS/FAIL] |
 
 ## Handoff to Next Gate
 - Review status: FAILED
@@ -2469,7 +2469,7 @@ See [dev-team/skills/shared-patterns/shared-pressure-resistance.md](../../dev-te
 | User Says | Your Response |
 |-----------|---------------|
 | "Skip review, code is simple" | "Simple code can have security issues. Dispatching all 7 reviewers." |
-| "Just run ring:code-reviewer" | "All 7 reviewers run in parallel. No time saved by skipping." |
+| "Just run marsai:code-reviewer" | "All 7 reviewers run in parallel. No time saved by skipping." |
 | "Fix later, merge now" | "Blocking issues (Critical/High/Medium) MUST be fixed before Gate 5." |
 
 ## Anti-Rationalization Table
@@ -2481,7 +2481,7 @@ See [dev-team/skills/shared-patterns/shared-anti-rationalization.md](../../dev-t
 | Rationalization | Why It's WRONG | Required Action |
 |-----------------|----------------|-----------------|
 | "Run reviewers one at a time" | Sequential = slow. Parallel = 7x faster. | **Dispatch all 7 in single message** |
-| "Skip security for internal code" | Internal code can have vulnerabilities. | **Include ring:security-reviewer** |
+| "Skip security for internal code" | Internal code can have vulnerabilities. | **Include marsai:security-reviewer** |
 | "Critical issue is false positive" | Prove it with evidence, don't assume. | **Fix or provide evidence** |
 | "Low issues don't need TODO" | TODOs ensure issues aren't forgotten. | **Add TODO comments** |
 | "6 of 7 reviewers passed" | Gate 4 requires ALL 7. 6/7 = 0/7. | **Re-run ALL 7 reviewers** |
@@ -2509,13 +2509,13 @@ See [dev-team/skills/shared-patterns/shared-anti-rationalization.md](../../dev-t
 ## Reviewer Verdicts
 | Reviewer | Verdict |
 |----------|---------|
-| ring:code-reviewer | ✅/❌ |
-| ring:business-logic-reviewer | ✅/❌ |
-| ring:security-reviewer | ✅/❌ |
-| ring:test-reviewer | ✅/❌ |
-| ring:nil-safety-reviewer | ✅/❌ |
-| ring:consequences-reviewer | ✅/❌ |
-| ring:dead-code-reviewer | ✅/❌ |
+| marsai:code-reviewer | ✅/❌ |
+| marsai:business-logic-reviewer | ✅/❌ |
+| marsai:security-reviewer | ✅/❌ |
+| marsai:test-reviewer | ✅/❌ |
+| marsai:nil-safety-reviewer | ✅/❌ |
+| marsai:consequences-reviewer | ✅/❌ |
+| marsai:dead-code-reviewer | ✅/❌ |
 
 ## Review Slicing
 **Sliced:** [Yes — N thematic groups | No — full-diff review]

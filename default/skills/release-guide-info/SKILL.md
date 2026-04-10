@@ -1,5 +1,5 @@
 ---
-name: ring:release-guide-info
+name: marsai:release-guide-info
 description: |
   Generate Ops Update Guide from Git Diff. Produces internal Operations-facing
   update/migration guides based on git diff analysis. Supports STRICT_NO_TOUCH (default)
@@ -822,6 +822,6 @@ Output:
 
 **Via slash command:**
 ```
-User: /ring:release-guide <base-ref> <target-ref>
+User: /marsai:release-guide <base-ref> <target-ref>
 Assistant: [Executes skill with BASE_REF and TARGET_REF]
 ```

@@ -1,8 +1,8 @@
 """
-Utility modules for Ring installer.
+Utility modules for MarsAI installer.
 """
 
-from ring_installer.utils.fs import (
+from marsai_installer.utils.fs import (
     are_files_identical,
     backup_existing,
     copy_with_transform,
@@ -10,12 +10,12 @@ from ring_installer.utils.fs import (
     get_file_hash,
     safe_remove,
 )
-from ring_installer.utils.platform_detect import (
+from marsai_installer.utils.platform_detect import (
     detect_installed_platforms,
     get_platform_version,
     is_platform_installed,
 )
-from ring_installer.utils.version import (
+from marsai_installer.utils.version import (
     InstallManifest,
     Version,
     check_for_updates,

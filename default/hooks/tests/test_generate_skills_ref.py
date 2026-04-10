@@ -275,14 +275,14 @@ class TestGenerateMarkdown:
         assert "No skills found" in result
 
     def test_single_skill_basic(self):
-        s = Skill(name="ring:test", description="Test skill", directory="test")
+        s = Skill(name="marsai:test", description="Test skill", directory="test")
         result = generate_markdown([s])
-        assert "ring:test" in result
+        assert "marsai:test" in result
         assert "Test skill" in result
 
     def test_skip_when_rendered(self):
         s = Skill(
-            name="ring:test",
+            name="marsai:test",
             description="d",
             directory="test",
             skip_when="No code changes",
@@ -292,7 +292,7 @@ class TestGenerateMarkdown:
 
     def test_not_skip_when_rendered(self):
         s = Skill(
-            name="ring:test",
+            name="marsai:test",
             description="d",
             directory="test",
             not_skip_when="Code is simple still needs review",
@@ -303,7 +303,7 @@ class TestGenerateMarkdown:
     def test_none_values_not_rendered(self):
         """None values should not appear as 'None' string in output."""
         s = Skill(
-            name="ring:test",
+            name="marsai:test",
             description="d",
             directory="test",
             skip_when=None,
@@ -317,7 +317,7 @@ class TestGenerateMarkdown:
     def test_dict_verification_not_raw(self):
         """Dict verification should not appear as raw Python repr."""
         s = Skill(
-            name="ring:test",
+            name="marsai:test",
             description="d",
             directory="test",
             verification={"automated": [{"command": "test"}]},
@@ -327,7 +327,7 @@ class TestGenerateMarkdown:
 
     def test_prerequisites_list_rendered(self):
         s = Skill(
-            name="ring:test",
+            name="marsai:test",
             description="d",
             directory="test",
             prerequisites=[{"name": "a"}, {"name": "b"}],

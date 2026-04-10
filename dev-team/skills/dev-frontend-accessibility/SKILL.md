@@ -1,5 +1,5 @@
 ---
-name: ring:dev-frontend-accessibility
+name: marsai:dev-frontend-accessibility
 description: |
   Gate 2 of frontend development cycle - ensures all components pass axe-core
   automated accessibility scans with zero WCAG 2.1 AA violations.
@@ -10,7 +10,7 @@ trigger: |
   - Validates WCAG 2.1 AA compliance
 
 skip_when: |
-  - Not inside a frontend development cycle (ring:dev-cycle-frontend)
+  - Not inside a frontend development cycle (marsai:dev-cycle-frontend)
   - Backend-only project with no UI components
   - Task is documentation-only, configuration-only, or non-code
   - Changes are limited to build tooling, CI/CD, or infrastructure with no UI impact
@@ -21,11 +21,11 @@ NOT_skip_when: |
   - "We'll add accessibility later" - Retrofitting costs 10x more.
 
 sequence:
-  after: [ring:dev-devops]
-  before: [ring:dev-unit-testing]
+  after: [marsai:dev-devops]
+  before: [marsai:dev-unit-testing]
 
 related:
-  complementary: [ring:dev-cycle-frontend, ring:dev-devops, ring:qa-analyst-frontend]
+  complementary: [marsai:dev-cycle-frontend, marsai:dev-devops, marsai:qa-analyst-frontend]
 
 input_schema:
   required:
@@ -115,7 +115,7 @@ Ensure all frontend components meet **WCAG 2.1 AA** accessibility standards thro
 **MANDATORY:** Load testing-accessibility.md standards via WebFetch.
 
 <fetch_required>
-https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/frontend/testing-accessibility.md
+https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/frontend/testing-accessibility.md
 </fetch_required>
 
 ---
@@ -142,7 +142,7 @@ if language != "typescript":
 
 ```text
 Task tool:
-  subagent_type: "ring:qa-analyst-frontend"
+  subagent_type: "marsai:qa-analyst-frontend"
   prompt: |
     **MODE:** ACCESSIBILITY TESTING (Gate 2)
 
@@ -177,7 +177,7 @@ if "Status: PASS" in output:
   → Return success with metrics
 
 if "Status: FAIL" in output:
-  → Dispatch fix to implementation agent (ring:frontend-engineer or ring:ui-engineer)
+  → Dispatch fix to implementation agent (marsai:frontend-engineer or marsai:ui-engineer)
   → Re-run accessibility tests (max 3 iterations)
   → If still failing: ESCALATE to user
 ```

@@ -52,10 +52,10 @@
 **For WebFetch:**
 ```
 # Old (deprecated)
-https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/golang.md
+https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang.md
 
 # New (use this)
-https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/golang/index.md
+https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang/index.md
 ```
 
 **For selective loading:**

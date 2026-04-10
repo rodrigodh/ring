@@ -1,4 +1,4 @@
-"""Codex adapter - installs Ring skills into Codex's skills directory."""
+"""Codex adapter - installs MarsAI skills into Codex's skills directory."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ import re
 from pathlib import Path
 from typing import Any, Dict, Optional
 
-from ring_installer.adapters.base import PlatformAdapter
+from marsai_installer.adapters.base import PlatformAdapter
 
 
 class CodexAdapter(PlatformAdapter):
@@ -23,7 +23,7 @@ class CodexAdapter(PlatformAdapter):
     platform_name = "Codex"
 
     def transform_skill(self, skill_content: str, metadata: Optional[Dict[str, Any]] = None) -> str:
-        """Transform a Ring skill into a Codex skill."""
+        """Transform a MarsAI skill into a Codex skill."""
         frontmatter, body = self.extract_frontmatter(skill_content)
         skill_name = self._resolve_codex_name(frontmatter, metadata, "skill")
 
@@ -69,11 +69,11 @@ class CodexAdapter(PlatformAdapter):
         return self._install_path
 
     def get_component_mapping(self) -> Dict[str, Dict[str, str]]:
-        """Install supported Ring abilities into Codex's skills tree."""
+        """Install supported MarsAI abilities into Codex's skills tree."""
         return {"skills": {"target_dir": "skills", "extension": ".md"}}
 
     def is_native_format(self) -> bool:
-        """Codex requires Ring content to be repackaged as skills."""
+        """Codex requires MarsAI content to be repackaged as skills."""
         return False
 
     def requires_flat_components(self, component_type: str) -> bool:
@@ -160,8 +160,8 @@ class CodexAdapter(PlatformAdapter):
                 content,
             )
 
-        content = re.sub(r"ring:([a-zA-Z0-9._-]+)", replace_plain, content)
-        content = re.sub(r"/ring:([a-zA-Z0-9._-]+)", replace_slash, content)
+        content = re.sub(r"marsai:([a-zA-Z0-9._-]+)", replace_plain, content)
+        content = re.sub(r"/marsai:([a-zA-Z0-9._-]+)", replace_slash, content)
         return content
 
     @staticmethod
@@ -185,11 +185,11 @@ class CodexAdapter(PlatformAdapter):
 
     def _fallback_description(self, component_type: str, metadata: Optional[Dict[str, Any]]) -> str:
         logical_name = self._source_component_name(metadata)
-        return f"Ring {component_type} `{self._ring_reference(logical_name)}` packaged for Codex."
+        return f"MarsAI {component_type} `{self._ring_reference(logical_name)}` packaged for Codex."
 
     @staticmethod
     def _ring_reference(logical_name: str) -> str:
-        return logical_name if logical_name.startswith("ring:") else f"ring:{logical_name}"
+        return logical_name if logical_name.startswith("marsai:") else f"marsai:{logical_name}"
 
     def _resolve_codex_name(
         self,

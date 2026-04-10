@@ -1,5 +1,5 @@
 ---
-name: ring:dev-delivery-verification
+name: marsai:dev-delivery-verification
 description: |
   Delivery Verification Gate — verifies that what was requested is actually delivered
   as reachable, integrated code. Not quality review (Gate 8), not test verification
@@ -13,7 +13,7 @@ trigger: |
   - When code is generated/scaffolded and needs integration verification
 
 skip_when: |
-  - Not inside a development cycle (ring:dev-cycle or ring:dev-refactor)
+  - Not inside a development cycle (marsai:dev-cycle or marsai:dev-refactor)
   - Task is documentation-only, configuration-only, or non-code
   - No implementation was produced in Gate 0 (nothing to verify)
 
@@ -26,11 +26,11 @@ NOT_skip_when: |
   - "It's a simple task" → Simple tasks still need verification. Partial delivery is not delivery.
 
 sequence:
-  after: [ring:dev-implementation]
-  before: [ring:dev-devops]
+  after: [marsai:dev-implementation]
+  before: [marsai:dev-devops]
 
 related:
-  complementary: [ring:dev-cycle, ring:dev-implementation, ring:verification-before-completion, ring:requesting-code-review]
+  complementary: [marsai:dev-cycle, marsai:dev-implementation, marsai:verification-before-completion, marsai:requesting-code-review]
 
 input_schema:
   required:

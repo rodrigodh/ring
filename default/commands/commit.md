@@ -1,5 +1,5 @@
 ---
-name: ring:commit
+name: marsai:commit
 description: Organize and create atomic git commits with intelligent change grouping
 argument-hint: "[message]"
 ---
@@ -9,8 +9,8 @@ Analyze changes, group them into coherent atomic commits, and create signed comm
 ## Usage
 
 ```
-/ring:commit                    # Analyze changes, propose commit plan, execute
-/ring:commit "fix login bug"    # Single commit with provided message
+/marsai:commit                    # Analyze changes, propose commit plan, execute
+/marsai:commit "fix login bug"    # Single commit with provided message
 ```
 
 ## What It Does
@@ -26,15 +26,15 @@ Analyze changes, group them into coherent atomic commits, and create signed comm
 
 | Command/Skill | Relationship |
 |---------------|--------------|
-| `ring:git-commit` skill | Full commit orchestration logic |
-| `ring:finishing-a-development-branch` | Complementary workflow for branch completion |
+| `marsai:git-commit` skill | Full commit orchestration logic |
+| `marsai:finishing-a-development-branch` | Complementary workflow for branch completion |
 
 ---
 
 ## MANDATORY: Load Full Skill
 
-This command delegates to the `ring:git-commit` skill which contains the complete commit orchestration logic, including smart grouping, trailer rules, anti-patterns, and the full 8-step commit process.
+This command delegates to the `marsai:git-commit` skill which contains the complete commit orchestration logic, including smart grouping, trailer rules, anti-patterns, and the full 8-step commit process.
 
-**MANDATORY: Load and execute the full skill using the Skill tool: `ring-default:git-commit`**
+**MANDATORY: Load and execute the full skill using the Skill tool: `marsai-default:git-commit`**
 
 Pass arguments: $@

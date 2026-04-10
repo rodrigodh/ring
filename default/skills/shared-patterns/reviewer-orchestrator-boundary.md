@@ -11,7 +11,7 @@ This document defines the mandatory separation of responsibilities between revie
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                        ORCHESTRATOR                              │
-│  (ring:dev-cycle, user, or workflow coordinator)                     │
+│  (marsai:dev-cycle, user, or workflow coordinator)                     │
 │                                                                  │
 │  1. Dispatches reviewers in parallel                            │
 │  2. Collects review reports                                     │
@@ -23,12 +23,12 @@ This document defines the mandatory separation of responsibilities between revie
 ┌─────────────────────────────┐          ┌─────────────────────────────────┐
 │         REVIEWERS           │          │     IMPLEMENTATION AGENTS       │
 │                             │          │                                 │
-│ • ring:code-reviewer         │          │ • ring:backend-engineer-golang      │
-│ • ring:business-logic-reviewer│          │ • ring:backend-engineer-typescript  │
-│ • ring:security-reviewer     │          │ • ring:frontend-engineer            │
-│ • ring:test-reviewer         │          │ • ring:devops-engineer              │
-│ • ring:nil-safety-reviewer   │          │ • ring:qa-analyst                   │
-│ • ring:dead-code-reviewer    │          │                                 │
+│ • marsai:code-reviewer         │          │ • marsai:backend-engineer-golang      │
+│ • marsai:business-logic-reviewer│          │ • marsai:backend-engineer-typescript  │
+│ • marsai:security-reviewer     │          │ • marsai:frontend-engineer            │
+│ • marsai:test-reviewer         │          │ • marsai:devops-engineer              │
+│ • marsai:nil-safety-reviewer   │          │ • marsai:qa-analyst                   │
+│ • marsai:dead-code-reviewer    │          │                                 │
 │                             │          │                                 │
 │ OUTPUT: Report              │          │ OUTPUT: Code changes            │
 │ ACTION: NONE                │          │ ACTION: Edit, Create, Delete    │
@@ -141,9 +141,9 @@ See [shared-patterns/reviewer-orchestrator-boundary.md](../skills/shared-pattern
 
 ---
 
-## Integration with ring:dev-cycle
+## Integration with marsai:dev-cycle
 
-The `ring:dev-cycle` skill enforces this boundary at Gate 4 (Review):
+The `marsai:dev-cycle` skill enforces this boundary at Gate 4 (Review):
 
 1. **Dispatch reviewers in parallel** (code, business-logic, security, test, nil-safety, dead-code, consequences)
 2. **Collect structured reports** from each reviewer

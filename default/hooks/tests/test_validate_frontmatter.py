@@ -29,7 +29,7 @@ Issue = mod.Issue
 class TestValidateSkill:
     def test_valid_skill_no_issues(self):
         fm = {
-            "name": "ring:test",
+            "name": "marsai:test",
             "description": "A test skill",
             "trigger": "when needed",
             "skip_when": "not needed",
@@ -43,31 +43,31 @@ class TestValidateSkill:
         assert any(i.level == "ERROR" and "name" in i.message for i in issues)
 
     def test_missing_required_description(self):
-        fm = {"name": "ring:test"}
+        fm = {"name": "marsai:test"}
         issues = validate_skill("test.md", fm)
         assert any(i.level == "ERROR" and "description" in i.message for i in issues)
 
     def test_missing_recommended_trigger(self):
-        fm = {"name": "ring:test", "description": "d"}
+        fm = {"name": "marsai:test", "description": "d"}
         issues = validate_skill("test.md", fm)
         assert any(i.level == "WARNING" and "trigger" in i.message for i in issues)
 
     def test_deprecated_when_to_use(self):
-        fm = {"name": "ring:test", "description": "d", "when_to_use": "old"}
+        fm = {"name": "marsai:test", "description": "d", "when_to_use": "old"}
         issues = validate_skill("test.md", fm)
         assert any(
             "deprecated" in i.message and "when_to_use" in i.message for i in issues
         )
 
     def test_invalid_field_version(self):
-        fm = {"name": "ring:test", "description": "d", "version": "1.0.0"}
+        fm = {"name": "marsai:test", "description": "d", "version": "1.0.0"}
         issues = validate_skill("test.md", fm)
         assert any(
             "invalid" in i.message.lower() and "version" in i.message for i in issues
         )
 
     def test_invalid_field_examples(self):
-        fm = {"name": "ring:test", "description": "d", "examples": []}
+        fm = {"name": "marsai:test", "description": "d", "examples": []}
         issues = validate_skill("test.md", fm)
         assert any(
             "invalid" in i.message.lower() and "examples" in i.message for i in issues
@@ -75,7 +75,7 @@ class TestValidateSkill:
 
     def test_valid_optional_fields(self):
         fm = {
-            "name": "ring:test",
+            "name": "marsai:test",
             "description": "d",
             "trigger": "t",
             "skip_when": "s",
@@ -129,7 +129,7 @@ class TestValidateCommand:
 class TestValidateAgent:
     def test_valid_agent_no_errors(self):
         fm = {
-            "name": "ring:test",
+            "name": "marsai:test",
             "description": "An agent",
             "type": "specialist",
             "output_schema": {"format": "markdown"},
@@ -138,13 +138,13 @@ class TestValidateAgent:
         assert all(i.level != "ERROR" for i in issues)
 
     def test_missing_required_type(self):
-        fm = {"name": "ring:test", "description": "d", "output_schema": {}}
+        fm = {"name": "marsai:test", "description": "d", "output_schema": {}}
         issues = validate_agent("test.md", fm)
         assert any(i.level == "ERROR" and "type" in i.message for i in issues)
 
     def test_invalid_type_enum(self):
         fm = {
-            "name": "ring:test",
+            "name": "marsai:test",
             "description": "d",
             "type": "invalid_type",
             "output_schema": {},

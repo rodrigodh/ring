@@ -1,5 +1,5 @@
 ---
-name: ring:diagram
+name: marsai:diagram
 description: Generate Mermaid diagrams and open them in mermaid.live
 argument-hint: "[description-or-topic]"
 ---
@@ -9,7 +9,7 @@ Generate Mermaid diagrams from a description or codebase context and open them a
 ## Usage
 
 ```
-/ring:diagram [description-or-topic]
+/marsai:diagram [description-or-topic]
 ```
 
 ## Arguments
@@ -32,19 +32,19 @@ Options are passed through to the skill:
 
 ### Architecture Flowchart
 ```
-/ring:diagram microservices architecture for the payment system
+/marsai:diagram microservices architecture for the payment system
 ```
 Generates a flowchart showing service boundaries, communication patterns, and data flow.
 
 ### Database Schema
 ```
-/ring:diagram ER diagram for the user and orders domain
+/marsai:diagram ER diagram for the user and orders domain
 ```
 Produces an entity-relationship diagram with tables, relationships, and cardinality.
 
 ### Sequence Diagram with Options
 ```
-/ring:diagram OAuth2 login flow --theme dark --rough
+/marsai:diagram OAuth2 login flow --theme dark --rough
 ```
 Creates a hand-drawn-style sequence diagram of the OAuth2 flow with dark theme.
 
@@ -61,14 +61,14 @@ The resulting mermaid.live URL is permanent (the diagram state is encoded in the
 
 | Command/Skill | Relationship |
 |---------------|--------------|
-| `ring:visual-explainer` | Use for rich, branded HTML visualizations with Lerian styling |
-| `/ring:md-to-html` | Use to convert a full markdown document into a styled HTML page with diagrams |
-| `/ring:brainstorm` | Use before diagramming to refine a design concept |
-| `/ring:explore-codebase` | Use to understand architecture before diagramming it |
+| `marsai:visual-explainer` | Use for rich, branded HTML visualizations with Lerian styling |
+| `/marsai:md-to-html` | Use to convert a full markdown document into a styled HTML page with diagrams |
+| `/marsai:brainstorm` | Use before diagramming to refine a design concept |
+| `/marsai:explore-codebase` | Use to understand architecture before diagramming it |
 
 ## When NOT to Use
 
-- You need a rich, branded, or styled HTML page -- use `ring:visual-explainer` or `/ring:md-to-html`
+- You need a rich, branded, or styled HTML page -- use `marsai:visual-explainer` or `/marsai:md-to-html`
 - You need to edit an existing diagram file -- just edit the Mermaid source directly
 - You need a non-Mermaid format (PNG, SVG export) -- use mermaid.live's built-in export after opening
 
@@ -79,7 +79,7 @@ The resulting mermaid.live URL is permanent (the diagram state is encoded in the
 **This command MUST load the skill for complete workflow execution.**
 
 ```
-Use Skill tool: ring:drawing-diagrams
+Use Skill tool: marsai:drawing-diagrams
 ```
 
 The skill contains the complete workflow with:

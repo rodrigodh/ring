@@ -1,5 +1,5 @@
 """
-Version management utilities for Ring installer.
+Version management utilities for MarsAI installer.
 
 Provides semver comparison, version detection, and update checking.
 """
@@ -56,7 +56,7 @@ class Version:
         match = re.match(pattern, version_str)
 
         if not match:
-            raise ValueError(f"Invalid version string: '{version_str}'")
+            raise ValueError(f"Invalid version stmarsai: '{version_str}'")
 
         return cls(
             major=int(match.group(1)),
@@ -157,7 +157,7 @@ class Version:
 @dataclass
 class InstallManifest:
     """
-    Manifest tracking installed Ring components.
+    Manifest tracking installed MarsAI components.
 
     Stored in the installation directory to track versions and files.
     """
@@ -273,7 +273,7 @@ def is_update_available(installed: str, available: str) -> bool:
 
 def get_ring_version(ring_path: Path) -> Optional[str]:
     """
-    Get the Ring version from a Ring installation.
+    Get the MarsAI version from a MarsAI installation.
 
     Looks for version in:
     1. .claude-plugin/marketplace.json
@@ -281,7 +281,7 @@ def get_ring_version(ring_path: Path) -> Optional[str]:
     3. package.json
 
     Args:
-        ring_path: Path to Ring installation
+        ring_path: Path to MarsAI installation
 
     Returns:
         Version string or None if not found
@@ -323,7 +323,7 @@ def get_ring_version(ring_path: Path) -> Optional[str]:
 
 def get_installed_version(install_path: Path, platform: str) -> Optional[str]:
     """
-    Get the installed Ring version for a platform.
+    Get the installed MarsAI version for a platform.
 
     Args:
         install_path: Platform installation path
@@ -374,7 +374,7 @@ def check_for_updates(
     Check for available updates.
 
     Args:
-        source_path: Path to Ring source
+        source_path: Path to MarsAI source
         install_path: Platform installation path
         platform: Platform identifier
 
@@ -411,7 +411,7 @@ def check_for_updates(
 
     if manifest:
         # Compare installed files with source
-        from ring_installer.utils.fs import get_file_hash
+        from marsai_installer.utils.fs import get_file_hash
 
         for file_path, file_hash in manifest.files.items():
             full_path = install_path / file_path
@@ -447,7 +447,7 @@ def save_install_manifest(
 
     Args:
         install_path: Platform installation path
-        source_path: Ring source path
+        source_path: MarsAI source path
         platform: Platform identifier
         version: Installed version
         plugins: List of installed plugins

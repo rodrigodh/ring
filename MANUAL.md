@@ -1,6 +1,6 @@
-# Ring Marketplace Manual
+# MarsAI Marketplace Manual
 
-Quick reference guide for the Ring skills library and workflow system. This monorepo provides 2 plugins with 54 skills, 22 agents, and 23 slash commands for enforcing proven software engineering practices.
+Quick reference guide for the MarsAI skills library and workflow system. This monorepo provides 2 plugins with 54 skills, 22 agents, and 23 slash commands for enforcing proven software engineering practices.
 
 ---
 
@@ -12,7 +12,7 @@ Quick reference guide for the Ring skills library and workflow system. This mono
 │                     (monorepo: .claude-plugin/marketplace.json)                    │
 │                                                                                    │
 │  ┌───────────────┐  ┌───────────────┐                                            │
-│  │ ring-default  │  │ ring-dev-team │                                            │
+│  │ marsai-default  │  │ marsai-dev-team │                                            │
 │  │  Skills(22)   │  │  Skills(32)   │                                            │
 │  │  Agents(10)   │  │  Agents(12)   │                                            │
 │  │  Cmds(14)     │  │  Cmds(9)      │                                            │
@@ -31,7 +31,7 @@ Quick reference guide for the Ring skills library and workflow system. This mono
     ┌──────────────┐         ┌──────────────┐         ┌──────────────┐
     │    HOOKS     │         │   COMMANDS   │         │    SKILLS    │
     │ auto-inject  │         │ user-invoked │         │ auto-applied │
-    │   context    │         │  /ring:...   │         │  internally  │
+    │   context    │         │  /marsai:...   │         │  internally  │
     └──────────────┘         └──────────────┘         └──────────────┘
            │                        │                        │
            │                        ▼                        │
@@ -51,7 +51,7 @@ Quick reference guide for the Ring skills library and workflow system. This mono
     │ PLUGIN     │ Self-contained package (skills+agents+commands)  │
     │ HOOK       │ Auto-runs at session events (injects context)    │
     │ SKILL      │ Workflow pattern (Claude Code uses internally)   │
-    │ COMMAND    │ User-invokable action (/ring:codereview)         │
+    │ COMMAND    │ User-invokable action (/marsai:codereview)         │
     │ AGENT      │ Specialized subprocess (Task tool dispatch)      │
     └────────────┴──────────────────────────────────────────────────┘
 ```
@@ -60,11 +60,11 @@ Quick reference guide for the Ring skills library and workflow system. This mono
 
 ## 🎯 Quick Start
 
-Ring is auto-loaded at session start. Three ways to invoke Ring capabilities:
+MarsAI is auto-loaded at session start. Three ways to invoke MarsAI capabilities:
 
 1. **Slash Commands** – `/command-name`
-2. **Skills** – `Skill tool: "ring:skill-name"`
-3. **Agents** – `Task tool with subagent_type: "ring:agent-name"`
+2. **Skills** – `Skill tool: "marsai:skill-name"`
+3. **Agents** – `Task tool with subagent_type: "marsai:agent-name"`
 
 ---
 
@@ -76,46 +76,46 @@ Commands are invoked directly: `/command-name`.
 
 | Command                         | Use Case                                    | Example                                            |
 | ------------------------------- | ------------------------------------------- | -------------------------------------------------- |
-| `/ring:brainstorm [topic]`      | Interactive design refinement before coding | `/ring:brainstorm user-authentication`             |
-| `/ring:explore-codebase [path]` | Autonomous two-phase codebase exploration   | `/ring:explore-codebase payment/`                  |
-| `/ring:interview-me [topic]`    | Proactive requirements gathering interview  | `/ring:interview-me auth-system`                   |
-| `/ring:md-to-html [file]`       | Transform a markdown file into an HTML page | `/ring:md-to-html architecture.md`                 |
-| `/ring:diagram [topic]`         | Generate a Mermaid diagram                  | `/ring:diagram payment-flow`                       |
-| `/ring:visualize [topic]`       | Generate visual explanation                 | `/ring:visualize auth-architecture`                |
-| `/ring:release-guide`           | Generate step-by-step release instructions  | `/ring:release-guide`                              |
-| `/ring:pre-dev-feature [name]`  | Plan simple features (<2 days) – 5 gates    | `/ring:pre-dev-feature logout-button`              |
-| `/ring:pre-dev-full [name]`     | Plan complex features (≥2 days) – 10 gates  | `/ring:pre-dev-full payment-system`                |
-| `/ring:worktree [branch-name]`  | Create isolated git workspace               | `/ring:worktree auth-system`                       |
-| `/ring:write-plan [feature]`    | Generate detailed task breakdown            | `/ring:write-plan dashboard-redesign`              |
-| `/ring:execute-plan [path]`     | Execute plan in batches with checkpoints    | `/ring:execute-plan docs/pre-dev/feature/tasks.md` |
+| `/marsai:brainstorm [topic]`      | Interactive design refinement before coding | `/marsai:brainstorm user-authentication`             |
+| `/marsai:explore-codebase [path]` | Autonomous two-phase codebase exploration   | `/marsai:explore-codebase payment/`                  |
+| `/marsai:interview-me [topic]`    | Proactive requirements gathering interview  | `/marsai:interview-me auth-system`                   |
+| `/marsai:md-to-html [file]`       | Transform a markdown file into an HTML page | `/marsai:md-to-html architecture.md`                 |
+| `/marsai:diagram [topic]`         | Generate a Mermaid diagram                  | `/marsai:diagram payment-flow`                       |
+| `/marsai:visualize [topic]`       | Generate visual explanation                 | `/marsai:visualize auth-architecture`                |
+| `/marsai:release-guide`           | Generate step-by-step release instructions  | `/marsai:release-guide`                              |
+| `/marsai:pre-dev-feature [name]`  | Plan simple features (<2 days) – 5 gates    | `/marsai:pre-dev-feature logout-button`              |
+| `/marsai:pre-dev-full [name]`     | Plan complex features (≥2 days) – 10 gates  | `/marsai:pre-dev-full payment-system`                |
+| `/marsai:worktree [branch-name]`  | Create isolated git workspace               | `/marsai:worktree auth-system`                       |
+| `/marsai:write-plan [feature]`    | Generate detailed task breakdown            | `/marsai:write-plan dashboard-redesign`              |
+| `/marsai:execute-plan [path]`     | Execute plan in batches with checkpoints    | `/marsai:execute-plan docs/pre-dev/feature/tasks.md` |
 
 ### Code & Integration Workflows
 
 | Command                             | Use Case                                       | Example                                              |
 | ----------------------------------- | ---------------------------------------------- | ---------------------------------------------------- |
-| `/ring:codereview [files-or-paths]` | Dispatch 7 parallel code reviewers             | `/ring:codereview src/auth/`                         |
-| `/ring:commit [message]`            | Create git commit with AI trailers             | `/ring:commit "fix(auth): improve token validation"` |
-| `/ring:lint [path]`                 | Run lint and dispatch agents to fix all issues | `/ring:lint src/`                                    |
+| `/marsai:codereview [files-or-paths]` | Dispatch 7 parallel code reviewers             | `/marsai:codereview src/auth/`                         |
+| `/marsai:commit [message]`            | Create git commit with AI trailers             | `/marsai:commit "fix(auth): improve token validation"` |
+| `/marsai:lint [path]`                 | Run lint and dispatch agents to fix all issues | `/marsai:lint src/`                                    |
 
 ### Session Management
 
 | Command                       | Use Case                                                      | Example                              |
 | ----------------------------- | ------------------------------------------------------------- | ------------------------------------ |
-| `/ring:create-handoff [name]` | Create handoff document before /clear (auto-resumes via hook) | `/ring:create-handoff auth-refactor` |
+| `/marsai:create-handoff [name]` | Create handoff document before /clear (auto-resumes via hook) | `/marsai:create-handoff auth-refactor` |
 
-### Development Cycle (ring-dev-team)
+### Development Cycle (marsai-dev-team)
 
 | Command                     | Use Case                           | Example                                 |
 | --------------------------- | ---------------------------------- | --------------------------------------- |
-| `/ring:dev-cycle [task]`    | Start 10-gate development workflow | `/ring:dev-cycle "implement user auth"` |
-| `/ring:dev-cycle-frontend [task]` | Start 9-gate frontend workflow | `/ring:dev-cycle-frontend "improve dashboard UX"` |
-| `/ring:dev-refactor [path]` | Analyze codebase against standards | `/ring:dev-refactor src/`               |
-| `/ring:dev-refactor-frontend [path]` | Analyze frontend against standards | `/ring:dev-refactor-frontend web/` |
-| `/ring:dev-service-discovery [path]` | Scan service/module/resource hierarchy | `/ring:dev-service-discovery .` |
-| `/ring:dev-status`          | Show current gate progress         | `/ring:dev-status`                      |
-| `/ring:dev-report`          | Generate development cycle report  | `/ring:dev-report`                      |
-| `/ring:dev-cancel`          | Cancel active development cycle    | `/ring:dev-cancel`                      |
-| `/ring:migrate-v4 [path]`  | Analyze Go service for lib-commons v4 migration | `/ring:migrate-v4 src/`        |
+| `/marsai:dev-cycle [task]`    | Start 10-gate development workflow | `/marsai:dev-cycle "implement user auth"` |
+| `/marsai:dev-cycle-frontend [task]` | Start 9-gate frontend workflow | `/marsai:dev-cycle-frontend "improve dashboard UX"` |
+| `/marsai:dev-refactor [path]` | Analyze codebase against standards | `/marsai:dev-refactor src/`               |
+| `/marsai:dev-refactor-frontend [path]` | Analyze frontend against standards | `/marsai:dev-refactor-frontend web/` |
+| `/marsai:dev-service-discovery [path]` | Scan service/module/resource hierarchy | `/marsai:dev-service-discovery .` |
+| `/marsai:dev-status`          | Show current gate progress         | `/marsai:dev-status`                      |
+| `/marsai:dev-report`          | Generate development cycle report  | `/marsai:dev-report`                      |
+| `/marsai:dev-cancel`          | Cancel active development cycle    | `/marsai:dev-cancel`                      |
+| `/marsai:migrate-v4 [path]`  | Analyze Go service for lib-commons v4 migration | `/marsai:migrate-v4 src/`        |
 
 ---
 
@@ -123,7 +123,7 @@ Commands are invoked directly: `/command-name`.
 
 Skills (54) are workflows that Claude Code invokes automatically when it detects they're applicable. They handle testing, debugging, verification, planning, and code review enforcement. You don't call them directly - Claude Code uses them internally to enforce best practices.
 
-Examples: ring:test-driven-development, ring:systematic-debugging, ring:requesting-code-review, ring:verification-before-completion, ring:production-readiness-audit (44-dimension audit, up to 10 explorers per batch, incremental report 0-430, max 440 with multi-tenant; see [default/skills/production-readiness-audit/SKILL.md](default/skills/production-readiness-audit/SKILL.md)), etc.
+Examples: marsai:test-driven-development, marsai:systematic-debugging, marsai:requesting-code-review, marsai:verification-before-completion, marsai:production-readiness-audit (44-dimension audit, up to 10 explorers per batch, incremental report 0-430, max 440 with multi-tenant; see [default/skills/production-readiness-audit/SKILL.md](default/skills/production-readiness-audit/SKILL.md)), etc.
 
 ### Skill Selection Criteria
 
@@ -150,66 +150,66 @@ Each skill has structured frontmatter that helps Claude Code determine which ski
 
 Invoke via `Task tool with subagent_type: "..."`.
 
-### Code Review (ring-default)
+### Code Review (marsai-default)
 
 **Always dispatch all 7 in parallel** (single message, 7 Task calls):
 
 | Agent                          | Purpose                                      |
 | ------------------------------ | -------------------------------------------- |
-| `ring:code-reviewer`           | Architecture, patterns, maintainability      |
-| `ring:business-logic-reviewer` | Domain correctness, edge cases, requirements |
-| `ring:security-reviewer`       | Vulnerabilities, OWASP, auth, validation     |
-| `ring:test-reviewer`           | Test coverage, quality, and completeness     |
-| `ring:nil-safety-reviewer`     | Nil/null pointer safety analysis             |
-| `ring:consequences-reviewer`   | Ripple effect, caller impact, downstream consequences |
-| `ring:dead-code-reviewer`      | Unused code, unreachable paths, dead exports          |
+| `marsai:code-reviewer`           | Architecture, patterns, maintainability      |
+| `marsai:business-logic-reviewer` | Domain correctness, edge cases, requirements |
+| `marsai:security-reviewer`       | Vulnerabilities, OWASP, auth, validation     |
+| `marsai:test-reviewer`           | Test coverage, quality, and completeness     |
+| `marsai:nil-safety-reviewer`     | Nil/null pointer safety analysis             |
+| `marsai:consequences-reviewer`   | Ripple effect, caller impact, downstream consequences |
+| `marsai:dead-code-reviewer`      | Unused code, unreachable paths, dead exports          |
 
-**Example:** Before merging, run all 7 parallel reviewers via `/ring:codereview src/`
+**Example:** Before merging, run all 7 parallel reviewers via `/marsai:codereview src/`
 
-### Orchestration (ring-default)
+### Orchestration (marsai-default)
 
 | Agent                  | Purpose                                                            |
 | ---------------------- | ------------------------------------------------------------------ |
-| `ring:review-slicer`   | Groups large multi-themed PRs into thematic slices for focused review |
+| `marsai:review-slicer`   | Groups large multi-themed PRs into thematic slices for focused review |
 
-### Planning & Analysis (ring-default)
+### Planning & Analysis (marsai-default)
 
 | Agent                    | Purpose                                                  |
 | ------------------------ | -------------------------------------------------------- |
-| `ring:write-plan`        | Generate implementation plans for zero-context execution |
-| `ring:codebase-explorer` | Deep architecture analysis (vs `Explore` for speed)      |
+| `marsai:write-plan`        | Generate implementation plans for zero-context execution |
+| `marsai:codebase-explorer` | Deep architecture analysis (vs `Explore` for speed)      |
 
-### Developer Specialists (ring-dev-team)
+### Developer Specialists (marsai-dev-team)
 
 Use when you need expert depth in specific domains:
 
 | Agent                                   | Specialization               | Technologies                                       |
 | --------------------------------------- | ---------------------------- | -------------------------------------------------- |
-| `ring:backend-engineer-golang`          | Go microservices & APIs      | Fiber, gRPC, PostgreSQL, MongoDB, Kafka, OAuth2    |
-| `ring:backend-engineer-typescript`      | TypeScript/Node.js backend   | Express, NestJS, Prisma, TypeORM, GraphQL          |
-| `ring:devops-engineer`                  | Infrastructure & CI/CD       | Docker, Kubernetes, Terraform, GitHub Actions      |
-| `ring:frontend-bff-engineer-typescript` | BFF & React/Next.js frontend | Next.js API Routes, Clean Architecture, DDD, React |
-| `ring:frontend-designer`                | Visual design & aesthetics   | Typography, motion, CSS, distinctive UI            |
-| `ring:frontend-engineer`                | General frontend development | React, TypeScript, CSS, component architecture     |
-| `ring:helm-engineer`                    | Helm chart specialist        | Helm charts, Kubernetes, Lerian conventions        |
-| `ring:prompt-quality-reviewer`          | AI prompt quality review     | Prompt engineering, clarity, effectiveness         |
-| `ring:qa-analyst`                       | Quality assurance            | Test strategy, automation, coverage                |
-| `ring:qa-analyst-frontend`              | Frontend QA specialist       | Accessibility, visual regression, E2E, performance |
-| `ring:sre`                              | Site reliability & ops       | Monitoring, alerting, incident response, SLOs      |
-| `ring:ui-engineer`                      | UI component specialist      | Design systems, accessibility, React               |
+| `marsai:backend-engineer-golang`          | Go microservices & APIs      | Fiber, gRPC, PostgreSQL, MongoDB, Kafka, OAuth2    |
+| `marsai:backend-engineer-typescript`      | TypeScript/Node.js backend   | Express, NestJS, Prisma, TypeORM, GraphQL          |
+| `marsai:devops-engineer`                  | Infrastructure & CI/CD       | Docker, Kubernetes, Terraform, GitHub Actions      |
+| `marsai:frontend-bff-engineer-typescript` | BFF & React/Next.js frontend | Next.js API Routes, Clean Architecture, DDD, React |
+| `marsai:frontend-designer`                | Visual design & aesthetics   | Typography, motion, CSS, distinctive UI            |
+| `marsai:frontend-engineer`                | General frontend development | React, TypeScript, CSS, component architecture     |
+| `marsai:helm-engineer`                    | Helm chart specialist        | Helm charts, Kubernetes, Lerian conventions        |
+| `marsai:prompt-quality-reviewer`          | AI prompt quality review     | Prompt engineering, clarity, effectiveness         |
+| `marsai:qa-analyst`                       | Quality assurance            | Test strategy, automation, coverage                |
+| `marsai:qa-analyst-frontend`              | Frontend QA specialist       | Accessibility, visual regression, E2E, performance |
+| `marsai:sre`                              | Site reliability & ops       | Monitoring, alerting, incident response, SLOs      |
+| `marsai:ui-engineer`                      | UI component specialist      | Design systems, accessibility, React               |
 
-**Standards Compliance Output:** All ring-dev-team agents include a `## Standards Compliance` output section with conditional requirement:
+**Standards Compliance Output:** All marsai-dev-team agents include a `## Standards Compliance` output section with conditional requirement:
 
 | Invocation Context      | Standards Compliance | Trigger                                   |
 | ----------------------- | -------------------- | ----------------------------------------- |
 | Direct agent call       | Optional             | N/A                                       |
-| Via `ring:dev-cycle`    | Optional             | N/A                                       |
-| Via `ring:dev-refactor` | **MANDATORY**        | Prompt contains `**MODE: ANALYSIS ONLY**` |
+| Via `marsai:dev-cycle`    | Optional             | N/A                                       |
+| Via `marsai:dev-refactor` | **MANDATORY**        | Prompt contains `**MODE: ANALYSIS ONLY**` |
 
 **How it works:**
 
-1. `ring:dev-refactor` dispatches agents with `**MODE: ANALYSIS ONLY**` in prompt
-2. Agents detect this pattern and load Ring standards via WebFetch
+1. `marsai:dev-refactor` dispatches agents with `**MODE: ANALYSIS ONLY**` in prompt
+2. Agents detect this pattern and load MarsAI standards via WebFetch
 3. Agents produce comparison tables: Current Pattern vs Expected Pattern
 4. Output includes severity, location, and migration recommendations
 
@@ -231,34 +231,34 @@ Use when you need expert depth in specific domains:
 
 ### New Feature Development
 
-1. **Design** → `/ring:brainstorm feature-name`
-2. **Plan** → `/ring:pre-dev-feature feature-name` (or `ring:pre-dev-full` if complex)
-3. **Isolate** → `/ring:worktree feature-branch`
-4. **Implement** → Use `ring:test-driven-development` skill
-5. **Review** → `/ring:codereview src/` (dispatches 7 reviewers)
-6. **Commit** → `/ring:commit "message"`
+1. **Design** → `/marsai:brainstorm feature-name`
+2. **Plan** → `/marsai:pre-dev-feature feature-name` (or `marsai:pre-dev-full` if complex)
+3. **Isolate** → `/marsai:worktree feature-branch`
+4. **Implement** → Use `marsai:test-driven-development` skill
+5. **Review** → `/marsai:codereview src/` (dispatches 7 reviewers)
+6. **Commit** → `/marsai:commit "message"`
 
 ### Bug Investigation
 
-1. **Investigate** → Use `ring:systematic-debugging` skill
-2. **Trace** → Use `ring:root-cause-tracing` if needed
-3. **Implement** → Use `ring:test-driven-development` skill
-4. **Verify** → Use `ring:verification-before-completion` skill
-5. **Review & Merge** → `/ring:codereview` + `/ring:commit`
+1. **Investigate** → Use `marsai:systematic-debugging` skill
+2. **Trace** → Use `marsai:root-cause-tracing` if needed
+3. **Implement** → Use `marsai:test-driven-development` skill
+4. **Verify** → Use `marsai:verification-before-completion` skill
+5. **Review & Merge** → `/marsai:codereview` + `/marsai:commit`
 
 ### Code Review
 
 ```
-/ring:codereview [files-or-paths]
+/marsai:codereview [files-or-paths]
     ↓
 Runs in parallel:
-  • ring:code-reviewer
-  • ring:business-logic-reviewer
-  • ring:security-reviewer
-  • ring:test-reviewer
-  • ring:nil-safety-reviewer
-  • ring:consequences-reviewer
-  • ring:dead-code-reviewer
+  • marsai:code-reviewer
+  • marsai:business-logic-reviewer
+  • marsai:security-reviewer
+  • marsai:test-reviewer
+  • marsai:nil-safety-reviewer
+  • marsai:consequences-reviewer
+  • marsai:dead-code-reviewer
     ↓
 Consolidated report with recommendations
 ```
@@ -270,8 +270,8 @@ Consolidated report with recommendations
 These enforce quality standards:
 
 1. **TDD is enforced** – Test must fail (RED) before implementation
-2. **Skill check is mandatory** – Use `ring:using-ring` before any task
-3. **Reviewers run parallel** – Never sequential review (use `/ring:codereview`)
+2. **Skill check is mandatory** – Use `marsai:using-marsai` before any task
+3. **Reviewers run parallel** – Never sequential review (use `/marsai:codereview`)
 4. **Verification required** – Don't claim complete without evidence
 5. **No incomplete code** – No "TODO" or placeholder comments
 6. **Error handling required** – Don't ignore errors
@@ -284,48 +284,48 @@ These enforce quality standards:
 
 | Situation                                              | Use This                |
 | ------------------------------------------------------ | ----------------------- |
-| New feature, unsure about design                       | `/ring:brainstorm`      |
-| Feature will take < 2 days                             | `/ring:pre-dev-feature` |
-| Feature will take ≥ 2 days or has complex dependencies | `/ring:pre-dev-full`    |
-| Need implementation tasks                              | `/ring:write-plan`      |
-| Before merging code                                    | `/ring:codereview`      |
+| New feature, unsure about design                       | `/marsai:brainstorm`      |
+| Feature will take < 2 days                             | `/marsai:pre-dev-feature` |
+| Feature will take ≥ 2 days or has complex dependencies | `/marsai:pre-dev-full`    |
+| Need implementation tasks                              | `/marsai:write-plan`      |
+| Before merging code                                    | `/marsai:codereview`      |
 
 ### Agent Selection
 
 | Need                              | Agent to Use                                |
 | --------------------------------- | ------------------------------------------- |
-| General code quality review       | 7 parallel reviewers via `/ring:codereview` |
-| Large PR review (15+ files)       | Auto-sliced via `ring:review-slicer`        |
-| Implementation planning           | `ring:write-plan`                           |
-| Deep codebase analysis            | `ring:codebase-explorer`                    |
-| Go backend expertise              | `ring:backend-engineer-golang`              |
-| TypeScript/Node.js backend        | `ring:backend-engineer-typescript`          |
-| Infrastructure/DevOps             | `ring:devops-engineer`                      |
-| React/Next.js frontend & BFF      | `ring:frontend-bff-engineer-typescript`     |
-| General frontend development      | `ring:frontend-engineer`                    |
-| Visual design & aesthetics        | `ring:frontend-designer`                    |
-| Helm charts & Kubernetes          | `ring:helm-engineer`                        |
-| UI component development          | `ring:ui-engineer`                          |
-| AI prompt quality review          | `ring:prompt-quality-reviewer`              |
-| Backend quality assurance          | `ring:qa-analyst`                           |
-| Frontend quality assurance         | `ring:qa-analyst-frontend`                  |
-| Site reliability & operations     | `ring:sre`                                  |
+| General code quality review       | 7 parallel reviewers via `/marsai:codereview` |
+| Large PR review (15+ files)       | Auto-sliced via `marsai:review-slicer`        |
+| Implementation planning           | `marsai:write-plan`                           |
+| Deep codebase analysis            | `marsai:codebase-explorer`                    |
+| Go backend expertise              | `marsai:backend-engineer-golang`              |
+| TypeScript/Node.js backend        | `marsai:backend-engineer-typescript`          |
+| Infrastructure/DevOps             | `marsai:devops-engineer`                      |
+| React/Next.js frontend & BFF      | `marsai:frontend-bff-engineer-typescript`     |
+| General frontend development      | `marsai:frontend-engineer`                    |
+| Visual design & aesthetics        | `marsai:frontend-designer`                    |
+| Helm charts & Kubernetes          | `marsai:helm-engineer`                        |
+| UI component development          | `marsai:ui-engineer`                          |
+| AI prompt quality review          | `marsai:prompt-quality-reviewer`              |
+| Backend quality assurance          | `marsai:qa-analyst`                           |
+| Frontend quality assurance         | `marsai:qa-analyst-frontend`                  |
+| Site reliability & operations     | `marsai:sre`                                  |
 
 ---
 
-## 🔧 How Ring Works
+## 🔧 How MarsAI Works
 
 ### Session Startup
 
 1. SessionStart hook runs automatically
 2. All 54 skills are auto-discovered and available
-3. `ring:using-ring` workflow is activated (skill checking is now mandatory)
+3. `marsai:using-marsai` workflow is activated (skill checking is now mandatory)
 
 ### Agent Dispatching
 
 ```
 Task tool:
-  subagent_type: "ring:code-reviewer"
+  subagent_type: "marsai:code-reviewer"
   prompt: [context]
     ↓
 Runs agent
@@ -338,13 +338,13 @@ Returns structured output per agent's output_schema
 ```
 Single message with 7 Task calls (not sequential):
 
-Task #1: ring:code-reviewer
-Task #2: ring:business-logic-reviewer
-Task #3: ring:security-reviewer
-Task #4: ring:test-reviewer
-Task #5: ring:nil-safety-reviewer
-Task #6: ring:consequences-reviewer
-Task #7: ring:dead-code-reviewer
+Task #1: marsai:code-reviewer
+Task #2: marsai:business-logic-reviewer
+Task #3: marsai:security-reviewer
+Task #4: marsai:test-reviewer
+Task #5: marsai:nil-safety-reviewer
+Task #6: marsai:consequences-reviewer
+Task #7: marsai:dead-code-reviewer
     ↓
 All run in parallel (saves ~15 minutes vs sequential)
     ↓
@@ -372,5 +372,5 @@ Consolidated report
 ## ❓ Need Help?
 
 - **How to use Claude Code?** → Ask about Claude Code features, MCP servers, slash commands
-- **How to use Ring?** → Check skill names in this manual or in `ring:using-ring` skill
-- **Feature/bug tracking?** → https://github.com/lerianstudio/ring/issues
+- **How to use MarsAI?** → Check skill names in this manual or in `marsai:using-marsai` skill
+- **Feature/bug tracking?** → https://github.com/lerianstudio/marsai/issues

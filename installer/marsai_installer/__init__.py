@@ -1,7 +1,7 @@
 """
-Ring Installer - Multi-platform AI agent skill installer.
+MarsAI Installer - Multi-platform AI agent skill installer.
 
-This package provides tools to install Ring skills, agents, and commands
+This package provides tools to install MarsAI skills, agents, and commands
 across multiple AI platforms including Claude Code, Codex, Factory AI, OpenCode, and Pi.
 """
 
@@ -9,14 +9,14 @@ __version__ = "0.1.0"
 __author__ = "Lerian Studio"
 __license__ = "Apache-2.0"
 
-from ring_installer.adapters import (
+from marsai_installer.adapters import (
     SUPPORTED_PLATFORMS,
     ClaudeAdapter,
     FactoryAdapter,
     PlatformAdapter,
     get_adapter,
 )
-from ring_installer.core import (
+from marsai_installer.core import (
     InstallOptions,
     InstallResult,
     InstallTarget,

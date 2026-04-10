@@ -1,5 +1,5 @@
 ---
-name: ring:dev-chaos-testing
+name: marsai:dev-chaos-testing
 description: |
   Gate 7 of development cycle - ensures chaos tests exist using Toxiproxy
   to verify graceful degradation under connection loss, latency, and partitions.
@@ -10,7 +10,7 @@ trigger: |
   - Verifies system behavior under failure conditions
 
 skip_when: |
-  - Not inside a development cycle (ring:dev-cycle)
+  - Not inside a development cycle (marsai:dev-cycle)
   - Service has no external dependencies (no database, cache, queue, or external API)
   - Task is documentation-only, configuration-only, or non-code
   - Frontend-only project with no backend service dependencies
@@ -21,11 +21,11 @@ NOT_skip_when: |
   - "Toxiproxy is complex" - One container, 20 minutes setup. Prevents production incidents.
 
 sequence:
-  after: [ring:dev-integration-testing]
-  before: [ring:requesting-code-review]
+  after: [marsai:dev-integration-testing]
+  before: [marsai:requesting-code-review]
 
 related:
-  complementary: [ring:dev-cycle, ring:dev-integration-testing, ring:qa-analyst]
+  complementary: [marsai:dev-cycle, marsai:dev-integration-testing, marsai:qa-analyst]
 
 input_schema:
   required:
@@ -116,7 +116,7 @@ Ensure code handles **failure conditions gracefully** by injecting faults using 
 **MANDATORY:** Load testing-chaos.md standards via WebFetch.
 
 <fetch_required>
-https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/golang/testing-chaos.md
+https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang/testing-chaos.md
 </fetch_required>
 
 ---
@@ -191,7 +191,7 @@ if external_dependencies is empty (AFTER auto-detection in Step 0):
 
 ```text
 Task tool:
-  subagent_type: "ring:qa-analyst"
+  subagent_type: "marsai:qa-analyst"
   prompt: |
     **MODE:** CHAOS TESTING (Gate 7)
 

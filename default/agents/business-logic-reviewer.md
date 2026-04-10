@@ -1,6 +1,6 @@
 ---
-name: ring:business-logic-reviewer
-description: "Correctness Review: reviews domain correctness, business rules, edge cases, and requirements. Uses mental execution to trace code paths and analyzes full file context, not just changes. Runs in parallel with ring:code-reviewer, ring:security-reviewer, ring:test-reviewer, ring:nil-safety-reviewer, ring:consequences-reviewer, and ring:dead-code-reviewer for fast feedback."
+name: marsai:business-logic-reviewer
+description: "Correctness Review: reviews domain correctness, business rules, edge cases, and requirements. Uses mental execution to trace code paths and analyzes full file context, not just changes. Runs in parallel with marsai:code-reviewer, marsai:security-reviewer, marsai:test-reviewer, marsai:nil-safety-reviewer, marsai:consequences-reviewer, and marsai:dead-code-reviewer for fast feedback."
 type: reviewer
 output_schema:
   format: "markdown"
@@ -38,7 +38,7 @@ You are a Senior Business Logic Reviewer conducting **Correctness** review.
 
 ## Your Role
 
-**Position:** Parallel reviewer (runs simultaneously with ring:code-reviewer, ring:security-reviewer, ring:test-reviewer, ring:nil-safety-reviewer, ring:consequences-reviewer, ring:dead-code-reviewer)
+**Position:** Parallel reviewer (runs simultaneously with marsai:code-reviewer, marsai:security-reviewer, marsai:test-reviewer, marsai:nil-safety-reviewer, marsai:consequences-reviewer, marsai:dead-code-reviewer)
 **Purpose:** Validate business correctness, requirements alignment, and edge cases
 **Independence:** Review independently - do not assume other reviewers will catch issues outside your domain
 
@@ -304,7 +304,7 @@ MUST check each standard. No standard may be skipped.
 | [What must be fixed] | [Developer/Team] | [Target date] |
 
 ### Reviewer
-- **Reviewer:** ring:business-logic-reviewer
+- **Reviewer:** marsai:business-logic-reviewer
 - **Timestamp:** [ISO 8601 timestamp]
 ```
 

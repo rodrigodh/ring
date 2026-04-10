@@ -1,10 +1,10 @@
 ---
-name: ring:cycle-management
+name: marsai:cycle-management
 description: Development cycle state management — status reporting and cycle cancellation
 trigger: |
   - User wants to check the status of a running development cycle
   - User wants to cancel an active development cycle
-  - Invoked by /ring:dev-status or /ring:dev-cancel commands
+  - Invoked by /marsai:dev-status or /marsai:dev-cancel commands
 skip_when: |
   - No development cycle is active or was recently started
   - User is asking about general project status (not cycle-specific)
@@ -16,12 +16,12 @@ Unified skill for managing development cycle state. Provides two modes: **status
 
 ## Mode Selection
 
-This skill is invoked by the `ring:dev-status` and `ring:dev-cancel` commands. The calling command specifies the mode:
+This skill is invoked by the `marsai:dev-status` and `marsai:dev-cancel` commands. The calling command specifies the mode:
 
 | Mode | Invoking Command | Purpose |
 |------|-----------------|---------|
-| `status` | `/ring:dev-status` | Read-only — display cycle metrics |
-| `cancel` | `/ring:dev-cancel [--force]` | Mutating — cancel the active cycle |
+| `status` | `/marsai:dev-status` | Read-only — display cycle metrics |
+| `cancel` | `/marsai:dev-cancel [--force]` | Mutating — cancel the active cycle |
 
 The mode is determined by the argument passed from the delegating command. If no mode is provided, default to `status`.
 
@@ -31,8 +31,8 @@ The mode is determined by the argument passed from the delegating command. If no
 
 Both modes read from the same state files. Check for an active cycle in this order:
 
-1. `docs/ring:dev-cycle/current-cycle.json`
-2. `docs/ring:dev-refactor/current-cycle.json`
+1. `docs/marsai:dev-cycle/current-cycle.json`
+2. `docs/marsai:dev-refactor/current-cycle.json`
 
 If neither file exists or both contain a terminal status (`completed`, `cancelled`), report that no cycle is active and exit with the appropriate "no cycle" message for the current mode.
 
@@ -67,14 +67,14 @@ Tasks:
 
 Current:
   Task: AUTH-003 - Implementar refresh token
-  Gate: 3/10 (ring:dev-unit-testing)
+  Gate: 3/10 (marsai:dev-unit-testing)
   Iterations: 1
 
 Metrics (completed tasks):
   Average Assertiveness: 89%
   Total Duration: 1h 45m
 
-State file: docs/ring:dev-cycle/current-cycle.json (or docs/ring:dev-refactor/current-cycle.json)
+State file: docs/marsai:dev-cycle/current-cycle.json (or docs/marsai:dev-refactor/current-cycle.json)
 ```
 
 ### When No Cycle is Running (Status Mode)
@@ -83,10 +83,10 @@ State file: docs/ring:dev-cycle/current-cycle.json (or docs/ring:dev-refactor/cu
 No development cycle in progress.
 
 Start a new cycle with:
-  /ring:dev-cycle docs/tasks/your-tasks.md
+  /marsai:dev-cycle docs/tasks/your-tasks.md
 
 Or resume an interrupted cycle:
-  /ring:dev-cycle --resume
+  /marsai:dev-cycle --resume
 ```
 
 ### Execution Steps (Status)
@@ -143,11 +143,11 @@ Cycle ID: 2024-01-15-143000
 Status: cancelled
 Completed: 3/5 tasks
 
-State saved to: docs/ring:dev-cycle/current-cycle.json (or docs/ring:dev-refactor/current-cycle.json)
+State saved to: docs/marsai:dev-cycle/current-cycle.json (or docs/marsai:dev-refactor/current-cycle.json)
 Partial report: docs/dev-team/feedback/cycle-2024-01-15-partial.md
 
 To resume later:
-  /ring:dev-cycle --resume
+  /marsai:dev-cycle --resume
 ```
 
 ### When No Cycle is Running (Cancel Mode)
@@ -156,7 +156,7 @@ To resume later:
 No development cycle to cancel.
 
 Check status with:
-  /ring:dev-status
+  /marsai:dev-status
 ```
 
 ### Execution Steps (Cancel)
@@ -176,13 +176,13 @@ Check status with:
 
 | Command | Description |
 |---------|-------------|
-| `/ring:dev-cycle` | Start or resume cycle |
-| `/ring:dev-cancel` | Cancel running cycle |
-| `/ring:dev-status` | Check current status |
-| `/ring:dev-report` | View feedback report |
+| `/marsai:dev-cycle` | Start or resume cycle |
+| `/marsai:dev-cancel` | Cancel running cycle |
+| `/marsai:dev-status` | Check current status |
+| `/marsai:dev-report` | View feedback report |
 
 ---
 
 Now executing the requested mode...
 
-Read state from: `docs/ring:dev-cycle/current-cycle.json` or `docs/ring:dev-refactor/current-cycle.json`
+Read state from: `docs/marsai:dev-cycle/current-cycle.json` or `docs/marsai:dev-refactor/current-cycle.json`

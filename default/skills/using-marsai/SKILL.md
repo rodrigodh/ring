@@ -1,5 +1,5 @@
 ---
-name: ring:using-ring
+name: marsai:using-marsai
 description: |
   Mandatory orchestrator protocol - establishes ORCHESTRATOR principle (dispatch agents,
   don't operate directly) and skill discovery workflow for every conversation.
@@ -48,7 +48,7 @@ This is not negotiable. This is not optional. You cannot rationalize your way ou
 | "update across", "change all", "refactor" | Launch specialist agent |
 | "find where", "search for", "locate" | Launch Explore agent |
 | "understand how", "how does X work" | Launch Explore agent |
-| "draw a diagram", "explain architecture", "visualize", "comparison table" | Load ring:visual-explainer skill |
+| "draw a diagram", "explain architecture", "visualize", "comparison table" | Load marsai:visual-explainer skill |
 
 **Why?** These phrases imply multi-file operations. You WILL exceed 3 files. Pre-empt the violation.
 
@@ -186,7 +186,7 @@ You don't read files, run grep chains, or manually explore – you **dispatch ag
 
 **Exceptions to default agents:**
 1. User explicitly provides a file path AND explicitly requests you read it (e.g., "read src/foo.ts")
-2. **A skill has its own specialized agents** - Some skills (e.g., `ring:dev-refactor`) define their own agents that MUST be used instead of Explore/Plan/general-purpose. When a skill specifies "OVERRIDE" or "FORBIDDEN agents", follow the skill's agent requirements, not the defaults above.
+2. **A skill has its own specialized agents** - Some skills (e.g., `marsai:dev-refactor`) define their own agents that MUST be used instead of Explore/Plan/general-purpose. When a skill specifies "OVERRIDE" or "FORBIDDEN agents", follow the skill's agent requirements, not the defaults above.
 
 **All these are STILL orchestration tasks:**
 - ❌ "I need to understand the codebase structure first" → Explore agent
@@ -206,7 +206,7 @@ You are breaking ORCHESTRATOR. Use an agent instead.
 
 **Built-in:** `Explore` (navigation), `Plan` (implementation), `general-purpose` (research), `claude-code-guide` (docs).
 
-**Ring:** `ring:code-reviewer`, `ring:business-logic-reviewer`, `ring:security-reviewer`, `ring:write-plan`.
+**MarsAI:** `marsai:code-reviewer`, `marsai:business-logic-reviewer`, `marsai:security-reviewer`, `marsai:write-plan`.
 
 ### Decision: Which Agent?
 
@@ -216,13 +216,13 @@ You are breaking ORCHESTRATOR. Use an agent instead.
 | Plan implementation, break down features | **Plan** |
 | Multi-step research, complex investigation | **general-purpose** |
 | Code review | ALL SEVEN in parallel (code, business-logic, security, test, nil-safety, consequences, dead-code reviewers) |
-| Implementation plan document | ring:write-plan |
+| Implementation plan document | marsai:write-plan |
 | Claude Code questions | claude-code-guide |
 | User explicitly said "read [file]" | Direct (ONLY exception) |
 
 **WRONG → RIGHT:** "Let me read files" → Explore. "I'll grep" → Explore. "Already read 3 files" → STOP, dispatch now.
 
-### Ring Reviewers: ALWAYS Parallel
+### MarsAI Reviewers: ALWAYS Parallel
 
 When dispatching code reviewers, **single message with 3 Task calls:**
 
@@ -250,7 +250,7 @@ When dispatching code reviewers, **single message with 3 Task calls:**
 
 ## Announcing Skill Usage
 
-- **Always announce meta-skills:** brainstorming, ring:writing-plans, systematic-debugging (methodology change)
+- **Always announce meta-skills:** brainstorming, marsai:writing-plans, systematic-debugging (methodology change)
 - **Skip when obvious:** User says "write tests first" → no need to announce TDD
 
 ## Required Patterns

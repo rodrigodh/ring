@@ -1,6 +1,6 @@
 ---
-name: ring:dev-refactor
-description: Analyzes backend codebase (Go/TypeScript) against standards and generates refactoring tasks for ring:dev-cycle. For frontend projects, use ring:dev-refactor-frontend instead.
+name: marsai:dev-refactor
+description: Analyzes backend codebase (Go/TypeScript) against standards and generates refactoring tasks for marsai:dev-cycle. For frontend projects, use marsai:dev-refactor-frontend instead.
 trigger: |
   - User wants to refactor existing project to follow standards
   - Legacy codebase needs modernization
@@ -8,18 +8,18 @@ trigger: |
 
 skip_when: |
   - Greenfield project → Use /pre-dev-* instead
-  - Single file fix → Use ring:dev-cycle directly
+  - Single file fix → Use marsai:dev-cycle directly
 ---
 
 # Dev Refactor Skill
 
-Analyzes existing codebase against Ring/Lerian standards and generates refactoring tasks compatible with ring:dev-cycle.
+Analyzes existing codebase against MarsAI/Lerian standards and generates refactoring tasks compatible with marsai:dev-cycle.
 
 ---
 
 ## ⛔ MANDATORY GAP PRINCIPLE (NON-NEGOTIABLE)
 
-**any divergence from Ring standards = MANDATORY gap to implement.**
+**any divergence from MarsAI standards = MANDATORY gap to implement.**
 
 <cannot_skip>
 - All divergences are gaps - Every difference MUST be tracked as FINDING-XXX
@@ -123,7 +123,7 @@ TodoWrite:
     - content: "Read PROJECT_RULES.md for context"
       status: "pending"
       activeForm: "Reading PROJECT_RULES.md"
-    - content: "Generate codebase report via ring:codebase-explorer"
+    - content: "Generate codebase report via marsai:codebase-explorer"
       status: "pending"
       activeForm: "Generating codebase report"
     - content: "Dispatch specialist agents in parallel"
@@ -153,9 +153,9 @@ TodoWrite:
     - content: "Save all artifacts"
       status: "pending"
       activeForm: "Saving artifacts"
-    - content: "Handoff to ring:dev-cycle"
+    - content: "Handoff to marsai:dev-cycle"
       status: "pending"
-      activeForm: "Handing off to ring:dev-cycle"
+      activeForm: "Handing off to marsai:dev-cycle"
 ```
 
 **This is NON-NEGOTIABLE. Do not skip creating the todo list.**
@@ -205,21 +205,21 @@ Re-run after file exists.
 
 **TodoWrite:** Mark "Detect project stack (Go/TypeScript)" as `in_progress`
 
-**⛔ SCOPE: BACKEND CODE ONLY.** This skill analyzes backend code exclusively. MUST use `ring:dev-refactor-frontend` for frontend code (React, Next.js, Vue, Angular).
+**⛔ SCOPE: BACKEND CODE ONLY.** This skill analyzes backend code exclusively. MUST use `marsai:dev-refactor-frontend` for frontend code (React, Next.js, Vue, Angular).
 
 Check for backend manifest files:
 
 | File/Pattern | Stack | Agent |
 |--------------|-------|-------|
-| `go.mod` | Go Backend | ring:backend-engineer-golang |
-| `package.json` + Express/Fastify/NestJS (no React/Next.js) | TypeScript Backend | ring:backend-engineer-typescript |
+| `go.mod` | Go Backend | marsai:backend-engineer-golang |
+| `package.json` + Express/Fastify/NestJS (no React/Next.js) | TypeScript Backend | marsai:backend-engineer-typescript |
 
 **Detection Logic:**
 - `go.mod` exists → Add Go backend agent
 - `package.json` exists + Express/Fastify/NestJS in dependencies (NO React/Next.js) → Add TypeScript backend agent
-- `package.json` exists + React/Next.js in dependencies → **STOP: This is a frontend project. Use `ring:dev-refactor-frontend` instead.**
+- `package.json` exists + React/Next.js in dependencies → **STOP: This is a frontend project. Use `marsai:dev-refactor-frontend` instead.**
 
-**⛔ FORBIDDEN:** Dispatching `ring:frontend-engineer`, `ring:frontend-designer`, `ring:ui-engineer`, `ring:qa-analyst-frontend`, or `ring:frontend-bff-engineer-typescript` from this skill. These are frontend agents and belong to `ring:dev-refactor-frontend`.
+**⛔ FORBIDDEN:** Dispatching `marsai:frontend-engineer`, `marsai:frontend-designer`, `marsai:ui-engineer`, `marsai:qa-analyst-frontend`, or `marsai:frontend-bff-engineer-typescript` from this skill. These are frontend agents and belong to `marsai:dev-refactor-frontend`.
 
 **TodoWrite:** Mark "Detect project stack (Go/TypeScript)" as `completed`
 
@@ -241,11 +241,11 @@ Extract project-specific conventions for agent context.
 
 ## Step 3: Generate Codebase Report
 
-**TodoWrite:** Mark "Generate codebase report via ring:codebase-explorer" as `in_progress`
+**TodoWrite:** Mark "Generate codebase report via marsai:codebase-explorer" as `in_progress`
 
-### ⛔ MANDATORY: Use Task Tool with ring:codebase-explorer
+### ⛔ MANDATORY: Use Task Tool with marsai:codebase-explorer
 
-<dispatch_required agent="ring:codebase-explorer">
+<dispatch_required agent="marsai:codebase-explorer">
 Generate a comprehensive codebase report describing WHAT EXISTS.
 
 Include:
@@ -278,7 +278,7 @@ Do not complete without outputting full report in the format above.
 
 ### Anti-Rationalization Table for Step 3
 
-See [shared-patterns/anti-rationalization-codebase-explorer.md](../shared-patterns/anti-rationalization-codebase-explorer.md) for the ring:codebase-explorer dispatch anti-rationalization table.
+See [shared-patterns/anti-rationalization-codebase-explorer.md](../shared-patterns/anti-rationalization-codebase-explorer.md) for the marsai:codebase-explorer dispatch anti-rationalization table.
 
 ### FORBIDDEN Actions for Step 3
 
@@ -296,7 +296,7 @@ Any of these = IMMEDIATE SKILL FAILURE.
 ### REQUIRED Action for Step 3
 
 ```
-✅ Task(subagent_type="ring:codebase-explorer", ...)
+✅ Task(subagent_type="marsai:codebase-explorer", ...)
 ```
 
 **Timestamp format:** `{timestamp}` = `YYYY-MM-DDTHH:MM:SS` (e.g., `2026-02-07T22:30:45`). Generate once at start, reuse for all artifacts.
@@ -305,11 +305,11 @@ Any of these = IMMEDIATE SKILL FAILURE.
 
 ```
 Write tool:
-  file_path: "docs/ring:dev-refactor/{timestamp}/codebase-report.md"
+  file_path: "docs/marsai:dev-refactor/{timestamp}/codebase-report.md"
   content: [Task output]
 ```
 
-**TodoWrite:** Mark "Generate codebase report via ring:codebase-explorer" as `completed`
+**TodoWrite:** Mark "Generate codebase report via marsai:codebase-explorer" as `completed`
 
 ---
 
@@ -328,11 +328,11 @@ See [shared-patterns/file-size-enforcement.md](../shared-patterns/file-size-enfo
 **BEFORE dispatching any specialist agent, verify:**
 
 ```
-Check 1: Does docs/ring:dev-refactor/{timestamp}/codebase-report.md exist?
+Check 1: Does docs/marsai:dev-refactor/{timestamp}/codebase-report.md exist?
   - YES → Continue to dispatch agents
   - no  → STOP. Go back to Step 3.
 
-Check 2: Was codebase-report.md created by ring:codebase-explorer?
+Check 2: Was codebase-report.md created by marsai:codebase-explorer?
   - YES → Continue
   - no (created by Bash output) → DELETE IT. Go back to Step 3. Use correct agent.
 ```
@@ -355,14 +355,14 @@ Check 2: Was codebase-report.md created by ring:codebase-explorer?
 
 ### For Go projects:
 
-<parallel_dispatch agents="ring:backend-engineer-golang, ring:qa-analyst, ring:qa-analyst[goroutine-leak], ring:devops-engineer, ring:sre">
+<parallel_dispatch agents="marsai:backend-engineer-golang, marsai:qa-analyst, marsai:qa-analyst[goroutine-leak], marsai:devops-engineer, marsai:sre">
 MUST dispatch all five agents in parallel via Task tool.
 Input: codebase-report.md, PROJECT_RULES.md
 </parallel_dispatch>
 
 ```yaml
 Task tool 1:
-  subagent_type: "ring:backend-engineer-golang"
+  subagent_type: "marsai:backend-engineer-golang"
   description: "Go standards analysis"
   prompt: |
     **MODE: ANALYSIS only**
@@ -388,9 +388,9 @@ Task tool 1:
     - Reference: golang/domain.md → File Organization (MANDATORY)
 
     Input:
-    - Ring Standards: Load via WebFetch (golang.md)
-    - Section Index: See shared-patterns/standards-coverage-table.md → "ring:backend-engineer-golang"
-    - Codebase Report: docs/ring:dev-refactor/{timestamp}/codebase-report.md
+    - MarsAI Standards: Load via WebFetch (golang.md)
+    - Section Index: See shared-patterns/standards-coverage-table.md → "marsai:backend-engineer-golang"
+    - Codebase Report: docs/marsai:dev-refactor/{timestamp}/codebase-report.md
     - Project Rules: docs/PROJECT_RULES.md
 
     ⛔ MULTI-TENANT ANALYSIS (MANDATORY):
@@ -401,36 +401,36 @@ Task tool 1:
     2. ISSUE-XXX for each ⚠️/❌ finding with: Pattern name, Severity, file:line, Current Code, Expected Code
 
 Task tool 2:
-  subagent_type: "ring:qa-analyst"
+  subagent_type: "marsai:qa-analyst"
   description: "Test coverage analysis"
   prompt: |
     **MODE: ANALYSIS only**
-    Check all testing sections per shared-patterns/standards-coverage-table.md → "ring:qa-analyst"
+    Check all testing sections per shared-patterns/standards-coverage-table.md → "marsai:qa-analyst"
     Input: codebase-report.md, PROJECT_RULES.md
     Output: Standards Coverage Table + ISSUE-XXX for gaps
 
 Task tool 3:
-  subagent_type: "ring:devops-engineer"
+  subagent_type: "marsai:devops-engineer"
   description: "DevOps analysis"
   prompt: |
     **MODE: ANALYSIS only**
-    Check all 8 sections per shared-patterns/standards-coverage-table.md → "ring:devops-engineer"
+    Check all 8 sections per shared-patterns/standards-coverage-table.md → "marsai:devops-engineer"
     ⛔ "Containers" means BOTH Dockerfile and Docker Compose
     ⛔ "Makefile Standards" means all required commands: build, lint, test, cover, up, down, etc.
     Input: codebase-report.md, PROJECT_RULES.md
     Output: Standards Coverage Table + ISSUE-XXX for gaps
 
 Task tool 4:
-  subagent_type: "ring:sre"
+  subagent_type: "marsai:sre"
   description: "Observability analysis"
   prompt: |
     **MODE: ANALYSIS only**
-    Check all 6 sections per shared-patterns/standards-coverage-table.md → "ring:sre"
+    Check all 6 sections per shared-patterns/standards-coverage-table.md → "marsai:sre"
     Input: codebase-report.md, PROJECT_RULES.md
     Output: Standards Coverage Table + ISSUE-XXX for gaps
 
 Task tool 5 (Go only):
-  subagent_type: "ring:qa-analyst"
+  subagent_type: "marsai:qa-analyst"
   description: "Goroutine leak analysis"
   prompt: |
     **MODE: ANALYSIS only**
@@ -439,7 +439,7 @@ Task tool 5 (Go only):
     ⛔ GOROUTINE LEAK DETECTION MODE
 
     ## Standards Reference
-    https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/golang/architecture.md
+    https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang/architecture.md
     Focus on: Goroutine Leak Detection (MANDATORY) section
 
     ## Analysis Steps
@@ -464,7 +464,7 @@ Task tool 5 (Go only):
     - Missing goleak.VerifyNone in specific tests
 
     Input:
-    - Codebase Report: docs/ring:dev-refactor/{timestamp}/codebase-report.md
+    - Codebase Report: docs/marsai:dev-refactor/{timestamp}/codebase-report.md
     - Project Rules: docs/PROJECT_RULES.md
 
     Output:
@@ -482,14 +482,14 @@ Task tool 5 (Go only):
 
 ### For TypeScript Backend projects:
 
-<parallel_dispatch agents="ring:backend-engineer-typescript, ring:qa-analyst, ring:devops-engineer, ring:sre">
+<parallel_dispatch agents="marsai:backend-engineer-typescript, marsai:qa-analyst, marsai:devops-engineer, marsai:sre">
 All four agents MUST be dispatched in parallel via Task tool.
 Input: codebase-report.md, PROJECT_RULES.md
 </parallel_dispatch>
 
 ```yaml
 Task tool 1:
-  subagent_type: "ring:backend-engineer-typescript"
+  subagent_type: "marsai:backend-engineer-typescript"
   description: "TypeScript backend standards analysis"
   prompt: |
     **MODE: ANALYSIS only**
@@ -518,9 +518,9 @@ Task tool 1:
     See [shared-patterns/multi-tenant-analysis.md](../shared-patterns/multi-tenant-analysis.md) for the full checklist.
 
     Input:
-    - Ring Standards: Load via WebFetch (typescript.md)
-    - Section Index: See shared-patterns/standards-coverage-table.md → "ring:backend-engineer-typescript"
-    - Codebase Report: docs/ring:dev-refactor/{timestamp}/codebase-report.md
+    - MarsAI Standards: Load via WebFetch (typescript.md)
+    - Section Index: See shared-patterns/standards-coverage-table.md → "marsai:backend-engineer-typescript"
+    - Codebase Report: docs/marsai:dev-refactor/{timestamp}/codebase-report.md
     - Project Rules: docs/PROJECT_RULES.md
 
     Output:
@@ -535,7 +535,7 @@ Task tool 1:
 | Go only | Task 1 (Go) + Task 2-4 + Task 5 (goroutine-leak) |
 | TypeScript Backend only | Task 1 (TS Backend) + Task 2-4 |
 
-**⛔ MUST use `ring:dev-refactor-frontend` for frontend/BFF projects.** This skill does not dispatch frontend agents.
+**⛔ MUST use `marsai:dev-refactor-frontend` for frontend/BFF projects.** This skill does not dispatch frontend agents.
 
 **Note:** Task 5 (goroutine-leak) is Go-specific. It detects goroutine usage and verifies goleak test coverage.
 
@@ -552,13 +552,13 @@ Task tool 1:
 After all parallel agent tasks complete, save each agent's output to a separate file:
 
 ```
-docs/ring:dev-refactor/{timestamp}/reports/
-├── ring:backend-engineer-golang-report.md     (if Go project)
-├── ring:backend-engineer-typescript-report.md (if TypeScript Backend)
-├── ring:qa-analyst-report.md                  (always)
-├── ring:qa-analyst-goroutine-leak-report.md   (if Go project)
-├── ring:devops-engineer-report.md             (always)
-└── ring:sre-report.md                         (always)
+docs/marsai:dev-refactor/{timestamp}/reports/
+├── marsai:backend-engineer-golang-report.md     (if Go project)
+├── marsai:backend-engineer-typescript-report.md (if TypeScript Backend)
+├── marsai:qa-analyst-report.md                  (always)
+├── marsai:qa-analyst-goroutine-leak-report.md   (if Go project)
+├── marsai:devops-engineer-report.md             (always)
+└── marsai:sre-report.md                         (always)
 ```
 
 ### Report File Format
@@ -589,19 +589,19 @@ docs/ring:dev-refactor/{timestamp}/reports/
 - **Low:** {count}
 
 ---
-*Report generated by ring:dev-refactor skill*
+*Report generated by marsai:dev-refactor skill*
 ```
 
 ### Agent Report Mapping
 
 | Agent Dispatched | Report File Name |
 |------------------|------------------|
-| ring:backend-engineer-golang | `ring:backend-engineer-golang-report.md` |
-| ring:backend-engineer-typescript | `ring:backend-engineer-typescript-report.md` |
-| ring:qa-analyst | `ring:qa-analyst-report.md` |
-| ring:qa-analyst (goroutine-leak) | `ring:qa-analyst-goroutine-leak-report.md` |
-| ring:devops-engineer | `ring:devops-engineer-report.md` |
-| ring:sre | `ring:sre-report.md` |
+| marsai:backend-engineer-golang | `marsai:backend-engineer-golang-report.md` |
+| marsai:backend-engineer-typescript | `marsai:backend-engineer-typescript-report.md` |
+| marsai:qa-analyst | `marsai:qa-analyst-report.md` |
+| marsai:qa-analyst (goroutine-leak) | `marsai:qa-analyst-goroutine-leak-report.md` |
+| marsai:devops-engineer | `marsai:devops-engineer-report.md` |
+| marsai:sre | `marsai:sre-report.md` |
 
 ### Anti-Rationalization Table for Step 4.5
 
@@ -616,7 +616,7 @@ docs/ring:dev-refactor/{timestamp}/reports/
 
 ```
 Write tool:
-  file_path: "docs/ring:dev-refactor/{timestamp}/reports/{agent-name}-report.md"
+  file_path: "docs/marsai:dev-refactor/{timestamp}/reports/{agent-name}-report.md"
   content: [Agent Task output formatted per template above]
 ```
 
@@ -634,8 +634,8 @@ Write tool:
 
 | Agent Report | Action |
 |--------------|--------|
-| Any difference between current code and Ring standard | → Create FINDING-XXX |
-| Any missing pattern from Ring standards | → Create FINDING-XXX |
+| Any difference between current code and MarsAI standard | → Create FINDING-XXX |
+| Any missing pattern from MarsAI standards | → Create FINDING-XXX |
 | Any deprecated pattern usage | → Create FINDING-XXX |
 | Any observability gap | → Create FINDING-XXX |
 
@@ -676,7 +676,7 @@ Write tool:
 
 ### ⛔ MANDATORY GAP RULE FOR STEP 4.1
 
-**Per the Mandatory Gap Principle (see top of skill): any divergence from Ring standards = FINDING-XXX.**
+**Per the Mandatory Gap Principle (see top of skill): any divergence from MarsAI standards = FINDING-XXX.**
 
 This means:
 - ✅ items in Standards Coverage Table = No finding needed
@@ -763,7 +763,7 @@ If counts don't match → STOP. Go back to Step 4.1. Map missing issues.
 ```
 ✅ Every FINDING-XXX includes: Severity, Category, Agent, Standard reference
 ✅ Every FINDING-XXX includes: Current Code with exact file:line
-✅ Every FINDING-XXX includes: Ring Standard Reference with URL
+✅ Every FINDING-XXX includes: MarsAI Standard Reference with URL
 ✅ Every FINDING-XXX includes: Required Changes as numbered actions
 ✅ Every FINDING-XXX includes: Why This Matters with Problem/Standard/Impact
 ✅ Total finding count MUST match total issues from Step 4.1
@@ -792,7 +792,7 @@ If counts don't match → STOP. Go back to Step 4.1. Map missing issues.
 
 ## ⛔ Mandatory Gap Principle Applied
 
-**all divergences from Ring standards are tracked below. No filtering applied.**
+**all divergences from MarsAI standards are tracked below. No filtering applied.**
 
 | Metric | Count |
 |--------|-------|
@@ -823,10 +823,10 @@ If counts don't match → STOP. Go back to Step 4.1. Map missing issues.
 {actual code}
 ```
 
-### Ring Standard Reference
+### MarsAI Standard Reference
 **Standard:** {standards-file}.md → Section: {section-name}
 **Pattern:** {pattern-name}
-**URL:** https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/{file}.md
+**URL:** https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/{file}.md
 
 ### Required Changes
 1. {action item 1 - what to change}
@@ -835,7 +835,7 @@ If counts don't match → STOP. Go back to Step 4.1. Map missing issues.
 
 ### Why This Matters
 - **Problem:** {what is wrong with current code}
-- **Standard Violated:** {specific section from Ring standards}
+- **Standard Violated:** {specific section from MarsAI standards}
 - **Impact:** {business/technical impact if not fixed}
 
 ---
@@ -860,7 +860,7 @@ Each finding becomes its own task. This prevents findings from being lost inside
 - FINDING-002 → REFACTOR-002
 - FINDING-NNN → REFACTOR-NNN
 
-**Ordering:** Sort tasks by severity (Critical first), then by dependency order.
+**Ordemarsai:** Sort tasks by severity (Critical first), then by dependency order.
 
 **Mapping Verification:**
 ```
@@ -931,10 +931,10 @@ Before proceeding to Step 7, verify:
 {actual code from FINDING-001}
 ```
 
-### Ring Standard Reference
+### MarsAI Standard Reference
 | Standard File | Section | URL |
 |---------------|---------|-----|
-| {file}.md | {section} | [Link](https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/{file}.md) |
+| {file}.md | {section} | [Link](https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/{file}.md) |
 
 ### Required Actions
 1. [ ] {action 1 - specific change to make}
@@ -954,7 +954,7 @@ Before proceeding to Step 7, verify:
 
 **TodoWrite:** Mark "Generate visual change report" as `in_progress`
 
-**MANDATORY:** Invoke `Skill("ring:visual-explainer")` to produce a self-contained HTML page showing all planned refactoring changes. This replaces reading raw findings.md / tasks.md markdown for approval decisions.
+**MANDATORY:** Invoke `Skill("marsai:visual-explainer")` to produce a self-contained HTML page showing all planned refactoring changes. This replaces reading raw findings.md / tasks.md markdown for approval decisions.
 
 **Read the code-diff template first:** Read `default/skills/visual-explainer/templates/code-diff.html` to absorb the patterns before generating.
 
@@ -969,18 +969,18 @@ Before proceeding to Step 7, verify:
 For each FINDING-XXX in findings.md:
 - **Header:** Finding ID, severity badge, category, agent that reported it
 - **Before panel:** Current Code block from findings.md (with file:line reference, syntax highlighted via Highlight.js)
-- **After panel:** Ring Standard pattern from Required Changes section (syntax highlighted)
+- **After panel:** MarsAI Standard pattern from Required Changes section (syntax highlighted)
 - **Collapsible "Why This Matters":** Problem / Standard Violated / Impact from findings.md
 
 ### 3. Task Mapping Table
 Table showing: FINDING-XXX → REFACTOR-XXX → Severity → Category → Estimated Effort
 
-**Output:** Save to `docs/ring:dev-refactor/{timestamp}/change-report.html`
+**Output:** Save to `docs/marsai:dev-refactor/{timestamp}/change-report.html`
 
 **Open in browser:**
 ```text
-macOS: open docs/ring:dev-refactor/{timestamp}/change-report.html
-Linux: xdg-open docs/ring:dev-refactor/{timestamp}/change-report.html
+macOS: open docs/marsai:dev-refactor/{timestamp}/change-report.html
+Linux: xdg-open docs/marsai:dev-refactor/{timestamp}/change-report.html
 ```
 
 **Tell the user** the file path. The report opens before the approval question so the user can review changes visually.
@@ -1007,7 +1007,7 @@ AskUserQuestion:
       header: "Approval"
       options:
         - label: "Approve all"
-          description: "Proceed to ring:dev-cycle execution"
+          description: "Proceed to marsai:dev-cycle execution"
         - label: "Critical only"
           description: "Execute only Critical/High tasks"
         - label: "Cancel"
@@ -1025,13 +1025,13 @@ CANNOT proceed without explicit user selection.
 **TodoWrite:** Mark "Save all artifacts" as `in_progress`
 
 ```
-docs/ring:dev-refactor/{timestamp}/
+docs/marsai:dev-refactor/{timestamp}/
 ├── codebase-report.md  (Step 3)
 ├── reports/            (Step 4.5)
-│   ├── ring:backend-engineer-golang-report.md
-│   ├── ring:qa-analyst-report.md
-│   ├── ring:devops-engineer-report.md
-│   └── ring:sre-report.md
+│   ├── marsai:backend-engineer-golang-report.md
+│   ├── marsai:qa-analyst-report.md
+│   ├── marsai:devops-engineer-report.md
+│   └── marsai:sre-report.md
 ├── findings.md         (Step 5)
 ├── tasks.md           (Step 7)
 └── change-report.html (Step 7.5)
@@ -1041,25 +1041,25 @@ docs/ring:dev-refactor/{timestamp}/
 
 ---
 
-## Step 10: Handoff to ring:dev-cycle
+## Step 10: Handoff to marsai:dev-cycle
 
-**TodoWrite:** Mark "Handoff to ring:dev-cycle" as `in_progress`
+**TodoWrite:** Mark "Handoff to marsai:dev-cycle" as `in_progress`
 
-**If user approved, use Skill tool to invoke ring:dev-cycle directly:**
+**If user approved, use Skill tool to invoke marsai:dev-cycle directly:**
 
 ```yaml
 Skill tool:
-  skill: "ring:dev-cycle"
+  skill: "marsai:dev-cycle"
 ```
 
 **⛔ CRITICAL: Pass tasks file path in context:**
 
 After invoking the skill, provide:
-- Tasks file: `docs/ring:dev-refactor/{timestamp}/tasks.md`
+- Tasks file: `docs/marsai:dev-refactor/{timestamp}/tasks.md`
 
 ```yaml
-Context for ring:dev-cycle:
-  tasks-file: "docs/ring:dev-refactor/{timestamp}/tasks.md"
+Context for marsai:dev-cycle:
+  tasks-file: "docs/marsai:dev-refactor/{timestamp}/tasks.md"
 ```
 
 Where `{timestamp}` format is `YYYY-MM-DDTHH:MM:SS` (e.g., `2026-02-07T22:30:45`). Use the same timestamp across all artifacts in a single run.
@@ -1069,23 +1069,23 @@ Where `{timestamp}` format is `YYYY-MM-DDTHH:MM:SS` (e.g., `2026-02-07T22:30:45`
 | Rationalization | Why It's WRONG | Required Action |
 |-----------------|----------------|-----------------|
 | "SlashCommand is equivalent to Skill tool" | SlashCommand is a hint; Skill tool guarantees skill loading | **Use Skill tool, not SlashCommand** |
-| "User can run /ring:dev-cycle manually" | Manual run risks skill not being loaded | **Invoke Skill tool directly** |
-| "ring:dev-cycle will auto-discover tasks" | Explicit path ensures correct file is used | **Pass explicit tasks path** |
-| "User approved, I can skip ring:dev-cycle" | Approval = permission to proceed, not skip execution | **Invoke Skill tool** |
+| "User can run /marsai:dev-cycle manually" | Manual run risks skill not being loaded | **Invoke Skill tool directly** |
+| "marsai:dev-cycle will auto-discover tasks" | Explicit path ensures correct file is used | **Pass explicit tasks path** |
+| "User approved, I can skip marsai:dev-cycle" | Approval = permission to proceed, not skip execution | **Invoke Skill tool** |
 | "Tasks are saved, job is done" | Saved tasks without execution = incomplete workflow | **Invoke Skill tool** |
 
-**⛔ HARD GATE: You CANNOT complete ring:dev-refactor without invoking `Skill tool: ring:dev-cycle`.**
+**⛔ HARD GATE: You CANNOT complete marsai:dev-refactor without invoking `Skill tool: marsai:dev-cycle`.**
 
 If user approved execution, you MUST:
-1. Invoke `Skill tool: ring:dev-cycle`
-2. Pass tasks file path: `docs/ring:dev-refactor/{timestamp}/tasks.md`
-3. Wait for ring:dev-cycle to complete all 10 gates
+1. Invoke `Skill tool: marsai:dev-cycle`
+2. Pass tasks file path: `docs/marsai:dev-refactor/{timestamp}/tasks.md`
+3. Wait for marsai:dev-cycle to complete all 10 gates
 
 **Skipping this step = SKILL FAILURE.**
 
-ring:dev-cycle executes each REFACTOR-XXX task through 10-gate process. After all tasks complete, ring:dev-multi-tenant runs as a post-cycle step to adapt all implemented code for multi-tenant support.
+marsai:dev-cycle executes each REFACTOR-XXX task through 10-gate process. After all tasks complete, marsai:dev-multi-tenant runs as a post-cycle step to adapt all implemented code for multi-tenant support.
 
-**TodoWrite:** Mark "Handoff to ring:dev-cycle" as `completed`
+**TodoWrite:** Mark "Handoff to marsai:dev-cycle" as `completed`
 
 ---
 
@@ -1105,7 +1105,7 @@ Base metrics per [shared-patterns/output-execution-report.md](../shared-patterns
 | Agents Dispatched | N |
 | Findings Generated | N |
 | Tasks Created | N |
-| Artifacts Location | docs/ring:dev-refactor/{date}/ |
+| Artifacts Location | docs/marsai:dev-refactor/{date}/ |
 
 ## Output Schema
 
@@ -1118,7 +1118,7 @@ artifacts:
   - change-report.html (Step 7.5)
 
 traceability:
-  Ring Standard → Agent Report → FINDING-XXX → REFACTOR-XXX → Implementation
+  MarsAI Standard → Agent Report → FINDING-XXX → REFACTOR-XXX → Implementation
 ```
 
 

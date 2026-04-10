@@ -1,38 +1,38 @@
 """
-Ring Installer CLI - Multi-platform AI agent skill installer.
+MarsAI Installer CLI - Multi-platform AI agent skill installer.
 
 Usage:
-    python -m ring_installer install [--platforms PLATFORMS] [--dry-run] [--force] [--verbose] [--link]
-    python -m ring_installer update [--platforms PLATFORMS] [--dry-run] [--verbose] [--link]
-    python -m ring_installer rebuild [--platforms PLATFORMS] [--verbose]
-    python -m ring_installer uninstall [--platforms PLATFORMS] [--dry-run] [--force]
-    python -m ring_installer list [--platform PLATFORM]
-    python -m ring_installer detect
+    python -m marsai_installer install [--platforms PLATFORMS] [--dry-run] [--force] [--verbose] [--link]
+    python -m marsai_installer update [--platforms PLATFORMS] [--dry-run] [--verbose] [--link]
+    python -m marsai_installer rebuild [--platforms PLATFORMS] [--verbose]
+    python -m marsai_installer uninstall [--platforms PLATFORMS] [--dry-run] [--force]
+    python -m marsai_installer list [--platform PLATFORM]
+    python -m marsai_installer detect
 
 Examples:
     # Install to all detected platforms
-    python -m ring_installer install
+    python -m marsai_installer install
 
     # Install to specific platforms
-    python -m ring_installer install --platforms claude,opencode
+    python -m marsai_installer install --platforms claude,opencode
 
     # Symlink install (builds in-repo, symlinks from config dir)
-    python -m ring_installer install --platforms opencode --link
+    python -m marsai_installer install --platforms opencode --link
 
     # Rebuild after git pull (re-transforms, symlinks still valid)
-    python -m ring_installer rebuild
+    python -m marsai_installer rebuild
 
     # Dry run to see what would be done
-    python -m ring_installer install --dry-run --verbose
+    python -m marsai_installer install --dry-run --verbose
 
     # Update existing installation
-    python -m ring_installer update
+    python -m marsai_installer update
 
     # List installed components
-    python -m ring_installer list --platform claude
+    python -m marsai_installer list --platform claude
 
     # Detect installed platforms
-    python -m ring_installer detect
+    python -m marsai_installer detect
 """
 
 import argparse
@@ -40,9 +40,9 @@ import sys
 from pathlib import Path
 from typing import List, Optional
 
-from ring_installer import __version__
-from ring_installer.adapters import SUPPORTED_PLATFORMS, list_platforms
-from ring_installer.core import (
+from marsai_installer import __version__
+from marsai_installer.adapters import SUPPORTED_PLATFORMS, list_platforms
+from marsai_installer.core import (
     InstallOptions,
     InstallResult,
     InstallStatus,
@@ -56,7 +56,7 @@ from ring_installer.core import (
     update,
     update_with_diff,
 )
-from ring_installer.utils.platform_detect import (
+from marsai_installer.utils.platform_detect import (
     detect_installed_platforms,
     print_detection_report,
 )
@@ -64,7 +64,7 @@ from ring_installer.utils.platform_detect import (
 
 def print_version() -> None:
     """Print version information."""
-    print(f"Ring Installer v{__version__}")
+    print(f"MarsAI Installer v{__version__}")
 
 
 def print_result(result: InstallResult, verbose: bool = False) -> None:
@@ -122,10 +122,10 @@ def progress_callback(message: str, current: int, total: int) -> None:
 
 def find_ring_source() -> Optional[Path]:
     """
-    Find the Ring source directory.
+    Find the MarsAI source directory.
 
     Looks in these locations:
-    1. Current directory (if it's a Ring repo)
+    1. Current directory (if it's a MarsAI repo)
     2. Parent directory (if running from installer/)
     3. ~/ring
     4. ~/.ring
@@ -133,12 +133,12 @@ def find_ring_source() -> Optional[Path]:
     candidates = [
         Path.cwd(),
         Path.cwd().parent,
-        Path.home() / "ring",
+        Path.home() / "marsai",
         Path.home() / ".ring",
     ]
 
     for candidate in candidates:
-        # Check for Ring markers
+        # Check for MarsAI markers
         if (candidate / ".claude-plugin").exists():
             return candidate
         if (candidate / "default" / "skills").exists():
@@ -174,15 +174,15 @@ def validate_platforms(platforms: List[str]) -> List[str]:
 
 def cmd_install(args: argparse.Namespace) -> int:
     """Handle install command."""
-    # Find Ring source
+    # Find MarsAI source
     source_path = Path(args.source).expanduser() if args.source else find_ring_source()
 
     if not source_path or not source_path.exists():
-        print("Error: Could not find Ring source directory.")
-        print("Please specify with --source or run from Ring directory.")
+        print("Error: Could not find MarsAI source directory.")
+        print("Please specify with --source or run from MarsAI directory.")
         return 1
 
-    print(f"Ring source: {source_path}")
+    print(f"MarsAI source: {source_path}")
 
     # Determine target platforms
     if args.platforms:
@@ -237,14 +237,14 @@ def cmd_install(args: argparse.Namespace) -> int:
 
 def cmd_update(args: argparse.Namespace) -> int:
     """Handle update command."""
-    # Find Ring source
+    # Find MarsAI source
     source_path = Path(args.source).expanduser() if args.source else find_ring_source()
 
     if not source_path or not source_path.exists():
-        print("Error: Could not find Ring source directory.")
+        print("Error: Could not find MarsAI source directory.")
         return 1
 
-    print(f"Ring source: {source_path}")
+    print(f"MarsAI source: {source_path}")
 
     # Determine target platforms
     if args.platforms:
@@ -308,7 +308,7 @@ def cmd_rebuild(args: argparse.Namespace) -> int:
     source_path = Path(args.source).expanduser() if args.source else find_ring_source()
 
     if not source_path or not source_path.exists():
-        print("Error: Could not find Ring source directory.")
+        print("Error: Could not find MarsAI source directory.")
         return 1
 
     build_root = source_path / ".ring-build"
@@ -317,7 +317,7 @@ def cmd_rebuild(args: argparse.Namespace) -> int:
         print("Run 'install --link' first to set up symlink-based installation.")
         return 1
 
-    print(f"Ring source: {source_path}")
+    print(f"MarsAI source: {source_path}")
 
     # Determine which platforms have existing builds
     if args.platforms:
@@ -359,14 +359,14 @@ def cmd_rebuild(args: argparse.Namespace) -> int:
 
 def cmd_check(args: argparse.Namespace) -> int:
     """Handle check command - check for available updates."""
-    # Find Ring source
+    # Find MarsAI source
     source_path = Path(args.source).expanduser() if args.source else find_ring_source()
 
     if not source_path or not source_path.exists():
-        print("Error: Could not find Ring source directory.")
+        print("Error: Could not find MarsAI source directory.")
         return 1
 
-    print(f"Ring source: {source_path}")
+    print(f"MarsAI source: {source_path}")
 
     # Determine target platforms
     if args.platforms:
@@ -420,14 +420,14 @@ def cmd_check(args: argparse.Namespace) -> int:
 
 def cmd_sync(args: argparse.Namespace) -> int:
     """Handle sync command - sync components across platforms."""
-    # Find Ring source
+    # Find MarsAI source
     source_path = Path(args.source).expanduser() if args.source else find_ring_source()
 
     if not source_path or not source_path.exists():
-        print("Error: Could not find Ring source directory.")
+        print("Error: Could not find MarsAI source directory.")
         return 1
 
-    print(f"Ring source: {source_path}")
+    print(f"MarsAI source: {source_path}")
 
     # Determine target platforms
     if args.platforms:
@@ -516,7 +516,7 @@ def cmd_uninstall(args: argparse.Namespace) -> int:
     print(f"Uninstalling from: {', '.join(platforms)}")
 
     if not args.force:
-        confirm = input("Are you sure? This will remove all Ring components. [y/N] ")
+        confirm = input("Are you sure? This will remove all MarsAI components. [y/N] ")
         if confirm.lower() != "y":
             print("Aborted.")
             return 0
@@ -636,7 +636,7 @@ def main() -> int:
     """Main entry point for the CLI."""
     parser = argparse.ArgumentParser(
         prog="ring-installer",
-        description="Ring multi-platform AI agent skill installer",
+        description="MarsAI multi-platform AI agent skill installer",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -654,8 +654,8 @@ Examples:
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
     # Install command
-    install_parser = subparsers.add_parser("install", help="Install Ring components")
-    install_parser.add_argument("--source", "-s", help="Path to Ring source directory")
+    install_parser = subparsers.add_parser("install", help="Install MarsAI components")
+    install_parser.add_argument("--source", "-s", help="Path to MarsAI source directory")
     install_parser.add_argument(
         "--platforms", "-p", help="Comma-separated list of target platforms"
     )
@@ -686,8 +686,8 @@ Examples:
     )
 
     # Update command
-    update_parser = subparsers.add_parser("update", help="Update Ring components")
-    update_parser.add_argument("--source", "-s", help="Path to Ring source directory")
+    update_parser = subparsers.add_parser("update", help="Update MarsAI components")
+    update_parser.add_argument("--source", "-s", help="Path to MarsAI source directory")
     update_parser.add_argument("--platforms", "-p", help="Comma-separated list of target platforms")
     update_parser.add_argument("--plugins", help="Comma-separated list of plugins to update")
     update_parser.add_argument("--exclude", help="Comma-separated list of plugins to exclude")
@@ -712,7 +712,7 @@ Examples:
         "rebuild",
         help="Rebuild .ring-build/ transformed files (for symlink installs after git pull)",
     )
-    rebuild_parser.add_argument("--source", "-s", help="Path to Ring source directory")
+    rebuild_parser.add_argument("--source", "-s", help="Path to MarsAI source directory")
     rebuild_parser.add_argument(
         "--platforms", "-p", help="Comma-separated list of target platforms"
     )
@@ -725,12 +725,12 @@ Examples:
 
     # Check command
     check_parser = subparsers.add_parser("check", help="Check for available updates")
-    check_parser.add_argument("--source", "-s", help="Path to Ring source directory")
+    check_parser.add_argument("--source", "-s", help="Path to MarsAI source directory")
     check_parser.add_argument("--platforms", "-p", help="Comma-separated list of target platforms")
 
     # Sync command
-    sync_parser = subparsers.add_parser("sync", help="Sync Ring components across platforms")
-    sync_parser.add_argument("--source", "-s", help="Path to Ring source directory")
+    sync_parser = subparsers.add_parser("sync", help="Sync MarsAI components across platforms")
+    sync_parser.add_argument("--source", "-s", help="Path to MarsAI source directory")
     sync_parser.add_argument("--platforms", "-p", help="Comma-separated list of platforms to sync")
     sync_parser.add_argument("--plugins", help="Comma-separated list of plugins to sync")
     sync_parser.add_argument("--exclude", help="Comma-separated list of plugins to exclude")
@@ -740,7 +740,7 @@ Examples:
     sync_parser.add_argument("--quiet", "-q", action="store_true", help="Suppress progress output")
 
     # Uninstall command
-    uninstall_parser = subparsers.add_parser("uninstall", help="Remove Ring components")
+    uninstall_parser = subparsers.add_parser("uninstall", help="Remove MarsAI components")
     uninstall_parser.add_argument(
         "--platforms", "-p", help="Comma-separated list of target platforms"
     )

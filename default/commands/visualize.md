@@ -1,5 +1,5 @@
 ---
-name: ring:visualize
+name: marsai:visualize
 description: Generate beautiful, self-contained HTML pages that visually explain systems, code, and data
 argument-hint: "[topic-or-description]"
 ---
@@ -9,7 +9,7 @@ Generate a self-contained, Lerian-branded HTML page that visually explains a sys
 ## Usage
 
 ```
-/ring:visualize [topic-or-description]
+/marsai:visualize [topic-or-description]
 ```
 
 ## Arguments
@@ -22,19 +22,19 @@ Generate a self-contained, Lerian-branded HTML page that visually explains a sys
 
 ### Architecture Overview
 ```
-/ring:visualize payment service architecture
+/marsai:visualize payment service architecture
 ```
 Generates a branded HTML page with a system diagram showing components, data flow, and dependencies of the payment service.
 
 ### Data Comparison Table
 ```
-/ring:visualize compare deployment strategies: blue-green vs canary vs rolling
+/marsai:visualize compare deployment strategies: blue-green vs canary vs rolling
 ```
 Produces a styled comparison table with pros, cons, and use cases for each strategy -- rendered in the browser instead of a hard-to-read ASCII table.
 
 ### Code Diff Review
 ```
-/ring:visualize diff review of the auth module refactor
+/marsai:visualize diff review of the auth module refactor
 ```
 Creates an interactive code diff page using `@pierre/diffs` with syntax highlighting, severity badges, and a sidebar TOC for each finding.
 
@@ -53,14 +53,14 @@ Supported visualization types include: architecture overviews, flowcharts, seque
 
 | Command/Skill | Relationship |
 |---------------|--------------|
-| `ring:drawing-diagrams` | Lightweight alternative -- generates shareable mermaid.live URLs instead of full HTML pages |
-| `/ring:md-to-html` | Converts an existing markdown file into a styled HTML page using the same visual engine |
-| `ring:visual-explainer` | The full skill powering this command |
+| `marsai:drawing-diagrams` | Lightweight alternative -- generates shareable mermaid.live URLs instead of full HTML pages |
+| `/marsai:md-to-html` | Converts an existing markdown file into a styled HTML page using the same visual engine |
+| `marsai:visual-explainer` | The full skill powering this command |
 
 ## When NOT to Use
 
 - Data fits in a small table (2 columns, 3 rows) -- just render it inline
-- You only need a quick, shareable Mermaid link -- use `ring:drawing-diagrams` instead
+- You only need a quick, shareable Mermaid link -- use `marsai:drawing-diagrams` instead
 - The user explicitly asks for plain markdown output
 
 ---
@@ -70,7 +70,7 @@ Supported visualization types include: architecture overviews, flowcharts, seque
 **This command MUST load the skill for complete workflow execution.**
 
 ```
-Use Skill tool: ring:visual-explainer
+Use Skill tool: marsai:visual-explainer
 ```
 
 The skill contains the complete workflow with:

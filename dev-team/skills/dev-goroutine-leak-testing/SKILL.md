@@ -1,8 +1,8 @@
 ---
-name: ring:dev-goroutine-leak-testing
+name: marsai:dev-goroutine-leak-testing
 description: |
   Goroutine leak detection skill - detects goroutine usage in Go code, runs goleak 
-  to identify memory leaks, and dispatches ring:backend-engineer-golang to fix leaks
+  to identify memory leaks, and dispatches marsai:backend-engineer-golang to fix leaks
   and create regression tests using the goleak framework.
 
 trigger: |
@@ -23,12 +23,12 @@ NOT_skip_when: |
   - "Process restart cleans it" → Restart = downtime. Prevent leaks instead.
 
 sequence:
-  after: [ring:dev-unit-testing]
-  before: [ring:requesting-code-review]
+  after: [marsai:dev-unit-testing]
+  before: [marsai:requesting-code-review]
 
 related:
-  complementary: [ring:qa-analyst, ring:backend-engineer-golang]
-  dispatches: [ring:backend-engineer-golang]
+  complementary: [marsai:qa-analyst, marsai:backend-engineer-golang]
+  dispatches: [marsai:backend-engineer-golang]
 
 input_schema:
   required:
@@ -81,7 +81,7 @@ This skill detects goroutine leaks in Go code using Uber's goleak framework and 
 ## Standards Loading (MANDATORY)
 
 <fetch_required>
-https://raw.githubusercontent.com/LerianStudio/ring/main/dev-team/docs/standards/golang/architecture.md
+https://raw.githubusercontent.com/LerianStudio/marsai/main/dev-team/docs/standards/golang/architecture.md
 </fetch_required>
 
 WebFetch architecture.md before any goroutine leak analysis work. Focus on "Goroutine Leak Detection (MANDATORY)" section.
@@ -137,7 +137,7 @@ If any HARD BLOCK condition is true, STOP immediately and report blocker.
 1. DETECT   → Find all goroutine usage in target path
 2. VERIFY   → Check for existing goleak tests (TestMain + per-test)
 3. EXECUTE  → Run goleak to identify actual leaks
-4. DISPATCH → If leaks found, dispatch ring:backend-engineer-golang to fix
+4. DISPATCH → If leaks found, dispatch marsai:backend-engineer-golang to fix
 ```
 
 ---
@@ -240,7 +240,7 @@ FAIL
 
 ## Step 4: Dispatch for Fix
 
-**When leaks are detected, dispatch `ring:backend-engineer-golang`:**
+**When leaks are detected, dispatch `marsai:backend-engineer-golang`:**
 
 ```markdown
 ## Task: Fix Goroutine Leak and Add goleak Regression Test
@@ -312,7 +312,7 @@ ${IF_NO_LEAKS}
 ${IF_LEAKS_FOUND}
 ⚠️ Goroutine leaks detected. Dispatch required.
 
-### Dispatch: ring:backend-engineer-golang
+### Dispatch: marsai:backend-engineer-golang
 
 **Packages requiring fix:**
 ${PACKAGE_LIST}

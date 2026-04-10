@@ -1,5 +1,5 @@
 ---
-name: ring:review-slicer
+name: marsai:review-slicer
 description: "Review Slicer: Adaptive classification engine that evaluates semantic cohesion to decide whether slicing improves review quality. Sits between Mithril pre-analysis and reviewer dispatch. Classification-only — does NOT read source code."
 type: orchestrator
 output_schema:

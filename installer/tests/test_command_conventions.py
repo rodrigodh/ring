@@ -2,7 +2,7 @@
 Tests for command naming conventions.
 
 Validates that all command frontmatter `name` fields follow the unified
-ring: namespace convention and do not contain the leading-slash bug.
+marsai: namespace convention and do not contain the leading-slash bug.
 """
 
 from pathlib import Path
@@ -102,14 +102,14 @@ class TestCommandNameConventions:
         )
 
     def test_name_starts_with_ring_prefix(self, test_id: str, command_path: Path):
-        """Command name must start with 'ring:' (unified namespace)."""
+        """Command name must start with 'marsai:' (unified namespace)."""
         frontmatter = _parse_frontmatter(command_path)
         if frontmatter is None or "name" not in frontmatter:
             pytest.skip("No valid name field to check")
 
         name = frontmatter["name"]
 
-        assert str(name).startswith("ring:"), (
-            f"{test_id}: name '{name}' does not start with 'ring:' — "
-            "all commands must use the unified ring: namespace"
+        assert str(name).startswith("marsai:"), (
+            f"{test_id}: name '{name}' does not start with 'marsai:' — "
+            "all commands must use the unified marsai: namespace"
         )

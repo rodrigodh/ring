@@ -1,13 +1,13 @@
 """
 Command content transformer.
 
-Transforms Ring slash command files to platform-specific formats.
+Transforms MarsAI slash command files to platform-specific formats.
 """
 
 import re
 from typing import Any, Dict, Optional
 
-from ring_installer.transformers.base import (
+from marsai_installer.transformers.base import (
     BaseTransformer,
     TransformContext,
     TransformResult,
@@ -16,7 +16,7 @@ from ring_installer.transformers.base import (
 
 class CommandTransformer(BaseTransformer):
     """
-    Transformer for Ring command files.
+    Transformer for MarsAI command files.
 
     Handles transformation of slash command definitions:
     - Claude: passthrough (native format)
@@ -129,7 +129,7 @@ class CommandTransformer(BaseTransformer):
             (r'\bAGENTS\b', 'DROIDS'),
             (r'\bsubagent\b', 'subdroid'),
             (r'\bSubagent\b', 'Subdroid'),
-            (r'"ring:([^"]*)-agent"', r'"ring:\1-droid"'),
+            (r'"marsai:([^"]*)-agent"', r'"marsai:\1-droid"'),
         ]
 
         result = text

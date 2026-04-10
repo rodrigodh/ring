@@ -1,5 +1,5 @@
 ---
-name: ring:using-lib-commons
+name: marsai:using-lib-commons
 description: |
   Comprehensive reference for lib-commons v4.6.0 — Lerian's shared Go library providing
   35+ packages across database connections, messaging, multi-tenancy, runtime configuration,
@@ -25,7 +25,7 @@ skip_when: |
   - Working on frontend code
 
 related:
-  similar: [ring:using-dev-team, ring:using-ring]
+  similar: [marsai:using-dev-team, marsai:using-marsai]
 ---
 
 # Using lib-commons v4.6.0 — Developer Reference

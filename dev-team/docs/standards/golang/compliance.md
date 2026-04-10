@@ -17,14 +17,14 @@ This module covers standards compliance output format and self-verification chec
 
 ## Standards Compliance Output Format
 
-When producing a Standards Compliance report (used by ring:dev-refactor workflow), follow these output formats:
+When producing a Standards Compliance report (used by marsai:dev-refactor workflow), follow these output formats:
 
 ### If all Categories Are Compliant
 
 ```markdown
 ## Standards Compliance
 
-### Lerian/Ring Standards Comparison
+### Lerian/MarsAI Standards Comparison
 
 #### Bootstrap & Initialization
 | Category | Current Pattern | Expected Pattern | Status | Evidence |
@@ -52,7 +52,7 @@ When producing a Standards Compliance report (used by ring:dev-refactor workflow
 
 ### Verdict: ✅ FULLY COMPLIANT
 
-No migration actions required. All categories verified against Lerian/Ring Go Standards.
+No migration actions required. All categories verified against Lerian/MarsAI Go Standards.
 ```
 
 ### If any Category Is Non-Compliant
@@ -60,7 +60,7 @@ No migration actions required. All categories verified against Lerian/Ring Go St
 ```markdown
 ## Standards Compliance
 
-### Lerian/Ring Standards Comparison
+### Lerian/MarsAI Standards Comparison
 
 #### Bootstrap & Initialization
 | Category | Current Pattern | Expected Pattern | Status | File/Location |

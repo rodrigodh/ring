@@ -1,15 +1,15 @@
 ---
-name: ring:dev-migrate-v4
+name: marsai:dev-migrate-v4
 description: |
   Analyzes a Go service using lib-commons v2/v3 and generates a visual migration
   report showing every change needed to upgrade to lib-commons v4. Produces an
-  interactive HTML page (via ring:visual-explainer) and optionally generates
-  refactoring tasks for ring:dev-cycle.
+  interactive HTML page (via marsai:visual-explainer) and optionally generates
+  refactoring tasks for marsai:dev-cycle.
 trigger: |
   - User wants to migrate a Go service from lib-commons v2 or v3 to v4
   - User asks about lib-commons version upgrade
   - User wants to see what needs to change for v4
-  - User runs /ring:migrate-v4
+  - User runs /marsai:migrate-v4
 
 skip_when: |
   - Project already uses lib-commons/v4 → Report compliance status only
@@ -21,10 +21,10 @@ prerequisites: |
   - docs/PROJECT_RULES.md exists (recommended but not blocking)
 
 sequence:
-  after: [ring:dev-cycle]
+  after: [marsai:dev-cycle]
 
 related:
-  complementary: [ring:dev-cycle, ring:dev-refactor, ring:codebase-explorer, ring:visual-explainer, ring:backend-engineer-golang]
+  complementary: [marsai:dev-cycle, marsai:dev-refactor, marsai:codebase-explorer, marsai:visual-explainer, marsai:backend-engineer-golang]
 
 verification:
   automated:
@@ -45,7 +45,7 @@ Scans a Go service for lib-commons v2/v3 usage patterns, compares against the v4
 
 ## ⛔ ORCHESTRATOR PRINCIPLE
 
-You orchestrate. Agents execute. Do NOT read source code directly — dispatch `ring:codebase-explorer` and `ring:backend-engineer-golang` for all analysis.
+You orchestrate. Agents execute. Do NOT read source code directly — dispatch `marsai:codebase-explorer` and `marsai:backend-engineer-golang` for all analysis.
 
 ---
 
@@ -70,7 +70,7 @@ MUST use the bundled `golang.md` as the source of truth for v4 patterns. This fi
 | No `go.mod` found in target path | **STOP** — "Not a Go project. Cannot migrate." |
 | `go.mod` does not contain `lib-commons` | **STOP** — "No lib-commons dependency found. Nothing to migrate." |
 | Already on v4 with full compliance | **STOP** — "Already on v4 and compliant. No migration needed." Report compliance status only. |
-| `golang.md` not found at `dev-team/docs/standards/golang.md` | **STOP** — "Standards file not found. Ensure Ring repository is accessible." |
+| `golang.md` not found at `dev-team/docs/standards/golang.md` | **STOP** — "Standards file not found. Ensure MarsAI repository is accessible." |
 | Target path is not readable | **STOP** — "Cannot access target path." |
 
 ---
@@ -80,11 +80,11 @@ MUST use the bundled `golang.md` as the source of truth for v4 patterns. This fi
 <cannot_skip>
 - MUST scan all 9 categories in Step 2 — no partial scans
 - MUST generate visual report for every migration — no report skipping
-- MUST use ring:codebase-explorer for scanning — FORBIDDEN to read code directly
+- MUST use marsai:codebase-explorer for scanning — FORBIDDEN to read code directly
 - MUST follow task ordering (go.mod → imports → config → logging → bootstrap → telemetry)
 - CANNOT generate tasks with placeholder file paths — all file lists MUST be concrete with line numbers
 - CANNOT mark a migration complete if `go build ./...` fails
-- CANNOT dispatch ring:dev-cycle without user reviewing the visual report first (unless --execute explicitly set)
+- CANNOT dispatch marsai:dev-cycle without user reviewing the visual report first (unless --execute explicitly set)
 - CANNOT add new v4 patterns (cassert, cruntime, cmetrics, csafe, ccrypto, cbackoff, coutbox) as migration tasks — migration is DE-PARA ONLY
 - CANNOT require patterns the service does not already use — only replace existing v2/v3 patterns with v4 equivalents
 </cannot_skip>
@@ -108,8 +108,8 @@ MUST use the bundled `golang.md` as the source of truth for v4 patterns. This fi
 | Input | Required | Default | Description |
 |-------|----------|---------|-------------|
 | Target path | Yes | cwd | Path to the Go service repository |
-| `--tasks` | No | false | Generate `migration-v4-tasks.md` for `ring:dev-cycle` |
-| `--execute` | No | false | Generate tasks AND dispatch `ring:dev-cycle` automatically |
+| `--tasks` | No | false | Generate `migration-v4-tasks.md` for `marsai:dev-cycle` |
+| `--execute` | No | false | Generate tasks AND dispatch `marsai:dev-cycle` automatically |
 | `--dry-run` | No | false | Show analysis and visual report only, no file generation |
 
 ---
@@ -133,10 +133,10 @@ TodoWrite:
       activeForm: "Generating visual migration report"
     - content: "Generate migration-v4-tasks.md (if --tasks or --execute)"
       status: "pending"
-      activeForm: "Generating migration tasks for ring:dev-cycle"
-    - content: "Dispatch ring:dev-cycle (if --execute)"
+      activeForm: "Generating migration tasks for marsai:dev-cycle"
+    - content: "Dispatch marsai:dev-cycle (if --execute)"
       status: "pending"
-      activeForm: "Dispatching ring:dev-cycle for migration execution"
+      activeForm: "Dispatching marsai:dev-cycle for migration execution"
     - content: "Present report to user"
       status: "pending"
       activeForm: "Presenting migration report"
@@ -164,7 +164,7 @@ Before generating tasks, the scan MUST detect if any migration step is already d
 
 **TodoWrite:** Mark "Detect current lib-commons version" as `in_progress`
 
-Dispatch `ring:codebase-explorer` with:
+Dispatch `marsai:codebase-explorer` with:
 
 ```
 Analyze the Go project at {target_path}. Find:
@@ -195,7 +195,7 @@ Analyze the Go project at {target_path}. Find:
 
 **TodoWrite:** Mark "Scan all v2/v3 usage patterns" as `in_progress`
 
-Dispatch `ring:codebase-explorer` with this EXACT prompt:
+Dispatch `marsai:codebase-explorer` with this EXACT prompt:
 
 ```
 THOROUGH scan of {target_path} for ALL lib-commons v2/v3 patterns.
@@ -259,7 +259,7 @@ Search for these import patterns and count occurrences:
 ### Category 9: v4 Opportunities (INFORMATIONAL ONLY — do NOT generate tasks)
 Scan for v4-only packages that the service does NOT currently use.
 Report these as "v4 Opportunities" in the visual report for future consideration.
-These are NOT migration tasks — they are suggestions for a future ring:dev-refactor pass.
+These are NOT migration tasks — they are suggestions for a future marsai:dev-refactor pass.
 
 - No `cassert` usage → could replace panic-based validation
 - No `cruntime.SafeGoWithContextAndComponent` → could replace raw `go func(){}()`
@@ -334,7 +334,7 @@ Using the scan results from Step 2, build a structured migration map:
 | `cmetrics` | Typed metric definitions | Suggest in visual report |
 | `csafe` | Safe decimal math | Suggest in visual report |
 | `ccrypto` | AES-GCM encryption | Suggest in visual report |
-| ... | (other v4-only patterns) | Future `/ring:dev-refactor` |
+| ... | (other v4-only patterns) | Future `/marsai:dev-refactor` |
 ```
 
 **TodoWrite:** Mark as `completed`
@@ -345,7 +345,7 @@ Using the scan results from Step 2, build a structured migration map:
 
 **TodoWrite:** Mark "Generate visual migration report" as `in_progress`
 
-Use `ring:visual-explainer` to create an interactive HTML page. Pass this prompt:
+Use `marsai:visual-explainer` to create an interactive HTML page. Pass this prompt:
 
 ```
 Create a professional HTML page titled "lib-commons Migration Report: {service-name}"
@@ -378,7 +378,7 @@ For EACH category where v2/v3 patterns were found:
 Separate section with green/blue styling (NOT red):
 - List v4-only packages the service does NOT currently use
 - Brief description of what each provides
-- Label: "Available after migration via /ring:dev-refactor"
+- Label: "Available after migration via /marsai:dev-refactor"
 - These are suggestions, NOT requirements
 
 ## Migration Checklist
@@ -404,9 +404,9 @@ Open the HTML in the browser.
 
 **TodoWrite:** Mark "Generate tasks.md (if --tasks)" as `in_progress`
 
-Generate a `tasks.md` file in the **exact format** that `ring:dev-cycle` expects. Each finding from Step 2 MUST map to a task. Tasks are grouped by migration phase to ensure correct execution order.
+Generate a `tasks.md` file in the **exact format** that `marsai:dev-cycle` expects. Each finding from Step 2 MUST map to a task. Tasks are grouped by migration phase to ensure correct execution order.
 
-**⛔ CRITICAL:** The tasks file MUST follow the `## Task: {ID} - {Title}` format with `- [ ]` acceptance criteria. This is the contract with `ring:dev-cycle`.
+**⛔ CRITICAL:** The tasks file MUST follow the `## Task: {ID} - {Title}` format with `- [ ]` acceptance criteria. This is the contract with `marsai:dev-cycle`.
 
 Save to: `docs/pre-dev/{service-name}/migration-v4-tasks.md`
 
@@ -415,7 +415,7 @@ Save to: `docs/pre-dev/{service-name}/migration-v4-tasks.md`
 ```markdown
 # Migration Tasks: {service-name} → lib-commons v4
 
-> Generated by ring:dev-migrate-v4 on {date}
+> Generated by marsai:dev-migrate-v4 on {date}
 > Source: lib-commons/{current-version} → lib-commons/v4
 > Findings: {total-findings} across {files-affected} files
 
@@ -632,7 +632,7 @@ When generating the actual tasks file for a specific repository:
 3. **Files list MUST include `_test.go` files** — test files use the same imports, loggers, and patterns. Migrating production code without tests will break the build.
 4. **Acceptance criteria MUST be verifiable** — agent can grep/build to confirm
 5. **Task ordering matters** — MIG-001 (go.mod) MUST execute before MIG-002 (imports)
-6. **Context for Agent section** — include enough detail for `ring:backend-engineer-golang` to execute without additional codebase exploration
+6. **Context for Agent section** — include enough detail for `marsai:backend-engineer-golang` to execute without additional codebase exploration
 7. **Skip tasks where pattern is not found** — if service has no RabbitMQ, do not generate MIG for RabbitMQ migration
 8. **MIG-FINAL is always the last task** — verifies entire migration compiles and passes tests
 
@@ -640,14 +640,14 @@ When generating the actual tasks file for a specific repository:
 
 ---
 
-## Step 6: Dispatch ring:dev-cycle (with --execute flag)
+## Step 6: Dispatch marsai:dev-cycle (with --execute flag)
 
-**TodoWrite:** Mark "Dispatch ring:dev-cycle" as `in_progress`
+**TodoWrite:** Mark "Dispatch marsai:dev-cycle" as `in_progress`
 
-If `--execute` flag is set, automatically hand off to `ring:dev-cycle`:
+If `--execute` flag is set, automatically hand off to `marsai:dev-cycle`:
 
 ```
-Skill tool: ring:dev-cycle
+Skill tool: marsai:dev-cycle
 Args: "docs/pre-dev/{service-name}/migration-v4-tasks.md"
 ```
 
@@ -655,7 +655,7 @@ The DevCycle will execute each migration task through **all 10 gates**:
 
 | Gate | What Happens for Migration |
 |------|---------------------------|
-| **Gate 0: Implementation** | `ring:backend-engineer-golang` executes the code changes |
+| **Gate 0: Implementation** | `marsai:backend-engineer-golang` executes the code changes |
 | **Gate 0.5: Delivery Verification** | Verifies each task's acceptance criteria are met |
 | **Gate 1: DevOps** | Updates Docker/compose if needed (Go version, env vars) |
 | **Gate 2: SRE** | Validates observability (telemetry, metrics, health checks) |
@@ -678,7 +678,7 @@ Migration tasks saved to: `docs/pre-dev/{service-name}/migration-v4-tasks.md`
 
 ### To execute:
 ```bash
-/ring:dev-cycle docs/pre-dev/{service-name}/migration-v4-tasks.md
+/marsai:dev-cycle docs/pre-dev/{service-name}/migration-v4-tasks.md
 ```
 ```
 
@@ -711,10 +711,10 @@ Present summary to user:
 ### v4 Opportunities (informational — shown in visual report only)
 | Opportunity | Description | Status |
 |-------------|-------------|--------|
-| `cassert` | Safe validation (replaces panic) | Suggestion for future `/ring:dev-refactor` |
-| `cruntime` | Safe goroutines with crash policies | Suggestion for future `/ring:dev-refactor` |
-| `cmetrics` | Typed metric definitions | Suggestion for future `/ring:dev-refactor` |
-| `csafe` | Safe decimal math | Suggestion for future `/ring:dev-refactor` |
+| `cassert` | Safe validation (replaces panic) | Suggestion for future `/marsai:dev-refactor` |
+| `cruntime` | Safe goroutines with crash policies | Suggestion for future `/marsai:dev-refactor` |
+| `cmetrics` | Typed metric definitions | Suggestion for future `/marsai:dev-refactor` |
+| `csafe` | Safe decimal math | Suggestion for future `/marsai:dev-refactor` |
 | ... | (other v4-only patterns not currently used) | ... |
 
 ### Artifacts
@@ -893,7 +893,7 @@ See [shared-patterns/shared-anti-rationalization.md](../shared-patterns/shared-a
 | "Tests still pass with v2" | Tests passing ≠ standards compliant. v4 patterns are mandatory. | **Migrate tests too** |
 | "Our custom patterns work fine" | Custom ≠ standard. lib-commons v4 provides the canonical implementation. | **Replace custom with v4** |
 | "This service is small, doesn't need all patterns" | Size is irrelevant. All existing v2/v3 patterns MUST be replaced. | **Replace all existing patterns** |
-| "Let's also add cassert/cruntime while we're at it" | Migration is de-para only. New patterns are a separate concern for ring:dev-refactor. | **Report as v4 opportunity, do NOT add** |
+| "Let's also add cassert/cruntime while we're at it" | Migration is de-para only. New patterns are a separate concern for marsai:dev-refactor. | **Report as v4 opportunity, do NOT add** |
 | "We should add circuit breakers during migration" | If the service doesn't already have circuit breakers, adding them is a new feature, not a migration. | **Out of scope — suggest in visual report** |
 
 ---
@@ -904,6 +904,6 @@ See [shared-patterns/shared-anti-rationalization.md](../shared-patterns/shared-a
 |-----------|--------------|
 | "Just update the imports, skip the rest" | "Import changes alone will not compile — the logging API, config loading, and bootstrap patterns have breaking changes. I need to map all existing patterns for a successful migration." |
 | "We don't need the visual report" | "The visual report helps the team review all changes before execution. I'll generate it — it takes 30 seconds." |
-| "Add cassert/cruntime/cmetrics too while we're at it" | "Migration is de-para only — we replace what exists. New v4 patterns are shown as opportunities in the report. Use `/ring:dev-refactor` after migration to adopt them." |
+| "Add cassert/cruntime/cmetrics too while we're at it" | "Migration is de-para only — we replace what exists. New v4 patterns are shown as opportunities in the report. Use `/marsai:dev-refactor` after migration to adopt them." |
 | "Can you just do it without the analysis?" | "Blind migration risks compilation errors and missed patterns. The analysis ensures zero surprises." |
-| "Also refactor the architecture while migrating" | "Migration scope is strictly v2/v3 → v4 replacement. Architecture changes are a separate `/ring:dev-refactor` concern." |
+| "Also refactor the architecture while migrating" | "Migration scope is strictly v2/v3 → v4 replacement. Architecture changes are a separate `/marsai:dev-refactor` concern." |

@@ -1,10 +1,10 @@
 <#
 .SYNOPSIS
-    Ring Multi-Platform Installer (PowerShell)
+    MarsAI Multi-Platform Installer (PowerShell)
 
 .DESCRIPTION
-    Installs Ring skills to Claude Code, Codex, Factory AI, Cursor, Cline, and/or OpenCode.
-    Multi-platform installer wrapper for the Python-based Ring installer.
+    Installs MarsAI skills to Claude Code, Codex, Factory AI, Cursor, Cline, and/or OpenCode.
+    Multi-platform installer wrapper for the Python-based MarsAI installer.
 
 .NOTES
     Requires: PowerShell 5.1 or later, Python 3.x
@@ -14,18 +14,18 @@
         Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 
     Or run with bypass:
-        powershell -ExecutionPolicy Bypass -File install-ring.ps1
+        powershell -ExecutionPolicy Bypass -File install-marsai.ps1
 
 .EXAMPLE
-    .\install-ring.ps1
+    .\install-marsai.ps1
     Interactive installation with platform selection
 
 .EXAMPLE
-    .\install-ring.ps1 install --platforms claude
+    .\install-marsai.ps1 install --platforms claude
     Direct installation to Claude Code
 
 .EXAMPLE
-    .\install-ring.ps1 update
+    .\install-marsai.ps1 update
     Update existing installation
 #>
 
@@ -49,7 +49,7 @@ if ($env:PYTHONPATH) {
 }
 
 Write-Host "================================================" -ForegroundColor Cyan
-Write-Host "Ring Multi-Platform Installer" -ForegroundColor Cyan
+Write-Host "MarsAI Multi-Platform Installer" -ForegroundColor Cyan
 Write-Host "================================================" -ForegroundColor Cyan
 Write-Host ""
 
@@ -96,7 +96,7 @@ Write-Host ""
 if ($args.Count -gt 0) {
     try {
         Set-Location $RingRoot
-        & $pythonExe @pythonArgs -m installer.ring_installer @args
+        & $pythonExe @pythonArgs -m installer.marsai_installer @args
         exit $LASTEXITCODE
     } catch {
         Write-Host "Error: $_" -ForegroundColor Red
@@ -105,7 +105,7 @@ if ($args.Count -gt 0) {
 }
 
 # Interactive mode - platform selection
-Write-Host "Select platforms to install Ring:"
+Write-Host "Select platforms to install MarsAI:"
 Write-Host ""
 Write-Host "  1) Claude Code     (recommended, native format)" -ForegroundColor Blue
 Write-Host "  2) Codex           (native format)" -ForegroundColor Blue
@@ -176,7 +176,7 @@ try {
         Write-Host ""
         Write-Host "=== Dry Run ===" -ForegroundColor Yellow
         Set-Location $RingRoot
-        & $pythonExe @pythonArgs -m installer.ring_installer install --platforms $platformString --dry-run @extraArgs
+        & $pythonExe @pythonArgs -m installer.marsai_installer install --platforms $platformString --dry-run @extraArgs
 
         if ($LASTEXITCODE -ne 0) {
             throw "Dry-run failed with exit code $LASTEXITCODE"
@@ -194,7 +194,7 @@ try {
     Write-Host ""
     Write-Host "=== Installing ===" -ForegroundColor Green
     Set-Location $RingRoot
-    & $pythonExe @pythonArgs -m installer.ring_installer install --platforms $platformString @extraArgs
+    & $pythonExe @pythonArgs -m installer.marsai_installer install --platforms $platformString @extraArgs
 
     if ($LASTEXITCODE -ne 0) {
         throw "Installation failed with exit code $LASTEXITCODE"
@@ -210,10 +210,10 @@ try {
     Write-Host "  2. Skills will auto-load (Claude Code) or be available as configured"
     Write-Host ""
     Write-Host "Commands:"
-    Write-Host "  .\installer\install-ring.ps1                    # Interactive install"
-    Write-Host "  .\installer\install-ring.ps1 --platforms claude # Direct install"
-    Write-Host "  .\installer\install-ring.ps1 update             # Update installation"
-    Write-Host "  .\installer\install-ring.ps1 list               # List installed"
+    Write-Host "  .\installer\install-marsai.ps1                    # Interactive install"
+    Write-Host "  .\installer\install-marsai.ps1 --platforms claude # Direct install"
+    Write-Host "  .\installer\install-marsai.ps1 update             # Update installation"
+    Write-Host "  .\installer\install-marsai.ps1 list               # List installed"
     Write-Host ""
 } catch {
     Write-Host ""

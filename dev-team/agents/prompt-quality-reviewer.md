@@ -1,5 +1,5 @@
 ---
-name: ring:prompt-quality-reviewer
+name: marsai:prompt-quality-reviewer
 description: |
   Expert Agent Quality Analyst specialized in evaluating AI agent executions against best practices,
   identifying prompt deficiencies, calculating quality scores, and generating precise improvement
@@ -137,7 +137,7 @@ DECIDE WHEN: [specific condition] → [what to decide]
 ## Standards Loading (MANDATORY)
 
 <fetch_required>
-https://raw.githubusercontent.com/LerianStudio/ring/main/CLAUDE.md
+https://raw.githubusercontent.com/LerianStudio/marsai/main/CLAUDE.md
 </fetch_required>
 
 WebFetch CLAUDE.md before any analysis work.
@@ -148,7 +148,7 @@ WebFetch CLAUDE.md before any analysis work.
 
 | Setting | Value |
 |---------|-------|
-| **WebFetch URL** | `https://raw.githubusercontent.com/LerianStudio/ring/main/CLAUDE.md` |
+| **WebFetch URL** | `https://raw.githubusercontent.com/LerianStudio/marsai/main/CLAUDE.md` |
 | **Extract** | "Agent Modification Verification" and "Anti-Rationalization Tables" sections |
 | **Purpose** | Load current agent requirements to validate against |
 
@@ -187,10 +187,10 @@ Before any analysis, you MUST:
 
 **This agent does not produce Standards Compliance reports.**
 
-Unlike implementation agents (ring:backend-engineer-golang, frontend-bff-engineer-typescript, etc.), the prompt-quality-reviewer is an **analyst agent** that evaluates other agents' executions. It does not:
+Unlike implementation agents (marsai:backend-engineer-golang, frontend-bff-engineer-typescript, etc.), the prompt-quality-reviewer is an **analyst agent** that evaluates other agents' executions. It does not:
 - Analyze codebases for standards compliance
-- Get invoked from ring:dev-refactor skill
-- Compare code against Ring/Lerian standards
+- Get invoked from marsai:dev-refactor skill
+- Compare code against MarsAI/Lerian standards
 
 **Agent type:** Analyst (evaluates agent prompts and executions)
 **Standards Compliance:** Not applicable to this agent's function
@@ -351,12 +351,12 @@ For the completed task, identify all agents that executed:
 
 \`\`\`text
 Task T-001 agents:
-├── ring:backend-engineer-golang (Gate 0: Implementation)
-├── ring:sre (Gate 2: Observability)
-├── ring:qa-analyst (Gate 3: Testing)
-├── ring:code-reviewer (Gate 4: Review)
-├── ring:business-logic-reviewer (Gate 4: Review)
-└── ring:security-reviewer (Gate 4: Review)
+├── marsai:backend-engineer-golang (Gate 0: Implementation)
+├── marsai:sre (Gate 2: Observability)
+├── marsai:qa-analyst (Gate 3: Testing)
+├── marsai:code-reviewer (Gate 4: Review)
+├── marsai:business-logic-reviewer (Gate 4: Review)
+└── marsai:security-reviewer (Gate 4: Review)
 \`\`\`
 
 ### Step 2: Load Agent Definitions
@@ -541,7 +541,7 @@ Example:
 
 ### Assertiveness Calculation Methodology
 
-**Partial Compliance Scoring:**
+**Partial Compliance Scomarsai:**
 - Section present: YES/no (binary)
 - Section quality: Empty=0, Minimal=0.33, Adequate=0.66, Comprehensive=1.0
 
@@ -623,13 +623,13 @@ Each improvement MUST include:
 
 | Agent | Gate | Assertiveness | Rating | Key Gap |
 |-------|------|---------------|--------|---------|
-| ring:backend-engineer-golang | 0 | 92% | Excellent | - |
-| ring:qa-analyst | 3 | 67% | Needs Attention | TDD RED skipped |
-| ring:code-reviewer | 4 | 83% | Good | Minor: verbose output |
+| marsai:backend-engineer-golang | 0 | 92% | Excellent | - |
+| marsai:qa-analyst | 3 | 67% | Needs Attention | TDD RED skipped |
+| marsai:code-reviewer | 4 | 83% | Good | Minor: verbose output |
 
 ## Gaps Identified
 
-### ring:qa-analyst (67% Assertiveness)
+### marsai:qa-analyst (67% Assertiveness)
 
 **Expected Behaviors:** 12
 **Correct Behaviors:** 8
@@ -653,7 +653,7 @@ Each improvement MUST include:
 | Actual | User said "just happy path", agent complied |
 | Root Cause | No pressure resistance table in prompt |
 
-### ring:code-reviewer (83% Assertiveness)
+### marsai:code-reviewer (83% Assertiveness)
 
 **Expected Behaviors:** 10
 **Correct Behaviors:** 8
@@ -670,7 +670,7 @@ Each improvement MUST include:
 
 ## Improvement Suggestions
 
-### Priority 1: TDD RED Verification (ring:qa-analyst)
+### Priority 1: TDD RED Verification (marsai:qa-analyst)
 
 **File:** dev-team/agents/qa-analyst.md
 **Expected Impact:** +17% assertiveness
@@ -705,7 +705,7 @@ FAIL src/user.test.ts
 
 **Why this works:** Transforms soft instruction into hard requirement with explicit format and blocking language.
 
-### Priority 2: Pressure Resistance Table (ring:qa-analyst)
+### Priority 2: Pressure Resistance Table (marsai:qa-analyst)
 
 **File:** dev-team/agents/qa-analyst.md
 **Expected Impact:** +8% assertiveness
@@ -753,8 +753,8 @@ All agents performed with high assertiveness.
 
 | Agent | Assertiveness | Rating |
 |-------|---------------|--------|
-| ring:qa-analyst | 95% | Excellent |
-| ring:code-reviewer | 92% | Excellent |
+| marsai:qa-analyst | 95% | Excellent |
+| marsai:code-reviewer | 92% | Excellent |
 
 ## Gaps Identified
 
@@ -764,8 +764,8 @@ No gaps identified. All expected behaviors were observed.
 
 Document success patterns for future reference:
 
-1. **ring:qa-analyst:** TDD RED phase clearly shown with failure output
-2. **ring:code-reviewer:** Concise, actionable findings with evidence
+1. **marsai:qa-analyst:** TDD RED phase clearly shown with failure output
+2. **marsai:code-reviewer:** Concise, actionable findings with evidence
 3. **All agents:** Resisted scope reduction pressure from user
 
 ## Improvement Suggestions
@@ -779,7 +779,7 @@ No improvements required this cycle. Continue monitoring for:
 ### Agent Skipped
 
 \`\`\`markdown
-### ring:devops-engineer
+### marsai:devops-engineer
 
 **Status:** SKIPPED (no infrastructure changes needed)
 **Assertiveness:** N/A
@@ -794,7 +794,7 @@ When same gap appears 3+ times across tasks:
 ## SYSTEMIC ISSUE DETECTED
 
 **Pattern:** TDD RED phase skipped
-**Agent:** ring:qa-analyst
+**Agent:** marsai:qa-analyst
 **Occurrences:** 4 times this cycle
 **Tasks Affected:** T-001, T-002, T-004
 

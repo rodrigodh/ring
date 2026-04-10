@@ -1,5 +1,5 @@
 ---
-name: ring:dev-validation
+name: marsai:dev-validation
 description: |
   Development cycle validation gate (Gate 5) - validates all acceptance criteria are met
   and requires explicit user approval before completion.
@@ -10,7 +10,7 @@ trigger: |
   - Need user sign-off on acceptance criteria
 
 skip_when: |
-  - Not inside a development cycle (ring:dev-cycle or ring:dev-cycle-frontend)
+  - Not inside a development cycle (marsai:dev-cycle or marsai:dev-cycle-frontend)
   - Task is documentation-only, configuration-only, or non-code
   - No implementation or tests were produced in prior gates
 
@@ -19,7 +19,7 @@ NOT_skip_when: |
   - "User will validate manually" → Gate 5 IS user validation. Cannot skip.
 
 sequence:
-  after: [ring:requesting-code-review]
+  after: [marsai:requesting-code-review]
 
 related:
   complementary: [verification-before-completion]
@@ -29,7 +29,7 @@ verification:
     - command: "go test ./... 2>&1 | grep -c PASS"
       description: "All tests pass"
       success_pattern: "[1-9][0-9]*"
-    - command: "cat docs/ring:dev-cycle/current-cycle.json 2>/dev/null || cat docs/ring:dev-refactor/current-cycle.json | jq '.gates[4].verdict'"
+    - command: "cat docs/marsai:dev-cycle/current-cycle.json 2>/dev/null || cat docs/marsai:dev-refactor/current-cycle.json | jq '.gates[4].verdict'"
       description: "Review gate passed"
       success_pattern: "PASS"
   manual:
@@ -57,7 +57,7 @@ See [shared-patterns/shared-pressure-resistance.md](../shared-patterns/shared-pr
 
 <forbidden>
 - Same agent approving code it implemented
-- Role switching to self-approve (e.g., ring:backend-engineer → ring:code-reviewer)
+- Role switching to self-approve (e.g., marsai:backend-engineer → marsai:code-reviewer)
 - Interpreting silence as approval
 - Proceeding without explicit APPROVED/REJECTED
 </forbidden>
@@ -72,9 +72,9 @@ See [shared-patterns/shared-pressure-resistance.md](../shared-patterns/shared-pr
 
 **If you implemented the code, you CANNOT approve it. Wait for user or different reviewer.**
 
-**Important:** "Different agent" means different human/entity. The same human using different agent roles (ring:backend-engineer-* → ring:code-reviewer) is STILL self-approval and PROHIBITED.
+**Important:** "Different agent" means different human/entity. The same human using different agent roles (marsai:backend-engineer-* → marsai:code-reviewer) is STILL self-approval and PROHIBITED.
 
-See [CLAUDE.md](https://raw.githubusercontent.com/LerianStudio/ring/main/CLAUDE.md) for the canonical validation policy.
+See [CLAUDE.md](https://raw.githubusercontent.com/LerianStudio/marsai/main/CLAUDE.md) for the canonical validation policy.
 
 ---
 

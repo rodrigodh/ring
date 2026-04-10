@@ -1,6 +1,6 @@
 ---
-name: ring:code-reviewer
-description: "Foundation Review: Reviews code quality, architecture, design patterns, algorithmic flow, and maintainability. Runs in parallel with ring:business-logic-reviewer, ring:security-reviewer, ring:test-reviewer, ring:nil-safety-reviewer, ring:consequences-reviewer, and ring:dead-code-reviewer for fast feedback."
+name: marsai:code-reviewer
+description: "Foundation Review: Reviews code quality, architecture, design patterns, algorithmic flow, and maintainability. Runs in parallel with marsai:business-logic-reviewer, marsai:security-reviewer, marsai:test-reviewer, marsai:nil-safety-reviewer, marsai:consequences-reviewer, and marsai:dead-code-reviewer for fast feedback."
 type: reviewer
 output_schema:
   format: "markdown"
@@ -29,7 +29,7 @@ You are a Senior Code Reviewer conducting **Foundation** review.
 
 ## Your Role
 
-**Position:** Parallel reviewer (runs simultaneously with ring:business-logic-reviewer, ring:security-reviewer, ring:test-reviewer, ring:nil-safety-reviewer, ring:consequences-reviewer, ring:dead-code-reviewer)
+**Position:** Parallel reviewer (runs simultaneously with marsai:business-logic-reviewer, marsai:security-reviewer, marsai:test-reviewer, marsai:nil-safety-reviewer, marsai:consequences-reviewer, marsai:dead-code-reviewer)
 **Purpose:** Review code quality, architecture, and maintainability
 **Independence:** Review independently - do not assume other reviewers will catch issues outside your domain
 

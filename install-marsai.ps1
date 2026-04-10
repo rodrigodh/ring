@@ -1,4 +1,4 @@
-# Ring Plugin Marketplace Installer (PowerShell)
+# MarsAI Plugin Marketplace Installer (PowerShell)
 $ErrorActionPreference = "Stop"
 
 # Check PowerShell version (3.0+ recommended for Invoke-RestMethod)
@@ -9,18 +9,18 @@ if ($PSVersionTable.PSVersion.Major -lt 3) {
 }
 
 Write-Host "================================================"
-Write-Host "Ring Plugin Marketplace Installer"
+Write-Host "MarsAI Plugin Marketplace Installer"
 Write-Host "================================================"
 Write-Host ""
 
-$MARKETPLACE_SOURCE = "lerianstudio/ring"
-$MARKETPLACE_NAME = "ring"
-$MARKETPLACE_JSON_URL = "https://raw.githubusercontent.com/lerianstudio/ring/main/.claude-plugin/marketplace.json"
+$MARKETPLACE_SOURCE = "lerianstudio/marsai"
+$MARKETPLACE_NAME = "marsai"
+$MARKETPLACE_JSON_URL = "https://raw.githubusercontent.com/lerianstudio/marsai/main/.claude-plugin/marketplace.json"
 
 # Ensure TLS 1.2+ is used for secure connections
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-Write-Host "📦 Adding Ring marketplace from GitHub..."
+Write-Host "📦 Adding MarsAI marketplace from GitHub..."
 try {
     $marketplaceOutput = & claude plugin marketplace add $MARKETPLACE_SOURCE 2>&1 | Out-String
     $marketplaceExitCode = $LASTEXITCODE
@@ -30,14 +30,14 @@ try {
 }
 
 if ($marketplaceOutput -match "already installed") {
-    Write-Host "ℹ️  Ring marketplace already installed"
+    Write-Host "ℹ️  MarsAI marketplace already installed"
     $updateMarketplace = Read-Host "Would you like to update it? (Y/n)"
 
     if ($updateMarketplace -notmatch "^[Nn]$") {
-        Write-Host "🔄 Updating Ring marketplace..."
+        Write-Host "🔄 Updating MarsAI marketplace..."
         try {
             & claude plugin marketplace update $MARKETPLACE_NAME | Out-Null
-            Write-Host "✅ Ring marketplace updated successfully"
+            Write-Host "✅ MarsAI marketplace updated successfully"
         } catch {
             Write-Host "⚠️  Failed to update marketplace, continuing with existing version..."
         }
@@ -45,20 +45,20 @@ if ($marketplaceOutput -match "already installed") {
         Write-Host "➡️  Continuing with existing marketplace"
     }
 } elseif ($marketplaceOutput -match "Failed") {
-    Write-Host "❌ Failed to add Ring marketplace"
+    Write-Host "❌ Failed to add MarsAI marketplace"
     Write-Host $marketplaceOutput
     exit 1
 } else {
-    Write-Host "✅ Ring marketplace added successfully"
+    Write-Host "✅ MarsAI marketplace added successfully"
 }
 Write-Host ""
 
-Write-Host "🔧 Installing/updating ring-default (core plugin - required)..."
+Write-Host "🔧 Installing/updating marsai-default (core plugin - required)..."
 try {
-    & claude plugin install ring-default 2>&1 | Out-Null
-    Write-Host "✅ ring-default ready"
+    & claude plugin install marsai-default 2>&1 | Out-Null
+    Write-Host "✅ marsai-default ready"
 } catch {
-    Write-Host "❌ Failed to install ring-default"
+    Write-Host "❌ Failed to install marsai-default"
     exit 1
 }
 Write-Host ""
@@ -95,8 +95,8 @@ try {
                 continue
             }
 
-            # Skip ring-default (already installed)
-            if ($pluginName -eq "ring-default") {
+            # Skip marsai-default (already installed)
+            if ($pluginName -eq "marsai-default") {
                 continue
             }
 
@@ -131,7 +131,7 @@ try {
         Write-Host "================================================"
         Write-Host ""
         Write-Host "Installed plugins:"
-        Write-Host "  ✓ ring-default (core - required)"
+        Write-Host "  ✓ marsai-default (core - required)"
 
         # Show installation status for each plugin
         foreach ($pluginName in $installedPlugins.Keys) {
@@ -148,7 +148,7 @@ try {
         Write-Host "⚠️  Could not parse marketplace data, showing static list..."
         Write-Host ""
         Write-Host "Available plugins (manual installation required):"
-        Write-Host "  • ring-dev-team - Developer role agents"
+        Write-Host "  • marsai-dev-team - Developer role agents"
         Write-Host "  • ring-finops-team - FinOps & regulatory compliance"
         Write-Host "  • ring-pm-team - Product planning workflows"
         Write-Host "  • ring-pmo-team - PMO portfolio management specialists"
@@ -160,7 +160,7 @@ try {
     Write-Host "   Error: $($_.Exception.Message)"
     Write-Host ""
     Write-Host "Available plugins (manual installation required):"
-    Write-Host "  • ring-dev-team - Developer role agents"
+    Write-Host "  • marsai-dev-team - Developer role agents"
     Write-Host "  • ring-finops-team - FinOps & regulatory compliance"
     Write-Host "  • ring-pm-team - Product planning workflows"
     Write-Host "  • ring-pmo-team - PMO portfolio management specialists"
@@ -172,7 +172,7 @@ Write-Host ""
 Write-Host "Next steps:"
 Write-Host "  1. Restart Claude Code or start a new session"
 Write-Host "  2. Skills will auto-load via SessionStart hook"
-Write-Host "  3. Try: /ring-default:brainstorm or Skill tool: 'ring-default:using-ring'"
+Write-Host "  3. Try: /marsai-default:brainstorm or Skill tool: 'marsai-default:using-marsai'"
 Write-Host ""
 Write-Host "Marketplace commands:"
 Write-Host "  claude plugin marketplace list    # View configured marketplaces"

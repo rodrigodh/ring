@@ -1,5 +1,5 @@
 ---
-name: ring:git-commit
+name: marsai:git-commit
 description: Smart commit organization with atomic grouping, conventional commits, and trailer management
 
 trigger: |
@@ -483,7 +483,7 @@ If the user provides a commit message as argument:
 4. Create signed commit with trailer
 
 ```bash
-# User says: /ring:commit "fix login bug"
+# User says: /marsai:commit "fix login bug"
 git commit -S \
   -m "fix: fix login bug" \
   --trailer "X-Lerian-Ref: 0x1"

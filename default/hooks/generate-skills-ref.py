@@ -356,7 +356,7 @@ def generate_markdown(skills: List[Skill]) -> str:
     - Shows sequence for workflow ordering
     """
     if not skills:
-        return "# Ring Skills Quick Reference\n\n**No skills found.**\n"
+        return "# MarsAI Skills Quick Reference\n\n**No skills found.**\n"
 
     # Group skills by category
     categorized: Dict[str, List[Skill]] = {}
@@ -371,7 +371,7 @@ def generate_markdown(skills: List[Skill]) -> str:
     sorted_categories = [cat for cat in category_order if cat in categorized]
 
     # Build markdown
-    lines = ["# Ring Skills Quick Reference\n"]
+    lines = ["# MarsAI Skills Quick Reference\n"]
 
     for category in sorted_categories:
         category_skills = categorized[category]
@@ -399,7 +399,7 @@ def generate_markdown(skills: List[Skill]) -> str:
     # Add usage section
     lines.append("## Usage\n")
     lines.append("To use a skill: Use the Skill tool with skill name")
-    lines.append("Example: `ring:brainstorming`")
+    lines.append("Example: `marsai:brainstorming`")
 
     return "\n".join(lines)
 

@@ -41,7 +41,7 @@ When a review cycle completes, optionally record feedback:
 ## Review Quality Feedback
 
 **Review Date:** [YYYY-MM-DD]
-**Reviewer:** [ring:code-reviewer | ring:business-logic-reviewer | ring:security-reviewer | ring:test-reviewer | ring:nil-safety-reviewer | ring:consequences-reviewer | ring:dead-code-reviewer]
+**Reviewer:** [marsai:code-reviewer | marsai:business-logic-reviewer | marsai:security-reviewer | marsai:test-reviewer | marsai:nil-safety-reviewer | marsai:consequences-reviewer | marsai:dead-code-reviewer]
 **Files Reviewed:** [count]
 
 ### Accuracy Assessment
@@ -88,7 +88,7 @@ This feedback mechanism is OPTIONAL but recommended for teams wanting to track r
 
 **Where to Store Feedback:**
 - Project-specific: `docs/review-feedback/[date]-[reviewer].md`
-- Or integrated into PR/ring:commit notes
+- Or integrated into PR/marsai:commit notes
 
 ---
 

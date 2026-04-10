@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2034  # Unused variables OK for exported config
-# Ring Multi-Platform Installer
-# Installs Ring skills to Claude Code, Codex, Factory AI, Cursor, and/or Cline
+# MarsAI Multi-Platform Installer
+# Installs MarsAI skills to Claude Code, Codex, Factory AI, Cursor, and/or Cline
 set -euo pipefail
 export LC_ALL=C
 
@@ -10,7 +10,7 @@ RING_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 export PYTHONPATH="$RING_ROOT/installer${PYTHONPATH:+:$PYTHONPATH}"
 
 echo "================================================"
-echo "Ring Multi-Platform Installer"
+echo "MarsAI Multi-Platform Installer"
 echo "================================================"
 echo ""
 
@@ -89,8 +89,8 @@ if [ $# -gt 0 ]; then
     done
 
     # Verify module exists before exec
-    if [ ! -f "$RING_ROOT/installer/ring_installer/__main__.py" ]; then
-        echo "${RED}Error: ring_installer module not found at $RING_ROOT/installer/ring_installer${RESET}"
+    if [ ! -f "$RING_ROOT/installer/marsai_installer/__main__.py" ]; then
+        echo "${RED}Error: marsai_installer module not found at $RING_ROOT/installer/marsai_installer${RESET}"
         exit 1
     fi
 
@@ -111,16 +111,16 @@ if [ $# -gt 0 ]; then
     cd "$RING_ROOT"
     case "$1" in
         install|update|rebuild|check|sync|uninstall|list|detect|platforms)
-            exec "$PYTHON_CMD" -m installer.ring_installer "$@"
+            exec "$PYTHON_CMD" -m installer.marsai_installer "$@"
             ;;
         *)
-            exec "$PYTHON_CMD" -m installer.ring_installer install "$@"
+            exec "$PYTHON_CMD" -m installer.marsai_installer install "$@"
             ;;
     esac
 fi
 
 # Interactive mode - platform selection
-echo "Select platforms to install Ring:"
+echo "Select platforms to install MarsAI:"
 echo ""
 echo "  ${BLUE}1)${RESET} Claude Code     (recommended, native format)"
 echo "  ${BLUE}2)${RESET} Codex           (native format)"
@@ -204,7 +204,7 @@ if [[ "$dry_run" =~ ^[Yy]$ ]]; then
     echo ""
     echo "${YELLOW}=== Dry Run ===${RESET}"
     cd "$RING_ROOT"
-    "$PYTHON_CMD" -m installer.ring_installer install --platforms "$PLATFORMS" --dry-run "${EXTRA_ARGS[@]+"${EXTRA_ARGS[@]}"}"
+    "$PYTHON_CMD" -m installer.marsai_installer install --platforms "$PLATFORMS" --dry-run "${EXTRA_ARGS[@]+"${EXTRA_ARGS[@]}"}"
     echo ""
     read -p "Proceed with actual installation? (Y/n): " proceed
     if [[ "$proceed" =~ ^[Nn]$ ]]; then
@@ -217,7 +217,7 @@ fi
 echo ""
 echo "${GREEN}=== Installing ===${RESET}"
 cd "$RING_ROOT"
-"$PYTHON_CMD" -m installer.ring_installer install --platforms "$PLATFORMS" "${EXTRA_ARGS[@]+"${EXTRA_ARGS[@]}"}"
+"$PYTHON_CMD" -m installer.marsai_installer install --platforms "$PLATFORMS" "${EXTRA_ARGS[@]+"${EXTRA_ARGS[@]}"}"
 
 echo ""
 echo "${GREEN}================================================${RESET}"
@@ -228,13 +228,13 @@ echo "Next steps:"
 echo "  1. Restart your AI tool or start a new session"
 echo "  2. Skills will auto-load (Claude Code) or be available as configured"
 if [[ "$use_link" =~ ^[Yy]$ ]]; then
-    echo "  3. After git pull, run: ./installer/install-ring.sh rebuild"
+    echo "  3. After git pull, run: ./installer/install-marsai.sh rebuild"
 fi
 echo ""
 echo "Commands:"
-echo "  ./installer/install-ring.sh                    # Interactive install"
-echo "  ./installer/install-ring.sh --platforms claude # Direct install"
-echo "  ./installer/install-ring.sh update             # Update installation"
-echo "  ./installer/install-ring.sh rebuild            # Rebuild after git pull"
-echo "  ./installer/install-ring.sh list               # List installed"
+echo "  ./installer/install-marsai.sh                    # Interactive install"
+echo "  ./installer/install-marsai.sh --platforms claude # Direct install"
+echo "  ./installer/install-marsai.sh update             # Update installation"
+echo "  ./installer/install-marsai.sh rebuild            # Rebuild after git pull"
+echo "  ./installer/install-marsai.sh list               # List installed"
 echo ""
