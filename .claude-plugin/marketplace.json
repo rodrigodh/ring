@@ -2,8 +2,8 @@
   "name": "marsai",
   "description": "Core software engineering skills (TDD, debugging, code review) and specialized developer agents (Backend, DevOps, Frontend, QA, SRE) for Claude Code and Cursor.",
   "owner": {
-    "name": "Fred Amaral",
-    "email": "fred@fredamaral.com.br"
+    "name": "Rodrigo Schieck",
+    "email": "rodrigo@v4company.com"
   },
   "plugins": [
     {
