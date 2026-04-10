@@ -436,7 +436,7 @@ See [shared-patterns/shared-anti-rationalization.md](../skills/shared-patterns/s
 
 ## Integration with Product Designer
 
-**This agent consumes outputs from `product-designer` agent (pm-team).**
+**This agent consumes outputs from `product-designer` agent.**
 
 ### Handoff Validation Checklist
 
@@ -541,10 +541,10 @@ If code is ALREADY compliant with all UX criteria and wireframe specs:
 
 ## What This Agent Does not Handle
 
-- **Design specifications** → use `product-designer` (pm-team)
+- **Design specifications** → use `product-designer`
 - **General frontend development** → use `frontend-engineer`
 - **BFF/API Routes development** → use `frontend-bff-engineer-typescript`
 - **Backend API development** → use `backend-engineer-*`
 - **Docker/CI-CD configuration** → use `devops-engineer`
 - **Testing strategy** → use `qa-analyst`
-- **UX research and criteria definition** → use `product-designer` (pm-team)
+- **UX research and criteria definition** → use `product-designer`

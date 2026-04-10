@@ -128,34 +128,6 @@ Each plugin auto-loads a `using-{plugin}` skill via SessionStart hook to introdu
   - ring:sre
   - ring:ui-engineer
 
-### Ring PM Team Plugin
-
-- `ring:using-pm-team` → Pre-dev workflow skills (8 gates)
-- Auto-loads when ring-pm-team plugin is enabled
-- Located: `pm-team/skills/using-pm-team/SKILL.md`
-- Skills: 8 pre-dev gates for feature planning
-
-### Ring TW Team Plugin
-
-- `using-tw-team` → 3 technical writing agents for documentation
-- Auto-loads when ring-tw-team plugin is enabled
-- Located: `tw-team/skills/using-tw-team/SKILL.md`
-- Agents (invoke as `ring:{agent-name}`):
-  - ring:functional-writer (guides)
-  - ring:api-writer (API reference)
-  - ring:docs-reviewer (quality review)
-- Commands: write-guide, write-api, review-docs
-
-### Ring FinOps Team Plugin
-
-- `using-finops-team` → 3 FinOps agents for Brazilian compliance and cost estimation
-- Auto-loads when ring-finops-team plugin is enabled
-- Located: `finops-team/skills/using-finops-team/SKILL.md`
-- Agents (invoke as `{agent-name}`):
-  - finops-analyzer (compliance analysis)
-  - infrastructure-cost-estimator (cost estimation)
-  - finops-automation (template generation)
-
 ### Hook Configuration
 
 - Each plugin has: `{plugin}/hooks/hooks.json` + `{plugin}/hooks/session-start.sh`
@@ -177,41 +149,6 @@ Each plugin auto-loads a `using-{plugin}` skill via SessionStart hook to introdu
    ```
 
 4. **MUST run in parallel** with other reviewers (single message, multiple Tasks)
-
----
-
-## Pre-Dev Workflow
-
-### Simple Features (<2 days): `/ring:pre-dev-feature`
-
-```
-├── Gate 0: pm-team/skills/pre-dev-research
-│   └── Output: docs/pre-dev/feature/research.md (parallel agents)
-├── Gate 1: pm-team/skills/pre-dev-prd-creation
-│   └── Output: docs/pre-dev/feature/PRD.md
-├── Gate 2: pm-team/skills/pre-dev-trd-creation
-│   └── Output: docs/pre-dev/feature/TRD.md
-└── Gate 3: pm-team/skills/pre-dev-task-breakdown
-    └── Output: docs/pre-dev/feature/tasks.md
-```
-
-### Complex Features (≥2 days): `/ring:pre-dev-full`
-
-```
-├── Gate 0: Research Phase
-│   └── 3 parallel agents: repo-research, best-practices, framework-docs
-├── Gates 1-3: Same as simple workflow
-├── Gate 4: pm-team/skills/pre-dev-api-design
-│   └── Output: docs/pre-dev/feature/API.md
-├── Gate 5: pm-team/skills/pre-dev-data-model
-│   └── Output: docs/pre-dev/feature/data-model.md
-├── Gate 6: pm-team/skills/pre-dev-dependency-map
-│   └── Output: docs/pre-dev/feature/dependencies.md
-├── Gate 7: pm-team/skills/pre-dev-task-breakdown
-│   └── Output: docs/pre-dev/feature/tasks.md
-└── Gate 8: pm-team/skills/pre-dev-subtask-creation
-    └── Output: docs/pre-dev/feature/subtasks.md
-```
 
 ---
 

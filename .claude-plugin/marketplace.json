@@ -1,6 +1,6 @@
 {
   "name": "ring",
-  "description": "Lerian Studio plugin marketplace: Core software engineering skills (TDD, debugging, code review), specialized developer agents (Backend, DevOps, Frontend, QA, SRE), product planning workflows (10-gate pre-dev system), FinOps/regulatory compliance for Brazilian financial systems (BACEN, RFB), and technical writing specialists for documentation.",
+  "description": "Core software engineering skills (TDD, debugging, code review) and specialized developer agents (Backend, DevOps, Frontend, QA, SRE) for Claude Code and Cursor.",
   "owner": {
     "name": "Fred Amaral",
     "email": "fred@fredamaral.com.br"
@@ -54,85 +54,6 @@
         "reliability",
         "infrastructure",
         "refactoring"
-      ]
-    },
-    {
-      "name": "ring-pm-team",
-      "description": "Product team workflow: 15 skills + 4 research agents. Pre-dev planning with 5-gate (small features) and 10-gate (large features) orchestrators, delivery roadmap generation, plus delivery status tracking for evidence-based progress reporting. Includes parallel research agents, specialized code analysis, and Product Designer.",
-      "version": "0.23.0",
-      "source": "./pm-team",
-      "homepage": "https://github.com/lerianstudio/ring/tree/pm-team",
-      "repository": "https://github.com/lerianstudio/ring/tree/pm-team",
-      "license": "MIT",
-      "keywords": [
-        "skills",
-        "product",
-        "pre-dev",
-        "planning",
-        "prd",
-        "trd",
-        "api-design",
-        "data-model",
-        "workflow",
-        "feature-planning",
-        "task-breakdown"
-      ]
-    },
-    {
-      "name": "ring-pmo-team",
-      "description": "PMO (Project Management Office) specialists for portfolio-level oversight: 6 agents (portfolio-manager, resource-planner, risk-analyst, governance-specialist, executive-reporter, delivery-reporter), 9 skills for portfolio planning, resource allocation, risk management, executive reporting, and squad delivery reporting. Complements ring-pm-team (single feature) with portfolio-level coordination.",
-      "version": "0.7.0",
-      "source": "./pmo-team",
-      "homepage": "https://github.com/lerianstudio/ring/tree/pmo-team",
-      "repository": "https://github.com/lerianstudio/ring/tree/pmo-team",
-      "license": "MIT",
-      "keywords": [
-        "pmo",
-        "portfolio",
-        "project-management",
-        "resource-planning",
-        "risk-management",
-        "governance",
-        "executive-reporting",
-        "agents"
-      ]
-    },
-    {
-      "name": "ring-finops-team",
-      "version": "0.11.0",
-      "description": "FinOps and Brazilian regulatory compliance skills for financial systems",
-      "source": "./finops-team",
-      "homepage": "https://github.com/lerianstudio/ring/tree/finops-team",
-      "repository": "https://github.com/lerianstudio/ring/tree/finops-team",
-      "license": "MIT",
-      "keywords": [
-        "finops",
-        "regulatory",
-        "compliance",
-        "bacen",
-        "rfb",
-        "brazil"
-      ]
-    },
-    {
-      "name": "ring-tw-team",
-      "description": "Technical writing specialists for functional and API documentation. 3 specialized agents (functional-writer, api-writer, docs-reviewer) and 7 documentation skills covering voice/tone, structure, API field descriptions, and quality review. Enforces clear, consistent documentation standards.",
-      "version": "0.4.2",
-      "source": "./tw-team",
-      "homepage": "https://github.com/lerianstudio/ring/tree/tw-team",
-      "repository": "https://github.com/lerianstudio/ring/tree/tw-team",
-      "license": "MIT",
-      "keywords": [
-        "technical-writing",
-        "documentation",
-        "api-docs",
-        "guides",
-        "tutorials",
-        "voice-tone",
-        "style-guide",
-        "docs-review",
-        "agents",
-        "content-quality"
       ]
     }
   ],

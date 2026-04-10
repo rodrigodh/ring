@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2034  # Unused variables OK for exported config
 # Ring Multi-Platform Installer
-# Installs Ring skills to Claude Code, Codex, Factory AI, Cursor, Cline, and/or OpenCode
+# Installs Ring skills to Claude Code, Codex, Factory AI, Cursor, and/or Cline
 set -euo pipefail
 export LC_ALL=C
 
@@ -127,27 +127,26 @@ echo "  ${BLUE}2)${RESET} Codex           (native format)"
 echo "  ${BLUE}3)${RESET} Factory AI      (droids, transformed)"
 echo "  ${BLUE}4)${RESET} Cursor          (skills/agents/commands)"
 echo "  ${BLUE}5)${RESET} Cline           (prompts, transformed)"
-echo "  ${BLUE}6)${RESET} OpenCode        (native format)"
-echo "  ${BLUE}7)${RESET} All supported platforms"
-echo "  ${BLUE}8)${RESET} Auto-detect and install"
+echo "  ${BLUE}6)${RESET} All supported platforms"
+echo "  ${BLUE}7)${RESET} Auto-detect and install"
 echo ""
 
-read -p "Enter choice(s) separated by comma (e.g., 1,2,3) [default: 8]: " choices
+read -p "Enter choice(s) separated by comma (e.g., 1,2,3) [default: 7]: " choices
 
 # Validate input only contains expected characters (locale-independent)
 LC_ALL=C
-if [[ -n "$choices" ]] && ! [[ "$choices" =~ ^[1-8,\ ]*$ ]]; then
-    echo "${RED}Error: Invalid input. Please enter numbers 1-8 separated by commas.${RESET}"
+if [[ -n "$choices" ]] && ! [[ "$choices" =~ ^[1-7,\ ]*$ ]]; then
+    echo "${RED}Error: Invalid input. Please enter numbers 1-7 separated by commas.${RESET}"
     exit 1
 fi
 
 # Default to auto-detect
 if [ -z "$choices" ]; then
-    choices="8"
+    choices="7"
 fi
 
 # Check for conflicting options (auto-detect with specific platforms)
-if [[ "$choices" =~ [78] ]] && [[ "$choices" =~ [1-6] ]]; then
+if [[ "$choices" =~ [67] ]] && [[ "$choices" =~ [1-5] ]]; then
     echo "${YELLOW}Note: Auto/all selected - ignoring specific platform selections.${RESET}"
 fi
 
@@ -169,13 +168,10 @@ case "$choices" in
     *5*) PLATFORMS="${PLATFORMS}cline," ;;
 esac
 case "$choices" in
-    *6*) PLATFORMS="${PLATFORMS}opencode," ;;
+    *6*) PLATFORMS="claude,codex,factory,cursor,cline" ;;
 esac
 case "$choices" in
-    *7*) PLATFORMS="claude,codex,factory,cursor,cline,opencode" ;;
-esac
-case "$choices" in
-    *8*) PLATFORMS="auto" ;;
+    *7*) PLATFORMS="auto" ;;
 esac
 
 # Remove trailing comma
@@ -238,7 +234,6 @@ echo ""
 echo "Commands:"
 echo "  ./installer/install-ring.sh                    # Interactive install"
 echo "  ./installer/install-ring.sh --platforms claude # Direct install"
-echo "  ./installer/install-ring.sh --platforms opencode --link  # Symlink install"
 echo "  ./installer/install-ring.sh update             # Update installation"
 echo "  ./installer/install-ring.sh rebuild            # Rebuild after git pull"
 echo "  ./installer/install-ring.sh list               # List installed"

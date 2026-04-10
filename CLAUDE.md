@@ -416,22 +416,18 @@ If any checkbox is no → Agent is INCOMPLETE. Add missing sections.
 
 ## Repository Overview
 
-Ring is a comprehensive skills library and workflow system for AI agents that enforces proven software engineering practices through mandatory workflows, parallel code review, and systematic pre-development planning. Currently implemented as a Claude Code plugin marketplace with **6 active plugins**, the skills are agent-agnostic and reusable across different AI systems.
+Ring is a comprehensive skills library and workflow system for AI agents that enforces proven software engineering practices through mandatory workflows, parallel code review, and systematic pre-development planning. Currently implemented as a Claude Code plugin with **2 active plugins**, the skills are agent-agnostic and reusable across different AI systems.
 
 **Active Plugins:**
 
 - **ring-default**: 22 core skills, 14 slash commands, 10 specialized agents
 - **ring-dev-team**: 32 development skills, 9 slash commands, 12 developer agents (Backend Go, Backend TypeScript, DevOps, Frontend TypeScript, Frontend Designer, Frontend Engineer, Helm, QA Backend, QA Frontend, SRE, UI Engineer, Prompt Quality Reviewer)
-- **ring-pm-team**: 16 product management skills, 4 research agents, 3 slash commands (includes delivery planning + status tracking + Product Designer + Lerian Map Management)
-- **ring-pmo-team**: 9 PMO skills, 4 slash commands, 6 PMO agents (Portfolio Manager, Resource Planner, Risk Analyst, Governance Specialist, Executive Reporter, Delivery Reporter)
-- **ring-finops-team**: 7 regulatory skills, 3 FinOps agents (Analyzer, Automation, Infrastructure Cost Estimator)
-- **ring-tw-team**: 7 technical writing skills, 3 slash commands, 3 documentation agents (Functional Writer, API Writer, Docs Reviewer)
 
 **Note:** Plugin versions are managed in `.claude-plugin/marketplace.json`
 
-**Total: 93 skills (22 + 32 + 16 + 9 + 7 + 7) across 6 plugins**
-**Total: 38 agents (10 + 12 + 4 + 6 + 3 + 3) across 6 plugins**
-**Total: 33 commands (14 + 9 + 3 + 4 + 0 + 3) across 6 plugins**
+**Total: 54 skills (22 + 32) across 2 plugins**
+**Total: 22 agents (10 + 12) across 2 plugins**
+**Total: 23 commands (14 + 9) across 2 plugins**
 
 The architecture uses markdown-based skill definitions with YAML frontmatter, auto-discovered at session start via hooks, and executed through Claude Code's native Skill/Task tools.
 
@@ -447,16 +443,12 @@ See [README.md](README.md#installation) for detailed installation instructions.
 
 ## Architecture
 
-**Monorepo Structure** - 6 plugin collections:
+**Monorepo Structure** - 2 plugin collections:
 
 | Plugin           | Path           | Contents                         |
 | ---------------- | -------------- | -------------------------------- |
 | ring-default     | `default/`     | 22 skills, 10 agents, 14 commands |
 | ring-dev-team    | `dev-team/`    | 32 skills, 12 agents, 9 commands |
-| ring-pm-team     | `pm-team/`     | 16 skills, 4 agents, 3 commands  |
-| ring-pmo-team    | `pmo-team/`    | 9 skills, 6 agents, 4 commands   |
-| ring-finops-team | `finops-team/` | 7 skills, 3 agents               |
-| ring-tw-team     | `tw-team/`     | 7 skills, 3 agents, 3 commands   |
 
 Each plugin contains: `skills/`, `agents/`, `commands/`, `hooks/`
 
@@ -589,14 +581,10 @@ The system loads at SessionStart (from `default/` plugin):
 **Monorepo Context:**
 
 - Repository: Monorepo marketplace with multiple plugin collections
-- Active plugins: 6 (`ring-default`, `ring-dev-team`, `ring-pm-team`, `ring-pmo-team`, `ring-finops-team`, `ring-tw-team`)
+- Active plugins: 2 (`ring-default`, `ring-dev-team`)
 - Plugin versions: See `.claude-plugin/marketplace.json`
 - Core plugin: `default/` (22 skills, 10 agents, 14 commands)
 - Developer agents: `dev-team/` (32 skills, 12 agents, 9 commands)
-- Product planning: `pm-team/` (16 skills, 4 agents, 3 commands)
-- PMO specialists: `pmo-team/` (9 skills, 6 agents, 4 commands)
-- FinOps regulatory: `finops-team/` (7 skills, 3 agents)
-- Technical writing: `tw-team/` (7 skills, 3 agents, 3 commands)
 - Current git branch: `main`
 - Remote: `github.com/LerianStudio/ring`
 
@@ -621,19 +609,11 @@ Reference Documentation:
 
 Plugin Hooks (inject context at session start):
 ├── default/hooks/session-start.sh        # Skills reference
-├── dev-team/hooks/session-start.sh       # Developer agents
-├── pm-team/hooks/session-start.sh        # Pre-dev skills
-├── pmo-team/hooks/session-start.sh       # PMO specialist agents
-├── finops-team/hooks/session-start.sh    # FinOps regulatory agents
-└── tw-team/hooks/session-start.sh        # Technical writing agents
+└── dev-team/hooks/session-start.sh       # Developer agents
 
 Using-* Skills (plugin introductions):
 ├── default/skills/using-ring/SKILL.md             # Core workflow + agent list
-├── dev-team/skills/using-dev-team/SKILL.md        # Developer agents guide
-├── pm-team/skills/using-pm-team/SKILL.md          # Pre-dev workflow
-├── pmo-team/skills/using-pmo-team/SKILL.md        # PMO portfolio guide
-├── finops-team/skills/using-finops-team/SKILL.md  # FinOps regulatory guide
-└── tw-team/skills/using-tw-team/SKILL.md          # Technical writing guide
+└── dev-team/skills/using-dev-team/SKILL.md        # Developer agents guide
 ```
 
 **Checklist when adding/modifying:**
